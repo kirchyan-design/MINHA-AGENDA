@@ -1,10 +1,10 @@
-/* MEU PLANO - service worker
+/* JC ORGANIZA - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='1.2.0';
-const CACHE='meu-plano-'+VERSION;
-const CORE=['./','index.html','style.css','script.js','manifest.webmanifest','icon-192.png','icon-512.png'];
+const VERSION='1.3.0';
+const CACHE='jc-organiza-'+VERSION;
+const CORE=['./','index.html','style.css','script.js','manifest.webmanifest','icon-192.png','icon-512.png','logo.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('meu-plano-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>(k.startsWith('meu-plano-')||k.startsWith('jc-organiza-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('message',e=>{
  if(e.data==='SKIP_WAITING')self.skipWaiting();
  if(e.data==='VERSION'&&e.ports&&e.ports[0])e.ports[0].postMessage(VERSION)});
