@@ -80,3 +80,5 @@ nav button{font-size:11px;padding:6px 0;min-width:0}
 .seg{overflow-x:auto}.seg button{flex:1 0 auto;padding:9px 12px}
 .mkbar{display:flex;align-items:center;gap:10px}.mkbar .t{flex:1;min-width:0}.mkbar small{display:block;color:var(--mute);font-size:12px}.mkbar b{font-size:17px;overflow-wrap:anywhere}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s}}
+
+.upd{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:616px;margin:0 auto}.upd button{background:var(--ac);color:var(--onac);padding:8px 14px}
