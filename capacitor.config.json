@@ -1,6 +1,6 @@
 {
   "appId": "com.minhaagenda.app",
-  "appName": "MINHA AGENDA",
+  "appName": "JC ORGANIZA",
   "webDir": "www",
   "plugins": {
     "LocalNotifications": {
