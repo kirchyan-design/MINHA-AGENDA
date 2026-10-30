@@ -63,4 +63,6 @@ nav button.on{color:var(--ac);background:var(--acs)}
 .pq{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}.pq input{width:72px;padding:6px 8px}.pq input:nth-child(3){width:96px}.pq b{margin-left:auto;font-size:15px}.pin{width:100px}
 .gt{font:700 24px/1.2 "Bricolage Grotesque",system-ui,sans-serif}.gd{color:var(--mute);font-size:14px}.gd::first-letter{text-transform:uppercase}.greet{margin-bottom:16px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}.dlg{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:18px;max-width:340px;width:100%}.dlg p{margin:0 0 14px;font-weight:600}.dlg .row button{flex:1}.dlg #ok{background:var(--rd)}
+html,body{max-width:100%;overflow-x:hidden}
+.row{flex-wrap:wrap}.row>input:not([style]){flex:1 1 110px;min-width:0}.row>button{flex:none;white-space:nowrap}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s}}
