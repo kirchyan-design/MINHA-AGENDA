@@ -1,6 +1,6 @@
 /* MEU PLANO - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='1.1.0';
+const VERSION='1.2.0';
 const CACHE='meu-plano-'+VERSION;
 const CORE=['./','index.html','style.css','script.js','manifest.webmanifest','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))))});
