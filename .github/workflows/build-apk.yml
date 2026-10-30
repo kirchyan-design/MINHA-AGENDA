@@ -29,10 +29,10 @@ jobs:
       - name: Preparar pasta www
         run: |
           mkdir -p www
-          for f in index.html style.css script.js logo.png; do
+          for f in index.html style.css script.js; do
             if [ -f "$f" ]; then cp "$f" www/; fi
           done
-          for f in index.html style.css script.js logo.png; do
+          for f in index.html style.css script.js; do
             test -f www/$f || { echo "ERRO: faltou o arquivo $f na raiz do repositorio. Envie-o para o GitHub e rode de novo."; exit 1; }
           done
           grep -q "function render" www/script.js || { echo "ERRO: o script.js do repositorio esta errado (nao e o codigo do app). Envie o script.js correto."; exit 1; }
