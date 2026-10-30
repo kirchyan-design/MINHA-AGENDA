@@ -38,6 +38,13 @@ jobs:
       - name: Criar projeto Android
         run: npx cap add android
 
+      - name: Permitir salvar backup em Documentos (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q WRITE_EXTERNAL_STORAGE "$M" || sed -i '/android.permission.INTERNET/a\    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />' "$M"
+          grep -q requestLegacyExternalStorage "$M" || sed -i 's#<application#<application android:requestLegacyExternalStorage="true"#' "$M"
+          grep -n "EXTERNAL_STORAGE\|requestLegacy" "$M" || true
+
       - name: Copiar o app para o Android
         run: npx cap sync android
 
