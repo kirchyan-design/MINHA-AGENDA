@@ -45,6 +45,30 @@ jobs:
           grep -q requestLegacyExternalStorage "$M" || sed -i 's#<application#<application android:requestLegacyExternalStorage="true"#' "$M"
           grep -n "EXTERNAL_STORAGE\|requestLegacy" "$M" || true
 
+      - name: Permissões de notificação e alarme (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          for P in POST_NOTIFICATIONS SCHEDULE_EXACT_ALARM RECEIVE_BOOT_COMPLETED VIBRATE WAKE_LOCK; do
+            grep -q "android.permission.$P\"" "$M" || sed -i "/android.permission.INTERNET/a\    <uses-permission android:name=\"android.permission.$P\" />" "$M"
+          done
+          grep -n "uses-permission" "$M" || true
+
+      - name: Aplicar o ícone do aplicativo (Android)
+        run: |
+          command -v convert >/dev/null || sudo apt-get install -y imagemagick
+          R=android/app/src/main/res
+          if [ -f icon-512.png ]; then
+            for d in mdpi:48:108 hdpi:72:162 xhdpi:96:216 xxhdpi:144:324 xxxhdpi:192:432; do
+              IFS=: read n a f <<< "$d"
+              mkdir -p "$R/mipmap-$n"
+              convert icon-512.png -resize ${a}x${a} "$R/mipmap-$n/ic_launcher.png"
+              convert icon-512.png -resize ${a}x${a} "$R/mipmap-$n/ic_launcher_round.png"
+              if [ -f android-icon-fg.png ]; then convert android-icon-fg.png -resize ${f}x${f} "$R/mipmap-$n/ic_launcher_foreground.png"; fi
+            done
+            if [ -f "$R/values/ic_launcher_background.xml" ]; then sed -i 's/#FFFFFF/#0F7B8A/I' "$R/values/ic_launcher_background.xml"; fi
+          fi
+          if [ -f notif-icon.png ]; then mkdir -p "$R/drawable"; cp notif-icon.png "$R/drawable/ic_stat_agenda.png"; fi
+
       - name: Copiar o app para o Android
         run: npx cap sync android
 
