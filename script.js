@@ -252,6 +252,11 @@ function vTotais(){
  +r('🏷️','Produtos cadastrados',pr,'')
  +r('📝','Notas',nt,'')
  +r('🩺','Plantões registrados',pl,'')+`</div>`}
+/* ---------- Frase do dia ---------- */
+const FRASES=["Um passo de cada vez já é caminho percorrido.", "Organizar o dia é cuidar de você mesma(o).", "Pequenos passos todos os dias levam a grandes lugares.", "Hoje é uma boa página para escrever algo bom.", "Faça o possível agora e o impossível vai ficando para trás.", "Quem planeja o dia respira melhor a noite.", "Constância vale mais que pressa.", "Você não precisa fazer tudo hoje, só o que importa.", "Descansar também faz parte do plano.", "Cada tarefa concluída é uma vitória, mesmo a pequena.", "Comece por onde está, com o que tem.", "A calma é uma forma de produtividade.", "Prioridade clara, mente leve.", "O que você faz hoje constrói o seu amanhã.", "Respire fundo: você já deu conta de dias difíceis antes.", "Cuidar dos outros começa por cuidar de si.", "Seu esforço de hoje é a tranquilidade de amanhã.", "Disciplina é gentileza com o seu futuro.", "Não espere o momento perfeito: crie o seu.", "Foco no que está ao seu alcance.", "Um bom dia começa com uma boa intenção.", "Você é capaz de mais do que imagina.", "Gratidão transforma o cotidiano em presente.", "Quem cuida com amor, colhe com sentido.", "O plantão cansa, mas o seu cuidado faz diferença.", "Pausas curtas renovam grandes jornadas.", "Hoje, escolha progresso em vez de perfeição.", "Uma lista curta e feita vale mais que uma longa esperada.", "Tudo o que é grande começou pequeno.", "Acredite no processo, confie no seu ritmo.", "Organização traz tempo; tempo traz paz.", "Sorria para o dia: ele ainda está em branco.", "Sua dedicação inspira mais gente do que você vê.", "Faça hoje o que o seu eu de amanhã vai agradecer.", "Sem pressa, mas sem pausa.", "Foque no avanço, não na comparação.", "Cada manhã é uma nova chance de recomeçar.", "Cuide da sua energia como cuida dos seus compromissos.", "Quem se organiza ganha o bem mais precioso: tempo.", "Persistir é continuar mesmo quando está difícil.", "Bons hábitos constroem boas semanas.", "Termine o que começou, um item por vez.", "Seu bem-estar também é compromisso na agenda.", "A gentileza com você mesma(o) também gera resultado.", "O dia rende mais quando começa com um plano.", "Confie: você está no caminho.", "Pequenas conquistas, grandes histórias.", "Dedique tempo ao que realmente importa.", "Menos estresse, mais presença.", "Valorize o que já conquistou até aqui.", "Hoje você pode ser a calma de alguém."];
+function fraseIdx(){const n=FRASES.length,b=Math.floor(new Date(HOJE+'T12:00').getTime()/864e5);if(S.fraseDia&&S.fraseDia.d===HOJE)return (b+S.fraseDia.k)%n;return b%n}
+function outraFrase(){const k=(S.fraseDia&&S.fraseDia.d===HOJE?S.fraseDia.k:0)+1;S.fraseDia={d:HOJE,k:k};save();render()}
+const fraseCard=()=>`<div class="card frase"><small>Frase do dia</small><p>“${esc(FRASES[fraseIdx()])}”</p><button class="ghost" onclick="outraFrase()" aria-label="Mostrar outra frase">↻ Outra frase</button></div>`;
 /* ---------- Início ---------- */
 const inicial=()=>(S.user.name||'?').trim().charAt(0).toUpperCase();
 const avatar=c=>S.user.photo?`<img class="av ${c||''}" src="${S.user.photo}" alt="Foto de perfil">`:`<span class="av ${c||''}" aria-hidden="true">${esc(inicial())}</span>`;
@@ -262,6 +267,7 @@ function vInicio(){
  const st=(ic,t,s,fn)=>`<button class="stat" onclick="${fn}"><span class="si">${ic}</span><b>${t}</b><small>${s}</small></button>`;
  const plHtml=plh.map(p=>`<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><span class="t"><b>Plantão ${p.ent} → ${p.sai}</b>${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';sel=HOJE;mes=new Date();go('cal')" aria-label="Abrir plantões">›</button></div>`).join('');
  return `<div class="card">${saudBloco(prof?`<div class="gd">${prof}</div>`:'')}</div>`
+ +fraseCard()
  +`<h3>Hoje</h3><div class="card">${plHtml}${hoje.length?hoje.map(evItem).join(''):(plh.length?'':'<div class="vazio" style="padding:10px">Nada marcado para hoje.</div>')}</div>`
  +`<div class="stats">`
  +st('📋','Agenda',hoje.length?pend+' de '+hoje.length+' pendentes hoje':'Nada hoje',`go('agenda')`)
@@ -310,7 +316,7 @@ const bkData=()=>JSON.stringify({app:'meu-plano',v:2,date:HOJE,S:S,LOGOS:LOGOS,F
 const marcaBk=()=>{S.lastBackup=new Date().toISOString();save();if(tab==='config')render()};
 const cancelado=e=>/cancel/i.test(String(e&&(e.message||e.errorMessage)||e));
 async function exportar(modo){
- const txt=bkData(),nome='meu-plano-backup-'+HOJE+'.json',FS=plug('Filesystem'),SH=plug('Share');
+ const txt=bkData(),nome='jc-organiza-backup-'+HOJE+'.json',FS=plug('Filesystem'),SH=plug('Share');
  if(nat()&&FS){
   try{
    if(modo==='docs'){
@@ -318,14 +324,14 @@ async function exportar(modo){
     catch(e){/* sem acesso à pasta Documentos: abre a tela de compartilhar */}
    }
    const r=await FS.writeFile({path:nome,data:txt,directory:'CACHE',encoding:'utf8'});
-   if(SH){await SH.share({title:'Backup MEU PLANO',text:'Backup do MEU PLANO',url:r.uri,dialogTitle:'Salvar backup'});marcaBk();return}
+   if(SH){await SH.share({title:'Backup JC ORGANIZA',text:'Backup do JC ORGANIZA',url:r.uri,dialogTitle:'Salvar backup'});marcaBk();return}
   }catch(e){if(cancelado(e))return;info('Não foi possível gerar o arquivo de backup. Use o botão Copiar texto e guarde onde preferir.');return}
  }
- try{const f=new File([txt],nome,{type:'application/json'});if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Backup MEU PLANO'});marcaBk();return}}catch(e){if(e&&e.name==='AbortError')return}
+ try{const f=new File([txt],nome,{type:'application/json'});if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Backup JC ORGANIZA'});marcaBk();return}}catch(e){if(e&&e.name==='AbortError')return}
  try{const u=URL.createObjectURL(new Blob([txt],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);marcaBk();info('Backup gerado: '+nome+'. Procure na pasta Downloads. Se não aparecer, use o botão Copiar texto.')}catch(e){info('Não foi possível gerar o arquivo. Use o botão Copiar texto.')}}
 function copiarBk(){const t=bkData(),m='Backup copiado. Cole em um lugar seguro (anotações, e-mail ou WhatsApp para você).';const fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();info(ok?m:'Não foi possível copiar neste aparelho.')};
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>info(m),fb);else fb()}
-function restaurar(txt){let d;try{d=JSON.parse(String(txt).trim());if(d&&d.app==='meu-plano'&&d.S&&typeof d.S==='object'){}else if(d&&Array.isArray(d.ev)){d={S:d,LOGOS:{},FOTOS:{}}}else throw 0}catch(e){info('Este conteúdo não é um backup válido do MEU PLANO.');return}
+function restaurar(txt){let d;try{d=JSON.parse(String(txt).trim());if(d&&d.app==='meu-plano'&&d.S&&typeof d.S==='object'){}else if(d&&Array.isArray(d.ev)){d={S:d,LOGOS:{},FOTOS:{}}}else throw 0}catch(e){info('Este conteúdo não é um backup válido do JC ORGANIZA.');return}
  ask('Substituir todos os dados atuais por este backup?',()=>{S=Object.assign({ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',pl:[]},d.S);S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.pl=Array.isArray(S.pl)?S.pl:[];S.user=S.user||{name:''};S.notif=Object.assign({on:false,lead:10,plOn:true,plLead:60},S.notif||{});LOGOS=d.LOGOS||{};FOTOS=d.FOTOS||{};try{localStorage.setItem('minha-agenda-logos',JSON.stringify(LOGOS))}catch(e){}saveFotos();const ok=save();render();info(ok?'Backup restaurado com sucesso.':'Backup restaurado, mas faltou espaço para guardar tudo neste aparelho.')},'Substituir')}
 function importar(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restaurar(r.result);r.onerror=()=>info('Não foi possível ler o arquivo.');r.readAsText(f);inp.value=''}
 function colarBk(){const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="dlg"><p>Cole aqui o texto do backup</p><textarea id="bkt" style="min-height:120px;margin-bottom:10px"></textarea><div class="row"><button id="bkok">Restaurar</button><button class="sec" id="bkno">Cancelar</button></div></div>';document.body.appendChild(o);o.querySelector('#bkno').onclick=()=>o.remove();o.querySelector('#bkok').onclick=()=>{const t=o.querySelector('#bkt').value;if(!t.trim())return;o.remove();restaurar(t)};o.querySelector('#bkt').focus()}
@@ -392,8 +398,8 @@ async function ativarLembretes(on){
  if(!on){S.notif.on=false;save();agendarNotifs(true);render();return}
  const L=LNp();
  if(nat()&&L){try{let p=await L.checkPermissions();if(p.display!=='granted')p=await L.requestPermissions();
-   if(p.display!=='granted'){info('Permissão negada. Ative as notificações do MEU PLANO nas configurações do celular.');return}
-   try{const ex=await L.checkExactNotificationSetting();if(ex&&ex.exact_alarm==='denied')ask('Para os lembretes tocarem na hora certa, permita “Alarmes e lembretes” para o MEU PLANO.',()=>{L.changeExactNotificationSetting().catch(()=>{})},'Abrir ajuste')}catch(e){}
+   if(p.display!=='granted'){info('Permissão negada. Ative as notificações do JC ORGANIZA nas configurações do celular.');return}
+   try{const ex=await L.checkExactNotificationSetting();if(ex&&ex.exact_alarm==='denied')ask('Para os lembretes tocarem na hora certa, permita “Alarmes e lembretes” para o JC ORGANIZA.',()=>{L.changeExactNotificationSetting().catch(()=>{})},'Abrir ajuste')}catch(e){}
   }catch(e){info('Não foi possível ativar as notificações neste aparelho.');return}}
  else if('Notification' in window&&Notification.permission==='default'){try{await Notification.requestPermission()}catch(e){}}
  S.notif.on=true;save();agendarNotifs(true);render()}
