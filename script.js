@@ -54,13 +54,13 @@ function upNote(id,k,v){const n=S.notes.find(x=>x.id===id);n[k]=v;n.at=Date.now(
 /* ---------- Diário ---------- */
 const MOODS=['😄','🙂','😐','😔','😡'];
 function vDiario(){
- const cur=S.diary[dsel]||{text:'',mood:''};mood=cur.mood;
+ const cur=S.diary[dsel]||{title:'',text:'',mood:''};mood=cur.mood;
  const ks=Object.keys(S.diary).sort().reverse();
  return `<h2>Diário</h2><div class="card"><input type="date" value="${dsel}" onchange="dsel=this.value||HOJE;render()"><div class="humor" id="hm">${MOODS.map(m=>`<button class="${mood===m?'on':''}" onclick="mood=mood==='${m}'?'':'${m}';document.querySelectorAll('#hm button').forEach(b=>b.classList.toggle('on',b.textContent===mood))" aria-label="Humor ${m}">${m}</button>`).join('')}</div>
- <textarea id="dt" style="min-height:160px" placeholder="Como foi o seu dia?">${esc(cur.text)}</textarea>
+ <input id="dti" value="${esc(cur.title||'')}" placeholder="Título do dia" maxlength="80" aria-label="Título" style="font-weight:600;margin-bottom:8px"><textarea id="dt" style="min-height:160px" placeholder="Como foi o seu dia?">${esc(cur.text)}</textarea>
  <div class="row" style="margin-top:8px"><button onclick="saveDi()">Salvar</button>${S.diary[dsel]?`<button class="ghost" onclick="ask('Excluir esta entrada?',()=>{delete S.diary['${dsel}'];save();render()})">Excluir</button>`:''}</div></div>`
- +(ks.length?'<h3>Entradas</h3>'+ks.map(k=>`<div class="card ent" onclick="dsel='${k}';render();window.scrollTo(0,0)"><strong>${S.diary[k].mood||'📖'} ${fmt(k,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</strong><p>${esc(S.diary[k].text)}</p><div class="row" style="margin-top:6px"><button class="sec" onclick="event.stopPropagation();dsel='${k}';render();window.scrollTo(0,0)">Editar</button><button class="ghost" onclick="event.stopPropagation();ask('Excluir esta entrada?',()=>{delete S.diary['${k}'];save();render()})">Excluir</button></div></div>`).join(''):'')}
-function saveDi(){const t=$('#dt').value.trim();if(!t&&!mood)return;S.diary[dsel]={text:t,mood};save();render()}
+ +(ks.length?'<h3>Entradas</h3>'+ks.map(k=>`<div class="card ent" onclick="dsel='${k}';render();window.scrollTo(0,0)"><strong>${S.diary[k].mood||'📖'} ${esc(S.diary[k].title||'')||fmt(k,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</strong>${S.diary[k].title?`<div style="color:var(--mute);font-size:13px">${fmt(k,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>`:''}<p>${esc(S.diary[k].text)}</p><div class="row" style="margin-top:6px"><button class="sec" onclick="event.stopPropagation();dsel='${k}';render();window.scrollTo(0,0)">Editar</button><button class="ghost" onclick="event.stopPropagation();ask('Excluir esta entrada?',()=>{delete S.diary['${k}'];save();render()})">Excluir</button></div></div>`).join(''):'')}
+function saveDi(){const t=$('#dt').value.trim(),ti=$('#dti').value.trim();if(!t&&!ti&&!mood)return;S.diary[dsel]={title:ti,text:t,mood};save();render()}
 
 /* ---------- Compras ---------- */
 let sub='atual',aberto=null;
