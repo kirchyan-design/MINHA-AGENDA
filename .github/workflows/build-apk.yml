@@ -26,6 +26,15 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
+      - name: Preparar pasta www
+        run: |
+          mkdir -p www
+          for f in index.html style.css script.js; do
+            if [ -f "$f" ]; then cp "$f" www/; fi
+          done
+          test -f www/index.html || { echo "ERRO: index.html nao encontrado"; exit 1; }
+          ls www
+
       - name: Criar projeto Android
         run: npx cap add android
 
