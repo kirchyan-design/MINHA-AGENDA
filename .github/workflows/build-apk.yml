@@ -32,11 +32,8 @@ jobs:
           for f in index.html style.css script.js; do
             if [ -f "$f" ]; then cp "$f" www/; fi
           done
-          for f in index.html style.css script.js; do
-            test -f www/$f || { echo "ERRO: faltou o arquivo $f na raiz do repositorio. Envie-o para o GitHub e rode de novo."; exit 1; }
-          done
-          grep -q "function render" www/script.js || { echo "ERRO: o script.js do repositorio esta errado (nao e o codigo do app). Envie o script.js correto."; exit 1; }
-          grep -q "^:root" www/style.css || { echo "ERRO: o style.css do repositorio esta errado. Envie o style.css correto."; exit 1; }
+          test -f www/index.html || { echo "ERRO: faltou o index.html na raiz do repositorio."; exit 1; }
+          grep -q "function render" www/index.html || { echo "ERRO: o index.html do repositorio esta errado (nao e o app completo). Envie o index.html correto."; exit 1; }
           ls -la www
 
       - name: Criar projeto Android
