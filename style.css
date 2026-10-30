@@ -65,4 +65,5 @@ nav button.on{color:var(--ac);background:var(--acs)}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}.dlg{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:18px;max-width:340px;width:100%}.dlg p{margin:0 0 14px;font-weight:600}.dlg .row button{flex:1}.dlg #ok{background:var(--rd)}
 html,body{max-width:100%;overflow-x:hidden}
 .row{flex-wrap:wrap}.row>input:not([style]){flex:1 1 110px;min-width:0}.row>button{flex:none;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:38px;height:38px;flex:none}.logo.big{width:64px;height:64px}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s}}
