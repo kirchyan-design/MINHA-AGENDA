@@ -18,7 +18,7 @@ function go(t){tab=t;nav();render();window.scrollTo(0,0)}
 /* ---------- Agenda ---------- */
 function evItem(e){if(e.id===edEv)return evEdit(e);return `<div class="item ${e.done?'done':''}"><input type="checkbox" ${e.done?'checked':''} onchange="togEv('${e.id}')" aria-label="Concluir"><span class="hora">${e.time||'—'}</span><span class="t">${esc(e.title)}</span><button class="ghost" onclick="edEv='${e.id}';render()" aria-label="Editar">✎</button><button class="ghost" onclick="delEv('${e.id}')" aria-label="Excluir">✕</button></div>`}
 function addEv(dateId,titleId,timeId){const t=$('#'+titleId).value.trim();if(!t){$('#'+titleId).focus();return}
- S.ev.push({id:uid(),title:t,date:$('#'+dateId)?$('#'+dateId).value:sel,time:$('#'+timeId).value,done:false});save();render()}
+ S.ev.push({id:uid(),title:t,date:dateId?$('#'+dateId).value:sel,time:$('#'+timeId).value,done:false});save();render()}
 function togEv(id){const e=S.ev.find(x=>x.id===id);e.done=!e.done;save();render()}
 function delEv(id){S.ev=S.ev.filter(x=>x.id!==id);save();render()}
 const sortEv=a=>a.sort((x,y)=>(x.date+(x.time||'99')).localeCompare(y.date+(y.time||'99')));
