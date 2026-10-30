@@ -22,6 +22,7 @@
 <section id="v"></section>
 </main>
 <nav><div id="nav"></div></nav>
+<script>window.addEventListener('error',function(e){var d=document.getElementById('v');if(d&&!d.innerHTML){var f=e.filename||(e.target&&e.target.src)||'';d.innerHTML='<div style="padding:16px;color:#c8483c;font:14px sans-serif"><b>Erro ao iniciar o app</b><br>'+String(e.message||'arquivo não carregou').replace(/</g,'&lt;')+'<br><small>'+String(f).split('/').pop()+(e.lineno?' linha '+e.lineno:'')+'</small></div>'}},true)</script>
 <script src="script.js"></script>
 </body>
 </html>
