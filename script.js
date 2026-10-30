@@ -11,12 +11,12 @@ let FOTOS={},dimgs=[],dimgsFor=null;try{const r=localStorage.getItem('minha-agen
 const saveFotos=()=>{try{localStorage.setItem('minha-agenda-fotos',JSON.stringify(FOTOS));return true}catch(e){return false}};
 function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.imgs||[]).forEach(i=>used.add(i)));let ch=false;Object.keys(FOTOS).forEach(k=>{if(!used.has(k)){delete FOTOS[k];ch=true}});if(ch)saveFotos()}
 const save=()=>{let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();return ok};
-let tab='agenda',sel=HOJE,mes=new Date(),mood='',dsel=HOJE;
-const TABS=[['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras']];
+let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE;
+const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras']];
 
 
 function nav(){$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"><b>${t[1]}</b>${t[2]}</button>`).join('')}
-function go(t){tab=t;dimgsFor=null;nav();render();window.scrollTo(0,0)}
+function go(t){tab=t;dimgsFor=null;edName=false;nav();render();window.scrollTo(0,0)}
 
 /* ---------- Agenda ---------- */
 function evItem(e){if(e.id===edEv)return evEdit(e);return `<div class="item ${e.done?'done':''}"><input type="checkbox" ${e.done?'checked':''} onchange="togEv('${e.id}')" aria-label="Concluir"><span class="hora">${e.time||'—'}</span><span class="t">${esc(e.title)}</span><button class="ghost" onclick="edEv='${e.id}';render()" aria-label="Editar">✎</button><button class="ghost" onclick="delEv('${e.id}')" aria-label="Excluir">✕</button></div>`}
@@ -151,19 +151,47 @@ function vCompras(){
  const seg=`<div class="seg">${[['atual','Lista'],['prod','Produtos'],['comp','Comparar'],['hist','Histórico ('+S.hist.length+')']].map(a=>`<button class="${sub===a[0]?'on':''}" onclick="sub='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`;
  return `<h2>Lista de compras</h2>`+seg+(sub==='atual'?vLista():sub==='prod'?vProdutos():sub==='comp'?vComparar():vHist())}
 
+function vTotais(){
+ const fotos=Object.values(S.diary).reduce((n,d)=>n+(d.imgs||[]).filter(id=>FOTOS[id]).length,0),ev=S.ev.length,ok=S.ev.filter(e=>e.done).length,di=Object.keys(S.diary).length,sh=S.shop.length,hi=S.hist.length,pr=Object.keys(S.prods).length,nt=S.notes.length,total=ev+di+sh+hi+pr+nt;
+ const r=(ic,t,n,sub)=>`<div class="item"><span class="si2">${ic}</span><span class="t">${t}${sub?`<br><small style="color:var(--mute)">${sub}</small>`:''}</span><b class="cn">${n}</b></div>`;
+ return `<h3>Total registrado</h3><div class="card"><div class="cn-tot"><strong>${total}</strong><span>${total===1?'registro no total':'registros no total'}</span></div>`
+ +r('📋','Compromissos na agenda',ev,ev?ok+(ok===1?' concluído':' concluídos')+' · '+(ev-ok)+(ev-ok===1?' pendente':' pendentes'):'')
+ +r('📖','Entradas no diário',di,fotos?fotos+(fotos===1?' foto':' fotos'):'')
+ +r('🛒','Itens na lista de compras',sh,'')
+ +r('🧾','Compras finalizadas (histórico)',hi,'')
+ +r('🏷️','Produtos cadastrados',pr,'')
+ +r('📝','Notas',nt,'')+`</div>`}
+/* ---------- Início ---------- */
+function vInicio(){
+ const hoje=sortEv(S.ev.filter(e=>e.date===HOJE)),pend=hoje.filter(e=>!e.done).length,faltam=S.shop.filter(x=>!x.done).length,nn=S.notes.length,tema=S.theme||'auto';
+ const nome=edName?`<div class="row"><input id="gn" value="${esc(S.user.name)}" maxlength="30" aria-label="Seu nome" onkeydown="if(event.key==='Enter')saveName()"><button onclick="saveName()">Salvar</button><button class="ghost" onclick="edName=false;render()">Cancelar</button></div>`:`<div class="row"><div style="flex:1"><div class="gt">${saud()}, ${esc(S.user.name)}!</div><div class="gd">${dataLonga()}</div></div><button class="sec" onclick="edName=true;render();$('#gn').focus()">✎ Nome</button></div>`;
+ const st=(ic,t,s,fn)=>`<button class="stat" onclick="${fn}"><span class="si">${ic}</span><b>${t}</b><small>${s}</small></button>`;
+ const tm=[['auto','🌓 Auto'],['light','☀️ Claro'],['dark','🌙 Escuro']];
+ return `<div class="card">${nome}</div>`
+ +`<h3>Hoje</h3><div class="card">${hoje.length?hoje.map(evItem).join(''):'<div class="vazio" style="padding:10px">Nada marcado para hoje.</div>'}</div>`
+ +`<div class="stats">`
+ +st('📋','Agenda',hoje.length?pend+' de '+hoje.length+' pendentes hoje':'Nada hoje',`go('agenda')`)
+ +st('📖','Diário',S.diary[HOJE]?'Escrito hoje ✓':'Ainda não escreveu',`dsel=HOJE;go('diario')`)
+ +st('🛒','Compras',faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop)),`go('compras')`)
+ +st('📝','Notas',nn+(nn===1?' nota':' notas'),`go('notas')`)
+ +`</div>`
+ +vTotais()
+ +`<h3>Aparência</h3><div class="card"><div class="seg" style="margin-bottom:0">${tm.map(a=>`<button class="${tema===a[0]?'on':''}" onclick="setTheme('${a[0]}')">${a[1]}</button>`).join('')}</div><p class="hint">Automático acompanha o tema do aparelho.</p></div>`
+ +`<div style="text-align:center;margin-top:4px"><button class="ghost" onclick="ask('Sair? Seus dados continuam salvos neste aparelho.',()=>{S.user.name='';edName=false;save();render()},'Sair')">Sair</button></div>`}
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
 }
 let edEv=null,edH=null,edD=null,edName=false;
-function applyTheme(){const t=S.theme||'auto',r=document.documentElement;if(t==='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;const b=$('#tb');if(b)b.textContent=t==='dark'?'🌙 Escuro':t==='light'?'☀️ Claro':'🌓 Auto'}
-function cycleTheme(){S.theme={auto:'dark',dark:'light',light:'auto'}[S.theme||'auto'];save();applyTheme()}
-function head(){applyTheme();const ok=!!S.user.name;$('nav').style.display=ok?'':'none';$('#so').style.display=ok?'':'none';
- const h=new Date().getHours(),s=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite',dt=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
- $('#greet').innerHTML=!ok?'':edName?`<div class="card row"><input id="gn" value="${esc(S.user.name)}" maxlength="30" aria-label="Seu nome" onkeydown="if(event.key==='Enter')saveName()"><button onclick="saveName()">Salvar</button><button class="ghost" onclick="edName=false;head()">Cancelar</button></div>`:`<div class="row greet"><div style="flex:1"><div class="gt">${s}, ${esc(S.user.name)}!</div><div class="gd">${dt}</div></div><button class="sec" onclick="edName=true;head();$('#gn').focus()">✎ Nome</button></div>`}
-function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();head()}
+function applyTheme(){const t=S.theme||'auto',r=document.documentElement;if(t==='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;}
+function setTheme(t){S.theme=t;save();applyTheme();render()}
+const saud=()=>{const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'};
+const dataLonga=()=>new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+function head(){applyTheme();const ok=!!S.user.name;$('nav').style.display=ok?'':'none';
+ $('#greet').innerHTML=!ok||tab==='inicio'?'':`<div class="greet"><div class="gt">${saud()}, ${esc(S.user.name)}!</div><div class="gd">${dataLonga()}</div></div>`}
+function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
 function welcomeView(){$('#v').innerHTML=`<div class="card" style="margin-top:20px"><div style="margin-bottom:10px">${$('.logo').outerHTML.replace('class="logo"','class="logo big"')}</div><h2>Bem-vindo(a)</h2><p style="margin:0 0 12px">Como você quer ser chamado(a)?</p><input id="wn" placeholder="Seu nome" maxlength="30" onkeydown="if(event.key==='Enter')enter()"><button style="margin-top:10px;width:100%" onclick="enter()">Entrar</button><p style="color:var(--mute);font-size:13px;margin:12px 0 0">Seus dados ficam salvos neste aparelho.</p></div>`}
 function enter(){const n=$('#wn').value.trim();if(!n){$('#wn').focus();return}S.user.name=n;save();render()}
 function evEdit(e){return `<div class="item" style="flex-wrap:wrap"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título"><div class="row" style="width:100%"><input type="date" id="ee-d" value="${e.date}"><input type="time" id="ee-h" value="${e.time||''}"><button onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
