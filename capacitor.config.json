@@ -1,5 +1,11 @@
 {
   "appId": "com.minhaagenda.app",
   "appName": "MINHA AGENDA",
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_agenda",
+      "iconColor": "#0f7b8a"
+    }
+  }
 }
