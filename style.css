@@ -105,3 +105,10 @@ header .brand{min-width:0}
 .pobs{font-size:13px;color:var(--mute);margin-top:2px;overflow-wrap:anywhere;white-space:pre-wrap}
 .plrow{cursor:pointer}
 h1{white-space:nowrap}@media(max-width:380px){.cfgt{display:none}.cfg{font-size:18px;padding:8px 12px}}
+
+/* ---- v1.2: histórico, alarme ---- */
+.pdt{color:var(--mute);font-size:12px;font-weight:600;text-transform:capitalize}
+.alarme{text-align:center}.alarme .bell{font-size:44px;line-height:1;margin-bottom:8px}@media(prefers-reduced-motion:no-preference){.alarme .bell{animation:toca .6s ease-in-out infinite alternate}}@keyframes toca{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+.abody{color:var(--mute);margin:-6px 0 14px;overflow-wrap:anywhere}
+.somnome{background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;overflow-wrap:anywhere}
+.cap1::first-letter{text-transform:uppercase}
