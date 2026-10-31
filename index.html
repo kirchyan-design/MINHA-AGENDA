@@ -142,7 +142,9 @@ header h1{font-size:25px}
 .mh small{display:block;color:var(--ac);font-weight:700;font-size:12px;margin-top:2px}
 .mh .chev{flex:none;color:var(--mute);font-size:16px;transition:transform .15s}
 .mh.open{border-color:var(--ac)}.mh.open .chev{transform:rotate(90deg)}
-.mh+.card{margin-top:-4px}
+.mh+.card,.mhr+.card{margin-top:-4px}
+.mhr{display:flex;align-items:center;gap:4px;margin:8px 0}.mhr .mh{margin:0;flex:1;width:auto;min-width:0}
+.mhr .mdel{flex:none;font-size:18px;padding:10px 10px}
 
 /* ---- v1.5: hospitais e diárias ---- */
 .hdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--nc,var(--mute));flex:none}
@@ -161,6 +163,10 @@ header h1{font-size:25px}
 .tot .hb{border-top:1px solid var(--ac);margin-top:8px;padding-top:8px}
 .tot strong.mn{font-size:24px}
 .seg.s3 button{padding:9px 6px;font-size:13px}
+.hhead{cursor:pointer}.hhead .chev{flex:none;color:var(--mute);font-size:16px;transition:transform .15s;padding:0 4px}.hhead .chev.open{transform:rotate(90deg)}
+.hlist{margin:0 0 8px 8px;padding-left:10px;border-left:3px solid var(--nc)}
+.hmh{font-size:12px;font-weight:700;color:var(--ac);margin:10px 0 0}
+.hlist .phos{display:none}
 .fl input{font-weight:400;color:var(--ink)}
 
 </style>
@@ -190,7 +196,7 @@ let FOTOS={},dimgs=[],dimgsFor=null;try{const r=localStorage.getItem('minha-agen
 const saveFotos=()=>{try{localStorage.setItem('minha-agenda-fotos',JSON.stringify(FOTOS));return true}catch(e){return false}};
 function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.imgs||[]).forEach(i=>used.add(i)));let ch=false;Object.keys(FOTOS).forEach(k=>{if(!used.has(k)){delete FOTOS[k];ch=true}});if(ch)saveFotos()}
 const save=()=>{let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}return ok};
-let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null;
+let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras']];
 
 
@@ -275,9 +281,6 @@ function quickBar(){
  +`<div class="seg">${b('d','☀️ 07–19')}${b('n','🌙 19–07')}${b('c','✏️ Outro')}</div>`
  +(q&&q.k==='c'?`<div class="row" style="margin-top:8px"><label class="fl2">Entrada<input type="time" id="pq-i" value="${q.ent}" onchange="setQuickT('ent',this.value)"></label><label class="fl2">Saída<input type="time" id="pq-o" value="${q.sai}" onchange="setQuickT('sai',this.value)"></label></div>`:'')
  +`<p class="hint">${q?`Modo ativo${h?' em <b>'+esc(h.name)+'</b>'+(h.val?' (diária '+BRL(h.val)+')':''):''}: toque nos dias para adicionar o plantão. Toque de novo no mesmo dia para remover. Toque no botão ativo para sair do modo.`:'Escolha o tipo de plantão e depois toque nos dias do calendário, quantos quiser.'+(S.hosp.length?'':' Cadastre seus hospitais na aba 🏥 Hospitais.')}</p></div>`}
-function plPreset(i,o){$('#pl-i').value=i;$('#pl-o').value=o}
-function addPl(){const i=$('#pl-i').value,o=$('#pl-o').value;if(!i){$('#pl-i').focus();return}if(!o){$('#pl-o').focus();return}
- S.pl.push({id:uid(),date:sel,ent:i,sai:o,obs:$('#pl-ob').value.trim(),hosp:$('#pl-h')?$('#pl-h').value:'',val:vlr($('#pl-v').value)});save();render()}
 function savePl(id){const p=S.pl.find(x=>x.id===id),i=$('#pe-i').value,o=$('#pe-o').value;if(!i){$('#pe-i').focus();return}if(!o){$('#pe-o').focus();return}
  p.date=$('#pe-d').value||p.date;p.ent=i;p.sai=o;p.obs=$('#pe-ob').value.trim();if($('#pe-h'))p.hosp=$('#pe-h').value;p.val=vlr($('#pe-v').value);edPl=null;save();render()}
 function vPlantoes(){
@@ -285,15 +288,10 @@ function vPlantoes(){
  if(plSub==='hosp')return vPlHosp();
  const y=mes.getFullYear(),m=mes.getMonth(),key=y+'-'+String(m+1).padStart(2,'0');
  const dia=S.pl.filter(p=>p.date===sel).sort(plSort),mp=S.pl.filter(p=>p.date.startsWith(key)).sort(plSort),tm=mp.reduce((s,p)=>s+durMin(p),0);
- return `<h2>Calendário</h2>${calSeg()}${plSeg()}${quickBar()}<div class="card">${calHead()}<div class="grid">${calGrid('pl')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">${plQuick?'Dias coloridos já têm plantão; a cor indica o hospital. ':'Toque em um dia para ver ou registrar o plantão. '}☀️ diurno · 🌙 noturno.</p>${S.hosp.length?`<div class="hleg">${S.hosp.map(h=>`<span>${hd(h)} ${esc(h.name)}</span>`).join('')}</div>`:''}</div>
+ return `<h2>Calendário</h2>${calSeg()}${plSeg()}${quickBar()}<div class="card">${calHead()}<div class="grid">${calGrid('pl')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">${plQuick?'Dias coloridos já têm plantão; a cor indica o hospital. ':'Toque em um dia para ver os plantões dele. '}☀️ diurno · 🌙 noturno.</p>${S.hosp.length?`<div class="hleg">${S.hosp.map(h=>`<span>${hd(h)} ${esc(h.name)}</span>`).join('')}</div>`:''}</div>
  <h3 style="text-transform:capitalize">${fmt(sel,{weekday:'long',day:'numeric',month:'long'})}</h3>
- <div class="card">${dia.length?dia.map(plItem).join(''):'<div class="vazio" style="padding:10px">Nenhum plantão registrado neste dia.</div>'}
- <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--ln)"><strong>Registrar plantão</strong>
- <div class="row" style="margin:8px 0"><button class="sec" onclick="plPreset('07:00','19:00')">☀️ Diurno 07–19</button><button class="sec" onclick="plPreset('19:00','07:00')">🌙 Noturno 19–07</button></div>
- <div class="row"><label class="fl2">Entrada<input type="time" id="pl-i"></label><label class="fl2">Saída<input type="time" id="pl-o"></label></div>
- <div class="row" style="margin-top:8px">${hospSel('pl-h','pl',(hospDef()||{}).id)}${valIn('pl-v',(hospDef()||{}).val)}</div>
- <textarea id="pl-ob" style="min-height:64px;margin-top:8px" placeholder="Observações (opcional): setor, troca de plantão, intercorrências…"></textarea>
- <button style="margin-top:8px;width:100%" onclick="addPl()">Registrar plantão</button></div></div>
+ <div class="card">${dia.length?dia.map(plItem).join(''):'<div class="vazio" style="padding:10px">Nenhum plantão registrado neste dia.'+(plQuick?'':' Escolha o tipo de plantão acima e toque no dia para registrar.')+'</div>'}
+</div>
  <h3 style="text-transform:capitalize">Resumo de ${mes.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</h3>
  <div class="card tot"><div class="r"><span>Plantões no mês</span><strong>${mp.length}</strong></div><div class="r"><span>Horas trabalhadas</span><strong>${fmtDur(tm)}</strong></div><div class="r"><span>Total das diárias</span><strong class="mn">${BRL(somaVal(mp))}</strong></div>${breakHtml(mp)}</div>
  ${mp.length?`<div class="card">${mp.map(p=>`<div class="item plrow" onclick="sel='${p.date}';edPl=null;render();window.scrollTo(0,0)"><span class="hora" style="min-width:64px;text-transform:capitalize">${fmt(p.date,{weekday:'short',day:'2-digit'})}</span><div class="t">${shiftIco(p)} ${p.ent} → ${p.sai} <small style="color:var(--ac);font-weight:700">· ${fmtDur(durMin(p))}</small>${plExtra(p)}${p.obs?`<div class="pobs">${esc(p.obs)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="vazio">Nenhum plantão neste mês.</div>'}`}
@@ -301,6 +299,9 @@ function vPlantoes(){
 const plSeg=()=>`<div class="seg s3">${[['reg','✍️ Registrar'],['hist','🗂 Histórico'],['hosp','🏥 Hospitais']].map(a=>`<button class="${plSub===a[0]?'on':''}" onclick="plSub='${a[0]}';edPl=null;edHosp=null;hpCor=null;render()">${a[1]}</button>`).join('')}</div>`;
 function addPlH(){const d=$('#ph-d').value,i=$('#ph-i').value,o=$('#ph-o').value;if(!d){$('#ph-d').focus();return}if(!i){$('#ph-i').focus();return}if(!o){$('#ph-o').focus();return}
  S.pl.push({id:uid(),date:d,ent:i,sai:o,obs:$('#ph-ob').value.trim(),hosp:$('#ph-h')?$('#ph-h').value:'',val:vlr($('#ph-v').value)});plOpen[d.slice(0,7)]=true;save();render()}
+function delMes(k){const a=S.pl.filter(p=>p.date.startsWith(k));if(!a.length)return;
+ const nome=new Date(k+'-01T12:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'}),v=somaVal(a);
+ ask('Excluir '+(a.length===1?'o plantão':'todos os '+a.length+' plantões')+' de '+nome+(v?' ('+BRL(v)+')':'')+'? Esta ação não pode ser desfeita.',()=>{S.pl=S.pl.filter(p=>!p.date.startsWith(k));delete plOpen[k];edPl=null;save();render()})}
 function togMes(k){plOpen[k]=!plOpen[k];render()}
 function togTodosMes(ks){const abrir=!ks.every(k=>plOpen[k]);ks.forEach(k=>plOpen[k]=abrir);render()}
 function vPlHist(){
@@ -314,7 +315,7 @@ function vPlHist(){
  +(lista.length?(()=>{const ks=Object.keys(g).sort().reverse(),todos=ks.every(k=>plOpen[k]);
   return `<div class="row" style="justify-content:flex-end;margin-top:4px"><button class="ghost" style="color:var(--ac);font-weight:600" onclick='togTodosMes(${JSON.stringify(ks)})'>${todos?'Recolher todos':'Expandir todos'}</button></div>`
   +ks.map(k=>{const a=g[k],m=a.reduce((s,p)=>s+durMin(p),0),ab=!!plOpen[k];
-   return `<button class="mh ${ab?'open':''}" onclick="togMes('${k}')" aria-expanded="${ab}"><span class="mt">${new Date(k+'-01T12:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}<small>${a.length} ${a.length===1?'plantão':'plantões'} · ${fmtDur(m)}${somaVal(a)?' · '+BRL(somaVal(a)):''}</small></span><span class="chev" aria-hidden="true">▸</span></button>${ab?`<div class="card">${breakHtml(a)}${a.map(p=>plItem(p,true)).join('')}</div>`:''}`}).join('')})():'<div class="vazio">Nenhum plantão no histórico ainda. Registre pelo calendário ou adicione acima.</div>')}
+   return `<div class="mhr"><button class="mh ${ab?'open':''}" onclick="togMes('${k}')" aria-expanded="${ab}"><span class="mt">${new Date(k+'-01T12:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}<small>${a.length} ${a.length===1?'plantão':'plantões'} · ${fmtDur(m)}${somaVal(a)?' · '+BRL(somaVal(a)):''}</small></span><span class="chev" aria-hidden="true">▸</span></button><button class="ghost mdel" onclick="delMes('${k}')" aria-label="Excluir mês" title="Excluir mês">🗑</button></div>${ab?`<div class="card">${breakHtml(a)}${a.map(p=>plItem(p,true)).join('')}</div>`:''}`}).join('')})():'<div class="vazio">Nenhum plantão no histórico ainda. Registre pelo calendário ou adicione acima.</div>')}
 
 /* ---------- Hospitais ---------- */
 const nextCor=()=>{const u=S.hosp.map(h=>h.cor),c=CORES.find(x=>!u.includes(x[0]));return (c||CORES[0])[0]};
@@ -325,6 +326,12 @@ function saveHosp(){const n=$('#hp-n').value.trim();if(!n){$('#hp-n').focus();re
  edHosp=null;hpCor=null;save();render()}
 function delHosp(id){const h=hospBy(id);if(!h)return;const n=S.pl.filter(p=>p.hosp===id).length;
  ask('Excluir o hospital "'+h.name+'"?'+(n?' Os '+n+(n===1?' plantão já registrado continua':' plantões já registrados continuam')+', mas fica(m) sem hospital.':''),()=>{S.pl.forEach(p=>{if(p.hosp===id)p.hosp=''});S.hosp=S.hosp.filter(x=>x.id!==id);if(plQuickH===id)plQuickH=null;save();render()})}
+function togHosp(id){hpOpen[id]=!hpOpen[id];render()}
+function hItem(h){
+ const L=S.pl.filter(p=>p.hosp===h.id).sort((a,b)=>plSort(b,a)),ab=!!hpOpen[h.id],tv=somaVal(L),g={};
+ L.forEach(p=>(g[p.date.slice(0,7)]=g[p.date.slice(0,7)]||[]).push(p));
+ return `<div class="item hhead" onclick="togHosp('${h.id}')" role="button" aria-expanded="${ab}"><i class="hdot big" data-c="${h.cor}"></i><div class="t"><b>${esc(h.name)}</b><div class="pobs">${h.val?'Diária padrão '+BRL(h.val)+' · ':''}${L.length} ${L.length===1?'plantão':'plantões'}${tv?' · '+BRL(tv):''}</div></div><button class="ghost" onclick="event.stopPropagation();edHosp='${h.id}';hpCor=null;render();window.scrollTo(0,0)" aria-label="Editar hospital">✎</button><button class="ghost" onclick="event.stopPropagation();delHosp('${h.id}')" aria-label="Excluir hospital">✕</button><span class="chev ${ab?'open':''}" aria-hidden="true">▸</span></div>`
+ +(ab?`<div class="hlist" data-c="${h.cor}">${L.length?Object.keys(g).sort().reverse().map(k=>{const a=g[k],v=somaVal(a);return `<div class="hmh cap1">${new Date(k+'-01T12:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})} · ${a.length} ${a.length===1?'plantão':'plantões'} · ${fmtDur(a.reduce((x,q)=>x+durMin(q),0))}${v?' · '+BRL(v):''}</div>`+a.map(q=>plItem(q,true)).join('')}).join(''):'<div class="vazio" style="padding:10px">Nenhum plantão neste hospital ainda.</div>'}</div>`:'')}
 function vPlHosp(){
  const e=S.hosp.find(h=>h.id===edHosp)||null;if(!hpCor)hpCor=e?e.cor:nextCor();
  const cnt=h=>S.pl.filter(p=>p.hosp===h.id).length;
@@ -335,7 +342,7 @@ function vPlHosp(){
  +`<label class="fl">Diária padrão (R$)<input type="number" id="hp-v" step="0.01" min="0" inputmode="decimal" placeholder="0,00" value="${e&&e.val?e.val:''}"></label>`
  +`<p class="hint">A diária padrão preenche automaticamente os novos plantões deste hospital. Você pode ajustar o valor em cada plantão. Plantões já registrados não mudam.</p>`
  +`<div class="row" style="margin-top:10px"><button style="flex:1" onclick="saveHosp()">${e?'Salvar':'Cadastrar hospital'}</button>${e?`<button class="ghost" onclick="edHosp=null;hpCor=null;render()">Cancelar</button>`:''}</div></div>`
- +(S.hosp.length?`<h3>Meus hospitais</h3><div class="card">${S.hosp.map(h=>`<div class="item"><i class="hdot big" data-c="${h.cor}"></i><div class="t"><b>${esc(h.name)}</b><div class="pobs">${h.val?'Diária padrão '+BRL(h.val)+' · ':''}${cnt(h)} ${cnt(h)===1?'plantão':'plantões'}</div></div><button class="ghost" onclick="edHosp='${h.id}';hpCor=null;render();window.scrollTo(0,0)" aria-label="Editar hospital">✎</button><button class="ghost" onclick="delHosp('${h.id}')" aria-label="Excluir hospital">✕</button></div>`).join('')}</div>`:'<div class="vazio">Nenhum hospital cadastrado ainda. Se você trabalha em mais de um, cadastre cada um com uma cor diferente.</div>')}
+ +(S.hosp.length?`<h3>Meus hospitais</h3><div class="card">${S.hosp.map(hItem).join('')}</div>`:'<div class="vazio">Nenhum hospital cadastrado ainda. Se você trabalha em mais de um, cadastre cada um com uma cor diferente.</div>')}
 
 /* ---------- Notas ---------- */
 const CORES=[['vermelho','Vermelho'],['laranja','Laranja'],['amarelo','Amarelo'],['verde','Verde'],['azul','Azul'],['roxo','Roxo'],['rosa','Rosa']];
