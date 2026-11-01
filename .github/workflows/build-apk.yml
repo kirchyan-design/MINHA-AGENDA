@@ -67,6 +67,32 @@ jobs:
           done
           grep -n "uses-permission" "$M" || true
 
+      - name: Permissões de fotos, vídeos e áudio + plugin nativo (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          for P in READ_MEDIA_IMAGES READ_MEDIA_VIDEO READ_MEDIA_AUDIO; do
+            grep -q "android.permission.$P\"" "$M" || sed -i "/android.permission.INTERNET/a\    <uses-permission android:name=\"android.permission.$P\" />" "$M"
+          done
+          grep -q "android.permission.READ_EXTERNAL_STORAGE" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />' "$M"
+          D=android/app/src/main/java/com/minhaagenda/app
+          mkdir -p "$D"
+          cp native/MediaPermissionsPlugin.java "$D/MediaPermissionsPlugin.java"
+          cat > "$D/MainActivity.java" <<'EOF'
+          package com.minhaagenda.app;
+
+          import android.os.Bundle;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(MediaPermissionsPlugin.class);
+                  super.onCreate(savedInstanceState);
+              }
+          }
+          EOF
+          grep -n "uses-permission" "$M" || true
+
       - name: Aplicar o ícone do aplicativo (Android)
         run: |
           command -v convert >/dev/null || sudo apt-get install -y imagemagick
