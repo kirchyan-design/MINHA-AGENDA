@@ -169,6 +169,28 @@ header h1{font-size:25px}
 .hlist .phos{display:none}
 .fl input{font-weight:400;color:var(--ink)}
 
+/* ---- v1.6: carteira ---- */
+.cw-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:3px 0}
+.cw-row b{font:700 17px "Bricolage Grotesque",system-ui,sans-serif;white-space:nowrap}
+.cw-in{color:var(--ok)}.cw-out{color:var(--rd)}
+.cw-sobra{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-top:1px solid var(--ac);margin-top:8px;padding-top:8px}
+.tot strong.neg{color:var(--rd)}
+.cw-bar{height:10px;border-radius:999px;background:var(--bg);border:1px solid var(--ln);overflow:hidden;margin:10px 0 4px}
+.cw-bar i{display:block;height:100%;background:var(--ac);border-radius:999px}
+.cw-bar.warn i{background:#e8b923}.cw-bar.over i{background:var(--rd)}
+.cw-warn{color:var(--rd);font-weight:600;font-size:14px;margin:8px 0 0}
+.cw-cat{padding:8px 0;border-bottom:1px solid var(--ln)}.cw-cat:last-child{border-bottom:0}
+.cw-cat .top{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.cw-cat .bar{height:6px;border-radius:999px;background:var(--bg);margin-top:6px;overflow:hidden}
+.cw-cat .bar i{display:block;height:100%;background:var(--ac);border-radius:999px}
+.cw-v{font-weight:700;white-space:nowrap}
+.cw-late{color:var(--rd);font-weight:600}
+.cw-ic{font-size:22px;line-height:1;flex:none}
+.cw-tg{width:100%;text-align:left}
+.cw-m{text-transform:none!important}.cw-m::first-letter{text-transform:uppercase}
+.seg.s4{overflow-x:visible}.seg.s4 button{flex:1 1 0;min-width:0;font-size:13px;padding:9px 2px}
+@media(max-width:430px){nav button{font-size:10px;letter-spacing:-.01em}nav button b{font-size:19px}}
+
 </style>
 
 </head>
@@ -197,11 +219,11 @@ const saveFotos=()=>{try{localStorage.setItem('minha-agenda-fotos',JSON.stringif
 function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.imgs||[]).forEach(i=>used.add(i)));let ch=false;Object.keys(FOTOS).forEach(k=>{if(!used.has(k)){delete FOTOS[k];ch=true}});if(ch)saveFotos()}
 const save=()=>{let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
-const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras']];
+const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira']];
 
 
 function nav(){$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"><b>${t[1]}</b>${t[2]}</button>`).join('')}
-function go(t){tab=t;dimgsFor=null;edName=false;nav();render();window.scrollTo(0,0)}
+function go(t){tab=t;dimgsFor=null;edName=false;cEd=null;nav();render();window.scrollTo(0,0)}
 
 /* ---------- Agenda ---------- */
 function evItem(e){if(e.id===edEv)return evEdit(e);return `<div class="item ${e.done?'done':''}"><input type="checkbox" ${e.done?'checked':''} onchange="togEv('${e.id}')" aria-label="Concluir"><span class="hora">${e.time||'—'}</span><span class="t">${esc(e.title)}</span><button class="ghost" onclick="edEv='${e.id}';render()" aria-label="Editar">✎</button><button class="ghost" onclick="delEv('${e.id}')" aria-label="Excluir">✕</button></div>`}
@@ -487,7 +509,7 @@ function vCompras(){
  return `<h2>Lista de compras</h2>`+seg+(sub==='atual'?vLista():sub==='prod'?vProdutos():sub==='comp'?vComparar():sub==='mkt'?vMercados():vHist())}
 
 function vTotais(){
- const fotos=Object.values(S.diary).reduce((n,d)=>n+(d.imgs||[]).filter(id=>FOTOS[id]).length,0),ev=S.ev.length,ok=S.ev.filter(e=>e.done).length,di=Object.keys(S.diary).length,sh=S.shop.length,hi=S.hist.length,pr=Object.keys(S.prods).length,nt=S.notes.length,pl=S.pl.length,total=ev+di+sh+hi+pr+nt+pl;
+ const fotos=Object.values(S.diary).reduce((n,d)=>n+(d.imgs||[]).filter(id=>FOTOS[id]).length,0),ev=S.ev.length,ok=S.ev.filter(e=>e.done).length,di=Object.keys(S.diary).length,sh=S.shop.length,hi=S.hist.length,pr=Object.keys(S.prods).length,nt=S.notes.length,pl=S.pl.length,cw=S.cart.gastos.length+S.cart.fixas.length+S.cart.rendas.length,total=ev+di+sh+hi+pr+nt+pl+cw;
  const r=(ic,t,n,sub)=>`<div class="item"><span class="si2">${ic}</span><span class="t">${t}${sub?`<br><small style="color:var(--mute)">${sub}</small>`:''}</span><b class="cn">${n}</b></div>`;
  return `<h3>Total registrado</h3><div class="card"><div class="cn-tot"><strong>${total}</strong><span>${total===1?'registro no total':'registros no total'}</span></div>`
  +r('📋','Compromissos na agenda',ev,ev?ok+(ok===1?' concluído':' concluídos')+' · '+(ev-ok)+(ev-ok===1?' pendente':' pendentes'):'')
@@ -496,7 +518,7 @@ function vTotais(){
  +r('🧾','Compras finalizadas (histórico)',hi,'')
  +r('🏷️','Produtos cadastrados',pr,'')
  +r('📝','Notas',nt,'')
- +r('🩺','Plantões registrados',pl,'')+`</div>`}
+ +r('🩺','Plantões registrados',pl,'')+r('💰','Lançamentos na carteira',cw,'')+`</div>`}
 /* ---------- Frase do dia ---------- */
 const FRASES=["Um passo de cada vez já é caminho percorrido.", "Organizar o dia é cuidar de você mesma(o).", "Pequenos passos todos os dias levam a grandes lugares.", "Hoje é uma boa página para escrever algo bom.", "Faça o possível agora e o impossível vai ficando para trás.", "Quem planeja o dia respira melhor a noite.", "Constância vale mais que pressa.", "Você não precisa fazer tudo hoje, só o que importa.", "Descansar também faz parte do plano.", "Cada tarefa concluída é uma vitória, mesmo a pequena.", "Comece por onde está, com o que tem.", "A calma é uma forma de produtividade.", "Prioridade clara, mente leve.", "O que você faz hoje constrói o seu amanhã.", "Respire fundo: você já deu conta de dias difíceis antes.", "Cuidar dos outros começa por cuidar de si.", "Seu esforço de hoje é a tranquilidade de amanhã.", "Disciplina é gentileza com o seu futuro.", "Não espere o momento perfeito: crie o seu.", "Foco no que está ao seu alcance.", "Um bom dia começa com uma boa intenção.", "Você é capaz de mais do que imagina.", "Gratidão transforma o cotidiano em presente.", "Quem cuida com amor, colhe com sentido.", "O plantão cansa, mas o seu cuidado faz diferença.", "Pausas curtas renovam grandes jornadas.", "Hoje, escolha progresso em vez de perfeição.", "Uma lista curta e feita vale mais que uma longa esperada.", "Tudo o que é grande começou pequeno.", "Acredite no processo, confie no seu ritmo.", "Organização traz tempo; tempo traz paz.", "Sorria para o dia: ele ainda está em branco.", "Sua dedicação inspira mais gente do que você vê.", "Faça hoje o que o seu eu de amanhã vai agradecer.", "Sem pressa, mas sem pausa.", "Foque no avanço, não na comparação.", "Cada manhã é uma nova chance de recomeçar.", "Cuide da sua energia como cuida dos seus compromissos.", "Quem se organiza ganha o bem mais precioso: tempo.", "Persistir é continuar mesmo quando está difícil.", "Bons hábitos constroem boas semanas.", "Termine o que começou, um item por vez.", "Seu bem-estar também é compromisso na agenda.", "A gentileza com você mesma(o) também gera resultado.", "O dia rende mais quando começa com um plano.", "Confie: você está no caminho.", "Pequenas conquistas, grandes histórias.", "Dedique tempo ao que realmente importa.", "Menos estresse, mais presença.", "Valorize o que já conquistou até aqui.", "Hoje você pode ser a calma de alguém."];
 function fraseIdx(){const n=FRASES.length,b=Math.floor(new Date(HOJE+'T12:00').getTime()/864e5);if(S.fraseDia&&S.fraseDia.d===HOJE)return (b+S.fraseDia.k)%n;return b%n}
@@ -519,6 +541,7 @@ function vInicio(){
  +st('📖','Diário',S.diary[HOJE]?'Escrito hoje ✓':'Ainda não escreveu',`dsel=HOJE;go('diario')`)
  +st('🛒','Compras',faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop)),`go('compras')`)
  +st('📝','Notas',nn+(nn===1?' nota':' notas'),`go('notas')`)
+ +(()=>{const k=cCalc(HOJE.slice(0,7));return st('💰','Carteira',k.renda>0?(k.sobra<0?'Faltam '+BRL(-k.sobra):'Sobram '+BRL(k.sobra))+' este mês':'Controle seus gastos do mês',`go('carteira')`).replace('class="stat"','class="stat" style="grid-column:1/-1"')})()
  +`</div>`
  +vTotais()}
 
@@ -577,11 +600,11 @@ async function exportar(modo){
 function copiarBk(){const t=bkData(),m='Backup copiado. Cole em um lugar seguro (anotações, e-mail ou WhatsApp para você).';const fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();info(ok?m:'Não foi possível copiar neste aparelho.')};
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>info(m),fb);else fb()}
 function restaurar(txt){let d;try{d=JSON.parse(String(txt).trim());if(d&&d.app==='meu-plano'&&d.S&&typeof d.S==='object'){}else if(d&&Array.isArray(d.ev)){d={S:d,LOGOS:{},FOTOS:{}}}else throw 0}catch(e){info('Este conteúdo não é um backup válido do JC ORGANIZA.');return}
- ask('Substituir todos os dados atuais por este backup?',()=>{S=Object.assign({ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',pl:[]},d.S);S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.pl=Array.isArray(S.pl)?S.pl:[];S.hosp=Array.isArray(S.hosp)?S.hosp:[];S.user=S.user||{name:''};S.notif=Object.assign({on:false,lead:10,plOn:true,plLead:60},S.notif||{});LOGOS=d.LOGOS||{};FOTOS=d.FOTOS||{};try{localStorage.setItem('minha-agenda-logos',JSON.stringify(LOGOS))}catch(e){}saveFotos();const ok=save();render();info(ok?'Backup restaurado com sucesso.':'Backup restaurado, mas faltou espaço para guardar tudo neste aparelho.')},'Substituir')}
+ ask('Substituir todos os dados atuais por este backup?',()=>{S=Object.assign({ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',pl:[]},d.S);S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.pl=Array.isArray(S.pl)?S.pl:[];S.hosp=Array.isArray(S.hosp)?S.hosp:[];S.user=S.user||{name:''};S.notif=Object.assign({on:false,lead:10,plOn:true,plLead:60},S.notif||{});normCart();LOGOS=d.LOGOS||{};FOTOS=d.FOTOS||{};try{localStorage.setItem('minha-agenda-logos',JSON.stringify(LOGOS))}catch(e){}saveFotos();const ok=save();render();info(ok?'Backup restaurado com sucesso.':'Backup restaurado, mas faltou espaço para guardar tudo neste aparelho.')},'Substituir')}
 function importar(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restaurar(r.result);r.onerror=()=>info('Não foi possível ler o arquivo.');r.readAsText(f);inp.value=''}
 function colarBk(){const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="dlg"><p>Cole aqui o texto do backup</p><textarea id="bkt" style="min-height:120px;margin-bottom:10px"></textarea><div class="row"><button id="bkok">Restaurar</button><button class="sec" id="bkno">Cancelar</button></div></div>';document.body.appendChild(o);o.querySelector('#bkno').onclick=()=>o.remove();o.querySelector('#bkok').onclick=()=>{const t=o.querySelector('#bkt').value;if(!t.trim())return;o.remove();restaurar(t)};o.querySelector('#bkt').focus()}
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config')showVer();
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -630,7 +653,8 @@ function gatilhos(){const N=S.notif,out=[];if(!N.on)return out;
   out.push({key:'e'+e.id,at:t-(tem?N.lead*60000:0),title:(tem?'⏰ ':'📋 ')+e.title,body:tem?(N.lead?'Começa às '+e.time+' (em '+N.lead+' min)':'Agora: '+e.time):'Compromisso de hoje'})});
  if(N.plOn)S.pl.forEach(p=>{const t=new Date(p.date+'T'+p.ent).getTime();if(isNaN(t))return;
   out.push({key:'p'+p.id,at:t-N.plLead*60000,title:'🩺 Plantão '+p.ent+' → '+p.sai,body:'Começa às '+p.ent+(hospBy(p.hosp)?' · '+hospBy(p.hosp).name:'')+(p.obs?' · '+p.obs:'')})});
- return out.sort((a,b)=>a.at-b.at)}
+ if(N.cwOn!==false)cwGatilhos(N).forEach(x=>out.push(x));
+  return out.sort((a,b)=>a.at-b.at)}
 function schedSoon(){clearTimeout(_st);_st=setTimeout(()=>{agendarNotifs().catch(()=>{})},700)}
 async function agendarNotifs(force){const L=LNp();if(!nat()||!L)return;
  const g=gatilhos().filter(x=>x.at>Date.now()).slice(0,60),sig=JSON.stringify(g.map(x=>[x.key,x.at,x.title,x.body]));
@@ -693,6 +717,174 @@ function cfgLembretes(){const N=S.notif,on=N.on,sn=N.sound,app=nat();
   +sel('nt-p','Lembrar meus plantões',[[0,'Não lembrar'],[30,'30 min antes'],[60,'1 hora antes'],[120,'2 horas antes'],[180,'3 horas antes']],N.plOn?N.plLead:0,"setNotif('plLead',this.value)"):'')
  +`<label class="fl">Música do alarme</label><div class="somnome">🎵 ${sn?esc(sn.name):'Som padrão (bipes)'}</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#nt-f').click()">🎵 Escolher música</button><button class="sec" onclick="alarme('Teste do alarme','É assim que o alarme vai tocar.')">▶ Testar</button>${sn?'<button class="ghost" onclick="removerSom()">Remover</button>':''}</div><input type="file" id="nt-f" accept="audio/*" style="display:none" onchange="escolherSom(this)">`
  +`<p class="hint">Escolha qualquer música dos arquivos do seu celular. Com o app aberto, ou ao tocar na notificação, a música toca em repetição até você parar. Com o app fechado, o celular mostra a notificação com o som padrão dele, pois o Android não deixa um app trocar o som sem estar aberto.${app?'':' Neste navegador os avisos só funcionam com a página aberta.'} A música fica só neste aparelho e não entra no backup.</p></div>`}
+
+
+/* ---------- Carteira (v1.6) ---------- */
+const CCATS=[['contas','🏠','Contas'],['feira','🛒','Feira / mercado'],['extra','🎉','Gastos extras'],['transp','🚗','Transporte'],['saude','💊','Saúde'],['outros','📦','Outros']];
+const ccat=id=>CCATS.find(c=>c[0]===id)||CCATS[5];
+const cR2=n=>Math.round((+n||0)*100)/100;
+const cSum=a=>cR2(a.reduce((s,x)=>s+(+x.val||0),0));
+function normCart(){
+ const c=S.cart=(S.cart&&typeof S.cart==='object'&&!Array.isArray(S.cart))?S.cart:{};
+ c.base=cR2(c.base);delete c.usePl;
+ ['rendas','fixas','gastos'].forEach(k=>{c[k]=Array.isArray(c[k])?c[k].filter(x=>x&&typeof x==='object'):[]});
+ c.fixas.forEach(f=>{f.val=cR2(f.val);f.dia=Math.min(31,Math.max(1,parseInt(f.dia)||1));f.desc=String(f.desc||'');f.cat=f.cat||'contas';f.ini=f.ini||HOJE.slice(0,7)});
+ c.gastos.forEach(g=>{g.val=cR2(g.val);g.date=g.date||HOJE;g.cat=g.cat||'outros';g.desc=String(g.desc||'')});
+ c.rendas.forEach(r=>{r.val=cR2(r.val);r.m=r.m||HOJE.slice(0,7);r.desc=String(r.desc||'')});
+ c.pagas=(c.pagas&&typeof c.pagas==='object'&&!Array.isArray(c.pagas))?c.pagas:{};
+ const N=S.notif=S.notif||{};if(N.cwOn===undefined)N.cwOn=true;if(N.cwLead===undefined||isNaN(+N.cwLead))N.cwLead=2;if(!/^\d{2}:\d{2}$/.test(N.cwHora||''))N.cwHora='09:00'}
+let cSub='res',cMes=HOJE.slice(0,7),cEd=null;
+/* aceita 1500 | 1500,50 | 1.500,50 | 1.500 | 15.5 */
+const cNum=v=>{let s=String(v==null?'':v).trim().replace(/[^\d.,]/g,'');
+ if(s.indexOf(',')>=0)s=s.replace(/\./g,'').replace(',','.');
+ else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+ const n=parseFloat(s);return isNaN(n)||n<0?0:cR2(n)};
+const cTxt=n=>n?String(cR2(n)).replace('.',','):'';
+const cMesTxt=()=>new Date(cMes+'-01T12:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+const cAtual=()=>cMes===HOJE.slice(0,7);
+const cDataPad=()=>cAtual()?HOJE:cMes+'-01';
+const cPrev=m=>{const a=m.split('-').map(Number);return iso(new Date(a[0],a[1]-2,1)).slice(0,7)};
+function cMove(n){const a=cMes.split('-').map(Number);cMes=iso(new Date(a[0],a[1]-1+n,1)).slice(0,7);cEd=null;render()}
+const cFix=m=>S.cart.fixas.filter(f=>f.ini<=m&&(!f.fim||m<=f.fim)).sort((a,b)=>a.dia-b.dia||a.desc.localeCompare(b.desc));
+const cPago=(m,id)=>!!(S.cart.pagas[m]&&S.cart.pagas[m][id]);
+const cGas=m=>S.cart.gastos.filter(g=>g.date.slice(0,7)===m).sort((a,b)=>b.date.localeCompare(a.date));
+const cRen=m=>S.cart.rendas.filter(r=>r.m===m);
+function cCalc(m){
+ const c=S.cart,fx=cFix(m),gs=cGas(m),re=cRen(m);
+ const rExtra=cSum(re),renda=cR2(c.base+rExtra);
+ const fixTot=cSum(fx),fixPago=cSum(fx.filter(f=>cPago(m,f.id))),gasTot=cSum(gs);
+ const gastos=cR2(fixTot+gasTot),porCat={};
+ fx.concat(gs).forEach(x=>{const k=ccat(x.cat)[0];porCat[k]=cR2((porCat[k]||0)+x.val)});
+ return {fx,gs,re,rExtra,renda,fixTot,fixPago,gasTot,gastos,porCat,sobra:cR2(renda-gastos),falta:cR2(fixTot-fixPago)}}
+const cSel=(id,cur)=>`<select id="${id}" aria-label="Categoria">${CCATS.map(c=>`<option value="${c[0]}" ${c[0]===cur?'selected':''}>${c[1]} ${c[2]}</option>`).join('')}</select>`;
+const cClear=ids=>ids.forEach(i=>{const e=$('#'+i);if(e)e.value=''});
+const cFoco=id=>{const e=$('#'+id);if(e)e.focus()};
+
+function vCarteira(){
+ const k=cCalc(cMes);
+ const seg=`<div class="seg s4">${[['res','📊 Resumo'],['gas','💸 Gastos'],['fix','📌 Fixas'],['ren','💵 Renda']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()">${a[1]}</button>`).join('')}</div>`;
+ const nv=`<div class="cal-h"><button class="sec" onclick="cMove(-1)" aria-label="Mês anterior">‹</button><strong class="cw-m">${esc(cMesTxt())}</strong><button class="sec" onclick="cMove(1)" aria-label="Próximo mês">›</button></div>`;
+ return `<h2>Carteira</h2>`+seg+nv+(cSub==='res'?cResumo(k):cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cRenda(k))}
+
+/* --- Resumo --- */
+function cResumo(k){
+ const real=k.renda>0?Math.round(k.gastos/k.renda*100):(k.gastos>0?100:0),cap=Math.min(100,real);
+ const cls=k.renda>0&&k.gastos>k.renda?'over':real>=80?'warn':'';
+ const aviso=k.renda<=0?`<p class="hint">Informe quanto você ganha na aba <b>Renda</b> para ver quanto sobra no mês.</p>`
+  :k.gastos>k.renda?`<p class="cw-warn">⚠️ Os gastos passaram da renda em ${BRL(-k.sobra)}.</p>`
+  :real>=80?`<p class="cw-warn">Atenção: você já usou ${real}% da renda do mês.</p>`:'';
+ const cats=CCATS.map(c=>[c,k.porCat[c[0]]||0]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+ const catHtml=cats.length?cats.map(x=>{const p=k.gastos>0?Math.round(x[1]/k.gastos*100):0;return `<div class="cw-cat"><div class="top"><span>${x[0][1]} ${x[0][2]}</span><span class="cw-v">${BRL(x[1])} <small style="color:var(--mute);font-weight:500">· ${p}%</small></span></div><div class="bar"><i style="width:${p}%"></i></div></div>`}).join(''):'<div class="vazio" style="padding:14px 8px">Nenhum gasto lançado neste mês.</div>';
+ return `<div class="card tot">
+  <div class="cw-row"><span>💵 Renda do mês</span><b class="cw-in">${BRL(k.renda)}</b></div>
+  <div class="cw-row"><span>💸 Gastos do mês</span><b class="cw-out">${BRL(k.gastos)}</b></div>
+  <div class="cw-sobra"><span>${k.sobra<0?'Falta':'Sobra'}</span><strong class="${k.sobra<0?'neg':''}">${BRL(Math.abs(k.sobra))}</strong></div>
+  <div class="cw-bar ${cls}" role="progressbar" aria-valuenow="${cap}" aria-valuemin="0" aria-valuemax="100" aria-label="Quanto da renda já foi usada"><i style="width:${cap}%"></i></div>
+  <small style="color:var(--mute)">${k.renda>0?'Você usou '+real+'% da renda':'Sem renda informada'}</small>${aviso}
+  ${k.falta>0?`<p class="hint">📌 Contas fixas ainda por pagar: <b>${BRL(k.falta)}</b></p>`:''}</div>
+ <div class="row"><button style="flex:1" onclick="cSub='gas';render();cFoco('cw-gd')">＋ Lançar gasto</button><button class="sec" style="flex:1" onclick="cSub='fix';render()">📌 Contas fixas</button></div>
+ <h3>Para onde foi o dinheiro</h3><div class="card">${catHtml}</div>`}
+
+/* --- Gastos avulsos --- */
+function cEditForm(kind,x){
+ return `<div class="item" style="flex-wrap:wrap"><input id="cw-e-d" value="${esc(x.desc)}" placeholder="${kind==='f'?'Conta':'Descrição'}" aria-label="Descrição">
+  <div class="row" style="width:100%"><input id="cw-e-v" inputmode="decimal" value="${cTxt(x.val)}" placeholder="Valor" aria-label="Valor">${kind==='g'?`<input type="date" id="cw-e-dt" value="${x.date}" aria-label="Data">`:`<input id="cw-e-dia" type="number" min="1" max="31" inputmode="numeric" value="${x.dia}" style="width:96px" aria-label="Dia do vencimento">`}${cSel('cw-e-c',x.cat)}</div>
+  <div class="row" style="width:100%"><button onclick="cSaveEd()">Salvar</button><button class="ghost" onclick="cEd=null;render()">Cancelar</button></div></div>`}
+function cGItem(g){
+ if(cEd&&cEd.k==='g'&&cEd.id===g.id)return cEditForm('g',g);
+ const c=ccat(g.cat);
+ return `<div class="item"><span class="cw-ic" aria-hidden="true">${c[1]}</span><div class="t" onclick="cEdit('g','${g.id}')" style="cursor:pointer"><b>${esc(g.desc||c[2])}</b><br><small style="color:var(--mute)">${fmt(g.date,{weekday:'short',day:'2-digit',month:'short'})} · ${c[2]}</small></div><b class="cw-v">${BRL(g.val)}</b><button class="ghost" onclick="cDelG('${g.id}')" aria-label="Excluir gasto">✕</button></div>`}
+function cGastos(k){
+ const form=`<div class="card"><input id="cw-gd" placeholder="O que foi? (ex.: Feira, Uber, Presente)" maxlength="60" onkeydown="if(event.key==='Enter')cFoco('cw-gv')">
+  <div class="row" style="margin-top:8px"><input id="cw-gv" inputmode="decimal" placeholder="Valor (R$)" onkeydown="if(event.key==='Enter')cAddG()">${cSel('cw-gc','feira')}</div>
+  <div class="row" style="margin-top:8px"><input type="date" id="cw-gdt" value="${cDataPad()}" aria-label="Data"><button onclick="cAddG()">＋ Adicionar</button></div></div>`;
+ return form+`<h3>Gastos do mês · ${BRL(k.gasTot)}</h3>`+(k.gs.length?`<div class="card">${k.gs.map(cGItem).join('')}</div><p class="hint">Toque em um gasto para editar.</p>`:'<div class="vazio">Nenhum gasto avulso neste mês.</div>')}
+function cAddG(){
+ const d=$('#cw-gd').value.trim(),v=cNum($('#cw-gv').value),c=$('#cw-gc').value,dt=$('#cw-gdt').value||HOJE;
+ if(!v){info('Informe o valor do gasto.');return}
+ S.cart.gastos.push({id:uid(),date:dt,cat:c,desc:d,val:v});cMes=dt.slice(0,7);
+ save();render();cClear(['cw-gd','cw-gv']);cFoco('cw-gd')}
+function cDelG(id){ask('Excluir este gasto?',()=>{S.cart.gastos=S.cart.gastos.filter(x=>x.id!==id);save();render()})}
+function cEdit(kind,id){cEd={k:kind,id:id};render();cFoco('cw-e-v')}
+function cSaveEd(){
+ if(!cEd)return;const L=cEd.k==='g'?S.cart.gastos:cEd.k==='r'?S.cart.rendas:S.cart.fixas,x=L.find(i=>i.id===cEd.id);
+ if(!x){cEd=null;render();return}
+ const v=cNum($('#cw-e-v').value),d=$('#cw-e-d').value.trim();
+ if(!v){info('Informe o valor.');return}
+ if(cEd.k==='f'&&!d){info('Informe o nome da conta.');return}
+ x.desc=d;x.val=v;if(cEd.k!=='r')x.cat=$('#cw-e-c').value;
+ if(cEd.k==='g'){x.date=$('#cw-e-dt').value||x.date;cMes=x.date.slice(0,7)}
+ else if(cEd.k==='f')x.dia=Math.min(31,Math.max(1,parseInt($('#cw-e-dia').value)||x.dia));
+ cEd=null;save();render()}
+
+/* --- Contas fixas (repetem todo mês) --- */
+function cFItem(f){
+ if(cEd&&cEd.k==='f'&&cEd.id===f.id)return cEditForm('f',f);
+ const pg=cPago(cMes,f.id),atr=!pg&&cAtual()&&f.dia<(+HOJE.slice(8,10)),c=ccat(f.cat);
+ return `<div class="item ${pg?'done':''}"><input type="checkbox" ${pg?'checked':''} onchange="cTogPago('${f.id}')" aria-label="Marcar como paga"><div class="t" onclick="cEdit('f','${f.id}')" style="cursor:pointer"><b>${esc(f.desc)}</b><br><small class="${atr?'cw-late':''}" ${atr?'':'style="color:var(--mute)"'}>${c[1]} vence dia ${f.dia}${pg?' · paga ✓':atr?' · atrasada':''}</small></div><b class="cw-v">${BRL(f.val)}</b><button class="ghost" onclick="cDelF('${f.id}')" aria-label="Remover conta fixa">✕</button></div>`}
+/* --- Lembrete de contas perto de vencer --- */
+function cwGatilhos(N){
+ const out=[],hh=String(N.cwHora||'09:00').split(':').map(Number),H=isNaN(hh[0])?9:hh[0],M=isNaN(hh[1])?0:hh[1],lead=Math.max(0,+N.cwLead||0),now=new Date();
+ for(let k=0;k<3;k++){
+  const base=new Date(now.getFullYear(),now.getMonth()+k,1),ym=iso(base).slice(0,7),ult=new Date(base.getFullYear(),base.getMonth()+1,0).getDate();
+  cFix(ym).forEach(f=>{
+   if(cPago(ym,f.id))return;
+   const dia=Math.min(f.dia,ult),venc=new Date(base.getFullYear(),base.getMonth(),dia,H,M,0,0),
+    dd=String(dia).padStart(2,'0')+'/'+String(base.getMonth()+1).padStart(2,'0'),corpo=BRL(f.val)+' · vencimento em '+dd;
+   if(lead>0){const a=new Date(venc.getTime());a.setDate(a.getDate()-lead);
+    out.push({key:'c'+f.id+ym+'a',at:a.getTime(),title:'💰 '+f.desc+' vence '+(lead===1?'amanhã':'em '+lead+' dias'),body:corpo})}
+   out.push({key:'c'+f.id+ym+'b',at:venc.getTime(),title:'💰 '+f.desc+' vence hoje',body:corpo+' · ainda não está marcada como paga'})})}
+ return out}
+function setCw(k,v){S.notif[k]=k==='cwOn'?!!v:k==='cwHora'?String(v||'09:00'):+v;save();agendarNotifs(true);render()}
+function cwLembrete(){
+ const N=S.notif,sn=N.sound;
+ if(!N.on)return `<div class="card"><b>🔔 Lembrete de contas</b><p class="hint" style="margin:6px 0 10px">Receba um aviso no celular antes de a conta vencer, com o alarme que você escolher.</p><button style="width:100%" onclick="ativarLembretes(true)">🔔 Ativar lembretes</button></div>`;
+ const on=N.cwOn!==false,opts=[[0,'Só no dia do vencimento'],[1,'1 dia antes'],[2,'2 dias antes'],[3,'3 dias antes'],[5,'5 dias antes'],[7,'7 dias antes']];
+ return `<div class="card"><button class="${on?'sec':''}" style="width:100%" onclick="setCw('cwOn',${!on})">${on?'🔔 Avisos de contas ligados · tocar para desligar':'🔕 Avisos de contas desligados · tocar para ligar'}</button>`
+ +(on?`<label class="fl" for="cw-lead">Avisar</label><select id="cw-lead" style="width:100%" onchange="setCw('cwLead',this.value)">${opts.map(o=>`<option value="${o[0]}" ${o[0]===(+N.cwLead||0)?'selected':''}>${o[1]}</option>`).join('')}</select>`
+  +`<label class="fl" for="cw-hora">Horário do aviso</label><input type="time" id="cw-hora" value="${esc(N.cwHora||'09:00')}" onchange="setCw('cwHora',this.value)">`
+  +`<label class="fl">Alarme</label><div class="somnome">🎵 ${sn?esc(sn.name):'Som padrão (bipes)'}</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#cw-snd').click()">🎵 Escolher música</button><button class="sec" onclick="alarme('💰 Teste de aviso de conta','É assim que o alarme vai tocar.')">▶ Testar</button>${sn?'<button class="ghost" onclick="removerSom()">Remover</button>':''}</div><input type="file" id="cw-snd" accept="audio/*" style="display:none" onchange="escolherSom(this)">`
+  +`<p class="hint">Você é avisado até o dia do vencimento, e some o aviso assim que marcar a conta como paga. Com o app aberto, ou ao tocar na notificação, a música escolhida toca em repetição até você parar. Com o app fechado, o celular usa o som padrão dele. O mesmo alarme vale para os lembretes da agenda.</p>`:'')+`</div>`}
+function cFixas(k){
+ const form=`<div class="card"><input id="cw-fd" placeholder="Conta (ex.: Aluguel, Luz, Internet)" maxlength="60" onkeydown="if(event.key==='Enter')cFoco('cw-fv')">
+  <div class="row" style="margin-top:8px"><input id="cw-fv" inputmode="decimal" placeholder="Valor (R$)" onkeydown="if(event.key==='Enter')cAddF()"><input id="cw-fdia" type="number" min="1" max="31" inputmode="numeric" placeholder="Vence dia" style="width:116px" onkeydown="if(event.key==='Enter')cAddF()"></div>
+  <div class="row" style="margin-top:8px">${cSel('cw-fc','contas')}<button onclick="cAddF()">＋ Adicionar</button></div>
+  <p class="hint">A conta passa a aparecer todo mês, a partir de ${esc(cMesTxt())}. Marque ✓ quando pagar.</p></div>`;
+ const resumo=k.fx.length?`<div class="card tot"><div class="cw-row"><span>Total das contas fixas</span><b>${BRL(k.fixTot)}</b></div><div class="cw-row"><span>✓ Já pago</span><b class="cw-in">${BRL(k.fixPago)}</b></div><div class="cw-row"><span>A pagar</span><b class="${k.falta>0?'cw-out':''}">${BRL(k.falta)}</b></div></div>`:'';
+ return cwLembrete()+form+resumo+(k.fx.length?`<div class="card">${k.fx.map(cFItem).join('')}</div><p class="hint">Toque em uma conta para editar o valor ou o vencimento.</p>`:'<div class="vazio">Nenhuma conta fixa neste mês.</div>')}
+function cAddF(){
+ const d=$('#cw-fd').value.trim(),v=cNum($('#cw-fv').value),dia=Math.min(31,Math.max(1,parseInt($('#cw-fdia').value)||1)),c=$('#cw-fc').value;
+ if(!d){cFoco('cw-fd');return}
+ if(!v){info('Informe o valor da conta.');return}
+ S.cart.fixas.push({id:uid(),desc:d,val:v,dia:dia,cat:c,ini:cMes});
+ save();render();cClear(['cw-fd','cw-fv','cw-fdia']);cFoco('cw-fd')}
+function cTogPago(id){const p=S.cart.pagas;p[cMes]=p[cMes]||{};if(p[cMes][id])delete p[cMes][id];else p[cMes][id]=true;save();render()}
+function cDelF(id){
+ const f=S.cart.fixas.find(x=>x.id===id);if(!f)return;
+ ask('Parar de contar "'+f.desc+'" a partir de '+cMesTxt()+'? Os meses anteriores continuam como estavam.',()=>{
+  const prev=cPrev(cMes);
+  if(prev<f.ini){S.cart.fixas=S.cart.fixas.filter(x=>x.id!==id);Object.keys(S.cart.pagas).forEach(m=>{delete S.cart.pagas[m][id]})}
+  else{f.fim=prev;Object.keys(S.cart.pagas).forEach(m=>{if(m>=cMes)delete S.cart.pagas[m][id]})}
+  save();render()},'Remover')}
+
+/* --- Renda --- */
+function cRenda(k){
+ const base=`<div class="card"><label class="fl" for="cw-base" style="margin-top:0">Quanto você ganha por mês (renda fixa)</label><div class="row"><input id="cw-base" inputmode="decimal" placeholder="Ex.: 2500,00" value="${cTxt(S.cart.base)}" onkeydown="if(event.key==='Enter')cSaveBase()"><button onclick="cSaveBase()">Salvar</button>${S.cart.base?'<button class="ghost" onclick="cDelBase()">Remover</button>':''}</div><p class="hint">Esse valor vale para todos os meses. O que varia (extras, bicos, 13º) você lança mais abaixo, no mês certo.</p></div>`;
+ const ex=`<h3>Rendas extras de ${esc(cMesTxt())}</h3><div class="card"><div class="row"><input id="cw-rd" placeholder="De onde veio? (ex.: Bico, 13º)" maxlength="60" onkeydown="if(event.key==='Enter')cFoco('cw-rv')"><input id="cw-rv" inputmode="decimal" placeholder="Valor (R$)" style="width:110px" onkeydown="if(event.key==='Enter')cAddR()"><button onclick="cAddR()">＋</button></div>`
+  +(k.re.length?k.re.map(cRItem).join(''):'<div class="vazio" style="padding:14px 8px">Nenhuma renda extra neste mês.</div>')+`</div>`+(k.re.length?'<p class="hint">Toque em uma renda para editar.</p>':'');
+ const resumo=`<div class="card tot"><div class="cw-row"><span>Renda fixa</span><b>${BRL(S.cart.base)}</b></div>${k.rExtra?`<div class="cw-row"><span>Extras</span><b>${BRL(k.rExtra)}</b></div>`:''}<div class="cw-sobra"><span>Renda total do mês</span><strong>${BRL(k.renda)}</strong></div></div>`;
+ return base+ex+resumo}
+function cRItem(r){
+ if(cEd&&cEd.k==='r'&&cEd.id===r.id)return `<div class="item" style="flex-wrap:wrap"><input id="cw-e-d" value="${esc(r.desc)}" placeholder="De onde veio?" aria-label="Descrição"><div class="row" style="width:100%"><input id="cw-e-v" inputmode="decimal" value="${cTxt(r.val)}" placeholder="Valor" aria-label="Valor"></div><div class="row" style="width:100%"><button onclick="cSaveEd()">Salvar</button><button class="ghost" onclick="cEd=null;render()">Cancelar</button></div></div>`;
+ return `<div class="item"><span class="cw-ic" aria-hidden="true">💵</span><div class="t" onclick="cEdit('r','${r.id}')" style="cursor:pointer"><b>${esc(r.desc||'Renda extra')}</b></div><b class="cw-v cw-in">${BRL(r.val)}</b><button class="ghost" onclick="cDelR('${r.id}')" aria-label="Excluir renda extra">✕</button></div>`}
+function cDelBase(){ask('Remover a renda mensal fixa?',()=>{S.cart.base=0;save();render()},'Remover')}
+function cSaveBase(){S.cart.base=cNum($('#cw-base').value);save();render();info(S.cart.base?'Renda mensal salva: '+BRL(S.cart.base)+'.':'Renda mensal zerada.')}
+function cAddR(){
+ const d=$('#cw-rd').value.trim(),v=cNum($('#cw-rv').value);
+ if(!v){info('Informe o valor da renda extra.');return}
+ S.cart.rendas.push({id:uid(),m:cMes,desc:d,val:v});save();render();cClear(['cw-rd','cw-rv']);cFoco('cw-rd')}
+function cDelR(id){ask('Excluir esta renda extra?',()=>{S.cart.rendas=S.cart.rendas.filter(x=>x.id!==id);save();render()})}
+normCart();
 
 applyTheme();nav();render();initSW();initLembretes();
 
