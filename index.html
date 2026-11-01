@@ -800,7 +800,7 @@ function fraseIdx(){const n=VERSOS.length,b=Math.floor(new Date(HOJE+'T12:00').g
  if(!S.user.seed){S.user.seed=1+Math.floor(Math.random()*1e6);try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){}}
  const k=S.fraseDia&&S.fraseDia.d===HOJE?S.fraseDia.k:0;return (S.user.seed+b*13+k)%n}
 function outraFrase(){const k=(S.fraseDia&&S.fraseDia.d===HOJE?S.fraseDia.k:0)+1;S.fraseDia={d:HOJE,k:k};save();render()}
-const fraseCard=()=>{const v=VERSOS[fraseIdx()];return `<div class="card frase"><small>Versículo do dia</small><p>“${esc(v[1])}”</p><cite>${esc(v[0])}</cite><button class="ghost" onclick="outraFrase()" aria-label="Mostrar outro versículo">↻ Outro versículo</button></div>`};
+const fraseCard=()=>{if(S.versOff)return '';const v=VERSOS[fraseIdx()];return `<div class="card frase"><small>Versículo do dia</small><p>“${esc(v[1])}”</p><cite>${esc(v[0])}</cite><button class="ghost" onclick="outraFrase()" aria-label="Mostrar outro versículo">↻ Outro versículo</button></div>`};
 /* ---------- Início ---------- */
 const inicial=()=>(S.user.name||'?').trim().charAt(0).toUpperCase();
 const avatar=c=>S.user.photo?`<img class="av ${c||''}" src="${S.user.photo}" alt="Foto de perfil">`:`<span class="av ${c||''}" aria-hidden="true">${esc(inicial())}</span>`;
@@ -865,11 +865,14 @@ function vConfig(){
  +`<p class="hint"><b>Último backup:</b> ${lb}.<br>${app?'Em “Salvar / compartilhar”, escolha Arquivos, Drive ou WhatsApp para guardar o arquivo. “Salvar em Documentos” grava direto na pasta Documentos/MeuPlano do celular. ':''}Seus dados ficam só neste aparelho: faça backup de vez em quando e antes de desinstalar o app.</p></div>`
  +cfgLembretes()
  +`<h3>Aplicativo</h3><div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div><p class="hint" id="ver"></p></div>`
+ +cfgInicio()
  +cfgAparencia()
  +cfgSeguranca()
  +cfgPermissoes()
  +`<div style="text-align:center;margin-top:4px"><button class="ghost" onclick="ask('Sair? Seus dados continuam salvos neste aparelho.',()=>{S.user.name='';tab='inicio';save();nav();render()},'Sair')">Sair</button></div>`}
 
+function togVers(){S.versOff=!S.versOff;save();render()}
+function cfgInicio(){const on=!S.versOff;return `<h3>Tela inicial</h3><div class="card"><div class="prm"><span class="ic">📖</span><span class="t"><b>Versículo bíblico do dia</b><small>${on?'Aparece no topo da tela inicial.':'Escondido da tela inicial.'}</small></span><button class="${on?'':'sec'}" onclick="togVers()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div></div>`}
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};
