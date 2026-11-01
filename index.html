@@ -443,6 +443,14 @@ nav button .ni{width:44px}
 .qa button{font-size:11.5px;letter-spacing:-.01em}
 .seg button{font-size:12.5px;padding:10px 4px;white-space:nowrap}
 
+
+/* ---- busca Google no Início ---- */
+.gsearch{display:flex;align-items:center;gap:10px;background:var(--sf);border:1px solid var(--ln2);border-radius:999px;padding:5px 5px 5px 16px;margin:0 0 16px;box-shadow:var(--sh);transition:box-shadow .15s,border-color .15s}
+.gsearch:focus-within{border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 18%,transparent),var(--sh)}
+.gsearch>svg{width:20px;height:20px;color:var(--mute);flex:none}
+.gsearch input{flex:1;min-width:0;background:transparent;border:0;box-shadow:none;padding:11px 0;font-size:16px}
+.gsearch input:focus{background:transparent;box-shadow:none;border:0}
+.gsearch button{flex:none;padding:10px 18px;border-radius:999px;font-size:14px}
 </style>
 
 </head>
@@ -804,6 +812,7 @@ function vInicio(){
   faltam?`<span class="chip">${svg('compras')}${faltam} ${faltam===1?'item':'itens'} na lista</span>`:''
  ].join('');
  const hero=`<div class="card hero"><div class="greet-row">${avatar()}<div style="flex:1;min-width:0"><div class="gt">${saud()}, ${esc(S.user.name)}!</div><div class="gd">${dataLonga()}</div>${prof?`<div class="gd">${prof}</div>`:''}</div></div><div class="chips">${chips}</div></div>`;
+ const gsearch=`<form class="gsearch" action="https://www.google.com/search" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pesquisar no Google" aria-label="Pesquisar no Google" enterkeyhint="search" autocomplete="off"><button type="submit">Buscar</button></form>`;
  const foc=(go_,sel_)=>`${go_};setTimeout(()=>{const i=document.querySelector('${sel_}');i&&i.focus()},80)`;
  const acoes=`<div class="qa" role="group" aria-label="Criar rápido">`
   +qa('agenda','Compromisso','var(--ac)',foc("go('agenda')",'#at'))
@@ -811,7 +820,7 @@ function vInicio(){
   +qa('diario','Diário','#e0609a',"dsel=HOJE;go('diario')")
   +qa('compras','Compra','#f08a24',foc("go('compras')",'#st'))
   +`</div>`;
- return hero+acoes
+ return gsearch+hero+acoes
  +`<h3>Hoje</h3><div class="card">${plHtml}${hoje.length?hoje.map(evItem).join(''):(plh.length?'':'<div class="vazio" style="padding:10px;border:0;margin:0">Nada marcado para hoje.<br>Use <b>Compromisso</b> acima para planejar algo.</div>')}</div>`
  +`<h3>Seus espaços</h3><div class="stats">`
  +st('agenda','var(--ac)','Agenda',hoje.length?pend+' de '+hoje.length+' pendentes hoje':'Nada hoje',`go('agenda')`)
