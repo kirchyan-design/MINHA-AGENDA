@@ -79,7 +79,7 @@ jobs:
               convert icon-512.png -resize ${a}x${a} "$R/mipmap-$n/ic_launcher_round.png"
               if [ -f android-icon-fg.png ]; then convert android-icon-fg.png -resize ${f}x${f} "$R/mipmap-$n/ic_launcher_foreground.png"; fi
             done
-            if [ -f "$R/values/ic_launcher_background.xml" ]; then sed -i 's/#FFFFFF/#0F7B8A/I' "$R/values/ic_launcher_background.xml"; fi
+            if [ -f "$R/values/ic_launcher_background.xml" ]; then sed -i 's/#FFFFFF/#EAF2FF/I' "$R/values/ic_launcher_background.xml"; fi
           fi
           if [ -f notif-icon.png ]; then mkdir -p "$R/drawable"; cp notif-icon.png "$R/drawable/ic_stat_agenda.png"; fi
 
