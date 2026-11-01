@@ -889,5 +889,263 @@ normCart();
 applyTheme();nav();render();initSW();initLembretes();
 
 </script>
+<script>
+/* ===== KAYLA - assistente por voz do JC ORGANIZA (tudo local, sem servidor) ===== */
+(function(){try{
+const KEY='kayla-mem',D0={alias:{},verbs:{},cat:{},st:{n:0,len:0,i:{},w:{},f:0,c:0},voice:'',rate:.94,pitch:1.1,on:true,hi:0,ek:'',vid:''};
+let M;try{M=Object.assign({},D0,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){M=Object.assign({},D0)}
+if(!M.vid)M.vid='RGymW84CSmfVugnA5tvA';
+const sv=()=>{try{localStorage.setItem(KEY,JSON.stringify(M))}catch(e){}};
+const pad=n=>String(n).padStart(2,'0'),cap=s=>s?s[0].toUpperCase()+s.slice(1):s,pick=a=>a[Math.floor(Math.random()*a.length)];
+const N=s=>nrm(String(s)).replace(/[^a-z0-9\s,.:\/$%-]/g,' ').replace(/\s+/g,' ').trim();
+const re=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+
+/* ---------- números por extenso ---------- */
+const U={zero:0,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30,quarenta:40,cinquenta:50,sessenta:60,setenta:70,oitenta:80,noventa:90,cem:100,cento:100,duzentos:200,trezentos:300,quatrocentos:400,quinhentos:500,seiscentos:600,setecentos:700,oitocentos:800,novecentos:900};
+function w2n(t){t=t.replace(/\b(um|uma) (real|mil)\b/g,'1 $2');const a=t.split(' '),o=[];
+ for(let i=0;i<a.length;){const w=a[i];
+  if(w in U){let tot=0,cur=0,lv=0,j=i;
+   while(j<a.length){const x=a[j];
+    if(x in U){cur+=U[x];lv=U[x];j++}
+    else if(x==='mil'){tot+=(cur||1)*1000;cur=0;lv=1000;j++}
+    else if(x==='e'&&j+1<a.length&&a[j+1] in U){const v=U[a[j+1]];
+     if((lv>=20&&lv<100&&lv%10===0&&v<10)||(lv>=100&&lv%100===0&&v<100)||(lv===1000&&v<1000))j++;else break}
+    else break}
+   o.push(String(tot+cur));i=j}
+  else if(w==='mil'&&/^\d+$/.test(o[o.length-1]||'')){o[o.length-1]=String(o[o.length-1]*1000);i++}
+  else{o.push(w);i++}}
+ return o.join(' ')}
+const cutAt=(t,m)=>(t.slice(0,m.index)+' '+t.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim();
+
+/* ---------- dinheiro, hora e data ---------- */
+function money(t){let m,v=null;
+ if(m=t.match(/r\$\s*([\d.,]+)/))v=cNum(m[1]);
+ else if(m=t.match(/([\d.,]+)\s*(?:reais|real|contos?|pratas?)(?:\s*e\s*(\d{1,2})\b)?/))v=cNum(m[1])+(m[2]?+m[2]/100:0);
+ else if(m=t.match(/([\d.,]+)\s*centavos?/))v=cNum(m[1])/100;
+ else if(m=t.match(/\b(\d{1,5}) e (\d{2})\b/))v=+m[1]+ +m[2]/100;
+ else if(m=t.match(/\b(\d{1,3}(?:\.\d{3})*,\d{1,2}|\d+,\d{1,2})\b/))v=cNum(m[1]);
+ else{const all=t.match(/\b\d+(?:\.\d+)?\b/g);if(all){m={index:t.lastIndexOf(all[all.length-1]),0:all[all.length-1]};v=cNum(all[all.length-1])}}
+ return{v:v,s:v==null?t:cutAt(t,m)}}
+function tempo(t){let m,h=null,mi=0;
+ const P='(?:\\s+(?:da|de|na|do|pela)\\s+(manha|tarde|noite|madrugada))?';
+ const R=[new RegExp('\\b(\\d{1,2}):(\\d{2})'+P),new RegExp('\\b(\\d{1,2})\\s?h(?:oras?)?(?:\\s?(\\d{2}))?'+P+'\\b'),new RegExp('\\bas (\\d{1,2})(?:\\s+e\\s+(meia|quinze|trinta|\\d{2}))?'+P),new RegExp('\\b(\\d{1,2})(?:\\s+e\\s+(meia))?\\s+(?:da|de|na)\\s+(manha|tarde|noite|madrugada)\\b')];
+ if(m=t.match(/\bmeio[- ]dia\b/))h=12;
+ else if(m=t.match(/\bmeia[- ]noite\b/))h=0;
+ else for(const r of R){if(m=t.match(r)){h=+m[1];const q=m[2];mi=q==='meia'||q==='trinta'?30:q==='quinze'?15:q?+q:0;const p=m[3];
+   if((p==='tarde'||p==='noite')&&h<12)h+=12;if(p==='madrugada'&&h===12)h=0;break}}
+ if(h==null||h>23||mi>59)return{h:null,mi:0,s:t};
+ return{h,mi,s:cutAt(t,m)}}
+const MES=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'],SEM=['domingo','segunda','terca','quarta','quinta','sexta','sabado'];
+function dia(t){let m,d=null;const B=new Date();B.setHours(12,0,0,0);
+ const add=n=>{const x=new Date(B);x.setDate(x.getDate()+n);return iso(x)};
+ const fut=(x,ex)=>{if(!ex&&x<B)x.setFullYear(x.getFullYear()+1);return iso(x)};
+ const R=[[/\bdepois de amanha\b/,()=>add(2)],[/\bamanha\b/,()=>add(1)],[/\bhoje\b/,()=>add(0)],[/\bontem\b/,()=>add(-1)],
+  [/\bdaqui a (\d+) (dias?|semanas?)\b/,m=>add(+m[1]*(m[2][0]==='s'?7:1))],
+  [new RegExp('\\b(?:dia )?(\\d{1,2}) de ('+MES.join('|')+')(?: de (\\d{4}))?'),m=>fut(new Date(m[3]?+m[3]:B.getFullYear(),MES.indexOf(m[2]),+m[1],12),!!m[3])],
+  [/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/,m=>{let y=m[3]?+m[3]:B.getFullYear();if(y<100)y+=2000;return fut(new Date(y,+m[2]-1,+m[1],12),!!m[3])}],
+  [/\b(?:no )?dia (\d{1,2})\b/,m=>{const x=new Date(B.getFullYear(),B.getMonth(),+m[1],12);if(x<B)x.setMonth(x.getMonth()+1);return iso(x)}],
+  [/\bsemana que vem\b/,()=>add(7)],
+  [new RegExp('\\b(?:(?:proxima|essa|esta|nessa|na|no|pra|para|de) )?('+SEM.join('|')+')(?:-feira)?\\b'),m=>{let n=(SEM.indexOf(m[1])-B.getDay()+7)%7;if(n===0)n=7;return add(n)}]];
+ for(const[r,f]of R){m=t.match(r);if(m){d=f(m);break}}
+ return{d,s:d?cutAt(t,m):t}}
+const LEAD=/^(?:(?:agenda|agendar|marca|marcar|cria|criar|adiciona|adicionar|compromisso|evento|lembrete|lembra|lembrar|me|um|uma|de|do|da|que|para|pra|no|na|em|eu|tenho|preciso|ir|ao|a|o|as|os|e|tem|vou|por favor) )+/;
+const TRAIL=/(?: (?:as|a|para|pra|no|na|em|de|do|da|dia|e|por favor))+$/;
+
+/* ---------- aprendizado do jeito de falar ---------- */
+const STY=['oxe','oxente','rapaz','visse','uai','beleza','valeu','tranquilo','massa','bora'],ACC={reuniao:'reunião',anotacao:'anotação'};
+function learn(t){const s=M.st;s.n++;s.len=(s.len*(s.n-1)+t.split(' ').length)/s.n;
+ t.split(' ').forEach(w=>{if(STY.includes(w))s.i[w]=(s.i[w]||0)+1;if(/^(to|ta|pra|tou|bora|vc|tb|tava)$/.test(w))s.c++;if(/^(senhora|poderia|gostaria|favor)$/.test(w))s.f++});
+ const C={ev:['compromisso','evento','tarefa','reuniao','lembrete'],shop:['feira','mercado','lista','compras'],gas:['gasto','despesa'],nota:['nota','anotacao','recado']};
+ for(const k in C)C[k].forEach(w=>{if(new RegExp('\\b'+w+'\\b').test(t)){s.w[k]=s.w[k]||{};s.w[k][w]=(s.w[k][w]||0)+1}});sv()}
+const W=(k,d)=>{const o=M.st.w[k];if(!o)return d;const w=Object.entries(o).sort((a,b)=>b[1]-a[1])[0][0];return ACC[w]||w};
+const OK=()=>M.st.c>=3&&M.st.c>M.st.f?pick(['Pronto!','Feito!','Tá feito!','Anotado!']):M.st.f>M.st.c?pick(['Certo.','Pronto.','Registrado.']):pick(['Pronto!','Feito!','Anotado!']);
+function flav(s){const top=Object.entries(M.st.i).sort((a,b)=>b[1]-a[1])[0];if(top&&top[1]>=3&&Math.random()<.25)return cap(top[0])+'! '+s;return s}
+const who=()=>(S.user&&S.user.name?', '+S.user.name.split(' ')[0]:'');
+
+/* ---------- voz de saída (suave) ---------- */
+const TTS='speechSynthesis' in window;
+const pt=()=>TTS?(speechSynthesis.getVoices()||[]).filter(v=>/^pt/i.test(v.lang)):[];
+function bestVoice(){const vs=pt();if(!vs.length)return null;const mine=vs.find(v=>v.name===M.voice);if(mine)return mine;
+ const sc=v=>{const n=v.name.toLowerCase();let p=0;if(/natural|neural|online|premium|enhanced|aprimorad/.test(n))p+=6;if(/francisca|thalita|vitoria|luciana|fernanda|camila|maria|helena|google/.test(n))p+=3;if(/br/i.test(v.lang))p+=2;if(/daniel|antonio|felipe|ricardo|jorge|male/.test(n))p-=8;return p};
+ return vs.slice().sort((a,b)=>sc(b)-sc(a))[0]}
+const spk=s=>s.replace(/R\$\s?([\d.]+),(\d{2})/g,(_,a,b)=>a.replace(/\./g,'')+(b==='00'?' reais':' reais e '+b+' centavos')).replace(/R\$\s?([\d.]+)/g,'$1 reais').replace(/[→·]/g,',');
+function bspeak(txt){if(!M.on||!TTS||!txt)return;speechSynthesis.cancel();const v=bestVoice();
+ (spk(txt).match(/[^.!?;]+[.!?;]*/g)||[txt]).forEach(p=>{const u=new SpeechSynthesisUtterance(p.trim());u.lang='pt-BR';if(v)u.voice=v;u.rate=M.rate;u.pitch=M.pitch;speechSynthesis.speak(u)})}
+
+/* ---------- voz ElevenLabs (opcional) ---------- */
+let AUD=null;
+const stopV=()=>{if(TTS)speechSynthesis.cancel();if(AUD){try{AUD.pause()}catch(e){}AUD=null}};
+async function eleven(txt){const text=spk(txt);let blob;
+ try{const c=await caches.open('kayla-voz'),rq=new Request('https://kayla.local/'+M.vid+'/'+encodeURIComponent(text));let r=await c.match(rq);
+  if(!r){const x=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(M.vid)+'?output_format=mp3_44100_64',{method:'POST',headers:{'xi-api-key':M.ek,'Content-Type':'application/json'},body:JSON.stringify({text,model_id:'eleven_multilingual_v2',voice_settings:{stability:.41,similarity_boost:.75,speed:.97}})});
+   if(!x.ok)throw new Error('http '+x.status);r=new Response(await x.blob(),{headers:{'Content-Type':'audio/mpeg'}});await c.put(rq,r.clone())}
+  blob=await r.blob()}catch(e){console.warn('ElevenLabs',e);bub('k','A voz do ElevenLabs falhou ('+(e.message||e)+'). Usei a voz do celular.');return false}
+ try{stopV();AUD=new Audio(URL.createObjectURL(blob));await AUD.play();return true}catch(e){bub('k','Não consegui tocar o áudio do ElevenLabs ('+(e.message||e)+').');return false}}
+function speak(txt){if(!M.on||!txt)return;stopV();if(M.ek&&M.vid){eleven(txt).then(ok=>{if(!ok)bspeak(txt)});return}bspeak(txt)}
+
+/* ---------- interface ---------- */
+const st=document.createElement('style');st.textContent=`#kfab{position:fixed;right:14px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:35;width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);font-size:26px;box-shadow:0 6px 18px rgba(0,0,0,.28);padding:0;cursor:pointer}
+#ksh{position:fixed;inset:0;z-index:45;display:flex;align-items:flex-end;background:rgba(0,0,0,.4)}#ksh[hidden]{display:none}
+.kbox{background:var(--sf);color:var(--ink);width:100%;max-width:640px;margin:0 auto;border-radius:20px 20px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:88vh;display:flex;flex-direction:column;gap:10px}
+.kh{display:flex;align-items:center;gap:10px}.kav{width:38px;height:38px;border-radius:50%;background:var(--ac);color:var(--onac);display:grid;place-items:center;font:800 18px "Bricolage Grotesque",sans-serif}
+.kav.on{animation:kp 1.2s infinite}@keyframes kp{50%{box-shadow:0 0 0 10px var(--acs)}}
+.kt{flex:1;display:flex;flex-direction:column}.kt small{color:var(--mute)}
+#klog{overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:90px;max-height:38vh}
+.kb{max-width:86%;padding:9px 12px;border-radius:14px;font-size:15px;line-height:1.35;white-space:pre-wrap}.kb.u{align-self:flex-end;background:var(--ac);color:var(--onac)}.kb.k{align-self:flex-start;background:var(--acs);color:var(--ink)}
+#kchips{display:flex;flex-wrap:wrap;gap:6px}#kchips button{padding:6px 10px;font-size:13px}
+.krow{display:flex;gap:8px}.krow input{flex:1;min-width:0}#kset{display:flex;flex-direction:column;gap:8px;border:1px solid var(--ln);border-radius:12px;padding:10px;font-size:14px}#kset[hidden]{display:none}`;
+document.head.appendChild(st);
+const fab=document.createElement('button');fab.id='kfab';fab.setAttribute('aria-label','Falar com a KAYLA');fab.textContent='🎙️';
+const sh=document.createElement('div');sh.id='ksh';sh.hidden=true;
+sh.innerHTML=`<div class="kbox" role="dialog" aria-label="KAYLA"><div class="kh"><div class="kav" id="kav">K</div><div class="kt"><b>KAYLA</b><small id="kst">Toque no microfone e fale</small></div><button class="ghost" id="kgear" aria-label="Voz e aprendizado">⚙</button><button class="ghost" id="kx" aria-label="Fechar">✕</button></div>
+<div id="kset" hidden><label>Voz <select id="kvoz"></select></label><label>Velocidade <input type="range" id="kr" min="0.7" max="1.2" step="0.02"></label><label>Tom <input type="range" id="kp" min="0.8" max="1.5" step="0.02"></label><label><input type="checkbox" id="kon"> Responder falando</label><label>ElevenLabs: chave da API <input type="password" id="kek" placeholder="cole sua chave" autocomplete="off"></label><label>ElevenLabs: ID da voz <input id="kvid" placeholder="ID da voz da KAYLA" autocomplete="off"></label><div class="krow"><button class="sec" id="kt">Testar voz</button><button class="sec" id="kfg">Esquecer o que aprendi</button></div><small id="kinfo" style="color:var(--mute)"></small></div>
+<div id="klog"></div><div id="kchips"></div><div class="krow"><input id="kin" placeholder="Fale ou digite um comando…" autocomplete="off"><button id="kgo" aria-label="Enviar">➤</button><button id="kmic" aria-label="Falar">🎙️</button></div></div>`;
+document.body.appendChild(fab);document.body.appendChild(sh);
+const $k=s=>sh.querySelector(s);
+const setSt=(s,on)=>{$k('#kst').textContent=s;$k('#kav').classList.toggle('on',!!on)};
+function bub(w,t){const l=$k('#klog'),d=document.createElement('div');d.className='kb '+w;d.textContent=t;l.appendChild(d);while(l.children.length>10)l.removeChild(l.firstChild);l.scrollTop=l.scrollHeight}
+function chips(a){const c=$k('#kchips');c.innerHTML='';(a||[]).forEach(([l,f])=>{const b=document.createElement('button');b.className='sec';b.textContent=l;b.onclick=()=>{c.innerHTML='';f()};c.appendChild(b)})}
+function say(m,ch){if(!m)return;bub('k',m);chips(ch);setSt('Falando…',1);speak(flav(m));setTimeout(()=>setSt('Toque no microfone e fale'),600)}
+function fillSet(){const vs=pt(),sel=$k('#kvoz'),b=bestVoice();sel.innerHTML=vs.length?vs.map(v=>`<option value="${esc(v.name)}" ${b&&b.name===v.name?'selected':''}>${esc(v.name)}</option>`).join(''):'<option>Nenhuma voz em português</option>';
+ $k('#kek').value=M.ek||'';$k('#kvid').value=M.vid||'';$k('#kr').value=M.rate;$k('#kp').value=M.pitch;$k('#kon').checked=M.on;
+ $k('#kinfo').textContent=vs.length?'Dica: vozes “Google português do Brasil” ou “Natural/Online” soam mais humanas.':'Instale uma voz pt-BR nas configurações de texto para fala do celular.'}
+if(TTS)speechSynthesis.onvoiceschanged=fillSet;
+
+/* ---------- reconhecimento de voz ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,ouvindo=false,fin='';
+function listen(){if(ouvindo){try{rec.stop()}catch(e){}return}
+ if(!SR){say('Este aparelho não tem reconhecimento de voz no navegador. Pode digitar o comando aqui embaixo.');return}
+ stopV();fin='';rec=new SR();rec.lang='pt-BR';rec.interimResults=true;rec.continuous=false;
+ rec.onstart=()=>{ouvindo=true;setSt('Ouvindo…',1)};
+ rec.onresult=e=>{let f='',i='';for(let k=0;k<e.results.length;k++){const x=e.results[k];if(x.isFinal)f+=x[0].transcript;else i+=x[0].transcript}fin=f||i;$k('#kin').value=fin};
+ rec.onerror=e=>{ouvindo=false;setSt('Toque no microfone e fale');if(e.error==='not-allowed'||e.error==='service-not-allowed')say('Preciso da permissão do microfone. Libere nas configurações do navegador e tente de novo.');else if(e.error==='no-speech')say('Não ouvi nada. Tente de novo.');else if(e.error==='network')say('Sem internet para reconhecer a voz. Você pode digitar o comando.')};
+ rec.onend=()=>{ouvindo=false;setSt('Toque no microfone e fale');const t=fin.trim();$k('#kin').value='';if(t)run(t)};
+ try{rec.start()}catch(e){}}
+
+/* ---------- cérebro: entende e executa ---------- */
+let PEND=null,undone=false;const UNDO={snaps:[]};
+const CATK={contas:/\b(luz|agua|aluguel|internet|telefone|condominio|gas|energia|cartao|boleto|iptu|escola)\b/,feira:/\b(feira|mercado|supermercado|padaria|acougue|hortifruti|atacadao|assai|sacolao)\b/,transp:/\b(uber|onibus|gasolina|combustivel|passagem|taxi|estacionamento|moto|carro)\b/,saude:/\b(farmacia|remedio|medico|consulta|dentista|exame|plano de saude)\b/,extra:/\b(lanche|restaurante|pizza|cinema|passeio|presente|festa|bar|sorvete|ifood|salao)\b/};
+function catOf(d){const n=N(d);for(const k in CATK)if(CATK[k].test(n))return k;return M.cat[n.split(' ')[0]]||'outros'}
+const PRE={ev:'agenda',nota:'anota',gasto:'gastei',ganho:'recebi',shop:'adiciona na lista'};
+const whenTxt=(d,h)=>{const a=new Date();a.setDate(a.getDate()+1);return(d===HOJE?'hoje':d===iso(a)?'amanhã':fmt(d))+(h?' às '+h:'')};
+const needVal=(desc,dt,ganho)=>{PEND={fill:t2=>{const v=money(t2).v;if(v==null)return false;lancar(desc,v,dt,ganho)}};return{m:'Qual foi o valor?'}};
+function lancar(desc,v,dt,ganho){v=cR2(v);const d=dt||HOJE;let cat;
+ if(ganho){S.cart.rendas.push({id:uid(),m:d.slice(0,7),desc:desc||'Renda extra',val:v});save();render();say(`${OK()} Entrada de ${BRL(v)}${desc?' ('+desc+')':''} lançada na carteira.`);0;return}
+ cat=catOf(desc);const g={id:uid(),date:d,cat,desc:desc||'Gasto',val:v};S.cart.gastos.push(g);save();render();
+ say(`${OK()} Gasto de ${BRL(v)}${desc?' com '+desc:''} em ${ccat(cat)[2]}.`,cat==='outros'&&desc?CCATS.filter(c=>c[0]!=='outros').map(c=>[c[1]+' '+c[2],()=>{g.cat=c[0];M.cat[N(desc).split(' ')[0]]=c[0];sv();save();render();say('Entendi, da próxima já coloco em '+c[2]+'.')}]):null);0}
+function shopAdd(t,fix){
+ let s=t.replace(/^(?:adiciona\w*|coloca\w*|poe|bota|inclui\w*|anota\w*|compra\w*|pega\w*|registra\w*|preciso de|falta)\s+/,'').replace(/\b(?:na|a|pra|para|no|em)\s+(?:minha\s+)?(?:lista|feira|carrinho|cesta|compras)(?: de compras)?\b/g,' ').replace(/\b(?:lista|feira)\b/g,' ');
+ s=s.replace(/(\d|reais|real|quilo|quilos|kg)\s+e\s+(?=[a-z])/g,'$1;');
+ const out=[];s.split(/\s*;\s*|\s*,\s*(?=[a-z])/).map(x=>x.trim()).filter(Boolean).forEach(it=>{
+  const mo=money(it);let x=mo.s,u='un',q=1,mq=x.match(/(\d+(?:[.,]\d+)?)\s*(kg|quilos?|kilos?|g|gramas?)\b(?:\s+de\b)?/);
+  if(mq){u=/^[kq]/.test(mq[2])?'kg':'g';q=num(mq[1]);x=x.replace(mq[0],' ')}
+  else if(/\b(kg|quilos?|kilos?)\b/.test(x))u='kg';
+  else if(mq=x.match(/^(\d+)\s+(?=[a-z])/)){q=Math.max(1,+mq[1]);x=x.replace(mq[0],'')}
+  x=x.replace(/\b(?:o|a|por|pelo|cada)?\s*(?:quilo|quilos|kilo|kg)\b/g,' ').replace(/\s+/g,' ').trim().replace(/^(?:(?:a|o|os|as|de|do|da|por|cada|pelo|um|uma|e) )+/,'').replace(/(?: (?:a|o|os|as|de|do|da|por|cada|pelo|e|reais|real))+$/,'');
+  if(!x)return;const title=cap(fix(x)),k=title.toLowerCase();let price=mo.v;
+  if(price==null)price=(S.prods[k]||{price:0}).price||0;
+  S.shop.push({id:uid(),title,price,unit:u,qty:q,done:false});
+  if(price>0||!S.prods[k])S.prods[k]={name:title,price,unit:wt(u)?'kg':'un'};out.push(title+(price?' '+BRL(price)+(wt(u)?'/kg':''):''))});
+ if(!out.length)return null;if(!S.market)S.mkSkip=true;save();go('compras');
+ return{did:1,m:`${OK()} Na lista: ${out.join(', ')}. Total agora: ${BRL(tot(S.shop))}.`+(S.market?'':' Diga “estou no Assaí” (ou outro mercado) para eu guardar os preços lá.')}}
+
+function act(raw,t){
+ const O={};raw.split(/\s+/).forEach(w=>{const k=N(w).replace(/[^a-z0-9]/g,'');if(k)O[k]=w.replace(/[.,;:!?]+$/,'')});
+ const fix=s=>s.split(' ').map(w=>O[w.replace(/[^a-z0-9]/g,'')]||w).join(' ');let m;
+ const f0=M.verbs[t.split(' ')[0]];if(f0)t=PRE[f0]+' '+t.split(' ').slice(1).join(' ');
+ if(/^(desfaz\w*|desfaca|cancela\w*|errei|volta\w*)\b/.test(t)&&/(desfaz|isso|ultim|errei|volta)/.test(t)){
+  if(!UNDO.snaps.length)return{m:'Não tenho nada para desfazer.'};S=JSON.parse(UNDO.snaps.pop());normCart();save();render();undone=true;return{m:'Desfeito.'}}
+ if(m=t.match(/^quando eu (?:disser|falar|digo|falo) (.+?) (?:quer dizer|significa|entenda|e|eh) (.+)$/)){M.alias[m[1]]=m[2];sv();return{m:`Combinado! Quando você disser “${m[1]}”, eu entendo “${m[2]}”.`}}
+ if(m=t.match(/^(?:abr\w*|vai|va|ir|mostr\w*|leva\w*|quero ver|ver)\s+(?:(?:para|pra|a|o|na|no|as|os|minha|meu|de)\s+)*(agenda|calendario|notas?|diario|compras|lista|feira|carteira|inicio|plantoes|configuracoes)\b/)){
+  const g={agenda:'agenda',calendario:'cal',nota:'notas',notas:'notas',diario:'diario',compras:'compras',lista:'compras',feira:'compras',carteira:'carteira',inicio:'inicio',plantoes:'cal',configuracoes:'config'}[m[1]];
+  if(m[1]==='plantoes')calSub='pl';go(g);return{m:'Abrindo '+m[1]+'.'}}
+ if(/^(oi|ola|bom dia|boa tarde|boa noite|e ai|tudo bem)\b/.test(t))return{m:`${pick(['Oi','Olá'])}${who()}! Em que posso ajudar?`};
+ if(/\b(obrigad[oa]|valeu)\b/.test(t))return{m:pick(['De nada!','Sempre às ordens!','Disponha!'])};
+ if(/\b(quem (e|eh) voce|o que (voce )?(sabe|faz)|ajuda|comandos)\b/.test(t))return{m:`Eu sou a KAYLA. Marco ${W('ev','compromisso')}s (“marca dentista amanhã às 3 da tarde”), crio notas (“anota: ligar pra Maria”), registro plantões, adiciono itens com preço na ${W('shop','lista')} (“arroz 5 reais o quilo”), lanço gastos e ganhos (“gastei 30 de padaria”, “recebi 200 de um bico”) e respondo perguntas (“quanto gastei esse mês?”, “o que tenho amanhã?”). Se eu errar, diga “desfaz”.`};
+ if(/\bquanto\b.*\b(gast\w+|sobr\w+|resta\w*)\b|\bsaldo\b/.test(t)){const mm=/passado/.test(t)?cPrev(HOJE.slice(0,7)):HOJE.slice(0,7),k=cCalc(mm);
+  return{m:`${/passado/.test(t)?'No mês passado':'Neste mês'} você gastou ${BRL(k.gastos)}`+(k.renda?`, de uma renda de ${BRL(k.renda)}. ${k.sobra<0?'Faltam '+BRL(-k.sobra):'Sobram '+BRL(k.sobra)}.`:'. Ainda não informou sua renda.')}}
+ if(/^(?:o que|quais|que)\b.*\b(tenho|tem|compromissos?|agenda)\b|\bminha agenda\b/.test(t)){const dd=dia(t).d||HOJE,ev=sortEv(S.ev.filter(e=>e.date===dd)),pl=S.pl.filter(p=>p.date===dd);
+  const L=ev.map(e=>(e.time?e.time+' ':'')+e.title).concat(pl.map(p=>'plantão das '+p.ent+' às '+p.sai));
+  return{m:L.length?`${whenTxt(dd)[0].toUpperCase()+whenTxt(dd).slice(1)} você tem: ${L.join('; ')}.`:`Nada marcado para ${whenTxt(dd)}.`}}
+ if(/\b(total|quanto deu|quanto ta)\b.*\b(lista|compra|compras|feira|carrinho)\b/.test(t))return{m:S.shop.length?`A ${W('shop','lista')} tem ${S.shop.length} itens, total de ${BRL(tot(S.shop))}.`:'A lista está vazia.'};
+ if(m=t.match(/\bquanto (?:custa|custou|esta|ta)\s+(?:o |a |um |uma |os |as )?(.+)$/)){const q=m[1].replace(/\b(no|na|em)\b.*$/,'').trim(),P=precos(),ks=Object.keys(P).filter(k=>k.split('|')[0].includes(q));
+  if(!ks.length)return{m:`Ainda não tenho preço de ${q}. Quando você finalizar uma compra com ele, eu passo a saber.`};
+  const p=P[ks[0]],L=Object.entries(p.m).map(([id,v])=>[MERC.find(x=>x.id===id).nome,v.price]).sort((a,b)=>a[1]-b[1]);
+  return{m:`${p.t}: `+L.map((x,i)=>`${x[0]} ${BRL(x[1])}${i===0&&L.length>1?' (mais barato)':''}`).join(', ')+(p.kg?' o quilo':'')+'.'}}
+ if((m=t.match(/\b(?:estou|to|tou|cheguei|fui)\b.*?\b(?:n[oa]|em|ao)\s+(.+)$/))&&(mkId(m[1])||/mercado|atacarejo|feira/.test(t))){const k=mkId(m[1]);
+  S.market=k?MERC.find(x=>x.id===k).nome:cap(fix(m[1].replace(/^(?:mercado|supermercado)\s+/,'')));S.mkSkip=false;save();go('compras');return{did:1,m:`Certo, você está no ${S.market}. Os preços que eu anotar ficam guardados aqui.`}}
+ if(/\b(finaliz\w+|termin\w+|fech\w+|conclu\w+)\b.*\b(compra|compras|feira|lista)\b/.test(t)){
+  if(!S.shop.length)return{m:'A lista está vazia, não tem o que finalizar.'};
+  const fim=()=>{const n=S.shop.length,tt=tot(S.shop),mk=S.market;finish();say(`${OK()} Compra finalizada: ${n} itens, ${BRL(tt)}. Guardei os preços do ${mk}.`)};
+  if(!S.market)return{m:'Em qual mercado você está?',chips:MERC.map(x=>[x.nome,()=>{S.market=x.nome;fim()}])};
+  fim();return{m:''}}
+ if(m=t.match(/^(?:apaga\w*|exclui\w*|remove\w*|deleta\w*)\s+(?:o |a |meu |minha )?(compromisso|nota|evento)?\s*(?:de |do |da |sobre )?(.+)$/)){
+  const isN=m[1]==='nota',list=isN?S.notes.filter(n=>N(n.title+' '+n.text).includes(m[2])):S.ev.filter(e=>N(e.title).includes(m[2]));
+  if(!list.length)return{m:`Não achei nada com “${m[2]}”.`};const x=list[0];close();
+  ask(`Excluir ${isN?'a nota':'o compromisso'} “${isN?(x.title||x.text.slice(0,30)):x.title}”?`,()=>{UNDO.snaps.push(JSON.stringify(S));if(isN)S.notes=S.notes.filter(n=>n!==x);else S.ev=S.ev.filter(e=>e!==x);save();render()});return{m:''}}
+ if(m=t.match(/^(?:marca\w*|conclui\w*)\s+(?:o |a )?(.+?) como (feito|concluido|pronto|pago)$/)){
+  if(m[2]==='pago'){const f=S.cart.fixas.find(x=>N(x.desc).includes(m[1]));if(f){const mm=HOJE.slice(0,7);(S.cart.pagas[mm]=S.cart.pagas[mm]||{})[f.id]=true;save();render();return{did:1,m:`${OK()} ${f.desc} marcada como paga.`}}}
+  const e=S.ev.find(x=>N(x.title).includes(m[1])&&!x.done)||S.shop.find(x=>N(x.title).includes(m[1]));
+  if(e){e.done=true;save();render();return{did:1,m:`${OK()} “${e.title}” concluído.`}}return{m:`Não achei “${m[1]}”.`}}
+ if(/\b(conta fixa|despesa fixa|todo mes|todo dia \d)/.test(t)&&/\d/.test(t)){const mf=t.match(/(?:todo dia|dia|vence dia)\s+(\d{1,2})/),dd=mf?Math.min(31,+mf[1]):1,x=t.replace(/(?:todo dia|vence dia)\s+\d{1,2}|\b(?:conta|despesa) fixa\b|\btodo mes\b/g,' '),mo=money(x);
+  if(mo.v==null)return{m:'Qual é o valor dessa conta fixa?'};
+  const d=cap(fix(mo.s.replace(/\b(adiciona\w*|cria\w*|registra\w*|de|do|da|com|em|no|na|um|uma|o|a|reais|real|dia|que|vence|pago|paguei)\b/g,' ').replace(/\s+/g,' ').trim()))||'Conta fixa';
+  S.cart.fixas.push({id:uid(),desc:d,val:cR2(mo.v),dia:dd,cat:catOf(d),ini:HOJE.slice(0,7)});save();go('carteira');cSub='fix';render();return{did:1,m:`${OK()} Conta fixa: ${d}, ${BRL(mo.v)}, todo dia ${dd}.`}}
+ if(/\b(minha renda|meu salario|salario|renda fixa|ganho por mes)\b/.test(t)&&!/\b(gastei|paguei)\b/.test(t)){const v=money(t).v;
+  if(v!=null){S.cart.base=cR2(v);save();render();return{did:1,m:`${OK()} Sua renda mensal agora é ${BRL(v)}.`}}}
+ const ganho=/\b(recebi|ganhei|entrou|caiu|vendi|deposita\w*|fiz um bico)\b/.test(t),gasto=/\b(gastei|paguei|gasto|despesa|saiu|pagamos|torrei)\b/.test(t);
+ if(ganho||gasto){const dt=dia(t),mo=money(dt.s);
+  const desc=cap(fix(mo.s.replace(/\b(gastei|paguei|gasto|despesa|saiu|recebi|ganhei|entrou|caiu|vendi|deposita\w*|fiz|reais|real|de|do|da|com|em|no|na|um|uma|o|a|por|pra|para|meu|minha|foi|que|eu|valor|bico)\b/g,' ').replace(/\s+/g,' ').trim()))||(ganho&&/bico/.test(t)?'Bico':'');
+  if(mo.v==null)return needVal(desc,dt.d,ganho);lancar(desc,mo.v,dt.d,ganho);return{m:''}}
+ if(/\bplantao|plantoes\b/.test(t)){const dt=dia(t);let ent,sai,r=dt.s.match(/\bdas? (\d{1,2})(?::(\d{2}))?\s?h?(?:oras?)?\s+(?:as|ate as|ate)\s+(\d{1,2})(?::(\d{2}))?/);
+  if(r){ent=pad(+r[1])+':'+(r[2]||'00');sai=pad(+r[3])+':'+(r[4]||'00')}else if(/noturn|noite/.test(dt.s)){ent='19:00';sai='07:00'}else if(/diurn|\bdia\b|manha/.test(dt.s)){ent='07:00';sai='19:00'}
+  const d=dt.d||HOJE;if(!ent){PEND={fill:t2=>{const x=t2.match(/\bdas? (\d{1,2})(?::(\d{2}))?\s?h?(?:oras?)?\s+(?:as|ate as|ate)\s+(\d{1,2})(?::(\d{2}))?/);if(!x)return false;S.pl.push({id:uid(),date:d,ent:pad(+x[1])+':'+(x[2]||'00'),sai:pad(+x[3])+':'+(x[4]||'00'),obs:'',hosp:S.hosp.length===1?S.hosp[0].id:'',val:0});save();render();say(`${OK()} Plantão registrado para ${whenTxt(d)}.`)}};return{m:'Qual o horário? Diga, por exemplo: das 19 às 7.'}}
+  S.pl.push({id:uid(),date:d,ent,sai,obs:'',hosp:S.hosp.length===1?S.hosp[0].id:'',val:0});save();render();return{did:1,m:`${OK()} Plantão de ${ent} às ${sai} registrado para ${whenTxt(d)}.`}}
+ if(/^(?:anota\w*|nota|cria\w* (?:uma )?nota|nova nota|escreve\w*|guarda\w*|salva\w*)\b/.test(t)&&!/\b(lista|feira|carrinho)\b/.test(t)&&!(money(t).v!=null&&/reais|real|r\$|quilo|kg/.test(t))){
+  let body=raw.replace(/^\s*(?:kayla,?\s*)?(?:por favor,?\s*)?(?:anota(?:r)?|cria(?:r)?(?: uma)? nota|nova nota|nota|escreve(?:r)?|guarda(?:r)?|salva(?:r)?)\s*(?:que|sobre|:|isso:?)?\s*/i,'').trim();
+  let cor='';const mc=N(body).match(/\b(?:nota|cor|de cor|na cor)\s+(vermelh[ao]|laranja|amarel[ao]|verde|azul|roxo|rosa)\b/);
+  if(mc){cor={vermelha:'vermelho',amarela:'amarelo'}[mc[1]]||mc[1].replace(/a$/,'o').replace('laranjo','laranja');body=body.replace(new RegExp('(?:nota |cor |de cor |na cor )'+mc[1]+'\\w*','i'),'').trim()}
+  if(!body)return{m:'O que você quer anotar?'};
+  let title,text;const ci=body.indexOf(':');if(ci>0&&ci<50){title=body.slice(0,ci).trim();text=body.slice(ci+1).trim()}else{title=body.split(/\s+/).slice(0,5).join(' ');text=body}
+  S.notes.push({id:uid(),title:cap(title),text:cap(text),color:cor,at:Date.now()});save();go('notas');return{did:1,m:`${OK()} Criei ${/^(a|o)?\s?nota/.test(W('nota','nota'))?'a nota':'a '+W('nota','nota')} “${cap(title)}”.`}}
+ const itens=/\b(lista|feira|carrinho|cesta|compras)\b/.test(t),vb=/^(?:adiciona\w*|coloca\w*|poe|bota|inclui\w*|anota\w*|compra\w*|pega\w*|registra\w*|preciso de|falta)\b/.test(t);
+ const dtx=dia(t),tmx=tempo(dtx.s),hasM=money(tmx.s).v!=null&&/reais|real|r\$|quilo|kg|\d,\d/.test(t);
+ if(itens||(vb&&hasM&&dtx.d==null)||(S.market&&hasM&&dtx.d==null&&tmx.h==null)){const r=shopAdd(t,fix);if(r)return r}
+ const vev=/^(?:agenda\w*|marca\w*|compromisso|evento|lembr\w+|tenho|preciso|reuniao|consulta|vou|tem)\b/.test(t);
+ if(vev||dtx.d||tmx.h!=null){let title=tmx.s.replace(LEAD,'').replace(TRAIL,'').trim(),d=dtx.d,h=tmx.h!=null?pad(tmx.h)+':'+pad(tmx.mi):'';
+  const grava=()=>{S.ev.push({id:uid(),title:cap(fix(title)),date:d||HOJE,time:h,done:false});save();go('agenda');say(`${OK()} ${cap(fix(title))} — ${whenTxt(d||HOJE,h)}.`);0};
+  const ask2=()=>{PEND={fill:t2=>{const a=dia(t2),b=tempo(a.s);if(!a.d&&b.h==null)return false;d=a.d;if(b.h!=null)h=pad(b.h)+':'+pad(b.mi);grava()}};return{m:'Para quando? Pode dizer o dia e a hora.'}};
+  if(!title){PEND={fill:t2=>{title=t2.replace(LEAD,'').trim();if(!title)return false;if(!d&&!h)return ask2();grava()}};return{m:'Qual é o compromisso?'}}
+  if(!d&&!h)return ask2();grava();return{m:''}}
+ PEND=null;const first=t.split(' ')[0];
+ return{m:'Ainda não sei o que fazer com isso. É um compromisso, uma nota, um gasto, um ganho ou um item de compra? Eu aprendo com a sua resposta.',chips:[['📅 Compromisso','ev'],['📝 Nota','nota'],['💸 Gasto','gasto'],['💵 Ganho','ganho'],['🛒 Compra','shop']].map(([l,k])=>[l,()=>{M.verbs[first]=k;sv();run(raw,true)}])}}
+
+function run(raw,quiet){raw=String(raw||'').trim();if(!raw)return;if(!quiet)bub('u',raw);setSt('Pensando…',1);
+ let t=w2n(N(raw)).replace(/^(?:(?:oi|ola|ei|ok|e)\s+)?kayla\b[, ]*/,'').replace(/^por favor\s+/,'');
+ for(const k in M.alias)t=t.replace(new RegExp('\\b'+re(k)+'\\b','g'),M.alias[k]);
+ if(!quiet)learn(t);
+ const snap=JSON.stringify(S);let r;undone=false;
+ try{
+  if(PEND){const p=PEND;PEND=null;r=p.fill(t,raw);if(r===false)r=act(raw,t)}else r=act(raw,t)
+ }catch(e){r={m:'Tive um problema ao fazer isso. Pode repetir de outro jeito?'}}
+ if(!undone&&JSON.stringify(S)!==snap){UNDO.snaps.push(snap);if(UNDO.snaps.length>8)UNDO.snaps.shift()}
+ if(r&&r.m)say(r.m,r.chips);else setSt('Toque no microfone e fale')}
+
+/* ---------- eventos ---------- */
+function open(listenNow){sh.hidden=false;fillSet();if(!M.hi){M.hi=1;sv();say(`Oi${who()}! Eu sou a KAYLA, sua assistente. Pode me pedir para marcar ${W('ev','compromisso')}s, criar notas, registrar preços na feira e lançar gastos e ganhos. Por exemplo: marca dentista amanhã às 3 da tarde.`)}
+ else if(listenNow)listen()}
+function close(){sh.hidden=true;try{if(ouvindo)rec.stop()}catch(e){}stopV()}
+fab.onclick=()=>open(true);$k('#kx').onclick=close;sh.onclick=e=>{if(e.target===sh)close()};
+$k('#kmic').onclick=listen;$k('#kgo').onclick=()=>{const v=$k('#kin').value;$k('#kin').value='';run(v)};
+$k('#kin').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$k('#kgo').onclick()}};
+$k('#kgear').onclick=()=>{const s=$k('#kset');s.hidden=!s.hidden;fillSet()};
+$k('#kvoz').onchange=e=>{M.voice=e.target.value;sv();speak('Oi! Essa é a minha voz.')};
+$k('#kr').oninput=e=>{M.rate=+e.target.value;sv()};$k('#kp').oninput=e=>{M.pitch=+e.target.value;sv()};
+$k('#kon').onchange=e=>{M.on=e.target.checked;sv()};$k('#kek').oninput=e=>{M.ek=e.target.value.trim();sv()};$k('#kvid').oninput=e=>{M.vid=e.target.value.trim();sv()};$k('#kt').onclick=()=>speak('Oi! Eu sou a KAYLA. Como posso ajudar você hoje?');
+$k('#kfg').onclick=()=>{if(confirm('Apagar tudo o que a KAYLA aprendeu sobre o seu jeito de falar?')){const v=M.voice,r=M.rate,p=M.pitch,o=M.on;M=Object.assign({},D0,{voice:v,rate:r,pitch:p,on:o,hi:1,ek:M.ek,vid:M.vid});sv();say('Pronto, esqueci o que tinha aprendido. Vamos começar de novo!')}};
+window.KAYLA={run,open};
+}catch(err){console.error('KAYLA',err)}})();
+
+</script>
 </body>
 </html>
