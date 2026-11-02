@@ -455,64 +455,7 @@ nav button .ni{width:44px}
 .frase cite{display:block;font-style:normal;font-weight:800;font-size:13px;color:var(--ac);letter-spacing:.02em;margin:2px 0 4px}
 .frase p{font-size:17px;line-height:1.4}
 
-/* =====================================================================
-   v2.1 — TEMAS ESPECIAIS (paletas inspiradas, sem logos oficiais)
-   Cada tema define as cores claras e escuras, o degradê (--grad) e um
-   enfeite discreto (emoji no canto / neve / teia).
-   ===================================================================== */
-
-/* ---- BTS (roxo "borahae") ---- */
-:root[data-color="bts"][data-eff="light"]{--bg:#f7f3ff;--sf:#fff;--ink:#1d1233;--mute:#6b5f86;--ac:#7c3aed;--acs:#ebe3ff;--ln:#e2d8f6;--onac:#fff;--grad:linear-gradient(135deg,#b794ff 0%,#7c3aed 48%,#4c1d95 100%);--emo:"💜"}
-:root[data-color="bts"][data-eff="dark"]{--bg:#110a21;--sf:#1c1332;--ink:#f1eaff;--mute:#a597c4;--ac:#b794ff;--acs:#33235c;--ln:#35295a;--onac:#1a0b3a;--grad:linear-gradient(135deg,#d4bfff 0%,#9b6dff 48%,#4c1d95 100%);--emo:"💜"}
-
-/* ---- ONE PIECE (chapéu de palha, mar e bandeira) ---- */
-:root[data-color="onepiece"][data-eff="light"]{--bg:#fbf5e4;--sf:#fffdf6;--ink:#1c2a3a;--mute:#6b6a5c;--ac:#c62828;--acs:#fde7c2;--ln:#ebdcb6;--onac:#fff;--grad:linear-gradient(135deg,#d93a2f 0%,#c62828 45%,#e07b00 100%);--emo:"🏴‍☠️"}
-:root[data-color="onepiece"][data-eff="dark"]{--bg:#08192b;--sf:#10283f;--ink:#f3ecd8;--mute:#98a9b8;--ac:#ffcf4a;--acs:#1d3b5c;--ln:#1e3957;--onac:#2b1b00;--grad:linear-gradient(135deg,#ffdc72 0%,#f2a81d 52%,#c4501a 100%);--emo:"🏴‍☠️"}
-
-/* ---- HOMEM-ARANHA (vermelho, azul e teia) ---- */
-:root[data-color="aranha"][data-eff="light"]{--bg:#f3f4fb;--sf:#fff;--ink:#141a33;--mute:#5d6485;--ac:#d81e2c;--acs:#fde1e4;--ln:#dfe2f0;--onac:#fff;--grad:linear-gradient(135deg,#ec3040 0%,#c0121f 52%,#1e3a8a 130%);--emo:"🕷️"}
-:root[data-color="aranha"][data-eff="dark"]{--bg:#0a0f1f;--sf:#131a33;--ink:#eef0fa;--mute:#98a0c2;--ac:#ff4d5a;--acs:#3a1a26;--ln:#232d58;--onac:#220308;--grad:linear-gradient(135deg,#ff6a75 0%,#d81e2c 52%,#1e3a8a 130%);--emo:"🕷️"}
-
-/* ---- BATMAN (preto e amarelo) ---- */
-:root[data-color="batman"][data-eff="light"]{--bg:#f2f1ec;--sf:#fff;--ink:#16161a;--mute:#66645c;--ac:#26262b;--acs:#fff0a8;--ln:#e2dfd0;--onac:#ffd60a;--grad:linear-gradient(135deg,#3c3c42 0%,#17171a 100%);--emo:"🦇"}
-:root[data-color="batman"][data-eff="dark"]{--bg:#09090b;--sf:#151517;--ink:#f3f1e8;--mute:#9b9a92;--ac:#ffd60a;--acs:#2d2808;--ln:#2a2a2e;--onac:#141000;--grad:linear-gradient(135deg,#ffe55c 0%,#e8b800 58%,#8a6d00 100%);--emo:"🦇"}
-
-/* ---- NATAL (vermelho, verde e neve) ---- */
-:root[data-color="natal"][data-eff="light"]{--bg:#fbf3ef;--sf:#fff;--ink:#2a1517;--mute:#7a5f60;--ac:#c8102e;--acs:#fde4e4;--ln:#ecd8d4;--onac:#fff;--grad:linear-gradient(135deg,#d8223d 0%,#a60c24 50%,#165b33 130%);--emo:"🎄";--snow:rgba(110,150,185,.65)}
-:root[data-color="natal"][data-eff="dark"]{--bg:#0c1a13;--sf:#152a1f;--ink:#f6efe9;--mute:#a3b8aa;--ac:#ff5a5f;--acs:#3a1d22;--ln:#234233;--onac:#2a0407;--grad:linear-gradient(135deg,#ff7a7e 0%,#d3162f 50%,#165b33 130%);--emo:"🎄";--snow:rgba(255,255,255,.85)}
-
-/* ---- SUPERMAN (azul, vermelho e amarelo) ---- */
-:root[data-color="superman"][data-eff="light"]{--bg:#f1f5fc;--sf:#fff;--ink:#101c38;--mute:#5a6890;--ac:#1459c7;--acs:#dbe8fd;--ln:#d5dff2;--onac:#fff;--grad:linear-gradient(135deg,#2a78f0 0%,#0f3f9e 55%,#c8102e 135%);--emo:"🦸"}
-:root[data-color="superman"][data-eff="dark"]{--bg:#071027;--sf:#0f1c3f;--ink:#eaf1ff;--mute:#93a4cc;--ac:#5da0ff;--acs:#14316b;--ln:#1c3466;--onac:#021333;--grad:linear-gradient(135deg,#7db6ff 0%,#2a78f0 55%,#c8102e 135%);--emo:"🦸"}
-
-/* ---- enfeites (não bloqueiam toques) ---- */
-:root[data-color="bts"] body::after,:root[data-color="onepiece"] body::after,:root[data-color="aranha"] body::after,
-:root[data-color="batman"] body::after,:root[data-color="natal"] body::after,:root[data-color="superman"] body::after{
- content:var(--emo);position:fixed;right:14px;top:calc(10px + env(safe-area-inset-top,0px));font-size:46px;line-height:1;opacity:.13;pointer-events:none;z-index:0;filter:saturate(1.2)}
-
-/* Homem-Aranha: teia no canto superior direito */
-:root[data-color="aranha"] body::before{content:"";position:fixed;top:0;right:0;width:260px;height:260px;pointer-events:none;z-index:0;opacity:.5;
- background:repeating-radial-gradient(circle at 100% 0,transparent 0 24px,color-mix(in srgb,var(--ac) 34%,transparent) 24px 25px),
-  repeating-conic-gradient(from 90deg at 100% 0,transparent 0 11.25deg,color-mix(in srgb,var(--ac) 34%,transparent) 11.25deg 11.9deg);
- -webkit-mask-image:radial-gradient(circle at 100% 0,#000 0 230px,transparent 252px);mask-image:radial-gradient(circle at 100% 0,#000 0 230px,transparent 252px)}
-
-/* Natal: neve caindo */
-:root[data-color="natal"] body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
- background-image:radial-gradient(circle,var(--snow) 0 2px,transparent 2.5px),radial-gradient(circle,var(--snow) 0 1.5px,transparent 2px),radial-gradient(circle,var(--snow) 0 3px,transparent 3.5px);
- background-size:130px 130px,190px 190px,270px 270px;background-position:0 0,40px 60px,90px 20px;opacity:.7}
-@media(prefers-reduced-motion:no-preference){
- :root[data-color="natal"] body::before{animation:neve 22s linear infinite}
- @keyframes neve{to{background-position:30px 540px,10px 760px,120px 1080px}}
-}
 main{position:relative;z-index:1}
-
-/* ---- cartões de tema nas Configurações ---- */
-.tmg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.tema{display:flex;flex-direction:column;align-items:stretch;padding:0;overflow:hidden;background:var(--sf);color:var(--ink);border:2px solid var(--ln);border-radius:18px;text-align:left;box-shadow:none}
-.tema .tp{height:66px;background:var(--pv);display:grid;place-items:center;font-size:32px;line-height:1}
-.tema .tn{padding:10px 12px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:6px}
-.tema.on{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent)}
-.tema.on .tn::after{content:"✓";color:var(--ac);font-weight:800}
 
 /* =====================================================================
    v2.1 — SCANNER DE PREÇOS (câmera)
@@ -1434,20 +1377,13 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],
- ['bts','BTS','#7c3aed','💜','linear-gradient(135deg,#d4bfff,#8b5cf6 50%,#4c1d95)'],
- ['onepiece','One Piece','#c62828','🏴‍☠️','linear-gradient(135deg,#ffd45e,#e8453c 55%,#0b4f8a)'],
- ['aranha','Homem-Aranha','#d81e2c','🕷️','linear-gradient(135deg,#ff5a66,#c0121f 55%,#1e3a8a)'],
- ['batman','Batman','#17171a','🦇','linear-gradient(135deg,#ffd60a,#2b2b2e 55%,#09090b)'],
- ['natal','Natal','#c8102e','🎄','linear-gradient(135deg,#d8223d,#a60c24 50%,#165b33)'],
- ['superman','Superman','#1459c7','🦸','linear-gradient(135deg,#2a78f0,#0f3f9e 55%,#c8102e)']];
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 Auto'],['light','☀️ Claro'],['dark','🌙 Escuro']];
  return `<h3>Aparência</h3><div class="card"><label class="fl" style="margin-top:0">Modo</label><div class="seg">${tm.map(a=>`<button class="${tema===a[0]?'on':''}" onclick="setTheme('${a[0]}')">${a[1]}</button>`).join('')}</div>`
  +`<label class="fl">Cor do tema</label><div class="swg">${COR.filter(c=>!c[3]).map(c=>`<button class="cor ${cor===c[0]?'on':''}" style="--sc:${c[2]}" aria-pressed="${cor===c[0]}" onclick="setColor('${c[0]}')">${c[1]}</button>`).join('')}</div>`
- +`<label class="fl">Temas especiais</label><div class="tmg">${COR.filter(c=>c[3]).map(c=>`<button class="tema ${cor===c[0]?'on':''}" style="--pv:${c[4]}" aria-pressed="${cor===c[0]}" onclick="setColor('${c[0]}')"><span class="tp">${c[3]}</span><span class="tn">${c[1]}</span></button>`).join('')}</div>`
- +`<p class="hint">Combine qualquer cor ou tema com o modo claro ou escuro. “Auto” acompanha o tema do aparelho. Os temas usam as cores inspiradas em cada universo.</p></div>`}
+ +`<p class="hint">Combine qualquer cor com o modo claro ou escuro. “Auto” acompanha o tema do aparelho.</p></div>`}
 
 /* ---------- v2.1: mercados cadastrados pelo usuário ---------- */
 const sigla=n=>{const w=String(n||'').trim().split(/\s+/).filter(Boolean);if(!w.length)return'?';return(w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase()};
