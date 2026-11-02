@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "172594112404",
+    "project_id": "jc-organiza",
+    "storage_bucket": "jc-organiza.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172594112404:android:6b96cee9622c6d77bc1181",
+        "android_client_info": {
+          "package_name": "com.minhaagenda.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "172594112404-fckqjdd9m6iluv4r4ngqbrkktii65s4l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.minhaagenda.app",
+            "certificate_hash": "36830cd99e6dc8916047e86e26194924bcfe8561"
+          }
+        },
+        {
+          "client_id": "172594112404-prh9m9sl999oj3iqgeokk797qr6tg94n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQK8A2x2tPQQiPBe3QOL8BqugqE9WsQ9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "172594112404-prh9m9sl999oj3iqgeokk797qr6tg94n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
