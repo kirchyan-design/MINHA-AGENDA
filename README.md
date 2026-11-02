@@ -2,6 +2,10 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 2.6
+
+- **Dados exclusivos por conta**: cada e-mail (ou celular) tem os seus próprios dados neste aparelho. Entrar com outra conta mostra o app zerado; entrar de novo com a conta original traz os dados dela de volta. Ao desconectar, os dados ficam guardados e o app volta para a tela inicial. Os dados que já existiam no aparelho ficam com a primeira conta que entrar.
+
 ## Versão 2.5
 
 - **Login por e-mail e senha e por celular (SMS)**, além do Google, na tela inicial e em Configurações › Conta.
