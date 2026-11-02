@@ -52,6 +52,10 @@ jobs:
           sed -i "s/versionCode [0-9]*/versionCode $RUN/; s/versionName \"[^\"]*\"/versionName \"1.3.$RUN\"/" "$G"
           grep -n "signingConfigs\|storeFile\|versionCode\|versionName" "$G"
 
+      - name: Mostrar SHA-1 e SHA-256 da assinatura (para o Firebase)
+        run: |
+          keytool -list -v -keystore jc-organiza.keystore -alias jc -storepass jcorganiza2026 | grep -E "SHA1|SHA256"
+
       - name: Permitir salvar backup em Documentos (Android)
         run: |
           M=android/app/src/main/AndroidManifest.xml
