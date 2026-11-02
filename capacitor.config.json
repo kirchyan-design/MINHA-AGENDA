@@ -2,6 +2,10 @@
   "appId": "com.minhaagenda.app",
   "appName": "JC ORGANIZA",
   "webDir": "www",
+  "server": {
+    "url": "https://kirchyan-design.github.io/MINHA-AGENDA/",
+    "cleartext": false
+  },
   "plugins": {
     "LocalNotifications": {
       "smallIcon": "ic_stat_agenda",
