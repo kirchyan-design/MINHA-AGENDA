@@ -6,6 +6,14 @@
     "LocalNotifications": {
       "smallIcon": "ic_stat_agenda",
       "iconColor": "#0f7b8a"
+    },
+    "FirebaseAuthentication": {
+      "authDomain": "jc-organiza.firebaseapp.com",
+      "providers": [
+        "google.com",
+        "password",
+        "phone"
+      ]
     }
   }
 }
