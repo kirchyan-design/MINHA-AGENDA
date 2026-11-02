@@ -1,6 +1,6 @@
 /* JC ORGANIZA - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='2.3.0';
+const VERSION='2.5.0';
 const CACHE='jc-organiza-'+VERSION;
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))))});
