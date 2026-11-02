@@ -105,7 +105,8 @@ jobs:
                   @Permission(alias = "images", strings = { Manifest.permission.READ_MEDIA_IMAGES }),
                   @Permission(alias = "video", strings = { Manifest.permission.READ_MEDIA_VIDEO }),
                   @Permission(alias = "audio", strings = { Manifest.permission.READ_MEDIA_AUDIO }),
-                  @Permission(alias = "storage", strings = { Manifest.permission.READ_EXTERNAL_STORAGE })
+                  @Permission(alias = "storage", strings = { Manifest.permission.READ_EXTERNAL_STORAGE }),
+                  @Permission(alias = "camera", strings = { Manifest.permission.CAMERA })
               }
           )
           public class MediaPermissionsPlugin extends Plugin {
@@ -129,6 +130,7 @@ jobs:
                       o.put("video", s);
                       o.put("audio", s);
                   }
+                  o.put("camera", st("camera"));
                   return o;
               }
 
@@ -139,15 +141,17 @@ jobs:
               @PluginMethod
               @Override
               public void requestPermissions(PluginCall call) {
+                  List<String> pedidos = new ArrayList<>();
+                  JSArray arr = call.getArray("permissions");
+                  try {
+                      if (arr != null) for (int i = 0; i < arr.length(); i++) pedidos.add(arr.getString(i));
+                  } catch (Exception ignored) {}
+                  if (pedidos.isEmpty()) { pedidos.add("images"); pedidos.add("video"); pedidos.add("audio"); pedidos.add("camera"); }
                   List<String> al = new ArrayList<>();
-                  if (novo()) {
-                      JSArray arr = call.getArray("permissions");
-                      try {
-                          if (arr != null) for (int i = 0; i < arr.length(); i++) al.add(arr.getString(i));
-                      } catch (Exception ignored) {}
-                      if (al.isEmpty()) { al.add("images"); al.add("video"); al.add("audio"); }
-                  } else {
-                      al.add("storage");
+                  for (String p : pedidos) {
+                      String a = p;
+                      if (!novo() && (p.equals("images") || p.equals("video") || p.equals("audio"))) a = "storage";
+                      if (!al.contains(a)) al.add(a);
                   }
                   requestPermissionForAliases(al.toArray(new String[0]), call, "depois");
               }
@@ -180,6 +184,13 @@ jobs:
           }
           EOF
           grep -n "uses-permission" "$M" || true
+
+      - name: Permissão da câmera (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q "android.permission.CAMERA\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-permission android:name="android.permission.CAMERA" />' "$M"
+          grep -q "android.hardware.camera\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-feature android:name="android.hardware.camera" android:required="false" />' "$M"
+          grep -n "CAMERA\|hardware.camera" "$M" || true
 
       - name: Aplicar o ícone do aplicativo (Android)
         run: |
