@@ -975,6 +975,7 @@ function vConfig(){
  +f('cf-w',_t('Local de trabalho'),u.work,'Ex.: Hospital / setor','maxlength="60"')
  +f('cf-t',_t('Telefone'),u.phone,'(00) 00000-0000','inputmode="tel" maxlength="20"')
  +`<button style="margin-top:14px;width:100%" onclick="saveProfile()">${_t('Salvar perfil')}</button></div>`
+ +cfgConta()
  +`<h3>${_t('Backup no celular')}</h3><div class="card"><div class="row">`
  +(app?`<button class="sec" onclick="exportar('share')">📤 Salvar / compartilhar backup</button><button class="sec" onclick="exportar('docs')">📁 Salvar em Documentos</button>`:`<button class="sec" onclick="exportar('share')">⬇ Exportar arquivo</button>`)
  +`</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#imp').click()">⬆ Restaurar de arquivo</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div><div class="row" style="margin-top:8px"><button class="sec" onclick="copiarBk()">📋 Copiar texto</button><button class="sec" onclick="colarBk()">📥 Colar texto</button></div>`
@@ -987,10 +988,99 @@ function vConfig(){
  +cfgAparencia()
  +cfgSeguranca()
  +cfgPermissoes()
- +`<div style="text-align:center;margin-top:4px"><button class="ghost" onclick="ask('Sair? Seus dados continuam salvos neste aparelho.',()=>{S.user.name='';tab='inicio';save();nav();render()},'Sair')">Sair</button></div>`}
+ +`<div style="text-align:center;margin-top:4px"><button class="ghost" onclick="ask('Sair? Seus dados continuam salvos neste aparelho.',()=>{contaSair(true);S.user.name='';tab='inicio';save();nav();render()},'Sair')">Sair</button></div>`}
 
 function togVers(){S.versOff=!S.versOff;save();render()}
 function cfgInicio(){const on=!S.versOff;return `<h3>${_t('Tela inicial')}</h3><div class="card"><div class="prm"><span class="ic">📖</span><span class="t"><b>Versículo bíblico do dia</b><small>${on?'Aparece no topo da tela inicial.':'Escondido da tela inicial.'}</small></span><button class="${on?'':'sec'}" onclick="togVers()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div></div>`}
+/* ---------- v2.5: Conta (Google, e-mail/senha ou celular) e recuperação da senha do app ---------- */
+const FA=()=>plug('FirebaseAuthentication');
+if(S.user&&S.user.google&&!S.user.conta){S.user.conta=Object.assign({prov:'google'},S.user.google);delete S.user.google}
+const ct=()=>S.user&&S.user.conta;
+const PROV={google:'Google',email:'e-mail e senha',fone:'celular (SMS)'};
+const ctRot=c=>c?(c.email||c.phone||c.name||''):'';
+const GLOGO='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" style="vertical-align:-3px;margin-right:8px"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
+function erroAuth(e){
+ const t=(String((e&&e.code)||'')+' '+String((e&&(e.message||e.errorMessage))||e)).toLowerCase();
+ const m=[['invalid-credential','E-mail ou senha incorretos.'],['wrong-password','Senha incorreta.'],['user-not-found','Não existe conta com este e-mail.'],['email-already-in-use','Este e-mail já tem conta. Use “Entrar”.'],['weak-password','A senha precisa ter pelo menos 6 caracteres.'],['invalid-email','E-mail inválido.'],['too-many-requests','Muitas tentativas. Aguarde um pouco e tente de novo.'],['network','Sem conexão com a internet.'],['invalid-phone-number','Número de celular inválido. Use o DDD, ex.: (81) 91234-5678.'],['invalid-verification-code','Código incorreto.'],['quota-exceeded','Limite de SMS atingido. Tente mais tarde.'],['operation-not-allowed','Este método de login ainda não está ativado no Firebase.']];
+ for(const [k,v] of m)if(t.includes(k))return v;
+ return 'Não foi possível concluir. '+t.trim().slice(0,140)}
+/* Janela com campos. Resolve {v:{id:valor}} (botão principal), {link:id,v} (botão de texto) ou null (cancelar). */
+function formDlg(o){return new Promise(res=>{
+ const el=document.createElement('div');el.className='ov';
+ el.innerHTML=`<div class="dlg" role="dialog" aria-label="${esc(o.title)}"><p><b>${esc(o.title)}</b></p>${o.sub?`<p style="color:var(--mute);font-size:13px;margin:0 0 6px">${esc(o.sub)}</p>`:''}`
+  +(o.fields||[]).map(f=>`<label class="fl" for="fd-${f.id}">${esc(f.label)}</label><input id="fd-${f.id}" type="${f.type||'text'}" placeholder="${esc(f.ph||'')}" value="${esc(f.val||'')}" ${f.ex||''}>`).join('')
+  +`<div class="row" style="margin-top:14px"><button id="fd-ok">${esc(o.ok||'OK')}</button><button class="sec" id="fd-no">Cancelar</button></div>`
+  +(o.links||[]).map(l=>`<button class="ghost" id="fd-l-${l.id}" style="width:100%;margin-top:6px">${esc(l.t)}</button>`).join('')+`</div>`;
+ document.body.appendChild(el);
+ const vals=()=>{const v={};(o.fields||[]).forEach(f=>{v[f.id]=el.querySelector('#fd-'+f.id).value});return v};
+ const fim=r=>{el.remove();res(r)};
+ el.querySelector('#fd-ok').onclick=()=>fim({v:vals()});
+ el.querySelector('#fd-no').onclick=()=>fim(null);
+ (o.links||[]).forEach(l=>{el.querySelector('#fd-l-'+l.id).onclick=()=>fim({link:l.id,v:vals()})});
+ const p=el.querySelector('input');if(p)setTimeout(()=>p.focus(),50)})}
+async function fotoDataUrl(url){try{const r=await fetch(url),b=await r.blob();return await new Promise((ok,er)=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=er;f.readAsDataURL(b)})}catch(e){return url}}
+function normFone(v){const d=String(v).replace(/[^\d+]/g,'');if(d.startsWith('+'))return d;const n=d.replace(/^0+/,'');return (n.length>=12&&n.startsWith('55'))?'+'+n:'+55'+n}
+/* Login por SMS: espera o código chegar, pede ao usuário e confirma. */
+function fbFone(tel){const A=FA();return new Promise(async(res,rej)=>{
+ const hs=[];let fechou=false;
+ const fim=(f,v)=>{if(fechou)return;fechou=true;hs.forEach(h=>{try{h&&h.remove&&h.remove()}catch(e){}});f(v)};
+ try{
+  hs.push(await A.addListener('phoneCodeSent',async ev=>{
+   const d=await formDlg({title:'Digite o código',sub:'Enviado por SMS para '+tel,fields:[{id:'cod',label:'Código recebido',ex:'inputmode="numeric" autocomplete="one-time-code" maxlength="8"'}],ok:'Confirmar'});
+   if(!d||!d.v.cod.trim())return fim(rej,{message:'cancel'});
+   try{fim(res,await A.confirmVerificationCode({verificationId:ev.verificationId,verificationCode:d.v.cod.trim()}))}catch(e){fim(rej,e)}}));
+  hs.push(await A.addListener('phoneVerificationFailed',ev=>fim(rej,{code:ev&&ev.message,message:(ev&&ev.message)||'Falha ao enviar o SMS.'})));
+  const r=await A.signInWithPhoneNumber({phoneNumber:tel});
+  if(r&&r.user)fim(res,r);
+ }catch(e){fim(rej,e)}})}
+/* Faz a autenticação pelo método m ('google' | 'email' | 'fone'). modo 'verificar' = confirmar a conta já conectada. Devolve o resultado ou null. */
+async function autenticar(m,modo){
+ const A=FA(),ver=modo==='verificar',c=ct()||{};
+ if(m==='google')return A.signInWithGoogle();
+ if(m==='email'){
+  const d=await formDlg({title:ver?'Confirme sua conta':'Entrar com e-mail',sub:ver?'Digite a senha da sua conta (não é a senha de 4 dígitos do app).':'',
+   fields:[{id:'em',label:'E-mail',type:'email',ph:'voce@email.com',val:ver?c.email:'',ex:'autocomplete="email"'},{id:'pw',label:'Senha da conta',type:'password',ph:'mínimo 6 caracteres',ex:'autocomplete="current-password"'}],
+   ok:ver?'Confirmar':'Entrar',links:ver?[{id:'rec',t:'Esqueci a senha da conta'}]:[{id:'new',t:'Criar conta nova'},{id:'rec',t:'Esqueci a senha da conta'}]});
+  if(!d)return null;
+  const em=d.v.em.trim(),pw=d.v.pw;
+  if(!em){info('Digite o e-mail.');return null}
+  if(d.link==='rec'){await A.sendPasswordResetEmail({email:em});info('Enviamos um e-mail para '+em+' com o link para criar uma nova senha da conta. Depois de criar, volte ao app e entre.');return null}
+  if(!pw){info('Digite a senha.');return null}
+  if(d.link==='new'){const r=await A.createUserWithEmailAndPassword({email:em,password:pw});try{await A.sendEmailVerification()}catch(e){}return r}
+  return A.signInWithEmailAndPassword({email:em,password:pw})}
+ if(m==='fone'){
+  const d=await formDlg({title:ver?'Confirme sua conta':'Entrar com o celular',sub:'Enviaremos um código por SMS.',fields:[{id:'tel',label:'Celular com DDD',type:'tel',ph:'(81) 91234-5678',val:ver?c.phone:'',ex:'autocomplete="tel"'}],ok:'Enviar código'});
+  if(!d)return null;
+  if(!d.v.tel.trim()){info('Digite o número do celular.');return null}
+  return fbFone(normFone(d.v.tel))}
+ return null}
+async function conectar(m){
+ const A=FA();
+ if(!nat()||!A){info('O login funciona no aplicativo instalado no celular.');return}
+ try{
+  const r=await autenticar(m),u=r&&r.user;if(!u)return;
+  const era=!S.user.name,nome=(u.displayName||'').trim();
+  S.user.conta={uid:u.uid,prov:m,email:u.email||'',phone:u.phoneNumber||'',name:nome};
+  if(!S.user.name){
+   let n=nome.split(/\s+/)[0]||(u.email||'').split('@')[0]||'';
+   if(!n){const d=await formDlg({title:'Como quer ser chamado(a)?',fields:[{id:'n',label:'Seu nome',ex:'maxlength="30"'}],ok:'Continuar'});n=(d&&d.v.n.trim())||'Usuário'}
+   S.user.name=n.slice(0,30)}
+  if(!S.user.full&&nome)S.user.full=nome;
+  if(!S.user.phone&&u.phoneNumber)S.user.phone=u.phoneNumber;
+  if(!S.user.photo&&u.photoUrl)S.user.photo=await fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c'));
+  save();render();
+  if(era)setTimeout(permIntro,500);else info('Conta conectada: '+ctRot(S.user.conta));
+ }catch(e){if(cancelado(e))return;info(erroAuth(e))}}
+async function contaSair(quiet){
+ const A=FA();try{if(nat()&&A)await A.signOut()}catch(e){}
+ delete S.user.conta;save();if(!quiet){render();info('Conta desconectada. Seus dados continuam salvos neste aparelho.')}}
+function btnsConta(){const b='width:100%;padding:13px;font-size:15px';
+ return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('fone')">📱 Entrar com o celular (SMS)</button>`}
+function cfgConta(){const c=ct();
+ return `<h3>Conta</h3><div class="card">`
+ +(c?`<div class="prm"><span class="ic">✅</span><span class="t"><b>Conectada · ${esc(PROV[c.prov]||'')}</b><small>${esc(ctRot(c))}</small></span><button class="sec" onclick="ask('Desconectar a conta deste aparelho? Seus dados continuam salvos.',()=>contaSair(),'Desconectar')">Desconectar</button></div><p class="hint">Se esquecer a senha de 4 dígitos do app, toque em “Esqueci” na tela de senha e entre de novo com esta conta para criar outra, sem perder seus dados.</p>`
+ :btnsConta()+`<p class="hint">Conecte uma conta para poder recuperar a senha do app caso você esqueça.</p>`)
+ +`</div>`}
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};
@@ -1037,7 +1127,7 @@ function head(){applyTheme();const ok=!!S.user.name;$('nav').style.display=ok&&S
  $('#greet').innerHTML=!ok||tab==='inicio'?'':`<div class="greet">${saudBloco()}</div>`;
  const cb=$('#cfgb');if(cb){cb.style.display=ok?'':'none';cb.classList.toggle('on',tab==='config')}}
 function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
-function welcomeView(){$('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card"><label class="fl" for="wn">${_t('Como você quer ser chamado(a)?')}</label><input id="wn" placeholder="${_t('Seu nome')}" maxlength="30" autocomplete="given-name" onkeydown="if(event.key==='Enter')enter()"><button class="wbig" onclick="enter()">${_t('Começar')}</button><p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam salvos só neste aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
+function welcomeView(){$('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsConta()}<p style="color:var(--mute);font-size:13px;margin:12px 0 4px;text-align:center">${_t('ou informe seu nome')}</p><label class="fl" for="wn">${_t('Como você quer ser chamado(a)?')}</label><input id="wn" placeholder="${_t('Seu nome')}" maxlength="30" autocomplete="given-name" onkeydown="if(event.key==='Enter')enter()"><button class="wbig" onclick="enter()">${_t('Começar')}</button><p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam salvos só neste aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
 function enter(){const n=$('#wn').value.trim();if(!n){$('#wn').focus();return}S.user.name=n;save();render();setTimeout(permIntro,500)}
 function evEdit(e){return `<div class="item" style="flex-wrap:wrap"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título"><div class="row" style="width:100%"><input type="date" id="ee-d" value="${e.date}"><input type="time" id="ee-h" value="${e.time||''}"><button onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
 function saveEv(id){const e=S.ev.find(x=>x.id===id),t=$('#ee-t').value.trim();if(!t){$('#ee-t').focus();return}e.title=t;e.date=$('#ee-d').value||e.date;e.time=$('#ee-h').value;edEv=null;save();render()}
@@ -1327,7 +1417,7 @@ function pinEntry(o){return new Promise(res=>{
  const end=r=>{document.removeEventListener('keydown',kd,true);el.remove();res(r)};
  async function press(k){if(busy)return;
   if(k==='x'){end(null);return}
-  if(k==='f'){pinForgot();return}
+  if(k==='f'){busy=true;let ok=false;try{ok=await pinForgot()}catch(e){}busy=false;if(ok)end('0000');return}
   if(k==='b'){v=v.slice(0,-1);msg.textContent='';paint();return}
   if(!/^\d$/.test(k)||v.length>=4)return;
   v+=k;msg.textContent='';paint();
@@ -1353,12 +1443,29 @@ const pinChecker=r=>async v=>{
 function lockApp(){const r=pinRec();if(!r||PIN_LK)return PIN_LK||Promise.resolve();
  PIN_LK=pinEntry({lock:true,forgot:true,title:'Digite sua senha',sub:'JC ORGANIZA está protegido',check:pinChecker(r)}).then(()=>{PIN_LK=null;pinHidAt=0});
  return PIN_LK}
-function pinForgot(){
+function pinApagar(){
  ask('Não existe recuperação de senha. Para entrar de novo, é preciso APAGAR todos os dados deste aparelho (agenda, notas, diário…). Se tiver um backup, você poderá restaurá-lo depois. Continuar?',()=>{
   ask('Tem certeza? Esta ação não pode ser desfeita.',()=>{
    try{['minha-agenda','minha-agenda-logos','minha-agenda-fotos','mp-fired',PINK,'mp-perm-asked'].forEach(k=>localStorage.removeItem(k))}catch(e){}
    try{indexedDB.deleteDatabase('meu-plano-som')}catch(e){}
    location.reload()},'Apagar tudo')},'Continuar')}
+async function pinForgot(){
+ const c=ct();
+ if(c){
+  const d=await formDlg({title:'Esqueceu a senha?',sub:'Entre de novo com a conta conectada ('+(PROV[c.prov]||'')+' · '+ctRot(c)+') e crie uma nova senha, sem perder seus dados.',fields:[],ok:'Recuperar com minha conta',links:[{id:'del',t:'Apagar os dados e começar do zero'}]});
+  if(!d)return false;
+  if(d.link!=='del')return pinRecuperar()}
+ pinApagar();return false}
+async function pinRecuperar(){
+ const c=ct(),A=FA();
+ if(!nat()||!A){info('A recuperação funciona no aplicativo instalado no celular.');return false}
+ try{
+  const r=await autenticar(c.prov,'verificar'),u=r&&r.user;if(!u)return false;
+  if(u.uid!==c.uid){try{await A.signOut()}catch(e){}info('Esta não é a conta conectada ao app ('+ctRot(c)+'). Tente de novo com a conta correta.');return false}
+  pinSave(null);
+  setTimeout(()=>ask('Conta confirmada! A senha antiga foi removida. Quer criar uma nova senha agora?',()=>pinCriar(),'Criar senha'),700);
+  return true
+ }catch(e){if(!cancelado(e))info(erroAuth(e));return false}}
 async function pinNova(titulo){
  const a=await pinEntry({title:titulo||'Crie sua senha',sub:'Escolha 4 números',cancel:true});if(a===null)return null;
  const b=await pinEntry({title:'Confirme a senha',sub:'Digite os 4 números de novo',cancel:true,check:v=>v===a?null:'As senhas não são iguais.'});
@@ -1366,7 +1473,7 @@ async function pinNova(titulo){
 async function pinCriar(){const p=await pinNova();if(p===null)return;
  const s=uid()+uid(),r={s,h:await pinHash(p,s),g:60,f:0,u:0};
  if(!pinSave(r)||!pinRec()){info('Não foi possível guardar a senha neste aparelho.');return}
- render();info('Senha criada. Anote em um lugar seguro: se esquecer, só dá para entrar apagando os dados do app.')}
+ render();info(ct()?'Senha criada. Se esquecer, você poderá recuperá-la entrando com a sua conta.':'Senha criada. Anote em um lugar seguro: se esquecer, só dá para entrar apagando os dados do app. Dica: conecte uma conta em Configurações para poder recuperar a senha.')}
 async function pinAlterar(){const r=pinRec();if(!r)return;
  const c=await pinEntry({title:'Senha atual',sub:'Digite sua senha para continuar',cancel:true,check:pinChecker(r)});if(c===null)return;
  const p=await pinNova('Nova senha');if(p===null)return;
@@ -1381,7 +1488,7 @@ function cfgSeguranca(){const r=pinRec();
  +(r?`<div class="item" style="border-bottom:0;padding-top:0"><span class="ic cw-ic">🔒</span><span class="t"><b>Senha de 4 dígitos ativada</b><br><small style="color:var(--mute)">O app pede a senha ao abrir.</small></span></div>`
    +`<div class="row"><button class="sec" style="flex:1" onclick="pinAlterar()">Alterar senha</button><button class="sec" style="flex:1" onclick="pinRemover()">Remover</button></div>`
    +`<label class="fl" for="pg">Bloquear novamente</label><select id="pg" style="width:100%" onchange="pinGrace(this.value)">${o.map(x=>`<option value="${x[0]}" ${x[0]===g?'selected':''}>${x[1]}</option>`).join('')}</select>`
-   +`<p class="hint">A senha fica só neste aparelho e não entra no backup. Se esquecer, só é possível entrar apagando os dados do app.</p>`
+   +`<p class="hint">A senha fica só neste aparelho e não entra no backup. ${ct()?'Se esquecer, é possível recuperá-la entrando com a conta conectada.':'Se esquecer, só é possível entrar apagando os dados do app. Conecte uma conta (Configurações › Conta) para poder recuperá-la.'}</p>`
   :`<button style="width:100%" onclick="pinCriar()">🔓 Criar senha de 4 dígitos</button><p class="hint">Proteja o app com uma senha numérica. Ela será pedida sempre que abrir o JC ORGANIZA.</p>`)
  +`</div>`}
 document.addEventListener('visibilitychange',()=>{const r=pinRec();if(!r)return;
