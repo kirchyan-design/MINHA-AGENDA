@@ -214,6 +214,15 @@ jobs:
           grep -q "android.hardware.camera\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-feature android:name="android.hardware.camera" android:required="false" />' "$M"
           grep -n "CAMERA\|hardware.camera" "$M" || true
 
+      - name: Permissão do microfone (comando de voz) (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q "android.permission.RECORD_AUDIO\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-permission android:name="android.permission.RECORD_AUDIO" />' "$M"
+          grep -q "android.hardware.microphone\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-feature android:name="android.hardware.microphone" android:required="false" />' "$M"
+          # Android 11+: sem isto o app não enxerga o serviço de reconhecimento de voz do celular
+          grep -q "android.speech.RecognitionService" "$M" || sed -i 's#<application#<queries><intent><action android:name="android.speech.RecognitionService" /></intent></queries>\n    <application#' "$M"
+          grep -n "RECORD_AUDIO\|hardware.microphone" "$M" || true
+
       - name: Aplicar o ícone do aplicativo (Android)
         run: |
           command -v convert >/dev/null || sudo apt-get install -y imagemagick
