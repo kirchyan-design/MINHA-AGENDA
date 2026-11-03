@@ -219,8 +219,9 @@ jobs:
       - name: Permissão do microfone (comando de voz) (Android)
         run: |
           M=android/app/src/main/AndroidManifest.xml
-          grep -q "android.permission.RECORD_AUDIO\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-permission android:name="android.permission.RECORD_AUDIO" />' "$M"
-          grep -q "RECORD_AUDIO" "$M" || sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application#' "$M"
+          # insere antes de </manifest> (funciona mesmo se o manifesto não tiver a linha do INTERNET)
+          grep -q 'android.permission.RECORD_AUDIO' "$M" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n</manifest>#' "$M"
+          grep -q 'android.permission.RECORD_AUDIO' "$M" || { echo "::error::Nao consegui declarar a permissao do microfone no AndroidManifest.xml"; cat "$M"; exit 1; }
           grep -q "android.hardware.microphone\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-feature android:name="android.hardware.microphone" android:required="false" />' "$M"
           # Android 11+: sem isto o app não enxerga o serviço de reconhecimento de voz do celular
           grep -q "android.speech.RecognitionService" "$M" || sed -i 's#<application#<queries><intent><action android:name="android.speech.RecognitionService" /></intent></queries>\n    <application#' "$M"
@@ -250,6 +251,12 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
+
+      - name: Conferir permissões do APK (microfone)
+        run: |
+          AAPT=$(ls $ANDROID_HOME/build-tools/*/aapt | sort -V | tail -1)
+          "$AAPT" dump permissions android/app/build/outputs/apk/debug/app-debug.apk | tee perm.txt
+          grep -q 'RECORD_AUDIO' perm.txt || { echo "::error::O APK ficou SEM a permissao do microfone (RECORD_AUDIO)."; exit 1; }
 
       - name: Guardar o APK
         uses: actions/upload-artifact@v4
