@@ -1465,7 +1465,7 @@ function vInicio(){
   +qa('diario',_t('Diário'),'#e0609a',"dsel=HOJE;go('diario')")
   +qa('compras',_t('Compra'),'#f08a24',foc("go('compras')",'#st'))
   +`</div>`;
- return apkAviso()+fraseCard()+gsearch+hero+acoes
+ return fraseCard()+gsearch+hero+acoes
  +`<h3>${_t('Hoje')}</h3><div class="card">${plHtml}${hoje.length?hoje.map(evItem).join(''):(plh.length?'':'<div class="vazio" style="padding:10px;border:0;margin:0">Nada marcado para hoje.<br>Use <b>Compromisso</b> acima para planejar algo.</div>')}</div>`
  +`<h3>${_t('Seus espaços')}</h3><div class="stats">`
  +st('agenda','var(--ac)',_t('Agenda'),hoje.length?pend+' de '+hoje.length+' pendentes hoje':'Nada hoje',`go('agenda')`)
@@ -1505,7 +1505,7 @@ function vConfig(){
  +`</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#imp').click()">⬆ Restaurar de arquivo</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div><div class="row" style="margin-top:8px"><button class="sec" onclick="copiarBk()">📋 Copiar texto</button><button class="sec" onclick="colarBk()">📥 Colar texto</button></div>`
  +`<p class="hint"><b>Último backup:</b> ${lb}.<br>${app?'Em “Salvar / compartilhar”, escolha Arquivos, Drive ou WhatsApp para guardar o arquivo. “Salvar em Documentos” grava direto na pasta Documentos/MeuPlano do celular. ':''}Seus dados ficam só neste aparelho: faça backup de vez em quando e antes de desinstalar o app.</p></div>`
  +cfgLembretes()
- +`<h3>${_t('Aplicativo')}</h3><div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div>${nat()?'<div class="row"><button class="sec" onclick="apkChecar(true)">📲 Verificar nova versão do aplicativo</button></div>':''}<p class="hint" id="ver"></p></div>`
+ +`<h3>${_t('Aplicativo')}</h3>${apkAviso()}<div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div>${nat()?'<div class="row"><button class="sec" onclick="apkChecar(true)">📲 Verificar nova versão do aplicativo</button></div>':''}<p class="hint" id="ver"></p></div>`
  +cfgInicio()
  +cfgIdioma()
  +cfgMenu()
@@ -1806,6 +1806,7 @@ let SWREG=null;
 /* Avisa por notificação do celular quando sai uma versão nova (uma vez por versão). */
 function updVersao(w){return new Promise(ok=>{try{const mc=new MessageChannel();let fim=false;const f=v=>{if(!fim){fim=true;ok(v)}};mc.port1.onmessage=m=>f(String(m.data||''));setTimeout(()=>f(''),1500);w.postMessage('VERSION',[mc.port2])}catch(e){ok('')}})}
 async function updNotificar(w){
+ return; /* sem notificação de atualização */
  try{const v=(await updVersao(w))||'nova';let ja='';try{ja=localStorage.getItem('ma-upd-notif')||''}catch(e){}
   if(ja===v)return;const marca=()=>{try{localStorage.setItem('ma-upd-notif',v)}catch(e){}};
   const title='🔄 Atualização disponível',body='Há uma nova versão do JC ORGANIZA'+(v&&v!=='nova'?' ('+v+')':'')+'. Abra o app e toque em Atualizar.';
@@ -2695,21 +2696,22 @@ function apkCard(){const s=APK_ST;if(!s)return '';
 function apkAviso(){return nat()?apkCard():''}
 function apkDesenha(){const h=apkCard(),e=$('#apk-aviso');
  if(e){if(h)e.outerHTML=h;else e.remove();return}
- if(h&&tab==='inicio'&&$('#v'))$('#v').insertAdjacentHTML('afterbegin',h)}
+ if(h&&tab==='config'&&$('#v'))$('#v').insertAdjacentHTML('afterbegin',h)}
 function apkBarra(){const b=$('#apk-bar'),t=$('#apk-pct');if(b&&APK_ST)b.style.width=(APK_ST.pct||0)+'%';if(t&&APK_ST)t.textContent='Baixando… '+(APK_ST.pct||0)+'%'}
 function apkDispensar(){try{localStorage.setItem('ma-apk-dispensa',String(Date.now()))}catch(e){}APK_ST=null;apkDesenha()}
 async function apkChecar(manual){
  if(!nat())return;
- if(APK_ST&&APK_ST.fase&&APK_ST.fase!=='pronto'&&APK_ST.tipo==='novo'){if(manual===true)go('inicio');return}
+ if(manual!==true)return; /* sem aviso automático de atualização */
+ if(APK_ST&&APK_ST.fase&&APK_ST.fase!=='pronto'&&APK_ST.tipo==='novo'){if(manual===true)go('config');return}
  const P=APKP();
  if(!P){ /* APK antigo, ainda sem o instalador interno: link de download uma única vez */
   let d=0;try{d=+localStorage.getItem('ma-apk-dispensa')||0}catch(e){}
   if(manual!==true&&Date.now()-d<3*864e5)return;
-  APK_ST={tipo:'antigo'};if(manual===true)go('inicio');else apkDesenha();return}
+  APK_ST={tipo:'antigo'};if(manual===true)go('config');else apkDesenha();return}
  if(manual!==true)return; /* APK novo: sem aviso automático; só pelo botão em Configurações › Aplicativo */
  try{
   const inf=await P.info(),r=await P.fetchText({url:APK_VER}),v=JSON.parse(r.text||'{}');
-  if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};if(manual===true)go('inicio');else apkDesenha()}
+  if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};if(manual===true)go('config');else apkDesenha()}
   else{APK_ST=null;apkDesenha();if(manual===true)info('Você já está com a versão mais recente do aplicativo.')}
  }catch(e){if(manual===true)info('Não foi possível verificar a atualização agora. Confira a conexão e tente de novo.')}}
 async function apkBaixar(){
