@@ -1,0 +1,84 @@
+name: Avisar atualização (notificação com o app fechado)
+
+# Roda sozinho quando você publica uma versão nova (VERSION do sw.js mudou).
+# Também dá para rodar à mão em Actions › Avisar atualização › Run workflow (serve de teste).
+on:
+  push:
+    branches: [main]
+    paths: [sw.js]
+  workflow_dispatch:
+
+jobs:
+  avisar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # true só se o segredo FIREBASE_SERVICE_ACCOUNT existir no repositório
+      TEM_CHAVE: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+      SITE: https://kirchyan-design.github.io/MINHA-AGENDA
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Conferir se a chave do Firebase foi cadastrada
+        if: env.TEM_CHAVE != 'true'
+        run: |
+          echo "::warning::Segredo FIREBASE_SERVICE_ACCOUNT nao cadastrado: nenhum aviso foi enviado. Veja o README (Versao 2.9.0) para cadastrar, ou envie o aviso pelo console do Firebase (topico: atualizacoes)."
+
+      - name: Descobrir a versão publicada
+        if: env.TEM_CHAVE == 'true'
+        id: ver
+        run: |
+          NOVA=$(grep -oP "VERSION='\K[^']+" sw.js | head -1)
+          ANTES=$(git show HEAD~1:sw.js 2>/dev/null | grep -oP "VERSION='\K[^']+" | head -1 || true)
+          echo "nova=$NOVA" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "push" ] && [ "$NOVA" = "$ANTES" ]; then
+            echo "VERSION nao mudou ($NOVA): nada a avisar."
+            echo "enviar=nao" >> "$GITHUB_OUTPUT"
+          else
+            echo "Versao $ANTES -> $NOVA"
+            echo "enviar=sim" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Esperar o site publicar a versão nova
+        if: env.TEM_CHAVE == 'true' && steps.ver.outputs.enviar == 'sim'
+        run: |
+          V="${{ steps.ver.outputs.nova }}"
+          # o aviso só pode sair depois que o site já entrega a versão nova (até ~10 min)
+          for i in $(seq 1 40); do
+            if curl -fsS "$SITE/sw.js?x=$RANDOM" | grep -q "VERSION='$V'"; then
+              echo "Site ja esta na versao $V."; exit 0
+            fi
+            echo "Aguardando o site publicar a versao $V ($i/40)..."; sleep 15
+          done
+          echo "::warning::O site nao mostrou a versao $V a tempo; o aviso sera enviado mesmo assim."
+
+      - name: Autenticar no Google
+        if: env.TEM_CHAVE == 'true' && steps.ver.outputs.enviar == 'sim'
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/firebase.messaging
+
+      - name: Enviar a notificação
+        if: env.TEM_CHAVE == 'true' && steps.ver.outputs.enviar == 'sim'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          V: ${{ steps.ver.outputs.nova }}
+        run: |
+          PROJ=$(jq -r .project_info.project_id google-services.json)
+          BODY=$(jq -n --arg v "$V" '{message:{topic:"atualizacoes",
+            notification:{title:"🔄 Atualização disponível",
+                          body:("Há uma nova versão do JC ORGANIZA (" + $v + "). Abra o app para atualizar.")},
+            android:{priority:"HIGH",notification:{channel_id:"atualizacoes"}}}}')
+          curl -fsS -X POST "https://fcm.googleapis.com/v1/projects/$PROJ/messages:send" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$BODY"
+          echo
+          echo "Aviso da versao $V enviado para o topico 'atualizacoes'."

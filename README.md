@@ -2,6 +2,17 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 2.9.1
+
+- **Aviso de atualização com o app fechado**: o aparelho se inscreve no tópico `atualizacoes` do Firebase (Cloud Messaging). Quando você publica uma versão nova, o Android mostra a notificação “🔄 Atualização disponível” mesmo com o app fechado. Vale só para o **APK gerado a partir desta versão** (gere de novo em Actions › *Gerar APK* e instale por cima).
+- **Envio automático** (workflow `avisar-atualizacao.yml`): roda sozinho quando o `VERSION` do `sw.js` muda, espera o site publicar a versão nova e só então envia o aviso. Configuração, uma vez só:
+  1. Firebase › ⚙️ Configurações do projeto › *Contas de serviço* › **Gerar nova chave privada** (baixa um `.json`).
+  2. GitHub › Settings › Secrets and variables › Actions › **New repository secret**: nome `FIREBASE_SERVICE_ACCOUNT`, valor = o conteúdo inteiro do `.json`. Nunca coloque esse arquivo no repositório.
+  3. Para testar: Actions › *Avisar atualização* › Run workflow.
+- **Sem o segredo**: nada quebra, só não sai o aviso automático. Dá para enviar à mão: Firebase › Messaging › Nova campanha › Notificações › Destino: **Tópico** `atualizacoes`.
+- Se o `google-services.json` não estiver no repositório, o APK sai sem o login Firebase e sem o push (o app abre normalmente).
+- O aviso usa o canal “Atualizações do app”; dá para silenciar em Ajustes do celular › Apps › JC ORGANIZA › Notificações.
+
 ## Versão 2.8.3
 
 - **Rotação de tela**: o app deixou de ser travado em pé (`orientation` no `manifest.webmanifest` agora é `any`) e todas as telas se adaptam. Em pé, nada muda. Deitado: o menu inferior vira uma barra lateral, o calendário e os diálogos ficam mais baixos, o teclado do PIN encolhe, os botões flutuantes (microfone, aviso de atualização) saem da frente do menu e respeitam o recorte da câmera/notch.

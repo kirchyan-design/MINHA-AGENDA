@@ -1573,6 +1573,14 @@ function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location
   reg.addEventListener('updatefound',()=>{const n=reg.installing;if(n)n.addEventListener('statechange',()=>{if(n.state==='installed'&&navigator.serviceWorker.controller)updBanner(n)})});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})});setInterval(()=>reg.update().catch(()=>{}),20*60*1000);
   showVer()}).catch(()=>{})}
+/* ---------- Aviso de atualização com o app FECHADO (push do Firebase) ----------
+   O aparelho se inscreve no tópico 'atualizacoes'; quando sai versão nova, o workflow
+   avisar-atualizacao.yml (ou o console do Firebase) envia o push e o Android mostra a notificação. */
+async function pushAtualizacoes(){
+ try{const FM=plug('FirebaseMessaging'),L=LNp();if(!nat()||!FM)return;
+  if(L)try{await L.createChannel({id:'atualizacoes',name:'Atualizações do app',description:'Avisos de nova versão',importance:4,visibility:1,vibration:true})}catch(e){}
+  await FM.subscribeToTopic({topic:'atualizacoes'})
+ }catch(e){}}
 /* ---------- Lembretes e alarme ---------- */
 const NOTIF0={on:false,lead:10,plOn:true,plLead:60};
 let _st=null,schedSig='',alarmAud=null,beepT=null,beepCtx=null,alarmOv=null,alarmStop=null,fired=new Set();
@@ -1948,7 +1956,7 @@ async function permPedir(id,quiet){
  const L=LNp(),M=MPp(),F=plug('Filesystem');
  try{
   if(id==='not'){
-   if(nat()&&L){const p=await L.requestPermissions();if(p.display!=='granted'&&!quiet)info('Notificações bloqueadas. Ative em: Ajustes do celular › Apps › JC ORGANIZA › Notificações.')}
+   if(nat()&&L){const p=await L.requestPermissions();if(p.display!=='granted'&&!quiet)info('Notificações bloqueadas. Ative em: Ajustes do celular › Apps › JC ORGANIZA › Notificações.');pushAtualizacoes()}
    else if('Notification' in window)await Notification.requestPermission();
   }else if(id==='cam'){
    if(nat()&&M)await M.requestPermissions({permissions:['camera']});
@@ -2433,6 +2441,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.1':[
+  '🔔 Novas versões agora avisam por notificação mesmo com o app fechado (vale para o APK gerado a partir desta versão).'
+ ],
  '2.9.0':[
   '↔️ O aviso discreto do menu inferior (deslize para o lado) agora aparece toda vez que você abre o app.'
  ],
@@ -2485,7 +2496,7 @@ try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma
   if(typeof o.cSub==='string')cSub=o.cSub;if(typeof o.cMes==='string')cMes=o.cMes;if(typeof o.sel==='string')sel=o.sel;if(typeof o.dsel==='string')dsel=o.dsel;
   if(o.mes&&!isNaN(o.mes))mes=new Date(o.mes)}}}catch(e){}
 
-applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(ocrAquecer,6000)});
+applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>
