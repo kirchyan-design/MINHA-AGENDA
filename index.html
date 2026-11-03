@@ -1510,7 +1510,7 @@ function vConfig(){
  +`</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#imp').click()">⬆ Restaurar de arquivo</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div><div class="row" style="margin-top:8px"><button class="sec" onclick="copiarBk()">📋 Copiar texto</button><button class="sec" onclick="colarBk()">📥 Colar texto</button></div>`
  +`<p class="hint"><b>Último backup:</b> ${lb}.<br>${app?'Em “Salvar / compartilhar”, escolha Arquivos, Drive ou WhatsApp para guardar o arquivo. “Salvar em Documentos” grava direto na pasta Documentos/MeuPlano do celular. ':''}Seus dados ficam só neste aparelho: faça backup de vez em quando e antes de desinstalar o app.</p></div>`
  +cfgLembretes()
- +`<h3>${_t('Aplicativo')}</h3>${apkAviso()}<div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div>${nat()?'<div class="row"><button class="sec" onclick="apkChecar(true)">📲 Verificar nova versão do aplicativo</button></div>':''}<p class="hint" id="ver"></p></div>`
+ +`<h3>${_t('Aplicativo')}</h3>${apkAviso()}<div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div><p class="hint" id="ver"></p></div>`
  +cfgInicio()
  +cfgIdioma()
  +cfgMenu()
@@ -1824,8 +1824,13 @@ async function updNotificar(w){
  }catch(e){}}
 function updBanner(w){WEB_NEW=true;UPD_HIDE=false;updPill()}
 function showVer(){const e=$('#ver');if(!e||!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;const mc=new MessageChannel();mc.port1.onmessage=m=>{const x=$('#ver');if(x)x.textContent='Versão '+m.data};navigator.serviceWorker.controller.postMessage('VERSION',[mc.port2])}
-function checkUpd(){if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
- SWREG.update().then(()=>{if(SWREG.installing||SWREG.waiting)info('Nova versão encontrada. Ela passa a valer na próxima vez que você abrir o app.');else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
+async function checkUpd(){
+ if(nat()){await apkChecar(true);if(APK_ST&&APK_ST.tipo==='novo'&&APK_ST.fase==='pronto')apkBaixar();return}
+ if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
+ SWREG.update().then(()=>{const n=SWREG.installing||SWREG.waiting;
+  if(n){info('Nova versão encontrada. Atualizando…');const rec=()=>setTimeout(()=>location.reload(),1200);
+   if(n.state==='installed'||n.state==='activated')rec();else n.addEventListener('statechange',()=>{if(n.state==='installed'||n.state==='activated')rec()})}
+  else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
 function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol))return;
  const had=!!navigator.serviceWorker.controller;let rl=false;
  /* atualização silenciosa: a versão nova vale na próxima abertura, sem recarregar a tela */
