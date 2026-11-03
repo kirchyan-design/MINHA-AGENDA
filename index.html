@@ -959,10 +959,76 @@ Alimento para Cães Dog Chow|10,1kg|149.90|115.90|99.90|129.90
 function mmLista(){const out=[];let cat='';MM_TXT.split('\n').forEach(l=>{l=l.trim();if(!l)return;if(l.indexOf('|')<0){cat=l;return}const a=l.split('|');out.push({c:cat,n:a[0],d:a[1],de:+a[2],app:+a[3],car:+a[4],v:+a[5]})});return out}
 function mmBusca(v){v=nrm(v);document.querySelectorAll('#v .mm-i').forEach(e=>{e.style.display=!v||e.dataset.t.includes(v)?'':'none'});
  document.querySelectorAll('#v .mm-c').forEach(c=>{const any=[...c.querySelectorAll('.mm-i')].some(e=>e.style.display!=='none');c.style.display=any?'':'none';const h=c.previousElementSibling;if(h&&h.tagName==='H3')h.style.display=any?'':'none'})}
+/* ---------- Meu Mercado: Assaí Atacadista (encartes de Pernambuco) ---------- */
+const AS_LEVA=`
+Açúcar refinado Olho d'Água|1kg|3.40|3.19
+Farinha de trigo tipo 1 Rosa Branca|1kg|4.19|3.89
+Biscoito Mamma Mia Capricche (original ou integral)|301g|5.39|3.59
+Biscoito Maria ou Maizena Pilar|307g|4.90|3.79
+Macarrão espaguete fino Vitarella|400g/500g|2.79|2.29
+Molho de tomate Predilecta sachê|300g|1.79|1.19
+Leite condensado semidesnatado Italac|395g|6.65|5.99
+Café solúvel Melitta sachê|40g|5.25|4.49
+Cerveja sem glúten Ultimate Heineken|lata 350ml|6.29|5.99
+Cerveja Pilsen Itaipava|lata 550ml|4.39|3.59
+Vodka Intencion|900ml|24.90|21.90
+Suco misto 100% OQ Mais+|1,35L|12.90|9.90
+Refrigerante Coca-Cola original|3L|12.99|11.49
+Feijão carioca tipo 1 Pai Heleno|1kg|7.79|6.99
+Café Melitta tradicional ou extraforte|250g|14.15|12.99
+Flocão de milho Vitamilho|500g|1.49|1.25
+Coxão mole bovino resfriado a vácuo Masterboi|kg|48.90|39.50
+Sobrecoxas de frango congeladas Sadia|1kg|15.90|13.89
+Filé de peito de frango congelado Mauricéa|1kg|22.50|18.79
+`;
+const AS_APP=`
+Macarrão espaguete Galo|400g|2.59|2.19|10 un.
+Molho de tomate Stella D'oro|300g|1.49|1.29|10 un.
+Leite condensado semidesnatado Sabe|395g|5.89|5.29|10 un.
+Vodka nacional Slova|970ml|13.90|10.90|6 un.
+Cerveja Amstel Ultra Lager|lata 269ml|4.39|3.79|12 un.
+Papel higiênico folha dupla Supra|12 rolos de 30m|24.99|19.49|10 un.
+Desodorante aerossol Above|150ml|9.79|6.85|10 un.
+Kit Above shampoo 325ml + condicionador 200ml|kit|15.85|14.60|10 un.
+Gel dental Closeup (Remove Manchas ou Ação Imediata)|tubo|9.19|7.99|10 un.
+Sabonete Francis fragrâncias|90g|4.45|3.99|10 un.
+Amaciante Coala concentrado|1L|17.89|15.90|10 un.
+Sabão em barra Bem-te-vi|160g|2.49|1.99|10 un.
+Desinfetante Guarani|2L|5.99|4.49|10 un.
+Detergente líquido Absoluto|2L|5.65|4.79|10 un.
+Limpador multiuso Becker|500ml|4.85|2.79|10 un.
+Farinha de trigo com fermento Rosa Branca|1kg|4.39|3.99|10 un.
+Mistura de creme de leite Mococa|200g|1.99|1.79|10 un.
+Biscoito cream cracker Vitarella|350g/400g|4.89|3.79|10 un.
+Contrafilé bovino resfriado a vácuo Masterboi|kg|48.90|43.90|5 kg
+Queijo mussarela fatiado Président|150g|10.50|9.49|10 un.
+Coxas de frango temperadas congeladas Perdigão|1,2kg|26.90|24.19|6 un.
+`;
+const AS_ENC=[
+ {id:'leva',t:'Leva o Assaí com você · Economia Arretada',ini:'2026-11-02',fim:'2026-11-05',txt:AS_LEVA,app:false},
+ {id:'app',t:'Especial App Meu Assaí',ini:'2026-10-29',fim:'2026-11-04',txt:AS_APP,app:true}
+];
+function asLista(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const a=l.split('|');return{n:a[0],d:a[1],de:+a[2],por:+a[3],lim:a[4]||''}})}
+const dm=iso=>iso.slice(8,10)+'/'+iso.slice(5,7);
+/* situação da validade: encerrada, último dia ou vigente (compara com a data de hoje) */
+function mmVal(fim){const h=new Date(),t=h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
+ if(t>fim)return{k:'off',txt:'Encerrada em '+dm(fim)};if(t===fim)return{k:'last',txt:'Último dia · até '+dm(fim)};return{k:'on',txt:'Válido até '+dm(fim)}}
+const mmChip=v=>`<span style="display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:${v.k==='off'?'color-mix(in srgb,var(--mute) 18%,transparent)':v.k==='last'?'color-mix(in srgb,#d97706 20%,transparent)':'var(--acs)'};color:${v.k==='off'?'var(--mute)':v.k==='last'?'#b45309':'var(--ac)'}">${v.txt}</span>`;
+let mmMk='atacadao';
+function mmPick(id){mmMk=id;render();window.scrollTo(0,0)}
+function mmSeg(){const g=id=>MERC0.find(m=>m.id===id);
+ return `<div class="seg s3" role="tablist">${[['atacadao','Atacadão'],['assai','Assaí']].map(a=>`<button role="tab" aria-selected="${mmMk===a[0]}" class="${mmMk===a[0]?'on':''}" style="display:flex;align-items:center;justify-content:center;gap:8px" onclick="mmPick('${a[0]}')">${logo(g(a[0]),26)}<span>${a[1]}</span></button>`).join('')}</div>`}
+function vMeuMercadoAssai(){
+ let tot=0;
+ const blocos=AS_ENC.map(e=>{const L=asLista(e.txt),v=mmVal(e.fim);tot+=L.length;
+  return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${e.app?'<p class="hint" style="margin:0 0 4px">Preços somente para compras pelo app Meu Assaí, com limite de unidades por produto.</p>':''}${L.map(i=>{const pc=Math.floor((i.de-i.por)/i.de*100+1e-9);
+   return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.por)}</strong>${e.app?'<small style="color:var(--ac)"> app</small>':''}<br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`}).join('')}</div>`}).join('');
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='assai'),40)}<div><strong>Promoções do Assaí Atacadista</strong><br><small style="color:var(--mute)">Encartes oficiais · lojas de Pernambuco (exceto Petrolina) · ${tot} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da promoção. Riscado: preço normal. As validades são diferentes: o Especial App vale até 04/11 e o Leva o Assaí até 05/11, ou enquanto durarem os estoques. Confirme os valores na loja.</p></div>`+blocos}
 function vMeuMercado(){
+ if(mmMk==='assai')return `<h2>${_t('Meu Mercado')}</h2>`+mmSeg()+vMeuMercadoAssai();
  const L=mmLista(),cats=[];L.forEach(i=>{if(!cats.includes(i.c))cats.push(i.c)});
- const blocos=cats.map(c=>`<h3>${esc(c)}</h3><div class="card mm-c">${L.filter(i=>i.c===c).map(i=>`<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.v)}</strong><br><small style="color:var(--ac)">app ${brl(i.app)} \u00b7 cartão ${brl(i.car)}</small><br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small></span></div>`).join('')}</div>`).join('');
- return `<h2>${_t('Meu Mercado')}</h2><div class="card"><strong>Promoções do Atacadão</strong><br><small style="color:var(--mute)">Folheto oficial \u00b7 válido de 27/10 a 02/11/2026 \u00b7 ${L.length} produtos</small><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o do folheto (varejo/atacado). Em azul: preço ativando a oferta no app e pagando com cartão Atacadão, Carrefour ou Sam\u2019s Club. Riscado: preço normal. Este é o folheto das lojas do Ceará; o de Pernambuco só sai em imagem, então confirme os valores na loja de Olinda. Há limite de compra por cliente.</p></div>`+blocos}
+ const blocos=cats.map(c=>`<h3>${esc(c)}</h3><div class="card mm-c">${L.filter(i=>i.c===c).map(i=>`<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.v)}</strong><br><small style="color:var(--ac)">app ${brl(i.app)} · cartão ${brl(i.car)}</small><br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small><br><small style="color:var(--mute)">até 02/11</small></span></div>`).join('')}</div>`).join('');
+ return `<h2>${_t('Meu Mercado')}</h2>`+mmSeg()+`<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Promoções do Atacadão</strong><br><small style="color:var(--mute)">Folheto oficial · ${mmChip(mmVal('2026-11-02'))} · de 27/10 a 02/11/2026 · ${L.length} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o do folheto (varejo/atacado). Em azul: preço ativando a oferta no app e pagando com cartão Atacadão, Carrefour ou Sam’s Club. Riscado: preço normal. Este é o folheto das lojas do Ceará; o de Pernambuco só sai em imagem, então confirme os valores na loja de Olinda. Há limite de compra por cliente.</p></div>`+blocos}
 
 /* ---------- Mercados ---------- */
 const MERC0=[{id:'atacadao',nome:'Atacadão',sig:'AT',h:4},{id:'assai',nome:'Assaí',sig:'AS',h:28},{id:'novo',nome:'Novo Atacarejo',sig:'NA',h:210},{id:'mix',nome:'Mix Mateus',sig:'MM',h:265},{id:'pao',nome:'Pão de Açúcar',sig:'PA',h:150}];
