@@ -532,6 +532,7 @@ main{position:relative;z-index:1}
 .apk p{margin:0 0 12px;line-height:1.45}
 .apk .apk-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:16px;border-radius:14px;background:var(--ac);color:var(--onac);font-weight:800;font-size:17px;letter-spacing:.3px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25);animation:apkp 1.1s ease-in-out infinite}
 @keyframes apkp{0%,100%{opacity:1}50%{opacity:.4}}
+.apk .apk-btn{border:0;cursor:pointer;font-family:inherit}.apk-bar{display:block;height:10px;border-radius:6px;background:rgba(127,127,127,.25);overflow:hidden;margin:8px 0 10px}.apk-bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .2s}
 
 /* ---------- comando de voz ---------- */
 #vozfab{position:fixed;right:16px;bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:47;width:66px;height:66px;min-width:0;border-radius:50%;border:0;padding:0;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;background:var(--ac);color:var(--onac);box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;transition:transform .12s}
@@ -1478,7 +1479,7 @@ function vConfig(){
  +`</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#imp').click()">⬆ Restaurar de arquivo</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div><div class="row" style="margin-top:8px"><button class="sec" onclick="copiarBk()">📋 Copiar texto</button><button class="sec" onclick="colarBk()">📥 Colar texto</button></div>`
  +`<p class="hint"><b>Último backup:</b> ${lb}.<br>${app?'Em “Salvar / compartilhar”, escolha Arquivos, Drive ou WhatsApp para guardar o arquivo. “Salvar em Documentos” grava direto na pasta Documentos/MeuPlano do celular. ':''}Seus dados ficam só neste aparelho: faça backup de vez em quando e antes de desinstalar o app.</p></div>`
  +cfgLembretes()
- +`<h3>${_t('Aplicativo')}</h3><div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div><p class="hint" id="ver"></p></div>`
+ +`<h3>${_t('Aplicativo')}</h3><div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div>${nat()?'<div class="row"><button class="sec" onclick="apkChecar(true)">📲 Verificar nova versão do aplicativo</button></div>':''}<p class="hint" id="ver"></p></div>`
  +cfgInicio()
  +cfgIdioma()
  +cfgMenu()
@@ -2638,18 +2639,65 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
  if(u.scan)S.scans=S.scans.filter(x=>x.id!==u.scan);
  save();if(tab==='compras'&&sub==='atual')render();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800)}
 
-/* ---------- aviso para baixar o APK novo (some sozinho depois de instalado) ---------- */
-const APK_LINK='https://drive.google.com/drive/folders/1VDCmsmyrA_pOihFJmKkljfbnGq8yx210';
-const apkNovoFlag=()=>{try{return localStorage.getItem('ma-apk-novo')==='1'}catch(e){return false}};
-function apkAviso(){
- return ''; /* atualização silenciosa: sem aviso */
- if(!nat()||apkNovoFlag())return '';
- return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização disponível: ative o microfone</h4><p>Baixe a nova versão do aplicativo para liberar o microfone. Assim você poderá registrar suas compras por voz na hora de montar a lista. Instale por cima do app atual, sem desinstalar.</p><a class="apk-btn" href="${APK_LINK}" target="_blank" rel="noopener">⬇️ BAIXAR ATUALIZAÇÃO</a><p class="hint">Depois do download, abra o arquivo e toque em Instalar. Se o Android pedir, permita a instalação. Este aviso some sozinho quando a atualização estiver instalada.</p></div>`}
-/* o APK novo traz o pedido nativo do microfone; quando ele existe, o aviso é removido para sempre */
-async function apkChecar(){
- if(!nat()||apkNovoFlag())return;
- try{const M=MPp();if(!M)return;const p=await M.checkPermissions();
-  if(p&&p.microphone){try{localStorage.setItem('ma-apk-novo','1')}catch(e){}const e=$('#apk-aviso');if(e)e.remove()}}catch(e){}}
+/* ---------- atualização do APK dentro do app: baixa do GitHub Releases e abre o instalador do Android ----------
+   O workflow "Gerar APK" publica JC-Organiza.apk + version.json na última Release do repositório.
+   O plugin nativo ApkUpdate (criado no workflow) faz a checagem, o download e a instalação. */
+const APK_BASE='https://github.com/kirchyan-design/MINHA-AGENDA/releases/latest/download/';
+const APK_URL=APK_BASE+'JC-Organiza.apk',APK_VER=APK_BASE+'version.json';
+const APKP=()=>plug('ApkUpdate');
+let APK_ST=null,APK_L=null; /* APK_ST: null = sem aviso | {tipo:'novo'|'antigo',fase,pct,msg,nome} */
+function apkCard(){const s=APK_ST;if(!s)return '';
+ const ver=s.nome?' ('+esc(s.nome)+')':'';let corpo,btn='';
+ if(s.tipo==='antigo'){
+  corpo='Há uma versão nova do aplicativo. Baixe e instale por cima do app atual, sem desinstalar. Depois disso, as próximas atualizações são feitas aqui dentro, com um toque.';
+  btn=`<a class="apk-btn" href="${APK_URL}" target="_blank" rel="noopener">⬇️ BAIXAR ATUALIZAÇÃO</a><div class="row" style="margin-top:10px"><button class="sec" onclick="apkDispensar()">Agora não</button></div>`}
+ else if(s.fase==='baixando'){
+  corpo=`<b id="apk-pct">Baixando… ${s.pct||0}%</b><span class="apk-bar"><i id="apk-bar" style="width:${s.pct||0}%"></i></span>Não feche o app até terminar.`}
+ else if(s.fase==='permissao'){
+  corpo='Para instalar, o Android precisa da sua permissão. Na tela que abriu, ative <b>“Permitir desta fonte”</b> e volte ao app. Depois toque no botão abaixo.';
+  btn=`<button class="apk-btn" onclick="apkInstalar()">✅ JÁ PERMITI, INSTALAR</button>`}
+ else if(s.fase==='instalando'){
+  corpo='Confirme a instalação na tela do Android. Se ela não apareceu, toque no botão abaixo.';
+  btn=`<button class="apk-btn" onclick="apkInstalar()">📲 INSTALAR</button>`}
+ else if(s.fase==='erro'){
+  corpo='Não foi possível baixar agora: '+esc(s.msg||'verifique a conexão')+'.';
+  btn=`<button class="apk-btn" onclick="apkBaixar()">🔁 TENTAR DE NOVO</button>`}
+ else{
+  corpo='Há uma versão nova do aplicativo. É só tocar no botão: o app baixa e abre a instalação por cima do atual, sem perder seus dados.';
+  btn=`<button class="apk-btn" onclick="apkBaixar()">⬇️ BAIXAR E INSTALAR</button>`}
+ return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização do aplicativo${ver}</h4><p>${corpo}</p>${btn}</div>`}
+function apkAviso(){return nat()?apkCard():''}
+function apkDesenha(){const h=apkCard(),e=$('#apk-aviso');
+ if(e){if(h)e.outerHTML=h;else e.remove();return}
+ if(h&&tab==='inicio'&&$('#v'))$('#v').insertAdjacentHTML('afterbegin',h)}
+function apkBarra(){const b=$('#apk-bar'),t=$('#apk-pct');if(b&&APK_ST)b.style.width=(APK_ST.pct||0)+'%';if(t&&APK_ST)t.textContent='Baixando… '+(APK_ST.pct||0)+'%'}
+function apkDispensar(){try{localStorage.setItem('ma-apk-dispensa',String(Date.now()))}catch(e){}APK_ST=null;apkDesenha()}
+async function apkChecar(manual){
+ if(!nat())return;
+ if(APK_ST&&APK_ST.fase&&APK_ST.fase!=='pronto'&&APK_ST.tipo==='novo'){if(manual===true)go('inicio');return}
+ const P=APKP();
+ if(!P){ /* APK antigo, ainda sem o instalador interno: link de download uma única vez */
+  let d=0;try{d=+localStorage.getItem('ma-apk-dispensa')||0}catch(e){}
+  if(manual!==true&&Date.now()-d<3*864e5)return;
+  APK_ST={tipo:'antigo'};if(manual===true)go('inicio');else apkDesenha();return}
+ if(manual!==true)return; /* APK novo: sem aviso automático; só pelo botão em Configurações › Aplicativo */
+ try{
+  const inf=await P.info(),r=await P.fetchText({url:APK_VER}),v=JSON.parse(r.text||'{}');
+  if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};if(manual===true)go('inicio');else apkDesenha()}
+  else{APK_ST=null;apkDesenha();if(manual===true)info('Você já está com a versão mais recente do aplicativo.')}
+ }catch(e){if(manual===true)info('Não foi possível verificar a atualização agora. Confira a conexão e tente de novo.')}}
+async function apkBaixar(){
+ const P=APKP();if(!P||!APK_ST||APK_ST.fase==='baixando')return;
+ APK_ST.fase='baixando';APK_ST.pct=0;apkDesenha();
+ try{
+  if(!APK_L)APK_L=await P.addListener('progress',e=>{if(APK_ST&&APK_ST.fase==='baixando'){APK_ST.pct=Math.max(0,Math.min(100,Math.round(+e.percent||0)));apkBarra()}});
+  await P.download({url:APK_URL});
+  await apkInstalar()
+ }catch(e){APK_ST.fase='erro';APK_ST.msg=(e&&e.message)||'falha no download';apkDesenha()}}
+async function apkInstalar(){
+ const P=APKP();if(!P||!APK_ST)return;
+ try{const r=await P.install();APK_ST.fase=(r&&r.permissao===false)?'permissao':'instalando';apkDesenha()}
+ catch(e){APK_ST.fase='erro';APK_ST.msg=(e&&e.message)||'falha ao abrir a instalação';apkDesenha()}}
 
 /* ---------- v2.8: pede o microfone (uma vez) e mostra as novidades depois de cada atualização ---------- */
 async function micPerguntar(){

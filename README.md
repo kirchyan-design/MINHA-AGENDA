@@ -2,6 +2,15 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Atualização do APK dentro do app (sem Google Play e sem Google Drive)
+
+- O workflow **Gerar APK** agora publica o APK na aba **Releases** do repositório (`JC-Organiza.apk` + `version.json`). O link fixo da última versão é `https://github.com/kirchyan-design/MINHA-AGENDA/releases/latest/download/JC-Organiza.apk`.
+- Dentro do app (Início, e Configurações › Aplicativo › *Verificar nova versão do aplicativo*), quando há versão mais nova aparece o botão **BAIXAR E INSTALAR**: o app baixa o APK com barra de progresso e abre a tela de instalação do Android. A assinatura é a mesma, então instala por cima e mantém os dados.
+- O Android sempre pede a confirmação do usuário (não existe instalação silenciosa fora da Play Store). Na primeira vez ele também pede para permitir “instalar apps desta fonte” para o JC ORGANIZA.
+- **Quem tem o APK antigo** (sem o instalador interno) vê na tela Início um cartão com o link de download (agora da Release, não do Drive). O botão **Agora não** esconde o cartão por 3 dias; depois ele volta, até a pessoa instalar o APK novo. Quem já tem o APK novo não vê aviso automático: atualiza pelo botão em Configurações › Aplicativo › *Verificar nova versão do aplicativo*.
+- Para cada APK novo: Actions › *Gerar APK* › Run workflow. O repositório precisa estar **público** (ou o link da Release não abre sem login) e o workflow precisa de permissão de escrita (já declarada em `permissions: contents: write`).
+- Alterações só no `index.html` continuam chegando sozinhas (o app carrega o site); o APK novo só é necessário quando muda a parte nativa.
+
 ## Aviso: boas-vindas para novos usuários (não é uma atualização)
 
 - **Caixa de informação com tudo o que o app oferece** (Início, Agenda, Calendário, Meus Plantões, Notas, Diário, Compras, Carteira, Promoções, Lembretes e alarme, Configurações). Aparece **uma única vez e só para usuário novo**: quem abre o app sem nome e sem dados vê a caixa logo depois de entrar com o nome ou com uma conta. Quem já usava o app nunca vê.
