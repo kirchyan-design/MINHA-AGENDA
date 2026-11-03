@@ -2,6 +2,10 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 2.8.1
+
+- **Escanear preços corrigido**: o leitor de texto não carregava porque a pasta `ocr/` não estava no site e o workflow *Baixar leitor offline* estava fora de `.github/workflows/` (o GitHub não o enxergava). Agora: (1) o workflow foi movido para `.github/workflows/leitor-offline.yml`; (2) se a pasta `ocr/` não existir, o app baixa o leitor do CDN (jsDelivr), guarda no aparelho e passa a funcionar offline nas próximas vezes. Para ter o leitor 100% dentro do app, rode uma vez Actions › *Baixar leitor offline* › Run workflow.
+
 ## Versão 2.8
 
 - **Microfone flutuante na lista de compras**: o botão 🎤 que ficava dentro da lista foi removido. Agora há um botão redondo no canto da tela (só em Compras › lista atual): **segure, fale o produto e o preço (ex.: “arroz turquesa 6,99”) e solte**. O item entra na lista e o preço é registrado no mercado. Melhorias: o app espera meio segundo ao soltar para não cortar o preço falado por último, volta a ouvir se o Android encerrar por silêncio com o dedo ainda no botão, e mostra o motivo se algo falhar.

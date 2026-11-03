@@ -1750,23 +1750,56 @@ function delScan(id){S.scans=S.scans.filter(x=>x.id!==id);save();render()}
 
 /* ---------- v2.1: scanner de preços pela câmera ---------- */
 const SC={stream:null,worker:null,rows:[],thumb:''};
-/* Leitor de texto 100% OFFLINE: os arquivos ficam na pasta ocr/ do app e são guardados no aparelho (cache jc-ocr-1). */
+/* Leitor de texto: usa os arquivos da pasta ocr/ (100% offline). Se a pasta não existir no site, baixa do CDN (jsDelivr) e guarda no aparelho (cache jc-ocr-1). */
 const OCR_CACHE='jc-ocr-1';
+const OCR_VT='5.1.1',OCR_VC='5.1.0',OCR_CDN='https://cdn.jsdelivr.net/npm/';
 const ocrUrl=p=>new URL('ocr/'+p,location.href).href;
 const ocrSimd=()=>{try{return WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]))}catch(e){return false}};
 const ocrLang=()=>(LANGS.find(l=>l[0]===LANG)||LANGS[0])[3];
-const ocrArqs=()=>['tesseract.min.js','worker.min.js','core/tesseract-core'+(ocrSimd()?'-simd':'')+'-lstm.wasm.js','lang/'+ocrLang()+'.traineddata.gz'];
-async function ocrPronto(){if(!window.caches)return false;try{const r=await Promise.all(ocrArqs().map(a=>caches.match(ocrUrl(a))));return r.every(Boolean)}catch(e){return false}}
+const ocrCore=()=>'tesseract-core'+(ocrSimd()?'-simd':'')+'-lstm.wasm.js';
+/* arquivos do leitor: [endereço local, endereço no CDN] */
+const ocrArqs=()=>{const l=ocrLang();return[
+ [ocrUrl('tesseract.min.js'),OCR_CDN+'tesseract.js@'+OCR_VT+'/dist/tesseract.min.js'],
+ [ocrUrl('worker.min.js'),OCR_CDN+'tesseract.js@'+OCR_VT+'/dist/worker.min.js'],
+ [ocrUrl('core/'+ocrCore()),OCR_CDN+'tesseract.js-core@'+OCR_VC+'/'+ocrCore()],
+ [ocrUrl('lang/'+l+'.traineddata.gz'),OCR_CDN+'@tesseract.js-data/'+l+'@1/4.0.0_best_int/'+l+'.traineddata.gz']]};
+/* fontes tentadas em ordem: primeiro a pasta ocr/ do app, depois o CDN */
+const ocrFontes=()=>{const l=ocrLang();return[
+ {n:'local',tess:ocrUrl('tesseract.min.js'),worker:ocrUrl('worker.min.js'),core:ocrUrl('core'),lang:ocrUrl('lang'),blob:false,ms:20000},
+ {n:'cdn',tess:OCR_CDN+'tesseract.js@'+OCR_VT+'/dist/tesseract.min.js',worker:OCR_CDN+'tesseract.js@'+OCR_VT+'/dist/worker.min.js',core:OCR_CDN+'tesseract.js-core@'+OCR_VC,lang:OCR_CDN+'@tesseract.js-data/'+l+'@1/4.0.0_best_int',blob:true,ms:120000}]};
+async function ocrPronto(){if(!window.caches)return false;try{const r=await Promise.all(ocrArqs().map(async a=>(await caches.match(a[0]))||(await caches.match(a[1]))));return r.every(Boolean)}catch(e){return false}}
 /* Com internet, guarda os arquivos do leitor no aparelho (uma vez). Depois disso a leitura funciona sem internet. */
 let ocrBusy=false;
 async function ocrAquecer(){if(ocrBusy||!window.caches||navigator.onLine===false)return;ocrBusy=true;
  try{const c=await caches.open(OCR_CACHE);
-  for(const a of ocrArqs()){const u=ocrUrl(a);try{if(await c.match(u))continue;const r=await fetch(u);if(r&&r.ok)await c.put(u,r)}catch(e){}}}catch(e){}
+  for(const a of ocrArqs()){
+   try{if((await c.match(a[0]))||(await c.match(a[1])))continue}catch(e){}
+   let ok=false;
+   for(const u of a){try{const r=await fetch(u);if(r&&r.ok){await c.put(u,r);ok=true;break}}catch(e){}}}
+ }catch(e){}
  ocrBusy=false;ocrMostra()}
 async function ocrMostra(){const e=$('#ocr-st');if(!e)return;const ok=await ocrPronto();
  e.className='hint';e.innerHTML=ok?'✅ <b>Leitor offline pronto.</b> Pode escanear sem internet.':'⏳ O leitor offline ainda não foi guardado neste aparelho. Conecte à internet uma vez; ele é baixado sozinho e depois funciona sem internet.'}
-function loadTess(){return new Promise((res,rej)=>{if(window.Tesseract)return res(window.Tesseract);
- const s=document.createElement('script');s.src=ocrUrl('tesseract.min.js');s.onload=()=>window.Tesseract?res(window.Tesseract):rej(new Error('sem leitor'));s.onerror=()=>rej(new Error('leitor offline não guardado'));document.head.appendChild(s)})}
+function ocrScript(u){return new Promise((res,rej)=>{if(window.Tesseract)return res(window.Tesseract);
+ const s=document.createElement('script');s.src=u;s.onload=()=>window.Tesseract?res(window.Tesseract):rej(new Error('sem leitor'));s.onerror=()=>{s.remove();rej(new Error('leitor não encontrado'))};document.head.appendChild(s)})}
+const ocrLimite=(p,ms)=>new Promise((res,rej)=>{const t=setTimeout(()=>rej(new Error('tempo esgotado')),ms);p.then(v=>{clearTimeout(t);res(v)},e=>{clearTimeout(t);rej(e)})});
+/* Cria o leitor: tenta a pasta ocr/ e, se não der, o CDN. Guarda o motivo em SC.err. */
+async function ocrCriar(){
+ if(SC.worker)return SC.worker;
+ let ult=null;
+ for(const f of ocrFontes()){
+  let w=null;
+  try{
+   const T=await ocrLimite(ocrScript(f.tess),f.ms);
+   const op={workerPath:f.worker,corePath:f.core,langPath:f.lang,workerBlobURL:f.blob,
+    logger:m=>{if(m&&typeof m.progress==='number')scProg(m.progress,m.status==='recognizing text'?'Lendo o texto da foto…':'Preparando o leitor…')}};
+   if(!f.blob)op.cacheMethod='none';
+   const pw=T.createWorker(ocrLang(),1,op);
+   pw.then(x=>{w=x},()=>{});
+   SC.worker=await ocrLimite(pw,f.ms);
+   return SC.worker
+  }catch(e){ult=e;try{if(w)w.terminate()}catch(_){}}}
+ SC.err=ult;throw ult||new Error('sem leitor')}
 
 /* Lê o texto de etiquetas de prateleira: cada preço (12,99) é ligado ao nome que veio logo antes dele. */
 function parseEtiquetas(txt){
@@ -1832,16 +1865,21 @@ function scProg(f,txt){const e=$('#sc-pg');if(e)e.style.width=Math.round(Math.ma
 async function scLer(c){
  try{const k=Math.min(1,160/Math.max(c.width,c.height)),s=document.createElement('canvas');s.width=Math.round(c.width*k);s.height=Math.round(c.height*k);s.getContext('2d').drawImage(c,0,0,s.width,s.height);SC.thumb=s.toDataURL('image/jpeg',.6)}catch(e){SC.thumb=''}
  scRev(true);
- let aviso='';
- try{
-  const T=await loadTess();
-  if(!SC.worker)SC.worker=await T.createWorker(ocrLang(),1,{workerPath:ocrUrl('worker.min.js'),corePath:ocrUrl('core'),langPath:ocrUrl('lang'),workerBlobURL:false,cacheMethod:'none',logger:m=>{if(m&&typeof m.progress==='number')scProg(m.progress,m.status==='recognizing text'?'Lendo o texto da foto…':'Preparando o leitor…')}});
-  const r=await SC.worker.recognize(scPrep(c)),novos=parseEtiquetas(r&&r.data&&r.data.text);
-  if(novos.length)SC.rows=SC.rows.concat(novos);
-  else{SC.rows.push({on:true,nome:'',preco:'',un:'un'});aviso='Não consegui ler um preço nesta foto. Preencha à mão ou tire outra foto mais de perto, com boa luz.'}
- }catch(e){
+ let aviso='',w=null;
+ try{w=await ocrCriar()}catch(e){
   SC.rows.push({on:true,nome:'',preco:'',un:'un'});
-  aviso='O leitor de texto offline ainda não está guardado neste aparelho. Conecte à internet uma vez para ele ser baixado, ou preencha o nome e o preço à mão.'}
+  aviso=navigator.onLine===false
+   ?'O leitor de texto ainda não está guardado neste aparelho. Conecte à internet uma vez para ele ser baixado, ou preencha o nome e o preço à mão.'
+   :'Não consegui carregar o leitor de texto agora. Confira a internet e toque em Outra foto para tentar de novo, ou preencha o nome e o preço à mão.'}
+ if(w){
+  try{
+   const r=await w.recognize(scPrep(c)),novos=parseEtiquetas(r&&r.data&&r.data.text);
+   if(novos.length)SC.rows=SC.rows.concat(novos);
+   else{SC.rows.push({on:true,nome:'',preco:'',un:'un'});aviso='Não consegui ler um preço nesta foto. Preencha à mão ou tire outra foto mais de perto, com boa luz.'}
+  }catch(e){
+   try{SC.worker.terminate()}catch(_){}SC.worker=null;
+   SC.rows.push({on:true,nome:'',preco:'',un:'un'});
+   aviso='A leitura da foto falhou. Toque em Outra foto para tentar de novo ou preencha à mão.'}}
  if(!$('#scan'))return;scRev(false,aviso)}
 
 function scLinha(r,i){return `<div class="sc-lin"><input type="checkbox" ${r.on?'checked':''} onchange="scSet(${i},'on',this.checked)" aria-label="Incluir este item"><div class="c"><input value="${esc(r.nome)}" placeholder="Nome do produto" maxlength="60" oninput="scSet(${i},'nome',this.value)" aria-label="Nome do produto"><div class="row"><input class="pr" inputmode="decimal" value="${esc(r.preco)}" placeholder="R$ 0,00" oninput="scSet(${i},'preco',this.value)" aria-label="Preço"><select onchange="scSet(${i},'un',this.value)" aria-label="Tipo de preço"><option value="un" ${r.un!=='kg'?'selected':''}>por unidade</option><option value="kg" ${r.un==='kg'?'selected':''}>por kg</option></select></div></div><button class="ghost" onclick="scDel(${i})" aria-label="Remover linha">✕</button></div>`}
@@ -2098,6 +2136,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.8.1':[
+  '📷 Escanear preços: corrigido o leitor de texto das fotos. Se o leitor offline ainda não estiver no aparelho, o app baixa sozinho pela internet e guarda para as próximas vezes.'
+ ],
  '2.8.0':[
   '🎤 Lista de compras: novo botão flutuante de microfone. Segure, fale o produto e o preço (ex.: “arroz turquesa 6,99”) e solte.',
   '🔔 Quando sai uma atualização, o app avisa por notificação e, ao abrir, mostra aqui o que mudou (uma única vez).',

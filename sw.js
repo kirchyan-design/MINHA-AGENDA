@@ -1,6 +1,6 @@
 /* JC ORGANIZA - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='2.8.0';
+const VERSION='2.8.1';
 const CACHE='jc-organiza-'+VERSION;
 const OCR_CACHE='jc-ocr-1'; /* leitor de texto offline (pasta ocr/): cache próprio, não é apagado a cada versão */
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
@@ -12,6 +12,9 @@ self.addEventListener('message',e=>{
 self.addEventListener('fetch',e=>{
  const r=e.request;if(r.method!=='GET')return;
  const u=new URL(r.url),mine=u.origin===location.origin;
+ /* leitor de texto baixado do CDN (quando a pasta ocr/ não existe): serve do cache guardado no aparelho; sem cache, segue pela rede */
+ const ocrCdn=!mine&&u.hostname==='cdn.jsdelivr.net'&&/\/npm\/(tesseract\.js(-core)?@|@tesseract\.js-data\/)/.test(u.pathname);
+ if(ocrCdn){e.respondWith(caches.open(OCR_CACHE).then(c=>c.match(r,{ignoreSearch:true}).then(m=>m||fetch(r))));return}
  if(!mine&&u.hostname!=='fonts.googleapis.com'&&u.hostname!=='fonts.gstatic.com')return;
  if(mine&&/\/ocr\//.test(u.pathname)){
   e.respondWith(caches.open(OCR_CACHE).then(c=>c.match(r,{ignoreSearch:true}).then(m=>m||fetch(r).then(res=>{if(res&&res.ok)c.put(r,res.clone());return res}))));return}
