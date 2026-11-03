@@ -2,14 +2,13 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
-## Atualização do APK dentro do app (sem Google Play e sem Google Drive)
+## Atualizações do aplicativo
 
-- O workflow **Gerar APK** agora publica o APK na aba **Releases** do repositório (`JC-Organiza.apk` + `version.json`). O link fixo da última versão é `https://github.com/kirchyan-design/MINHA-AGENDA/releases/latest/download/JC-Organiza.apk`.
-- Dentro do app (Início, e Configurações › Aplicativo › *Verificar nova versão do aplicativo*), quando há versão mais nova aparece o botão **BAIXAR E INSTALAR**: o app baixa o APK com barra de progresso e abre a tela de instalação do Android. A assinatura é a mesma, então instala por cima e mantém os dados.
-- O Android sempre pede a confirmação do usuário (não existe instalação silenciosa fora da Play Store). Na primeira vez ele também pede para permitir “instalar apps desta fonte” para o JC ORGANIZA.
-- **Quem tem o APK antigo** (sem o instalador interno) vê na tela Início um cartão com o link de download (agora da Release, não do Drive). O botão **Agora não** esconde o cartão por 3 dias; depois ele volta, até a pessoa instalar o APK novo. Quem já tem o APK novo não vê aviso automático: atualiza pelo botão em Configurações › Aplicativo › *Verificar nova versão do aplicativo*.
-- Para cada APK novo: Actions › *Gerar APK* › Run workflow. O repositório precisa estar **público** (ou o link da Release não abre sem login) e o workflow precisa de permissão de escrita (já declarada em `permissions: contents: write`).
-- Alterações só no `index.html` continuam chegando sozinhas (o app carrega o site); o APK novo só é necessário quando muda a parte nativa.
+- **Quem tem o APK 2.0 ou anterior** vê na tela Início um cartão com o botão **BAIXAR ATUALIZAÇÃO**, que abre a pasta do Google Drive (`APK_URL` no `index.html`) com o APK novo. É só instalar por cima, sem desinstalar. **Agora não** esconde o cartão por 3 dias.
+- **Quem já tem o APK atualizado (2.1 em diante)** não vê esse cartão. As próximas atualizações chegam só pelo botão **Atualizar** na parte de baixo da tela (“Nova versão disponível”): ao tocar, o app recarrega já na versão nova.
+- Como o app sabe que o APK é 2.0 ou anterior: a partir da 2.1 o plugin nativo `MediaPermissions` informa a permissão da câmera (`camera`). APK sem o plugin, ou sem `camera` na resposta, é tratado como 2.0 ou anterior (função `apkAntigo` no `index.html`).
+- **Como lançar cada atualização**: aumente `VERSION` no `sw.js` e publique. O botão “Atualizar” aparece para todos. Mudou a parte nativa (plugins, permissões)? Gere o APK em Actions › *Gerar APK*, suba o arquivo na pasta do Drive e, se quiser, ajuste o critério de `apkAntigo`.
+- O aviso por notificação, o push com o app fechado e a caixa de novidades continuam desligados (só o botão de baixo).
 
 ## Aviso: boas-vindas para novos usuários (não é uma atualização)
 
