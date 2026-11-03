@@ -128,7 +128,8 @@ jobs:
                   @Permission(alias = "video", strings = { Manifest.permission.READ_MEDIA_VIDEO }),
                   @Permission(alias = "audio", strings = { Manifest.permission.READ_MEDIA_AUDIO }),
                   @Permission(alias = "storage", strings = { Manifest.permission.READ_EXTERNAL_STORAGE }),
-                  @Permission(alias = "camera", strings = { Manifest.permission.CAMERA })
+                  @Permission(alias = "camera", strings = { Manifest.permission.CAMERA }),
+                  @Permission(alias = "microphone", strings = { Manifest.permission.RECORD_AUDIO })
               }
           )
           public class MediaPermissionsPlugin extends Plugin {
@@ -153,6 +154,7 @@ jobs:
                       o.put("audio", s);
                   }
                   o.put("camera", st("camera"));
+                  o.put("microphone", st("microphone"));
                   return o;
               }
 
@@ -168,7 +170,7 @@ jobs:
                   try {
                       if (arr != null) for (int i = 0; i < arr.length(); i++) pedidos.add(arr.getString(i));
                   } catch (Exception ignored) {}
-                  if (pedidos.isEmpty()) { pedidos.add("images"); pedidos.add("video"); pedidos.add("audio"); pedidos.add("camera"); }
+                  if (pedidos.isEmpty()) { pedidos.add("images"); pedidos.add("video"); pedidos.add("audio"); pedidos.add("camera"); pedidos.add("microphone"); }
                   List<String> al = new ArrayList<>();
                   for (String p : pedidos) {
                       String a = p;
@@ -218,6 +220,7 @@ jobs:
         run: |
           M=android/app/src/main/AndroidManifest.xml
           grep -q "android.permission.RECORD_AUDIO\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-permission android:name="android.permission.RECORD_AUDIO" />' "$M"
+          grep -q "RECORD_AUDIO" "$M" || sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application#' "$M"
           grep -q "android.hardware.microphone\"" "$M" || sed -i '/android.permission.INTERNET/a\    <uses-feature android:name="android.hardware.microphone" android:required="false" />' "$M"
           # Android 11+: sem isto o app não enxerga o serviço de reconhecimento de voz do celular
           grep -q "android.speech.RecognitionService" "$M" || sed -i 's#<application#<queries><intent><action android:name="android.speech.RecognitionService" /></intent></queries>\n    <application#' "$M"
