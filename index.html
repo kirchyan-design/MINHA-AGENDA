@@ -1615,7 +1615,7 @@ async function fsReq(method,url,body){
  const A=FA(),tk=(await A.getIdToken()).token;
  const r=await fetch(url,{method:method,headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
  const j=await r.json().catch(()=>null),em=(j&&j.error&&j.error.message)||'';
- if(r.status===404&&method==='GET'&&!/database/i.test(em))return null;
+ if(r.status===404&&method==='GET'&&!/does not exist|not been used|disabled/i.test(em))return null; /* documento ainda não existe */
  if(!r.ok){const e=new Error(em||('HTTP '+r.status));e.code=(j&&j.error&&j.error.status)||String(r.status);throw e}
  return j}
 const nuvKey=uid=>'ma-nuv:'+uid;
@@ -1689,7 +1689,7 @@ async function nuvSync(manual,login){
   const at=await nuvEnviar(uid,local,meta);nuvGrava(uid,{at:at,hash:h,pend:0,touch:Date.now()});nuvSet(true,'Dados deste aparelho enviados para a nuvem.');return false
  }catch(e){
   const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();
-  nuvSet(false,/permission|403|unauthenticated/.test(t)?'A nuvem ainda não está liberada para o app (regras do Firestore).':/database|not_found|not exist/.test(t)?'O banco de dados do Firestore ainda não foi criado no Firebase.':/failed to fetch|network|load failed/.test(t)?'Sem conexão. Sincroniza quando a internet voltar.':'Não foi possível sincronizar: '+t.trim().slice(0,100));
+  nuvSet(false,/permission|403|unauthenticated/.test(t)?'A nuvem ainda não está liberada para o app (regras do Firestore).':/does not exist|not been used|disabled/.test(t)?'O banco de dados do Firestore ainda não foi criado (ou a API está desativada) no Firebase.':/failed to fetch|network|load failed/.test(t)?'Sem conexão. Sincroniza quando a internet voltar.':'Não foi possível sincronizar: '+t.trim().slice(0,100));
   return false
  }finally{NUV.busy=false}}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){try{if(ct()&&!NUV.busy)nuvSync()}catch(e){}}else{try{if(ct()&&Date.now()-NUV.t>60000&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||''))nuvSync()}catch(e){}}});
@@ -2649,6 +2649,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.6':[
+  '☁️ Corrigida a sincronização na nuvem: ela acusava erro de banco de dados mesmo com o Firestore criado.'
+ ],
  '2.9.5':[
   '🔑 O login por celular (SMS) foi retirado. Agora é só com o Google ou com e-mail e senha.'
  ],

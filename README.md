@@ -15,6 +15,10 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 2.9.6
+
+- Corrigido: a sincronização acusava “banco de dados não criado” quando o documento do usuário ainda não existia (a mensagem real do Firestore contém “databases/(default)”).
+
 ## Versão 2.9.5
 
 - **Login por celular (SMS) removido**, para não precisar do plano pago do Firebase. Fica Google e e-mail/senha. No Firebase: Authentication › Sign-in method › **Telefone** › Desativar.
