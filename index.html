@@ -501,6 +501,11 @@ main{position:relative;z-index:1}
 .drw .dh{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;font-weight:700;font-size:17px}
 .drw button{display:flex;align-items:center;gap:14px;width:100%;background:none;color:var(--ink);text-align:left;padding:12px;border-radius:14px;font-size:16px;font-weight:600;box-shadow:none}
 .drw button.on{background:var(--acs);color:var(--ac)}.drw button svg{width:22px;height:22px;flex:none}.drw hr{border:0;border-top:1px solid var(--ln);margin:8px 0;width:100%}
+
+/* ---------- recado do criador (02/11 e 03/11) ---------- */
+.dev-dlg{position:relative;padding-top:34px;text-align:center}
+.dev-dlg p{font-weight:700;line-height:1.45;margin:6px 0 0}
+.dev-x{position:absolute;top:8px;right:8px;width:36px;height:36px;min-width:0;padding:0;border-radius:50%;border:0;background:var(--bg);color:var(--tx);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
 </style>
 
 </head>
@@ -1954,7 +1959,27 @@ function vEscanear(){
 
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>applyTheme())}catch(e){}
 
-applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>setTimeout(permIntro,600));
+
+/* ---------- recado do criador: aparece 1 vez em 02/11 e 1 vez em 03/11 (por aparelho, vale para qualquer conta) ---------- */
+const DEV_MSG='OLÁ, EU SOU JOÃO O CRIADOR DO APLICATIVO, SE ESTÁ GOSTANDO DO APP MANDA UM OI NO WHATSAPP, 81984264462 E ME DIZ O QUE ESTÁ ACHANDO, SEU FEEDBACK É DE EXTREMA IMPORTÂNCIA, BOM USO DESDE JÁ AGRADEÇO 🙏🏾';
+const DEV_DIAS={'11-02':1,'11-03':1};
+function recadoCriador(){
+ const d=new Date(),mmdd=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ if(!DEV_DIAS[mmdd])return;
+ const key='ma-recado-criador-'+d.getFullYear()+'-'+mmdd;
+ try{if(localStorage.getItem(key))return;localStorage.setItem(key,'1')}catch(e){}
+ if(document.querySelector('.dev-ov'))return;
+ const o=document.createElement('div');o.className='ov dev-ov';
+ o.innerHTML='<div class="dlg dev-dlg" role="alertdialog" aria-label="Mensagem do criador"><button type="button" class="dev-x" aria-label="Fechar">✕</button><p>'+esc(DEV_MSG)+'</p></div>';
+ document.body.appendChild(o);
+ const fim=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
+ const kd=e=>{if(e.key==='Escape')fim()};
+ document.addEventListener('keydown',kd,true);
+ o.querySelector('.dev-x').onclick=fim}
+/* espera o bloqueio por senha e o aviso de permissões saírem da frente para não empilhar caixas */
+function recadoQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>recadoQuandoLivre(n+1),1000);return}recadoCriador()}
+
+applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>
