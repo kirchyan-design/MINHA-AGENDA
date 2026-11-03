@@ -6,6 +6,7 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 
 - **Escanear preços sem internet**: o leitor de texto (Tesseract) fica dentro do app, na pasta `ocr/`, e é guardado no aparelho. **Uma vez só**, rode em Actions › *Baixar leitor offline* › Run workflow para preencher a pasta `ocr/`. Depois disso o app guarda o leitor sozinho na primeira vez que abrir com internet.
 - **Produto escaneado entra na lista de compras**: ao confirmar, cada produto vai direto para a lista que está sendo feita (se já estiver lá, só atualiza o preço) e o preço continua registrado no mercado.
+- **Notificação de atualização**: quando sai uma versão nova, o app avisa por notificação do celular (uma vez por versão) e mostra o botão Atualizar. A checagem acontece ao abrir o app, ao voltar para ele e a cada 20 minutos enquanto está aberto. **Para cada atualização, aumente o número `VERSION` no `sw.js`** (ex.: 2.7.0 → 2.7.1); é isso que dispara o aviso.
 - Meu Mercado mostra apenas as promoções do Assaí Atacadista.
 
 ## Versão 2.6

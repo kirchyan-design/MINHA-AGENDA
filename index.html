@@ -1256,7 +1256,20 @@ function ask(msg,fn,label){const o=document.createElement('div');o.className='ov
 
 /* ---------- Atualização do app (PWA) ---------- */
 let SWREG=null;
-function updBanner(w){if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
+/* Avisa por notificação do celular quando sai uma versão nova (uma vez por versão). */
+function updVersao(w){return new Promise(ok=>{try{const mc=new MessageChannel();let fim=false;const f=v=>{if(!fim){fim=true;ok(v)}};mc.port1.onmessage=m=>f(String(m.data||''));setTimeout(()=>f(''),1500);w.postMessage('VERSION',[mc.port2])}catch(e){ok('')}})}
+async function updNotificar(w){
+ try{const v=(await updVersao(w))||'nova';let ja='';try{ja=localStorage.getItem('ma-upd-notif')||''}catch(e){}
+  if(ja===v)return;const marca=()=>{try{localStorage.setItem('ma-upd-notif',v)}catch(e){}};
+  const title='🔄 Atualização disponível',body='Há uma nova versão do JC ORGANIZA'+(v&&v!=='nova'?' ('+v+')':'')+'. Abra o app e toque em Atualizar.';
+  const L=LNp();
+  if(nat()&&L){let p=await L.checkPermissions();if(p.display==='prompt'||p.display==='prompt-with-rationale')p=await L.requestPermissions();if(p.display!=='granted')return;
+   try{await L.createChannel({id:'atualizacoes',name:'Atualizações do app',description:'Avisos de nova versão',importance:4,visibility:1,vibration:true})}catch(e){}
+   await L.schedule({notifications:[{id:nid('upd'+v),title,body,channelId:'atualizacoes'}]});marca();return}
+  if('Notification' in window&&Notification.permission==='granted'){
+   if(SWREG&&SWREG.showNotification)await SWREG.showNotification(title,{body,icon:'icon-192.png',tag:'jc-update'});else new Notification(title,{body,icon:'icon-192.png'});marca()}
+ }catch(e){}}
+function updBanner(w){try{updNotificar(w)}catch(e){}if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
 function showVer(){const e=$('#ver');if(!e||!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;const mc=new MessageChannel();mc.port1.onmessage=m=>{const x=$('#ver');if(x)x.textContent='Versão '+m.data};navigator.serviceWorker.controller.postMessage('VERSION',[mc.port2])}
 function checkUpd(){if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
  SWREG.update().then(()=>{if(SWREG.installing||SWREG.waiting)info('Nova versão encontrada. Toque em Atualizar no aviso que apareceu.');else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
@@ -1266,7 +1279,7 @@ function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location
  navigator.serviceWorker.register('sw.js').then(reg=>{SWREG=reg;
   if(reg.waiting&&navigator.serviceWorker.controller)updBanner(reg.waiting);
   reg.addEventListener('updatefound',()=>{const n=reg.installing;if(n)n.addEventListener('statechange',()=>{if(n.state==='installed'&&navigator.serviceWorker.controller)updBanner(n)})});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})});setInterval(()=>reg.update().catch(()=>{}),20*60*1000);
   showVer()}).catch(()=>{})}
 /* ---------- Lembretes e alarme ---------- */
 const NOTIF0={on:false,lead:10,plOn:true,plLead:60};
