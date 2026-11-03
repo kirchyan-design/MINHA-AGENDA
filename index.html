@@ -1696,9 +1696,23 @@ function delScan(id){S.scans=S.scans.filter(x=>x.id!==id);save();render()}
 
 /* ---------- v2.1: scanner de preços pela câmera ---------- */
 const SC={stream:null,worker:null,rows:[],thumb:''};
-const TESS_URL='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+/* Leitor de texto 100% OFFLINE: os arquivos ficam na pasta ocr/ do app e são guardados no aparelho (cache jc-ocr-1). */
+const OCR_CACHE='jc-ocr-1';
+const ocrUrl=p=>new URL('ocr/'+p,location.href).href;
+const ocrSimd=()=>{try{return WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]))}catch(e){return false}};
+const ocrLang=()=>(LANGS.find(l=>l[0]===LANG)||LANGS[0])[3];
+const ocrArqs=()=>['tesseract.min.js','worker.min.js','core/tesseract-core'+(ocrSimd()?'-simd':'')+'-lstm.wasm.js','lang/'+ocrLang()+'.traineddata.gz'];
+async function ocrPronto(){if(!window.caches)return false;try{const r=await Promise.all(ocrArqs().map(a=>caches.match(ocrUrl(a))));return r.every(Boolean)}catch(e){return false}}
+/* Com internet, guarda os arquivos do leitor no aparelho (uma vez). Depois disso a leitura funciona sem internet. */
+let ocrBusy=false;
+async function ocrAquecer(){if(ocrBusy||!window.caches||navigator.onLine===false)return;ocrBusy=true;
+ try{const c=await caches.open(OCR_CACHE);
+  for(const a of ocrArqs()){const u=ocrUrl(a);try{if(await c.match(u))continue;const r=await fetch(u);if(r&&r.ok)await c.put(u,r)}catch(e){}}}catch(e){}
+ ocrBusy=false;ocrMostra()}
+async function ocrMostra(){const e=$('#ocr-st');if(!e)return;const ok=await ocrPronto();
+ e.className='hint';e.innerHTML=ok?'✅ <b>Leitor offline pronto.</b> Pode escanear sem internet.':'⏳ O leitor offline ainda não foi guardado neste aparelho. Conecte à internet uma vez; ele é baixado sozinho e depois funciona sem internet.'}
 function loadTess(){return new Promise((res,rej)=>{if(window.Tesseract)return res(window.Tesseract);
- const s=document.createElement('script');s.src=TESS_URL;s.onload=()=>window.Tesseract?res(window.Tesseract):rej(new Error('sem leitor'));s.onerror=()=>rej(new Error('sem internet'));document.head.appendChild(s)})}
+ const s=document.createElement('script');s.src=ocrUrl('tesseract.min.js');s.onload=()=>window.Tesseract?res(window.Tesseract):rej(new Error('sem leitor'));s.onerror=()=>rej(new Error('leitor offline não guardado'));document.head.appendChild(s)})}
 
 /* Lê o texto de etiquetas de prateleira: cada preço (12,99) é ligado ao nome que veio logo antes dele. */
 function parseEtiquetas(txt){
@@ -1767,39 +1781,45 @@ async function scLer(c){
  let aviso='';
  try{
   const T=await loadTess();
-  if(!SC.worker)SC.worker=await T.createWorker((LANGS.find(l=>l[0]===LANG)||LANGS[0])[3],1,{logger:m=>{if(m&&typeof m.progress==='number')scProg(m.progress,m.status==='recognizing text'?'Lendo o texto da foto…':'Preparando o leitor (só na primeira vez)…')}});
+  if(!SC.worker)SC.worker=await T.createWorker(ocrLang(),1,{workerPath:ocrUrl('worker.min.js'),corePath:ocrUrl('core'),langPath:ocrUrl('lang'),workerBlobURL:false,cacheMethod:'none',logger:m=>{if(m&&typeof m.progress==='number')scProg(m.progress,m.status==='recognizing text'?'Lendo o texto da foto…':'Preparando o leitor…')}});
   const r=await SC.worker.recognize(scPrep(c)),novos=parseEtiquetas(r&&r.data&&r.data.text);
   if(novos.length)SC.rows=SC.rows.concat(novos);
   else{SC.rows.push({on:true,nome:'',preco:'',un:'un'});aviso='Não consegui ler um preço nesta foto. Preencha à mão ou tire outra foto mais de perto, com boa luz.'}
  }catch(e){
   SC.rows.push({on:true,nome:'',preco:'',un:'un'});
-  aviso='O leitor automático de texto não carregou (ele precisa de internet na primeira vez). Preencha o nome e o preço à mão.'}
+  aviso='O leitor de texto offline ainda não está guardado neste aparelho. Conecte à internet uma vez para ele ser baixado, ou preencha o nome e o preço à mão.'}
  if(!$('#scan'))return;scRev(false,aviso)}
 
 function scLinha(r,i){return `<div class="sc-lin"><input type="checkbox" ${r.on?'checked':''} onchange="scSet(${i},'on',this.checked)" aria-label="Incluir este item"><div class="c"><input value="${esc(r.nome)}" placeholder="Nome do produto" maxlength="60" oninput="scSet(${i},'nome',this.value)" aria-label="Nome do produto"><div class="row"><input class="pr" inputmode="decimal" value="${esc(r.preco)}" placeholder="R$ 0,00" oninput="scSet(${i},'preco',this.value)" aria-label="Preço"><select onchange="scSet(${i},'un',this.value)" aria-label="Tipo de preço"><option value="un" ${r.un!=='kg'?'selected':''}>por unidade</option><option value="kg" ${r.un==='kg'?'selected':''}>por kg</option></select></div></div><button class="ghost" onclick="scDel(${i})" aria-label="Remover linha">✕</button></div>`}
-function scConta(){const b=$('#sc-sv');if(b)b.textContent='Salvar preços ('+SC.rows.filter(r=>r.on).length+')'}
+function scConta(){const b=$('#sc-sv');if(b)b.textContent='Adicionar à lista ('+SC.rows.filter(r=>r.on).length+')'}
 function scSet(i,k,v){if(SC.rows[i]){SC.rows[i][k]=v;if(k==='on')scConta()}}
 function scDel(i){SC.rows.splice(i,1);scRev()}
 function scAdd(){SC.rows.push({on:true,nome:'',preco:'',un:'un'});scRev();const r=$('.sc-rev');if(r)r.scrollTop=r.scrollHeight}
 function scRev(busy,aviso){
  const o=$('#scan');if(!o)return;scParar();const L=SC.rows;
  o.innerHTML=scTopo()+`<div class="sc-rev"><div class="card"><div class="sc-prev">${SC.thumb?`<img src="${SC.thumb}" alt="Foto da etiqueta">`:''}<div class="t"><b id="sc-pt">${busy?'Lendo o texto da foto…':(L.length+(L.length===1?' item para conferir':' itens para conferir'))}</b><br><small>${busy?'Aguarde alguns segundos.':'Corrija o que precisar e salve em '+esc(S.market)+'.'}</small>${busy?'<div class="sc-prog"><i id="sc-pg"></i></div>':''}</div></div>${aviso?`<p class="hint" style="color:var(--rd);margin-top:10px">${esc(aviso)}</p>`:''}</div>`
- +(busy?'':`<div class="card">${L.map(scLinha).join('')||'<div class="vazio" style="padding:10px">Nenhum item. Toque em Adicionar linha ou tire uma foto.</div>'}<button class="sec" style="margin-top:10px;width:100%" onclick="scAdd()">＋ Adicionar linha</button></div><div class="sc-act"><button class="sec" onclick="scCam()">📷 Outra foto</button><button id="sc-sv" onclick="scSalvar()">Salvar preços (${L.filter(r=>r.on).length})</button></div>`)+`</div>`}
+ +(busy?'':`<div class="card">${L.map(scLinha).join('')||'<div class="vazio" style="padding:10px">Nenhum item. Toque em Adicionar linha ou tire uma foto.</div>'}<button class="sec" style="margin-top:10px;width:100%" onclick="scAdd()">＋ Adicionar linha</button></div><div class="sc-act"><button class="sec" onclick="scCam()">📷 Outra foto</button><button id="sc-sv" onclick="scSalvar()">Adicionar à lista (${L.filter(r=>r.on).length})</button></div>`)+`</div>`}
 function scSalvar(){
  const sel=SC.rows.filter(r=>r.on),ok=sel.filter(r=>String(r.nome).trim()&&num(r.preco)>0);
  if(!ok.length){info('Marque ao menos um item com nome e preço maior que zero.');return}
  const mk=(S.market||'').trim(),id=mkId(mk)||addMk(mk),nome=(MK().find(x=>x.id===id)||{nome:mk}).nome;
+ let novos=0,atual=0;
  ok.forEach(r=>{const t=String(r.nome).trim().replace(/\s+/g,' '),p=num(r.preco),un=r.un==='kg'?'kg':'un';
   S.scans=S.scans.filter(x=>!(x.market===nome&&x.date===HOJE&&nrm(x.title)===nrm(t)&&wt(x.unit)===(un==='kg')));
   S.scans.unshift({id:uid(),market:nome,date:HOJE,title:t,price:p,unit:un});
-  S.prods[t.toLowerCase()]={name:t,price:p,unit:un}});
+  S.prods[t.toLowerCase()]={name:t,price:p,unit:un};
+  /* entra na lista de compras que o usuário está montando agora (se já estiver lá, só atualiza o preço) */
+  const ja=S.shop.find(x=>!x.done&&nrm(x.title)===nrm(t)&&wt(x.unit)===(un==='kg'));
+  if(ja){ja.price=p;atual++}
+  else{S.shop.push({id:uid(),title:t,price:p,unit:un,qty:1,done:false});novos++}});
  if(S.scans.length>1500)S.scans.length=1500;
- const n=ok.length,pul=sel.length-n;save();scFechar();tab='compras';sub='mkt';nav();render();window.scrollTo(0,0);
- info(n+(n===1?' preço registrado':' preços registrados')+' em '+nome+'.'+(pul?' '+pul+(pul===1?' linha sem nome ou preço ficou de fora.':' linhas sem nome ou preço ficaram de fora.'):'')+' Veja a comparação em Mercados.')}
+ const n=ok.length,pul=sel.length-n;save();scFechar();tab='compras';sub='atual';nav();render();window.scrollTo(0,0);
+ info((novos?novos+(novos===1?' produto adicionado':' produtos adicionados')+' à lista de compras':'')+(novos&&atual?' e ':'')+(atual?atual+(atual===1?' produto já estava na lista (preço atualizado)':' produtos já estavam na lista (preços atualizados)'):'')+'. Preço registrado em '+nome+'.'+(pul?' '+pul+(pul===1?' linha sem nome ou preço ficou de fora.':' linhas sem nome ou preço ficaram de fora.'):''))}
 
 function vEscanear(){
+ setTimeout(()=>{ocrMostra();ocrAquecer()},50);
  const rec=(S.scans||[]).slice(0,10);
- return mkBar()+`<div class="card"><div class="scan-hero"><span class="si2">📷</span><div class="t"><b>Escanear preços na prateleira</b><br><small>Aponte a câmera para a etiqueta. O app lê o nome e o preço, você confere e salva no mercado escolhido.</small></div></div><button style="width:100%;margin-top:12px" onclick="abrirScanner()">📷 Abrir câmera</button><p class="hint">Na primeira leitura o app baixa o leitor de texto, então precisa de internet. A foto não fica guardada: só o nome e o preço.</p></div>`
+ return mkBar()+`<div class="card"><div class="scan-hero"><span class="si2">📷</span><div class="t"><b>Escanear preços na prateleira</b><br><small>Aponte a câmera para a etiqueta. O app lê o nome e o preço, você confere e o produto entra na sua lista de compras e no mercado escolhido.</small></div></div><button style="width:100%;margin-top:12px" onclick="abrirScanner()">📷 Abrir câmera</button><p class="hint" id="ocr-st">Verificando o leitor offline…</p><p class="hint">A leitura é feita no próprio celular, sem internet. A foto não fica guardada: só o nome e o preço. Os produtos lidos entram direto na sua lista de compras.</p></div>`
  +(rec.length?`<h3>Últimos preços lidos</h3><div class="card">${rec.map(x=>`<div class="item">${logoNome(x.market)}<span class="t">${esc(x.title)}<br><small style="color:var(--mute)">${esc(x.market)} · ${fmt(x.date,{day:'numeric',month:'short'})}</small></span><b>${brl(x.price)}${wt(x.unit)?'<small>/kg</small>':''}</b><button class="ghost" onclick="delScan('${x.id}')" aria-label="Excluir">✕</button></div>`).join('')}</div>`
  :'<div class="vazio">Nenhum preço lido ainda. Os preços que você escanear aparecem aqui e na comparação entre mercados.</div>')}
 
@@ -1825,7 +1845,7 @@ function recadoCriador(){
 /* espera o bloqueio por senha e o aviso de permissões saírem da frente para não empilhar caixas */
 function recadoQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>recadoQuandoLivre(n+1),1000);return}recadoCriador()}
 
-applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500)});
+applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>

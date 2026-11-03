@@ -1,0 +1,52 @@
+name: Baixar leitor offline
+
+# Rode uma vez (aba Actions > Baixar leitor offline > Run workflow).
+# Ele baixa o leitor de texto (Tesseract) e guarda na pasta ocr/ do repositório,
+# para o escaneamento de preços funcionar SEM internet.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ocr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Baixar o leitor e os idiomas
+        run: |
+          mkdir -p /tmp/o && cd /tmp/o
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund tesseract.js@5.1.1 tesseract.js-core@5.1.0 @tesseract.js-data/por @tesseract.js-data/eng @tesseract.js-data/spa @tesseract.js-data/deu
+
+      - name: Copiar para a pasta ocr/
+        run: |
+          N=/tmp/o/node_modules
+          rm -rf ocr && mkdir -p ocr/core ocr/lang
+          cp "$N/tesseract.js/dist/tesseract.min.js" ocr/
+          cp "$N/tesseract.js/dist/worker.min.js" ocr/
+          cp "$N"/tesseract.js-core/tesseract-core*lstm* ocr/core/
+          for L in por eng spa deu; do
+            D="$N/@tesseract.js-data/$L/4.0.0_best_int"
+            [ -f "$D/$L.traineddata.gz" ] || D="$N/@tesseract.js-data/$L/4.0.0"
+            cp "$D/$L.traineddata.gz" "ocr/lang/$L.traineddata.gz"
+          done
+          find ocr -type f -exec ls -la {} \;
+          test -s ocr/tesseract.min.js && test -s ocr/worker.min.js && test -s ocr/core/tesseract-core-lstm.wasm.js && test -s ocr/lang/por.traineddata.gz
+
+      - name: Salvar no repositório
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add ocr
+          git commit -m "Leitor de texto offline (Tesseract)" || echo "Nada para salvar"
+          git push
