@@ -552,6 +552,11 @@ main{position:relative;z-index:1}
 #ptr.spin span{display:inline-block;animation:ptrspin .8s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
 
+/* botão discreto de atualização */
+#updpill{position:fixed;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:44;max-width:calc(100% - 110px);display:flex;align-items:center;gap:8px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-radius:999px;padding:6px 6px 6px 14px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+body.nv #updpill{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+#updpill .u-a{background:var(--ac);color:var(--onac);border:0;border-radius:999px;padding:6px 12px;font:inherit;font-weight:700;min-width:0}
+#updpill .u-x{background:none;border:0;color:var(--mute);padding:4px 8px;font:inherit;min-width:0}
 /* ---------- aviso de atualização do APK (tela inicial) ---------- */
 .apk{border:2px solid var(--ac);background:var(--acs);color:var(--ink)}
 .apk h4{margin:0 0 6px;font-size:16px}
@@ -1817,7 +1822,7 @@ async function updNotificar(w){
   if('Notification' in window&&Notification.permission==='granted'){
    if(SWREG&&SWREG.showNotification)await SWREG.showNotification(title,{body,icon:'icon-192.png',tag:'jc-update'});else new Notification(title,{body,icon:'icon-192.png'});marca()}
  }catch(e){}}
-function updBanner(w){try{w.postMessage('SKIP_WAITING')}catch(e){}return; /* atualização silenciosa: sem aviso */ if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
+function updBanner(w){WEB_NEW=true;UPD_HIDE=false;updPill()}
 function showVer(){const e=$('#ver');if(!e||!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;const mc=new MessageChannel();mc.port1.onmessage=m=>{const x=$('#ver');if(x)x.textContent='Versão '+m.data};navigator.serviceWorker.controller.postMessage('VERSION',[mc.port2])}
 function checkUpd(){if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
  SWREG.update().then(()=>{if(SWREG.installing||SWREG.waiting)info('Nova versão encontrada. Ela passa a valer na próxima vez que você abrir o app.');else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
@@ -2693,25 +2698,18 @@ function apkCard(){const s=APK_ST;if(!s)return '';
   corpo='Há uma versão nova do aplicativo. É só tocar no botão: o app baixa e abre a instalação por cima do atual, sem perder seus dados.';
   btn=`<button class="apk-btn" onclick="apkBaixar()">⬇️ BAIXAR E INSTALAR</button>`}
  return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização do aplicativo${ver}</h4><p>${corpo}</p>${btn}</div>`}
-function apkAviso(){return nat()?apkCard():''}
-function apkDesenha(){const h=apkCard(),e=$('#apk-aviso');
- if(e){if(h)e.outerHTML=h;else e.remove();return}
- if(h&&tab==='config'&&$('#v'))$('#v').insertAdjacentHTML('afterbegin',h)}
-function apkBarra(){const b=$('#apk-bar'),t=$('#apk-pct');if(b&&APK_ST)b.style.width=(APK_ST.pct||0)+'%';if(t&&APK_ST)t.textContent='Baixando… '+(APK_ST.pct||0)+'%'}
+function apkAviso(){return ''}
+function apkDesenha(){updPill()}
+function apkBarra(){const t=$('#upd-t');if(t&&APK_ST)t.textContent='Baixando… '+(APK_ST.pct||0)+'%'}
 function apkDispensar(){try{localStorage.setItem('ma-apk-dispensa',String(Date.now()))}catch(e){}APK_ST=null;apkDesenha()}
 async function apkChecar(manual){
  if(!nat())return;
- if(manual!==true)return; /* sem aviso automático de atualização */
- if(APK_ST&&APK_ST.fase&&APK_ST.fase!=='pronto'&&APK_ST.tipo==='novo'){if(manual===true)go('config');return}
+ if(APK_ST&&APK_ST.tipo==='novo'&&APK_ST.fase&&APK_ST.fase!=='pronto')return;
  const P=APKP();
- if(!P){ /* APK antigo, ainda sem o instalador interno: link de download uma única vez */
-  let d=0;try{d=+localStorage.getItem('ma-apk-dispensa')||0}catch(e){}
-  if(manual!==true&&Date.now()-d<3*864e5)return;
-  APK_ST={tipo:'antigo'};if(manual===true)go('config');else apkDesenha();return}
- if(manual!==true)return; /* APK novo: sem aviso automático; só pelo botão em Configurações › Aplicativo */
+ if(!P){if(manual===true)info('Este aplicativo ainda não tem o atualizador interno. Instale a versão mais recente uma única vez; depois disso as atualizações acontecem por dentro do app, com um toque.');return}
  try{
   const inf=await P.info(),r=await P.fetchText({url:APK_VER}),v=JSON.parse(r.text||'{}');
-  if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};if(manual===true)go('config');else apkDesenha()}
+  if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};UPD_HIDE=false;apkDesenha()}
   else{APK_ST=null;apkDesenha();if(manual===true)info('Você já está com a versão mais recente do aplicativo.')}
  }catch(e){if(manual===true)info('Não foi possível verificar a atualização agora. Confira a conexão e tente de novo.')}}
 async function apkBaixar(){
@@ -2930,6 +2928,22 @@ function mgDeco(){document.querySelectorAll('.mg-art,.mg-ban,.mg-hat').forEach(e
  if(add)v.insertAdjacentHTML('afterbegin',add.replace('class="mg-ban"','class="mg-ban mg-art-box"'))}
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{mgDeco()}catch(e){}}})();
 
+/* ---------- botão discreto de atualização (rodapé) ---------- */
+let WEB_NEW=false,UPD_HIDE=false;
+function updFechar(){UPD_HIDE=true;updPill()}
+function updPill(){
+ let el=document.getElementById('updpill');const a=APK_ST&&APK_ST.tipo==='novo'?APK_ST:null;let txt='',act='',fn='',busy=false;
+ if(a){const f=a.fase;
+  if(f==='baixando'){txt='Baixando… '+(a.pct||0)+'%';busy=true}
+  else if(f==='permissao'){txt='Permita a instalação e toque aqui';fn='apkInstalar()';act='Continuar'}
+  else if(f==='instalando'){txt='Toque para concluir a instalação';fn='apkInstalar()';act='Instalar'}
+  else if(f==='erro'){txt='Não foi possível atualizar';fn='apkBaixar()';act='Tentar de novo'}
+  else{txt='Nova versão disponível';fn='apkBaixar()';act='Atualizar'}
+ }else if(WEB_NEW){txt='Nova versão disponível';fn='location.reload()';act='Atualizar'}
+ const fixo=a&&a.fase&&a.fase!=='pronto';
+ if(!txt||(UPD_HIDE&&!fixo)||!(S.user&&S.user.name)){if(el)el.remove();return}
+ if(!el){el=document.createElement('div');el.id='updpill';document.body.appendChild(el)}
+ el.innerHTML='<span id="upd-t">'+txt+'</span>'+(fn&&!busy?'<button class="u-a" onclick="'+fn+'">'+act+'</button>':'')+(busy?'':'<button class="u-x" aria-label="Fechar" onclick="updFechar()">✕</button>')}
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
