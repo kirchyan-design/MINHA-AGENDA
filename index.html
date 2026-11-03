@@ -191,6 +191,32 @@ header h1{font-size:25px}
 .seg.s4{overflow-x:visible}.seg.s4 button{flex:1 1 0;min-width:0;font-size:13px;padding:9px 2px}
 @media(max-width:430px){nav button{font-size:10px;letter-spacing:-.01em}nav button b{font-size:19px}}
 
+/* ---- Tema Escola de Magia ---- */
+:root[data-color="magia"][data-eff="light"]{--bg:#f4ecdc;--sf:#fffaf0;--ac:#7a1f2b;--acs:#f1dcc8;--ln:#dfcaa8;--onac:#fff}
+:root[data-color="magia"][data-eff="dark"]{--bg:#0f0a12;--sf:#1a1220;--ac:#e2b350;--acs:#3a2a18;--ln:#3a2a38;--onac:#1a1000}
+html[data-color="magia"] h1,html[data-color="magia"] h2{font-family:Georgia,"Palatino Linotype",Palatino,serif;letter-spacing:.01em}
+html[data-color="magia"] .card{box-shadow:0 0 0 1px color-mix(in srgb,var(--ac) 18%,transparent),0 6px 18px -10px color-mix(in srgb,var(--ac) 55%,transparent)}
+html[data-color="magia"][data-eff="dark"] body{background:radial-gradient(120% 60% at 50% 0,#241338 0,#0f0a12 60%) fixed}
+html[data-color="magia"][data-eff="light"] body{background:radial-gradient(120% 60% at 50% 0,#fff6e2 0,#f4ecdc 65%) fixed}
+html[data-color="magia"] #v{position:relative}
+.mg-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.mg-bg .castle{position:absolute;left:0;right:0;bottom:0;width:100%;height:auto;max-height:42vh;opacity:.30}
+.mg-bg .aluno{position:absolute;right:-6px;bottom:56px;width:150px;opacity:.16}
+.mg-bg .star{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--ac);animation:mgtw 3.2s ease-in-out infinite}
+.mg-bg .vela svg{width:12px;height:34px;display:block}
+.mg-bg .vela{position:absolute;width:12px;height:34px;animation:mgfl 6s ease-in-out infinite;opacity:.55}
+@keyframes mgtw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.9;transform:scale(1.3)}}
+@keyframes mgfl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.mg-art{pointer-events:none}
+.mg-ban{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 22%,var(--sf)),var(--sf));border:1px solid var(--ln);overflow:hidden;position:relative}
+.mg-ban svg{flex:0 0 auto}
+.mg-ban b{font:700 15px/1.2 Georgia,serif;color:var(--ac);display:block}
+.mg-ban span{font-size:12.5px;color:var(--mute)}
+.mg-hat{position:absolute;top:-34px;right:2px;width:84px;z-index:2;transform:rotate(8deg);filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.mg-wandh{width:64px;height:30px;flex:0 0 auto;animation:mgwand 4s ease-in-out infinite;transform-origin:10% 90%}
+@keyframes mgwand{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+@media(prefers-reduced-motion:reduce){.mg-bg .star,.mg-bg .vela,.mg-wandh{animation:none}}
+
 /* ---- v1.7: temas de cor, senha e permissões ---- */
 :root[data-color="azul"][data-eff="light"]{--bg:#f1f4fa;--sf:#fff;--ac:#2563eb;--acs:#dde8fd;--ln:#d9e0ee;--onac:#fff}
 :root[data-color="azul"][data-eff="dark"]{--bg:#0e1624;--sf:#16233a;--ac:#6ea0ff;--acs:#1c3257;--ln:#253756;--onac:#06122a}
@@ -1479,7 +1505,7 @@ function vConfig(){
  +`</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#imp').click()">⬆ Restaurar de arquivo</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div><div class="row" style="margin-top:8px"><button class="sec" onclick="copiarBk()">📋 Copiar texto</button><button class="sec" onclick="colarBk()">📥 Colar texto</button></div>`
  +`<p class="hint"><b>Último backup:</b> ${lb}.<br>${app?'Em “Salvar / compartilhar”, escolha Arquivos, Drive ou WhatsApp para guardar o arquivo. “Salvar em Documentos” grava direto na pasta Documentos/MeuPlano do celular. ':''}Seus dados ficam só neste aparelho: faça backup de vez em quando e antes de desinstalar o app.</p></div>`
  +cfgLembretes()
- +`<h3>${_t('Aplicativo')}</h3><div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div><p class="hint" id="ver"></p></div>`
+ +`<h3>${_t('Aplicativo')}</h3><div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div>${nat()?'<div class="row"><button class="sec" onclick="apkChecar(true)">📲 Verificar nova versão do aplicativo</button></div>':''}<p class="hint" id="ver"></p></div>`
  +cfgInicio()
  +cfgIdioma()
  +cfgMenu()
@@ -1790,14 +1816,13 @@ async function updNotificar(w){
   if('Notification' in window&&Notification.permission==='granted'){
    if(SWREG&&SWREG.showNotification)await SWREG.showNotification(title,{body,icon:'icon-192.png',tag:'jc-update'});else new Notification(title,{body,icon:'icon-192.png'});marca()}
  }catch(e){}}
-function updBanner(w){if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
+function updBanner(w){try{w.postMessage('SKIP_WAITING')}catch(e){}return; /* atualização silenciosa: sem aviso */ if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
 function showVer(){const e=$('#ver');if(!e||!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;const mc=new MessageChannel();mc.port1.onmessage=m=>{const x=$('#ver');if(x)x.textContent='Versão '+m.data};navigator.serviceWorker.controller.postMessage('VERSION',[mc.port2])}
 function checkUpd(){if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
  SWREG.update().then(()=>{if(SWREG.installing||SWREG.waiting)info('Nova versão encontrada. Ela passa a valer na próxima vez que você abrir o app.');else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
 function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol))return;
  const had=!!navigator.serviceWorker.controller;let rl=false;
- /* versão nova: aparece o botão Atualizar na parte de baixo; ao tocar, o app recarrega já na versão nova */
- navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!had||rl)return;rl=true;location.reload()});
+ /* atualização silenciosa: a versão nova vale na próxima abertura, sem recarregar a tela */
  navigator.serviceWorker.register('sw.js').then(reg=>{SWREG=reg;
   if(reg.waiting&&navigator.serviceWorker.controller)updBanner(reg.waiting);
   reg.addEventListener('updatefound',()=>{const n=reg.installing;if(n)n.addEventListener('statechange',()=>{if(n.state==='installed'&&navigator.serviceWorker.controller)updBanner(n)})});
@@ -2233,7 +2258,7 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569']];
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
@@ -2640,29 +2665,65 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
  if(u.scan)S.scans=S.scans.filter(x=>x.id!==u.scan);
  save();if(tab==='compras'&&sub==='atual')render();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800)}
 
-/* ---------- aviso de download na tela inicial: SÓ para quem tem o APK 2.0 ou anterior ----------
-   O botão leva à pasta do Google Drive com o APK novo. Quem já tem o APK atualizado (2.1 em diante) não vê este aviso:
-   as próximas atualizações chegam pelo botão "Atualizar" na parte de baixo da tela (updBanner).
-   Como saber se o APK é 2.0 ou anterior: a partir da 2.1 o plugin nativo MediaPermissions informa a permissão da câmera
-   ("camera" na resposta de checkPermissions). APK sem o plugin, ou com o plugin sem "camera", é 2.0 ou anterior. */
-const APK_URL='https://drive.google.com/drive/folders/1VDCmsmyrA_pOihFJmKkljfbnGq8yx210';
-let APK_ST=null; /* null = sem aviso | {tipo:'antigo'} */
-function apkCard(){if(!APK_ST)return '';
- return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização do aplicativo</h4><p>Há uma versão nova do aplicativo. Baixe e instale por cima do app atual, sem desinstalar. Depois disso, as próximas atualizações aparecem aqui dentro, no botão <b>Atualizar</b> na parte de baixo da tela.</p><a class="apk-btn" href="${APK_URL}" target="_blank" rel="noopener">⬇️ BAIXAR ATUALIZAÇÃO</a><div class="row" style="margin-top:10px"><button class="sec" onclick="apkDispensar()">Agora não</button></div></div>`}
+/* ---------- atualização do APK dentro do app: baixa do GitHub Releases e abre o instalador do Android ----------
+   O workflow "Gerar APK" publica JC-Organiza.apk + version.json na última Release do repositório.
+   O plugin nativo ApkUpdate (criado no workflow) faz a checagem, o download e a instalação. */
+const APK_BASE='https://github.com/kirchyan-design/MINHA-AGENDA/releases/latest/download/';
+const APK_URL=APK_BASE+'JC-Organiza.apk',APK_VER=APK_BASE+'version.json';
+const APKP=()=>plug('ApkUpdate');
+let APK_ST=null,APK_L=null; /* APK_ST: null = sem aviso | {tipo:'novo'|'antigo',fase,pct,msg,nome} */
+function apkCard(){const s=APK_ST;if(!s)return '';
+ const ver=s.nome?' ('+esc(s.nome)+')':'';let corpo,btn='';
+ if(s.tipo==='antigo'){
+  corpo='Há uma versão nova do aplicativo. Baixe e instale por cima do app atual, sem desinstalar. Depois disso, as próximas atualizações são feitas aqui dentro, com um toque.';
+  btn=`<a class="apk-btn" href="${APK_URL}" target="_blank" rel="noopener">⬇️ BAIXAR ATUALIZAÇÃO</a><div class="row" style="margin-top:10px"><button class="sec" onclick="apkDispensar()">Agora não</button></div>`}
+ else if(s.fase==='baixando'){
+  corpo=`<b id="apk-pct">Baixando… ${s.pct||0}%</b><span class="apk-bar"><i id="apk-bar" style="width:${s.pct||0}%"></i></span>Não feche o app até terminar.`}
+ else if(s.fase==='permissao'){
+  corpo='Para instalar, o Android precisa da sua permissão. Na tela que abriu, ative <b>“Permitir desta fonte”</b> e volte ao app. Depois toque no botão abaixo.';
+  btn=`<button class="apk-btn" onclick="apkInstalar()">✅ JÁ PERMITI, INSTALAR</button>`}
+ else if(s.fase==='instalando'){
+  corpo='Confirme a instalação na tela do Android. Se ela não apareceu, toque no botão abaixo.';
+  btn=`<button class="apk-btn" onclick="apkInstalar()">📲 INSTALAR</button>`}
+ else if(s.fase==='erro'){
+  corpo='Não foi possível baixar agora: '+esc(s.msg||'verifique a conexão')+'.';
+  btn=`<button class="apk-btn" onclick="apkBaixar()">🔁 TENTAR DE NOVO</button>`}
+ else{
+  corpo='Há uma versão nova do aplicativo. É só tocar no botão: o app baixa e abre a instalação por cima do atual, sem perder seus dados.';
+  btn=`<button class="apk-btn" onclick="apkBaixar()">⬇️ BAIXAR E INSTALAR</button>`}
+ return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização do aplicativo${ver}</h4><p>${corpo}</p>${btn}</div>`}
 function apkAviso(){return nat()?apkCard():''}
 function apkDesenha(){const h=apkCard(),e=$('#apk-aviso');
  if(e){if(h)e.outerHTML=h;else e.remove();return}
  if(h&&tab==='inicio'&&$('#v'))$('#v').insertAdjacentHTML('afterbegin',h)}
+function apkBarra(){const b=$('#apk-bar'),t=$('#apk-pct');if(b&&APK_ST)b.style.width=(APK_ST.pct||0)+'%';if(t&&APK_ST)t.textContent='Baixando… '+(APK_ST.pct||0)+'%'}
 function apkDispensar(){try{localStorage.setItem('ma-apk-dispensa',String(Date.now()))}catch(e){}APK_ST=null;apkDesenha()}
-async function apkAntigo(){ /* true = APK 2.0 ou anterior */
- const M=MPp();if(!M)return true;
- try{const p=await M.checkPermissions();return !(p&&typeof p==='object'&&('camera' in p))}catch(e){return false} /* na dúvida, não mostra */}
-async function apkChecar(){
+async function apkChecar(manual){
  if(!nat())return;
- let d=0;try{d=+localStorage.getItem('ma-apk-dispensa')||0}catch(e){}
- if(Date.now()-d<3*864e5)return; /* "Agora não" esconde por 3 dias */
- if(!(await apkAntigo()))return;
- APK_ST={tipo:'antigo'};apkDesenha()}
+ if(APK_ST&&APK_ST.fase&&APK_ST.fase!=='pronto'&&APK_ST.tipo==='novo'){if(manual===true)go('inicio');return}
+ const P=APKP();
+ if(!P){ /* APK antigo, ainda sem o instalador interno: link de download uma única vez */
+  let d=0;try{d=+localStorage.getItem('ma-apk-dispensa')||0}catch(e){}
+  if(manual!==true&&Date.now()-d<3*864e5)return;
+  APK_ST={tipo:'antigo'};if(manual===true)go('inicio');else apkDesenha();return}
+ if(manual!==true)return; /* APK novo: sem aviso automático; só pelo botão em Configurações › Aplicativo */
+ try{
+  const inf=await P.info(),r=await P.fetchText({url:APK_VER}),v=JSON.parse(r.text||'{}');
+  if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};if(manual===true)go('inicio');else apkDesenha()}
+  else{APK_ST=null;apkDesenha();if(manual===true)info('Você já está com a versão mais recente do aplicativo.')}
+ }catch(e){if(manual===true)info('Não foi possível verificar a atualização agora. Confira a conexão e tente de novo.')}}
+async function apkBaixar(){
+ const P=APKP();if(!P||!APK_ST||APK_ST.fase==='baixando')return;
+ APK_ST.fase='baixando';APK_ST.pct=0;apkDesenha();
+ try{
+  if(!APK_L)APK_L=await P.addListener('progress',e=>{if(APK_ST&&APK_ST.fase==='baixando'){APK_ST.pct=Math.max(0,Math.min(100,Math.round(+e.percent||0)));apkBarra()}});
+  await P.download({url:APK_URL});
+  await apkInstalar()
+ }catch(e){APK_ST.fase='erro';APK_ST.msg=(e&&e.message)||'falha no download';apkDesenha()}}
+async function apkInstalar(){
+ const P=APKP();if(!P||!APK_ST)return;
+ try{const r=await P.install();APK_ST.fase=(r&&r.permissao===false)?'permissao':'instalando';apkDesenha()}
+ catch(e){APK_ST.fase='erro';APK_ST.msg=(e&&e.message)||'falha ao abrir a instalação';apkDesenha()}}
 
 /* ---------- v2.8: pede o microfone (uma vez) e mostra as novidades depois de cada atualização ---------- */
 async function micPerguntar(){
@@ -2837,6 +2898,35 @@ try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma
   if(typeof o.sub==='string')sub=o.sub;if(typeof o.calSub==='string')calSub=o.calSub;if(typeof o.plSub==='string')plSub=o.plSub;if(typeof o.plAno==='string')plAno=o.plAno;
   if(typeof o.cSub==='string')cSub=o.cSub;if(typeof o.cMes==='string')cMes=o.cMes;if(typeof o.sel==='string')sel=o.sel;if(typeof o.dsel==='string')dsel=o.dsel;
   if(o.mes&&!isNaN(o.mes))mes=new Date(o.mes)}}}catch(e){}
+
+/* ---------- Tema Escola de Magia (ilustrações originais) ---------- */
+const MG={
+castle:`<svg class="castle" viewBox="0 0 400 170" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M0 170V128l14-8v-22l6-14 6 14v22l10 6v-30l8-22 8 22v30h14v-40l7-26 7 26v40h18V92h10V78h6V64l6-22 6 22v14h6v14h10v-30l9-26 9 26v30h12v-34l7-24 7 24v34h14v-50l9-34 9 34v50h14v-26h10v-12l8-18 8 18v12h10v-20l6-12 6 12v20h14v-14l9-5 9 5v14h14v-22l6-14 6 14v22h12v40z"/><path d="M60 28l5 12 12-4-9 10 8 9-12-1-4 12-4-12-12 1 8-9-9-10 12 4z" opacity=".0"/></g><g fill="#ffd36b"><rect x="30" y="110" width="4" height="7" rx="2"/><rect x="82" y="96" width="4" height="8" rx="2"/><rect x="168" y="72" width="5" height="9" rx="2.5"/><rect x="198" y="100" width="4" height="7" rx="2"/><rect x="236" y="84" width="4" height="8" rx="2"/><rect x="292" y="104" width="4" height="7" rx="2"/><rect x="338" y="112" width="4" height="7" rx="2"/><rect x="366" y="120" width="4" height="7" rx="2"/></g></svg>`,
+wand:`<svg class="mg-wandh mg-art" viewBox="0 0 64 30" xmlns="http://www.w3.org/2000/svg"><path d="M4 26L52 8" stroke="#6b4423" stroke-width="3.4" stroke-linecap="round"/><path d="M4 26L52 8" stroke="#a8743c" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="3 5"/><circle cx="10" cy="24" r="3.1" fill="#4a2e16"/><circle cx="22" cy="19" r="2.2" fill="#8a5a2c"/><circle cx="35" cy="14" r="2" fill="#8a5a2c"/><g fill="#ffe08a"><path d="M58 4l1.4 3.2 3.2 1.4-3.2 1.4L58 13l-1.4-3-3.2-1.4 3.2-1.4z"/><circle cx="52" cy="2.5" r="1.3"/><circle cx="62" cy="14" r="1.1"/></g></svg>`,
+hat:`<svg class="mg-hat mg-art" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><ellipse cx="45" cy="76" rx="40" ry="9" fill="#5a3b1e"/><path d="M14 74C22 54 30 40 36 26c3-9 10-18 22-22-4 8-2 14 2 20 5 8 10 18 16 50-8 6-52 6-62 0z" fill="#7a5230"/><path d="M14 74c10 5 52 5 62 0l-1-8c-9 4-51 4-60 0z" fill="#3e2812"/><path d="M33 60c4 3 9 4 14 4s10-2 14-5" stroke="#2a1a0a" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="37" cy="48" r="2" fill="#2a1a0a"/><circle cx="55" cy="48" r="2" fill="#2a1a0a"/><path d="M28 36l10 4M52 22l9 8" stroke="#3e2812" stroke-width="1.6" stroke-dasharray="2 2"/><rect x="40" y="28" width="9" height="9" fill="#b8793d" transform="rotate(8 44 32)"/></svg>`,
+snake:`<svg viewBox="0 0 320 78" xmlns="http://www.w3.org/2000/svg" class="mg-art" style="width:100%;height:78px"><path d="M8 62C46 62 50 20 90 20s46 42 88 42 46-40 84-40" stroke="#2f7d3b" stroke-width="15" fill="none" stroke-linecap="round"/><path d="M8 62C46 62 50 20 90 20s46 42 88 42 46-40 84-40" stroke="#58b865" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 9"/><path d="M262 22c14-12 38-12 48 2 4 6 2 14-6 17-10 4-30 3-42-6z" fill="#2f7d3b"/><path d="M270 12l5-10 4 10M284 10l6-9 2 10" stroke="#d6a82c" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="294" cy="24" rx="4" ry="5.5" fill="#f5d442"/><rect x="293" y="19" width="2" height="10" rx="1" fill="#111"/><path d="M312 34l8 3m-8-3l7 6" stroke="#d6313a" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+sombra:`<svg viewBox="0 0 110 96" xmlns="http://www.w3.org/2000/svg" class="mg-art" style="width:98px;height:86px"><defs><radialGradient id="mgg" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#37e06a" stop-opacity=".55"/><stop offset="1" stop-color="#37e06a" stop-opacity="0"/></radialGradient></defs><ellipse cx="55" cy="40" rx="48" ry="40" fill="url(#mgg)"/><path d="M55 6c-18 0-28 14-28 30 0 6 1 10 3 14-10 6-22 16-26 46h102c-4-30-16-40-26-46 2-4 3-8 3-14 0-16-10-30-28-30z" fill="#0c0a10"/><path d="M55 16c-12 0-19 9-19 20 0 10 8 18 19 18s19-8 19-18c0-11-7-20-19-20z" fill="#000"/><path d="M45 38l7 2m11 0l7-2" stroke="#37e06a" stroke-width="3.2" stroke-linecap="round"/><path d="M0 96c12-8 14-18 26-22M110 96c-12-8-14-18-26-22" stroke="#2a1d36" stroke-width="3" fill="none"/></svg>`,
+aluno:`<svg class="aluno" viewBox="0 0 120 190" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M60 8c-16 0-26 12-26 26 0 8 3 14 7 18-18 8-30 24-32 138h102C109 76 97 60 79 52c4-4 7-10 7-18C86 20 76 8 60 8z"/><path d="M92 66l22-52" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></g><g fill="none" stroke="var(--bg)" stroke-width="3"><circle cx="49" cy="34" r="8"/><circle cx="71" cy="34" r="8"/><path d="M57 34h6"/></g><g fill="#ffe08a"><path d="M114 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><circle cx="104" cy="8" r="2"/></g></svg>`,
+vela:`<svg class="vela" viewBox="0 0 12 34"><rect x="2" y="12" width="8" height="22" rx="1.5" fill="#f3ead2"/><path d="M6 1c3 4 3 7 0 10-3-3-3-6 0-10z" fill="#ffb938"/></svg>`
+};
+function mgBg(){let el=document.querySelector('.mg-bg');
+ if(S.color!=='magia'){if(el)el.remove();return}
+ if(el)return;el=document.createElement('div');el.className='mg-bg';
+ let st='';for(let i=0;i<22;i++)st+=`<i class="star" style="left:${(i*37+11)%100}%;top:${(i*53+7)%62}%;animation-delay:${(i%7)*.45}s"></i>`;
+ let ve='';[[8,18],[78,30],[44,12]].forEach((p,i)=>{ve+=`<div style="position:absolute;left:${p[0]}%;top:${p[1]}%;animation-delay:${i*1.3}s" class="vela">${MG.vela.replace('class="vela"','')}</div>`});
+ el.innerHTML=st+ve+MG.aluno+`<div style="color:var(--ac)">${MG.castle}</div>`;document.body.prepend(el)}
+function mgDeco(){document.querySelectorAll('.mg-art,.mg-ban,.mg-hat').forEach(e=>e.remove());mgBg();
+ if(S.color!=='magia'||!S.user||!S.user.name)return;
+ const v=document.getElementById('v'),h=document.querySelector('header .brand');if(!v)return;
+ if(h&&!h.querySelector('.mg-wandh'))h.insertAdjacentHTML('beforeend',MG.wand);
+ const ban=(svg,t,s)=>`<div class="mg-ban mg-art-box">${svg}<div><b>${t}</b><span>${s}</span></div></div>`;
+ let add='';
+ if(tab==='inicio')add=ban(`<div style="color:var(--ac);width:96px;height:56px;overflow:hidden;border-radius:8px">${MG.castle}</div>`,'Bem-vindo à Escola de Magia','Organize seu dia com um toque de varinha ✨');
+ else if(tab==='mercado'||tab==='compras'||tab==='carteira')add=`<div class="mg-ban" style="padding:4px 10px">${MG.snake}</div>`;
+ else if(tab==='config')add=ban(MG.sombra,'Cuidado com as trevas','Aqui ficam os feitiços do seu app: conta, backup e senha.');
+ else if(tab==='notas'||tab==='diario'){v.insertAdjacentHTML('afterbegin',MG.hat)}
+ if(add)v.insertAdjacentHTML('afterbegin',add.replace('class="mg-ban"','class="mg-ban mg-art-box"'))}
+(function(){const _r=render;render=function(){_r.apply(this,arguments);try{mgDeco()}catch(e){}}})();
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
