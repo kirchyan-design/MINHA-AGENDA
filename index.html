@@ -1488,7 +1488,7 @@ function vConfig(){
 
 function togVers(){S.versOff=!S.versOff;save();render()}
 function cfgInicio(){const on=!S.versOff;return `<h3>${_t('Tela inicial')}</h3><div class="card"><div class="prm"><span class="ic">📖</span><span class="t"><b>Versículo bíblico do dia</b><small>${on?'Aparece no topo da tela inicial.':'Escondido da tela inicial.'}</small></span><button class="${on?'':'sec'}" onclick="togVers()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div></div>`}
-/* ---------- v2.5: Conta (Google, e-mail/senha ou celular) e recuperação da senha do app ---------- */
+/* ---------- v2.5: Conta (Google ou e-mail/senha) e recuperação da senha do app ---------- */
 const FA=()=>plug('FirebaseAuthentication');
 if(S.user&&S.user.google&&!S.user.conta){S.user.conta=Object.assign({prov:'google'},S.user.google);delete S.user.google}
 const ct=()=>S.user&&S.user.conta;
@@ -1515,21 +1515,7 @@ function formDlg(o){return new Promise(res=>{
  (o.links||[]).forEach(l=>{el.querySelector('#fd-l-'+l.id).onclick=()=>fim({link:l.id,v:vals()})});
  const p=el.querySelector('input');if(p)setTimeout(()=>p.focus(),50)})}
 async function fotoDataUrl(url){try{const r=await fetch(url),b=await r.blob();return await new Promise((ok,er)=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=er;f.readAsDataURL(b)})}catch(e){return url}}
-function normFone(v){const d=String(v).replace(/[^\d+]/g,'');if(d.startsWith('+'))return d;const n=d.replace(/^0+/,'');return (n.length>=12&&n.startsWith('55'))?'+'+n:'+55'+n}
-/* Login por SMS: espera o código chegar, pede ao usuário e confirma. */
-function fbFone(tel){const A=FA();return new Promise(async(res,rej)=>{
- const hs=[];let fechou=false;
- const fim=(f,v)=>{if(fechou)return;fechou=true;hs.forEach(h=>{try{h&&h.remove&&h.remove()}catch(e){}});f(v)};
- try{
-  hs.push(await A.addListener('phoneCodeSent',async ev=>{
-   const d=await formDlg({title:'Digite o código',sub:'Enviado por SMS para '+tel,fields:[{id:'cod',label:'Código recebido',ex:'inputmode="numeric" autocomplete="one-time-code" maxlength="8"'}],ok:'Confirmar'});
-   if(!d||!d.v.cod.trim())return fim(rej,{message:'cancel'});
-   try{fim(res,await A.confirmVerificationCode({verificationId:ev.verificationId,verificationCode:d.v.cod.trim()}))}catch(e){fim(rej,e)}}));
-  hs.push(await A.addListener('phoneVerificationFailed',ev=>fim(rej,{code:ev&&ev.message,message:(ev&&ev.message)||'Falha ao enviar o SMS.'})));
-  const r=await A.signInWithPhoneNumber({phoneNumber:tel});
-  if(r&&r.user)fim(res,r);
- }catch(e){fim(rej,e)}})}
-/* Faz a autenticação pelo método m ('google' | 'email' | 'fone'). modo 'verificar' = confirmar a conta já conectada. Devolve o resultado ou null. */
+/* Faz a autenticação pelo método m ('google' | 'email'). modo 'verificar' = confirmar a conta já conectada. Devolve o resultado ou null. */
 async function autenticar(m,modo){
  const A=FA(),ver=modo==='verificar',c=ct()||{};
  if(m==='google')return A.signInWithGoogle();
@@ -1544,11 +1530,7 @@ async function autenticar(m,modo){
   if(!pw){info('Digite a senha.');return null}
   if(d.link==='new'){const r=await A.createUserWithEmailAndPassword({email:em,password:pw});try{await A.sendEmailVerification()}catch(e){}return r}
   return A.signInWithEmailAndPassword({email:em,password:pw})}
- if(m==='fone'){
-  const d=await formDlg({title:ver?'Confirme sua conta':'Entrar com o celular',sub:'Enviaremos um código por SMS.',fields:[{id:'tel',label:'Celular com DDD',type:'tel',ph:'(81) 91234-5678',val:ver?c.phone:'',ex:'autocomplete="tel"'}],ok:'Enviar código'});
-  if(!d)return null;
-  if(!d.v.tel.trim()){info('Digite o número do celular.');return null}
-  return fbFone(normFone(d.v.tel))}
+ if(m==='fone'){info('O login por celular (SMS) foi desativado. Entre com o Google ou com e-mail e senha.');return null}
  return null}
 /* ---------- v2.6: troca de conta ---------- */
 const acctId=u=>String((u&&(u.email||u.phoneNumber||u.uid))||'').trim().toLowerCase();
@@ -1617,14 +1599,14 @@ async function contaSair(quiet){
  if(own&&trocarDados(own,'',null,quiet?'':'Conta desconectada. Os dados dela ficam guardados e voltam quando você entrar de novo com ela.'))return;
  delete S.user.conta;save();if(!quiet){render();info('Conta desconectada. Seus dados continuam salvos neste aparelho.')}}
 function btnsConta(){const b='width:100%;padding:13px;font-size:15px';
- return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('fone')">📱 Entrar com o celular (SMS)</button>`}
+ return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button>`}
 function cfgConta(){const c=ct();
  return `<h3>Conta</h3><div class="card">`
  +(c?`<div class="prm"><span class="ic">✅</span><span class="t"><b>Conectada · ${esc(PROV[c.prov]||'')}</b><small>${esc(ctRot(c))}</small></span><button class="sec" onclick="ask('Desconectar a conta deste aparelho? Os dados dela ficam guardados na nuvem e voltam quando você entrar de novo com ela.',()=>contaSair(),'Desconectar')">Desconectar</button></div>${nuvStatus()}<p class="hint">Se esquecer a senha de 4 dígitos do app, toque em “Esqueci” na tela de senha e entre de novo com esta conta para criar outra, sem perder seus dados.</p>`
  :btnsConta()+`<p class="hint">Conecte uma conta para poder recuperar a senha do app caso você esqueça.</p>`)
  +`</div>`}
 /* ---------- v2.9.4: dados na nuvem (Firebase Firestore) ----------
-   Quem entra com Google, e-mail ou celular tem os dados guardados na nuvem, na conta dele (users/{uid}). Ao trocar de aparelho ou sair e entrar de novo, os dados voltam.
+   Quem entra com Google ou e-mail tem os dados guardados na nuvem, na conta dele (users/{uid}). Ao trocar de aparelho ou sair e entrar de novo, os dados voltam.
    Usa a API REST do Firestore com o token de login do próprio usuário (as regras do Firestore deixam cada um ler e gravar só o que é seu). */
 const FS_N='projects/jc-organiza/databases/(default)/documents',FS_B='https://firestore.googleapis.com/v1/'+FS_N,NUV_PART=250000,NUV_FOTOS_MAX=8e6;
 const NUV={busy:false,ok:null,msg:'',t:0};let NUV_T=null;
@@ -2667,8 +2649,11 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.5':[
+  '🔑 O login por celular (SMS) foi retirado. Agora é só com o Google ou com e-mail e senha.'
+ ],
  '2.9.4':[
-  '☁️ Seus dados agora ficam guardados na nuvem, na sua conta (Google, e-mail ou celular). Se trocar de celular ou sair e entrar de novo, tudo volta: agenda, notas, diário, compras e plantões.'
+  '☁️ Seus dados agora ficam guardados na nuvem, na sua conta (Google ou e-mail). Se trocar de celular ou sair e entrar de novo, tudo volta: agenda, notas, diário, compras e plantões.'
  ],
  '2.9.3':[
   '⚖️ Promoções: nova aba “Comparar preços”. O app compara os produtos equivalentes do Assaí, do Atacadão e do Novo Atacarejo, mostra qual mercado está mais barato em cada setor e no total geral.'
@@ -2727,12 +2712,12 @@ function novidadesQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySel
 /* ---------- recado: guia com todas as funções das Configurações ----------
    Aparece UMA única vez por aparelho:
    - quem já tem o app: na próxima vez que abrir (depois de liberar a senha e as outras caixas);
-   - quem é novo: logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
+   - quem é novo: logo depois de entrar com o nome ou com uma conta (Google ou e-mail).
    Se mudar alguma opção em Configurações, atualize esta lista. Para mostrar de novo a todos, troque o número da chave (-v1 → -v2). */
 const RECADO_CFG_KEY='ma-recado-config-v1';
 const RECADO_CFG=[
  ['👤','Perfil','Foto, nome na saudação, nome completo, profissão/função, registro profissional, local de trabalho e telefone.'],
- ['🔑','Conta','Entre com o Google, com e-mail e senha ou com o celular (SMS). Serve para recuperar a senha do app, e cada conta tem os seus próprios dados.'],
+ ['🔑','Conta','Entre com o Google ou com e-mail e senha. Serve para recuperar a senha do app, e cada conta tem os seus próprios dados.'],
  ['💾','Backup no celular','Salvar ou compartilhar o backup, salvar em Documentos, restaurar de um arquivo e copiar ou colar o texto do backup.'],
  ['🔔','Lembretes e alarme','Ativar os lembretes de compromissos, escolher quanto tempo antes avisar, lembrar seus plantões, escolher a música do alarme e testar.'],
  ['🔄','Aplicativo','Verificar se há atualização e ver a versão instalada.'],
@@ -2780,7 +2765,7 @@ const GUIA_APP=[
  ['💰','Carteira','Resumo, gastos, contas fixas e renda.'],
  ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
- ['⚙️','Configurações','Perfil, conta (Google, e-mail ou celular), backup, idioma, cores do tema, menu e senha do app.']];
+ ['⚙️','Configurações','Perfil, conta (Google ou e-mail), backup, idioma, cores do tema, menu e senha do app.']];
 function guiaNovosInit(){
  try{
   if(localStorage.getItem(GUIA_KEY))return;

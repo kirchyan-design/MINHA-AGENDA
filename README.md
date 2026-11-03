@@ -15,9 +15,13 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 2.9.5
+
+- **Login por celular (SMS) removido**, para não precisar do plano pago do Firebase. Fica Google e e-mail/senha. No Firebase: Authentication › Sign-in method › **Telefone** › Desativar.
+
 ## Versão 2.9.4
 
-- **Dados na nuvem**: quem entra com Google, e-mail ou celular tem os dados (agenda, notas, diário com fotos, compras, plantões, etc.) guardados no Firestore, em `users/{uid}` (e-mail, telefone, nome, provedor, criadoEm, ultimoAcesso) e `users/{uid}/dados/p0…` (dados em partes). Ao trocar de celular ou sair e entrar de novo, os dados voltam. Sincroniza 5 s depois de cada alteração, ao fechar/abrir o app e pelo botão **Sincronizar** em Configurações › Conta. Se este aparelho e a nuvem tiverem dados diferentes, o app pergunta quais manter. Não sincroniza: logos dos mercados e quem usa o app só com o nome (sem conta).
+- **Dados na nuvem**: quem entra com Google ou e-mail tem os dados (agenda, notas, diário com fotos, compras, plantões, etc.) guardados no Firestore, em `users/{uid}` (e-mail, telefone, nome, provedor, criadoEm, ultimoAcesso) e `users/{uid}/dados/p0…` (dados em partes). Ao trocar de celular ou sair e entrar de novo, os dados voltam. Sincroniza 5 s depois de cada alteração, ao fechar/abrir o app e pelo botão **Sincronizar** em Configurações › Conta. Se este aparelho e a nuvem tiverem dados diferentes, o app pergunta quais manter. Não sincroniza: logos dos mercados e quem usa o app só com o nome (sem conta).
 - **Configuração, uma vez só** (sem isso a nuvem não funciona; o app mostra “A nuvem ainda não está liberada”):
   1. Firebase › Build › **Firestore Database** › Criar banco de dados (modo produção, região `southamerica-east1`).
   2. Firestore › aba **Regras** › cole o conteúdo do arquivo `firestore.rules` › Publicar.

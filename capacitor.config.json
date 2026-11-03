@@ -14,8 +14,7 @@
     "FirebaseAuthentication": {
       "authDomain": "jc-organiza.firebaseapp.com",
       "providers": [
-        "google.com",
-        "phone"
+        "google.com"
       ]
     }
   }
