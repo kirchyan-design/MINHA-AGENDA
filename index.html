@@ -1744,8 +1744,7 @@ function head(){try{vozFabSync()}catch(e){}applyTheme();const ok=!!S.user.name;$
  $('#greet').innerHTML=!ok||tab==='inicio'?'':`<div class="greet">${saudBloco()}</div>`;
  const cb=$('#cfgb');if(cb){cb.style.display=ok?'':'none';cb.classList.toggle('on',tab==='config')}}
 function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
-function welcomeView(){$('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsConta()}<p style="color:var(--mute);font-size:13px;margin:12px 0 4px;text-align:center">${_t('ou informe seu nome')}</p><label class="fl" for="wn">${_t('Como você quer ser chamado(a)?')}</label><input id="wn" placeholder="${_t('Seu nome')}" maxlength="30" autocomplete="given-name" onkeydown="if(event.key==='Enter')enter()"><button class="wbig" onclick="enter()">${_t('Começar')}</button><p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam salvos só neste aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
-function enter(){const n=$('#wn').value.trim();if(!n){$('#wn').focus();return}S.user.name=n;save();render();setTimeout(permIntro,500);setTimeout(guiaNovosQuandoLivre,700);setTimeout(recadoConfigQuandoLivre,900)}
+function welcomeView(){$('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsConta()}<p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
 function evEdit(e){return `<div class="item" style="flex-wrap:wrap"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título"><div class="row" style="width:100%"><input type="date" id="ee-d" value="${e.date}"><input type="time" id="ee-h" value="${e.time||''}"><button onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
 function saveEv(id){const e=S.ev.find(x=>x.id===id),t=$('#ee-t').value.trim();if(!t){$('#ee-t').focus();return}e.title=t;e.date=$('#ee-d').value||e.date;e.time=$('#ee-h').value;edEv=null;save();render()}
 function startH(id){edH=id;edD=JSON.parse(JSON.stringify(S.hist.find(x=>x.id===id)));render()}
@@ -2649,6 +2648,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.7':[
+  '🔑 A tela inicial não pede mais o nome: é só entrar com o Google ou com e-mail e senha (ou criar a conta) e você já cai direto no app.'
+ ],
  '2.9.6':[
   '☁️ Corrigida a sincronização na nuvem: ela acusava erro de banco de dados mesmo com o Firestore criado.'
  ],
@@ -2732,7 +2734,7 @@ const RECADO_CFG=[
  ['🛡️','Permissões','Arquivos, fotos e vídeos, música e áudio, notificações, câmera e microfone. Tem o botão “Permitir tudo” e o atalho para os ajustes do celular.'],
  ['🚪','Sair','Desconecta e volta para a tela inicial. Seus dados ficam guardados no aparelho e voltam quando você entrar de novo.']];
 function recadoConfig(){
- if(!S.user||!S.user.name)return; /* ainda não entrou: espera o login/nome (enter() e conectar() chamam de novo) */
+ if(!S.user||!S.user.name)return; /* ainda não entrou: espera o login/nome (conectar() chama de novo) */
  if(document.querySelector('.rc-ov'))return;
  try{if(localStorage.getItem(RECADO_CFG_KEY))return;localStorage.setItem(RECADO_CFG_KEY,'1')}catch(e){return}
  const o=document.createElement('div');o.className='ov rc-ov';

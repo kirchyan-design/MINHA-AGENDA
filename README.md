@@ -15,6 +15,10 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 2.9.7
+
+- **Sem login por nome**: a tela de boas-vindas só tem Google e e-mail/senha (entrar ou criar conta); logo depois do login o usuário cai direto no app, com o nome tirado da conta. Quem já usava o app só com o nome continua normalmente.
+
 ## Versão 2.9.6
 
 - Corrigido: a sincronização acusava “banco de dados não criado” quando o documento do usuário ainda não existia (a mensagem real do Firestore contém “databases/(default)”).
