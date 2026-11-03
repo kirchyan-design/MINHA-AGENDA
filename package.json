@@ -1,6 +1,6 @@
 {
   "name": "jc-organiza",
-  "version": "2.5.0",
+  "version": "2.8.0",
   "private": true,
   "dependencies": {
     "@capacitor/android": "^6.2.0",

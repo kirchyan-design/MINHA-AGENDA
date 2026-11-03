@@ -514,10 +514,10 @@ main{position:relative;z-index:1}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
 
 /* ---------- comando de voz ---------- */
-.vozbtn{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.25}
-.vozbtn small{opacity:.8;font-weight:500}
-.vozbtn.on{background:var(--rd);color:#fff;border-color:var(--rd)}
-#voz{position:fixed;left:12px;right:12px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:46;display:none;align-items:center;gap:12px;background:#14232e;color:#fff;border-radius:18px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.35)}#voz.ouve{pointer-events:none}
+#vozfab{position:fixed;right:16px;bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:47;width:66px;height:66px;min-width:0;border-radius:50%;border:0;padding:0;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;background:var(--ac);color:var(--onac);box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+#vozfab.on{background:var(--rd);color:#fff;transform:scale(1.18);animation:fabp 1s ease-in-out infinite}
+@keyframes fabp{50%{box-shadow:0 0 0 14px rgba(220,38,38,.25)}}
+#voz{position:fixed;left:12px;right:12px;bottom:calc(176px + env(safe-area-inset-bottom,0px));z-index:46;display:none;align-items:center;gap:12px;background:#14232e;color:#fff;border-radius:18px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.35)}#voz.ouve{pointer-events:none}
 #voz .mic{font-size:26px;flex:none}#voz.ouve .mic{animation:vozp 1s ease-in-out infinite}
 #voz .tx{flex:1;min-width:0;font-weight:600;word-break:break-word}#voz .tx small{display:block;font-weight:500;opacity:.8}
 #voz button{flex:none;background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:12px;padding:8px 12px;font:inherit;font-weight:700}
@@ -974,7 +974,7 @@ function vLista(){
  const it=x=>`<div class="item ${x.done?'done':''}"><input type="checkbox" ${x.done?'checked':''} onchange="togShop('${x.id}')" aria-label="Marcar"><div class="t"><div>${esc(x.title)}</div><div class="pq"><input inputmode="decimal" value="${x.qty}" oninput="upShop('${x.id}','qty',this.value)" aria-label="Quantidade">${unitSel(x.unit,`upUnit('${x.id}',this.value)`)}<span>×</span><input class="pr" inputmode="decimal" value="${x.price||''}" placeholder="${wt(x.unit)?'R$/kg':'0,00'}" oninput="upShop('${x.id}','price',this.value)" aria-label="Preço"><b id="sub${x.id}">${brl(lineTotal(x))}</b></div></div><button class="ghost" onclick="S.shop=S.shop.filter(y=>y.id!=='${x.id}');save();render()" aria-label="Excluir">✕</button></div>`;
  const mk=[...new Set(S.hist.map(h=>h.market))];
  return `<datalist id="pl">${Object.values(S.prods).map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist><datalist id="mks">${mk.map(m=>`<option value="${esc(m)}">`).join('')}</datalist>
- ${mkBar()}<button class="sec" style="width:100%;margin:0 0 14px" onclick="abrirScanner()">📷 Escanear preço na prateleira</button><button class="vozbtn" id="vozb" style="width:100%;margin:0 0 14px" onpointerdown="vozIni(event)" onpointerup="vozFim()" onpointercancel="vozFim()" oncontextmenu="return false" aria-label="Segure e fale o produto e o preço">🎤 Segure e fale<small>Ex.: “arroz turquesa 6,99”</small></button><div class="card tot"><div class="r"><span>Total da lista</span><strong id="tt">${brl(t)}</strong></div><div class="r"><span>No carrinho</span><b id="tc">${brl(c)}</b></div><div class="r"><span>Falta pegar</span><b id="tf">${brl(t-c)}</b></div></div>
+ ${mkBar()}<button class="sec" style="width:100%;margin:0 0 14px" onclick="abrirScanner()">📷 Escanear preço na prateleira</button><p class="hint" style="margin:0 0 14px">🎤 Segure o botão do microfone (canto da tela), fale o produto e o preço e solte. Ex.: “arroz turquesa 6,99”.</p><div class="card tot"><div class="r"><span>Total da lista</span><strong id="tt">${brl(t)}</strong></div><div class="r"><span>No carrinho</span><b id="tc">${brl(c)}</b></div><div class="r"><span>Falta pegar</span><b id="tf">${brl(t-c)}</b></div></div>
  <div class="card"><input id="st" list="pl" placeholder="Produto" oninput="fillPrice()" onkeydown="if(event.key==='Enter')addShop()"><div class="row" style="margin-top:8px"><input id="sp" inputmode="decimal" placeholder="Preço (R$)" onkeydown="if(event.key==='Enter')addShop()"><input id="sq" inputmode="decimal" value="1" style="width:70px" aria-label="Quantidade"><select id="su" onchange="unitHint()" aria-label="Unidade"><option value="un">un</option><option value="kg">kg</option><option value="g">g</option></select><button onclick="addShop()">Adicionar</button></div><p class="hint">Produto por peso: escolha kg ou g e informe o preço do quilo.</p></div>`
  +(S.shop.length?(pend.length?`<div class="card">${pend.map(it).join('')}</div>`:'')+(d.length?`<h3>No carrinho (${d.length})</h3><div class="card">${d.map(it).join('')}</div>`:'')
  +`<div class="card"><div class="row" style="margin-top:8px"><button onclick="finish()">Finalizar e salvar no histórico</button><button class="ghost" onclick="ask('Limpar toda a lista?',()=>{S.shop=[];save();render()},'Limpar')">Limpar</button></div></div>`
@@ -1256,7 +1256,7 @@ function applyTheme(){const t=S.theme||'auto',r=document.documentElement,cc=(typ
 function setTheme(t){S.theme=t;save();applyTheme();render()}
 const saud=()=>{const h=new Date().getHours();return h<12?_t('Bom dia'):h<18?_t('Boa tarde'):_t('Boa noite')};
 const dataLonga=()=>new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
-function head(){applyTheme();const ok=!!S.user.name;$('nav').style.display=ok&&S.menu!=='side'?'':'none';{const mb=$('#menub');if(mb)mb.style.display=ok&&S.menu==='side'?'':'none'}const hh=document.querySelector('header');if(hh)hh.style.display=ok?'':'none';
+function head(){try{vozFabSync()}catch(e){}applyTheme();const ok=!!S.user.name;$('nav').style.display=ok&&S.menu!=='side'?'':'none';{const mb=$('#menub');if(mb)mb.style.display=ok&&S.menu==='side'?'':'none'}const hh=document.querySelector('header');if(hh)hh.style.display=ok?'':'none';
  $('#greet').innerHTML=!ok||tab==='inicio'?'':`<div class="greet">${saudBloco()}</div>`;
  const cb=$('#cfgb');if(cb){cb.style.display=ok?'':'none';cb.classList.toggle('on',tab==='config')}}
 function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
@@ -1705,7 +1705,7 @@ function permIntro(){
  const o=document.createElement('div');o.className='ov';o.setAttribute('role','alertdialog');
  o.innerHTML=`<div class="dlg"><p>Permissões do JC ORGANIZA</p>${PERMS.map(p=>`<div class="prm"><span class="ic">${p.ic}</span><span class="t"><b>${p.nome}</b><small>${p.desc}</small></span></div>`).join('')}<div class="row" style="margin-top:12px"><button id="pi-ok" style="background:var(--ac)">Permitir</button><button class="sec" id="pi-no">Agora não</button></div></div>`;
  document.body.appendChild(o);
- const fim=()=>{try{localStorage.setItem('mp-perm-asked','1')}catch(e){}permAsking=false;o.remove()};
+ const fim=()=>{try{localStorage.setItem('mp-perm-asked','1');localStorage.setItem('ma-mic-asked','1')}catch(e){}permAsking=false;o.remove()};
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
@@ -1944,46 +1944,87 @@ function parseVoz(txt){
  nome=nome.split(' ').map((w,i)=>i&&peq.test(w.toLowerCase())?w.toLowerCase():(w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())).join(' ').slice(0,60);
  return {nome,preco,un:kg?'kg':'un'}}
 
-const V={hold:false,on:false,done:false,txt:'',sr:null,ls:null,tm:null,undo:null};
+const V={hold:false,on:false,done:false,fin:false,txt:'',acc:'',erro:'',rs:0,seq:0,max:null,sr:null,ls:null,ls2:null,tm:null,undo:null};
 function vozBolha(html,cls,btn){let b=$('#voz');if(!b){b=document.createElement('div');b.id='voz';b.setAttribute('role','status');document.body.appendChild(b)}
- b.className=cls||'';b.innerHTML=html+(btn?'<button type="button" id="voz-u">'+btn+'</button>':'');b.style.display='flex';clearTimeout(V.tm)}
+ b.className=cls||'';b.onclick=cls==='ouve'?()=>vozAbort():null;b.innerHTML=html+(btn?'<button type="button" id="voz-u">'+btn+'</button>':'');b.style.display='flex';clearTimeout(V.tm)}
 function vozAviso(ic,msg,ms){vozBolha('<span class="mic">'+ic+'</span><span class="tx">'+msg+'</span>');vozAuto(ms||6000);const b=$('#voz');if(b)b.onclick=()=>vozFecha()}
 function vozFecha(){clearTimeout(V.tm);const b=$('#voz');if(b)b.style.display='none'}
 function vozAuto(ms){clearTimeout(V.tm);V.tm=setTimeout(vozFecha,ms)}
-const vozBt=on=>{const b=$('#vozb');if(b)b.classList.toggle('on',!!on)};
+const vozBt=on=>{const b=$('#vozfab');if(b)b.classList.toggle('on',!!on)};
+const vozTxt=()=>((V.acc||'')+' '+(V.txt||'')).replace(/\s+/g,' ').trim();
+/* botão flutuante do microfone: só aparece em Compras › lista atual */
+function vozFabSync(){
+ const show=!!(S.user&&S.user.name)&&tab==='compras'&&sub==='atual'&&!(typeof PIN_LK!=='undefined'&&PIN_LK);
+ if(!show){if(V.on||V.hold)vozAbort();else if($('#voz')&&$('#voz').classList.contains('ouve'))vozFecha()}
+ let b=$('#vozfab');
+ if(!b){if(!show)return;
+  b=document.createElement('button');b.id='vozfab';b.type='button';b.textContent='🎤';b.setAttribute('aria-label','Segure e fale o produto e o preço');
+  b.addEventListener('pointerdown',vozIni);
+  b.addEventListener('pointerup',()=>vozFim());b.addEventListener('pointercancel',()=>vozFim());
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+  document.body.appendChild(b)}
+ b.style.display=show?'flex':'none'}
+function vozMicNegado(){
+ const o=document.createElement('div');o.className='ov';o.setAttribute('role','alertdialog');
+ o.innerHTML='<div class="dlg"><p>🎤 Microfone bloqueado</p><div class="hint" style="margin:0 0 14px">Para falar o produto e o preço, permita o microfone em: Ajustes do celular › Apps › JC ORGANIZA › Permissões › Microfone.</div><div class="row"><button id="mn-ok">Abrir ajustes</button><button class="sec" id="mn-no">Agora não</button></div></div>';
+ document.body.appendChild(o);
+ o.querySelector('#mn-ok').onclick=()=>{o.remove();permAjustes()};o.querySelector('#mn-no').onclick=()=>o.remove()}
 async function vozIni(ev){
- if(ev){try{ev.preventDefault();if(ev.target&&ev.target.setPointerCapture&&ev.pointerId!=null)ev.target.setPointerCapture(ev.pointerId)}catch(e){}}
+ if(ev){try{ev.preventDefault();if(ev.currentTarget&&ev.currentTarget.setPointerCapture&&ev.pointerId!=null)ev.currentTarget.setPointerCapture(ev.pointerId)}catch(e){}}
  if(V.hold||V.on)return;
  if(!(S.market||'').trim()){escMk=true;render();vozAviso('🏪','Escolha primeiro o mercado. Depois segure o botão 🎤 e fale o produto e o preço.');return}
  const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!N&&!W){vozAviso('⚠️',nat()?'O reconhecimento de voz ainda não está neste app. <small>Gere o APK de novo (Actions › Gerar APK) e instale a versão nova.</small>':'Este navegador não tem reconhecimento de voz. <small>Abra pelo Google Chrome ou use o app instalado.</small>',9000);return}
- V.hold=true;V.done=false;V.txt='';
+ V.seq++;V.hold=true;V.done=false;V.fin=false;V.txt='';V.acc='';V.erro='';V.rs=0;
+ clearTimeout(V.max);V.max=setTimeout(()=>{if(V.hold||V.on)vozFim()},20000);
  try{
   if(N){
    let p=await N.checkPermissions();
-   if(p.speechRecognition!=='granted'){p=await N.requestPermissions();V.hold=false;
-    if(p.speechRecognition==='granted')vozAviso('✅','Microfone liberado. Agora segure o botão 🎤 e fale o produto e o preço.');else vozAviso('🎤','Permita o microfone do JC ORGANIZA nos ajustes do celular para usar a voz.',8000);return}
-   try{const a=await N.available();if(a&&a.available===false){V.hold=false;vozAviso('⚠️','O reconhecimento de voz não está disponível neste celular. <small>Confira se o app Google está instalado e atualizado.</small>',8000);return}}catch(e){}
-   vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99</small></span>','ouve');vozBt(1);
-   V.on=true;
-   V.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m){V.txt=m;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(m)+'<small>Solte o botão para registrar</small></span>','ouve')}});
-   try{V.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped'&&V.on&&!V.hold)setTimeout(vozProc,300)})}catch(e){}
-   await N.start({language:LOC(),maxResults:3,partialResults:true,popup:false});
+   if(p.speechRecognition!=='granted'){
+    V.hold=false;clearTimeout(V.max);
+    p=await N.requestPermissions();
+    if(p.speechRecognition==='granted')vozAviso('✅','Microfone liberado. Agora segure o botão 🎤 e fale o produto e o preço.');
+    else vozMicNegado();
+    return}
+   try{const a=await N.available();if(a&&a.available===false){V.hold=false;clearTimeout(V.max);vozAviso('⚠️','O reconhecimento de voz não está disponível neste celular. <small>Confira se o app Google está instalado e atualizado.</small>',8000);return}}catch(e){}
+   const ouvindo=()=>vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99</small></span>','ouve');
+   ouvindo();vozBt(1);V.on=true;
+   const opt={language:LOC(),maxResults:3,partialResults:true,popup:false};
+   V.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m){V.txt=m;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(vozTxt())+'<small>Solte o botão para registrar</small></span>','ouve')}});
+   try{V.ls2=await N.addListener('listeningState',e=>{
+    if(!(e&&e.status==='stopped')||!V.on||V.done)return;
+    /* o Android encerra sozinho após um silêncio; se o dedo ainda está no botão, volta a ouvir */
+    if(V.hold&&V.rs<6){V.rs++;V.acc=vozTxt();V.txt='';N.start(opt).catch(()=>{})}
+    else if(!V.hold)setTimeout(vozProc,300)})}catch(e){}
+   await N.start(opt);
    if(!V.hold)vozFim();return}
   const r=new W();r.lang=LOC();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
   r.onresult=e=>{let x='';for(let i=0;i<e.results.length;i++)x+=e.results[i][0].transcript;V.txt=x;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(x)+'<small>Solte o botão para registrar</small></span>','ouve')};
-  r.onerror=e=>{V.erro=e&&e.error};r.onend=()=>vozProc();
+  const sq=V.seq;r.onerror=e=>{V.erro=e&&e.error;setTimeout(()=>{if(sq===V.seq)vozProc()},300)};r.onend=()=>{if(sq===V.seq)vozProc()};
   vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99</small></span>','ouve');vozBt(1);
-  V.sr=r;V.on=true;V.erro='';r.start()
- }catch(e){V.hold=false;V.on=false;vozBt(0);vozAviso('⚠️','Não foi possível usar o microfone agora. Tente de novo.')}}
+  V.sr=r;V.on=true;r.start()
+ }catch(e){V.hold=false;V.on=false;clearTimeout(V.max);vozBt(0);
+  const why=String((e&&(e.message||e.errorMessage))||e||'').slice(0,120);
+  vozAviso('⚠️','Não foi possível usar o microfone agora.'+(why?'<small>'+esc(why)+'</small>':''),7000)}}
 async function vozFim(){
- if(!V.hold&&!V.on)return;V.hold=false;if(!V.on)return;
- const N=nat()?plug('SpeechRecognition'):null;
- try{if(N){await N.stop();setTimeout(vozProc,500)}else if(V.sr)V.sr.stop()}catch(e){vozProc()}}
-async function vozProc(){
- if(V.done)return;V.done=true;V.on=false;V.hold=false;vozBt(0);
+ if(!V.hold&&!V.on)return;V.hold=false;if(!V.on||V.fin)return;V.fin=true;clearTimeout(V.max);
+ const N=nat()?plug('SpeechRecognition'):null,sq=V.seq,fim=()=>{if(sq===V.seq)vozProc()};
+ /* espera meio segundo antes de parar, para não cortar a última palavra (o preço) */
+ setTimeout(async()=>{try{if(N){await N.stop();setTimeout(fim,700)}else if(V.sr){V.sr.stop();setTimeout(fim,1500)}else fim()}catch(e){fim()}},500);
+ /* plano B: em qualquer caso a escuta é encerrada e a barra some */
+ setTimeout(fim,3500)}
+/* cancela tudo: para o microfone e some com a barra */
+async function vozAbort(){
+ clearTimeout(V.max);V.seq++;const N=nat()?plug('SpeechRecognition'):null;
+ V.done=true;V.on=false;V.hold=false;V.fin=false;vozBt(0);
  try{if(V.ls)V.ls.remove();if(V.ls2)V.ls2.remove()}catch(e){}V.ls=V.ls2=null;
- const txt=(V.txt||'').trim();
+ try{if(N)await N.stop()}catch(e){}
+ try{if(V.sr){V.sr.onend=null;V.sr.onerror=null;if(V.sr.abort)V.sr.abort();else V.sr.stop()}}catch(e){}V.sr=null;
+ vozFecha()}
+async function vozProc(){
+ if(V.done)return;V.done=true;V.on=false;V.hold=false;V.fin=false;clearTimeout(V.max);vozBt(0);
+ try{if(V.ls)V.ls.remove();if(V.ls2)V.ls2.remove()}catch(e){}V.ls=V.ls2=null;
+ const txt=vozTxt();
  if(!txt){const neg=V.erro==='not-allowed'||V.erro==='service-not-allowed';
   vozBolha('<span class="mic">🎙️</span><span class="tx">'+(neg?'Microfone bloqueado. Permita o microfone nas configurações.':'Não ouvi nada. Segure o botão e fale de novo.')+'</span>');vozAuto(3500);return}
  vozAdd(txt)}
@@ -2009,6 +2050,51 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
  if(u.scan)S.scans=S.scans.filter(x=>x.id!==u.scan);
  save();if(tab==='compras'&&sub==='atual')render();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800)}
 
+/* ---------- v2.8: pede o microfone (uma vez) e mostra as novidades depois de cada atualização ---------- */
+async function micPerguntar(){
+ if(!nat()||PIN_LK||permAsking||!S.user.name)return;
+ const SR=plug('SpeechRecognition');if(!SR)return;
+ let k='';try{k=localStorage.getItem('ma-mic-asked')||''}catch(e){}
+ if(k)return;
+ let p='';try{p=(await SR.checkPermissions()).speechRecognition}catch(e){return}
+ const marca=()=>{try{localStorage.setItem('ma-mic-asked','1')}catch(e){}};
+ if(p==='granted'){marca();return}
+ permAsking=true;
+ const o=document.createElement('div');o.className='ov';o.setAttribute('role','alertdialog');
+ o.innerHTML='<div class="dlg"><p>🎤 Permitir o microfone?</p><div class="hint" style="margin:0 0 14px">Usado só na lista de compras: você segura o botão do microfone, fala o produto e o preço, e o item é registrado.</div><div class="row"><button id="mc-ok">Permitir</button><button class="sec" id="mc-no">Agora não</button></div></div>';
+ document.body.appendChild(o);
+ const fim=()=>{marca();permAsking=false;o.remove()};
+ o.querySelector('#mc-no').onclick=fim;
+ o.querySelector('#mc-ok').onclick=async()=>{fim();await permPedir('mic',false)}}
+function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>micQuandoLivre(n+1),1000);return}micPerguntar()}
+
+/* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
+const NOVIDADES={
+ '2.8.0':[
+  '🎤 Lista de compras: novo botão flutuante de microfone. Segure, fale o produto e o preço (ex.: “arroz turquesa 6,99”) e solte.',
+  '🔔 Quando sai uma atualização, o app avisa por notificação e, ao abrir, mostra aqui o que mudou (uma única vez).',
+  '🔐 O app pede a permissão do microfone para a voz funcionar.'
+ ]};
+function novidadesDialog(v,lista,marca){
+ marca();
+ const o=document.createElement('div');o.className='ov';o.setAttribute('role','alertdialog');o.setAttribute('aria-label','Novidades da atualização');
+ o.innerHTML='<div class="dlg"><p>🆕 Novidades da versão '+esc(v)+'</p><div style="margin:0 0 14px;line-height:1.5">'+lista.map(t=>'<div style="margin:0 0 8px">'+esc(t)+'</div>').join('')+'</div><div class="row"><button id="nv-ok">Entendi</button></div></div>';
+ document.body.appendChild(o);o.querySelector('#nv-ok').onclick=()=>o.remove()}
+async function novidadesChecar(){
+ try{
+  if(!('serviceWorker' in navigator))return;
+  const reg=await navigator.serviceWorker.ready;const w=navigator.serviceWorker.controller||reg.active;if(!w)return;
+  const v=await updVersao(w);if(!v)return;
+  let vis='';try{vis=localStorage.getItem('ma-novidades-visto')||''}catch(e){}
+  if(vis===v)return;
+  const marca=()=>{try{localStorage.setItem('ma-novidades-visto',v)}catch(e){}};
+  const lista=NOVIDADES[v];
+  /* sem texto para esta versão, ou aparelho novo (sem conta ainda): só registra a versão, sem mostrar */
+  if(!lista||!(S.user&&S.user.name)){marca();return}
+  novidadesDialog(v,lista,marca)
+ }catch(e){}}
+function novidadesQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>novidadesQuandoLivre(n+1),1000);return}novidadesChecar()}
+
 /* depois de puxar para atualizar, volta para a mesma página onde o usuário estava */
 try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma-ptr');const o=JSON.parse(r)||{};
  if(S.user&&S.user.name&&(o.tab==='config'||TABS.some(t=>t[0]===o.tab))){tab=o.tab;
@@ -2016,7 +2102,7 @@ try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma
   if(typeof o.cSub==='string')cSub=o.cSub;if(typeof o.cMes==='string')cMes=o.cMes;if(typeof o.sel==='string')sel=o.sel;if(typeof o.dsel==='string')dsel=o.dsel;
   if(o.mes&&!isNaN(o.mes))mes=new Date(o.mes)}}}catch(e){}
 
-applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(ocrAquecer,6000)});
+applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>

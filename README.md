@@ -2,6 +2,13 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 2.8
+
+- **Microfone flutuante na lista de compras**: o botão 🎤 que ficava dentro da lista foi removido. Agora há um botão redondo no canto da tela (só em Compras › lista atual): **segure, fale o produto e o preço (ex.: “arroz turquesa 6,99”) e solte**. O item entra na lista e o preço é registrado no mercado. Melhorias: o app espera meio segundo ao soltar para não cortar o preço falado por último, volta a ouvir se o Android encerrar por silêncio com o dedo ainda no botão, e mostra o motivo se algo falhar.
+- **Permissão do microfone**: o app pergunta uma vez (mesmo para quem já tinha respondido às outras permissões) e, se estiver bloqueado, o botão abre uma caixa com atalho para os Ajustes do celular.
+- **Novidades da atualização**: depois de atualizar, o app abre uma caixa com a lista de novidades **uma única vez**. O texto fica em `NOVIDADES` no `index.html`.
+- **Como lançar cada atualização**: (1) aumente `VERSION` no `sw.js`; (2) acrescente a mesma versão em `NOVIDADES` no `index.html` com a lista do que mudou; (3) publique. O app avisa por notificação e, depois de atualizado, mostra a caixa.
+
 ## Versão 2.7
 
 - **Escanear preços sem internet**: o leitor de texto (Tesseract) fica dentro do app, na pasta `ocr/`, e é guardado no aparelho. **Uma vez só**, rode em Actions › *Baixar leitor offline* › Run workflow para preencher a pasta `ocr/`. Depois disso o app guarda o leitor sozinho na primeira vez que abrir com internet.
