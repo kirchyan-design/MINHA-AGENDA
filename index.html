@@ -206,6 +206,10 @@ header h1{font-size:25px}
 :root[data-color="ambar"][data-eff="dark"]{--bg:#1b160a;--sf:#292110;--ac:#f2c14e;--acs:#4a3b10;--ln:#3d3317;--onac:#261b00}
 :root[data-color="grafite"][data-eff="light"]{--bg:#f1f2f4;--sf:#fff;--ac:#475569;--acs:#e2e8f0;--ln:#d8dce2;--onac:#fff}
 :root[data-color="grafite"][data-eff="dark"]{--bg:#121417;--sf:#1c2025;--ac:#a8b8cc;--acs:#2c3440;--ln:#2b3036;--onac:#101820}
+/* Tema Natal */
+:root[data-color="natal"][data-eff="light"]{--bg:#f8f3ef;--sf:#fff;--ac:#c62828;--acs:#fde4e1;--ln:#eadcd6;--onac:#fff;--ok:#1f7a3e}
+:root[data-color="natal"][data-eff="dark"]{--bg:#0f1f17;--sf:#17291f;--ac:#ff7a6b;--acs:#3b2a2c;--ln:#2a4034;--onac:#2b0805;--ok:#5fd08a}
+:root[data-color="natal"] header h1::after{content:" 🎄"}
 .swg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .cor{background:var(--sf);color:var(--ink);border:2px solid var(--ln);padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:500;border-radius:12px}
 .cor::before{content:"";width:28px;height:28px;border-radius:50%;background:var(--sc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px}
@@ -1601,7 +1605,7 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569']];
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['natal','Natal','#c62828']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
@@ -1733,6 +1737,7 @@ function vEscanear(){
 
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>applyTheme())}catch(e){}
 
+try{if(!S.natalTeste){S.color='natal';S.natalTeste=1;save()}}catch(e){}
 applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>setTimeout(permIntro,600));
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
