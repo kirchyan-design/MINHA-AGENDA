@@ -509,6 +509,17 @@ main{position:relative;z-index:1}
 .dev-dlg p{font-weight:700;line-height:1.45;margin:6px 0 0}
 .dev-x{position:absolute;top:8px;right:8px;width:36px;height:36px;min-width:0;padding:0;border-radius:50%;border:0;background:var(--bg);color:var(--tx);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
 
+/* ---------- recado: guia das Configurações (aparece uma única vez) ---------- */
+.dlg.rc-dlg{position:relative;display:flex;flex-direction:column;max-width:380px;padding:0;overflow:hidden;max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px)}
+.rc-h{padding:20px 56px 12px 20px}
+.dlg .rc-h p{margin:0;font-weight:700;font-size:17px;line-height:1.35}
+.rc-h small{display:block;margin-top:6px;color:var(--mute);font-size:12.5px;line-height:1.45}
+.rc-b{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px;border-top:1px solid var(--ln)}
+.rc-b .prm{align-items:flex-start}
+.rc-b .prm .t small{display:block;margin-top:2px;font-size:12.5px;line-height:1.45}
+.rc-f{padding:12px 20px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--ln)}
+.rc-f button{width:100%}
+
 /* ---------- puxar para baixo para atualizar ---------- */
 #ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 6px);width:42px;height:42px;margin-left:-21px;border-radius:50%;background:var(--sf);color:var(--ac);box-shadow:0 4px 16px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;font-size:22px;z-index:45;pointer-events:none;opacity:0;transform:translateY(-70px)}
 #ptr.go{color:var(--onac);background:var(--ac)}
@@ -1477,6 +1488,7 @@ async function conectar(m){
   if(!S.user.photo&&u.photoUrl)S.user.photo=await fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c'));
   save();render();
   if(era)setTimeout(permIntro,500);else info('Conta conectada: '+ctRot(S.user.conta));
+  setTimeout(recadoConfigQuandoLivre,900);
  }catch(e){if(cancelado(e))return;info(erroAuth(e))}}
 async function contaSair(quiet){
  const A=FA();try{if(nat()&&A)await A.signOut()}catch(e){}
@@ -1537,7 +1549,7 @@ function head(){try{vozFabSync()}catch(e){}applyTheme();const ok=!!S.user.name;$
  const cb=$('#cfgb');if(cb){cb.style.display=ok?'':'none';cb.classList.toggle('on',tab==='config')}}
 function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
 function welcomeView(){$('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsConta()}<p style="color:var(--mute);font-size:13px;margin:12px 0 4px;text-align:center">${_t('ou informe seu nome')}</p><label class="fl" for="wn">${_t('Como você quer ser chamado(a)?')}</label><input id="wn" placeholder="${_t('Seu nome')}" maxlength="30" autocomplete="given-name" onkeydown="if(event.key==='Enter')enter()"><button class="wbig" onclick="enter()">${_t('Começar')}</button><p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam salvos só neste aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
-function enter(){const n=$('#wn').value.trim();if(!n){$('#wn').focus();return}S.user.name=n;save();render();setTimeout(permIntro,500)}
+function enter(){const n=$('#wn').value.trim();if(!n){$('#wn').focus();return}S.user.name=n;save();render();setTimeout(permIntro,500);setTimeout(recadoConfigQuandoLivre,900)}
 function evEdit(e){return `<div class="item" style="flex-wrap:wrap"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título"><div class="row" style="width:100%"><input type="date" id="ee-d" value="${e.date}"><input type="time" id="ee-h" value="${e.time||''}"><button onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
 function saveEv(id){const e=S.ev.find(x=>x.id===id),t=$('#ee-t').value.trim();if(!t){$('#ee-t').focus();return}e.title=t;e.date=$('#ee-d').value||e.date;e.time=$('#ee-h').value;edEv=null;save();render()}
 function startH(id){edH=id;edD=JSON.parse(JSON.stringify(S.hist.find(x=>x.id===id)));render()}
@@ -2492,6 +2504,47 @@ async function novidadesChecar(){
  }catch(e){}}
 function novidadesQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>novidadesQuandoLivre(n+1),1000);return}novidadesChecar()}
 
+/* ---------- recado: guia com todas as funções das Configurações ----------
+   Aparece UMA única vez por aparelho:
+   - quem já tem o app: na próxima vez que abrir (depois de liberar a senha e as outras caixas);
+   - quem é novo: logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
+   Se mudar alguma opção em Configurações, atualize esta lista. Para mostrar de novo a todos, troque o número da chave (-v1 → -v2). */
+const RECADO_CFG_KEY='ma-recado-config-v1';
+const RECADO_CFG=[
+ ['👤','Perfil','Foto, nome na saudação, nome completo, profissão/função, registro profissional, local de trabalho e telefone.'],
+ ['🔑','Conta','Entre com o Google, com e-mail e senha ou com o celular (SMS). Serve para recuperar a senha do app, e cada conta tem os seus próprios dados.'],
+ ['💾','Backup no celular','Salvar ou compartilhar o backup, salvar em Documentos, restaurar de um arquivo e copiar ou colar o texto do backup.'],
+ ['🔔','Lembretes e alarme','Ativar os lembretes de compromissos, escolher quanto tempo antes avisar, lembrar seus plantões, escolher a música do alarme e testar.'],
+ ['🔄','Aplicativo','Verificar se há atualização e ver a versão instalada.'],
+ ['📖','Tela inicial','Ativar ou desativar o versículo bíblico do dia.'],
+ ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
+ ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
+ ['🎨','Aparência','Modo automático, claro ou escuro e a cor do tema.'],
+ ['🔒','Segurança','Criar uma senha de 4 dígitos, alterar, remover e escolher quando o app bloqueia de novo.'],
+ ['🛡️','Permissões','Arquivos, fotos e vídeos, música e áudio, notificações, câmera e microfone. Tem o botão “Permitir tudo” e o atalho para os ajustes do celular.'],
+ ['🚪','Sair','Desconecta e volta para a tela inicial. Seus dados ficam guardados no aparelho e voltam quando você entrar de novo.']];
+function recadoConfig(){
+ if(!S.user||!S.user.name)return; /* ainda não entrou: espera o login/nome (enter() e conectar() chamam de novo) */
+ if(document.querySelector('.rc-ov'))return;
+ try{if(localStorage.getItem(RECADO_CFG_KEY))return;localStorage.setItem(RECADO_CFG_KEY,'1')}catch(e){return}
+ const o=document.createElement('div');o.className='ov rc-ov';
+ o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Guia das configurações"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
+  +'<div class="rc-h"><p>⚙️ Tudo o que você pode fazer em Configurações</p><small>Um guia rápido com todas as funções da tela Configurações. Esta mensagem aparece só uma vez.</small></div>'
+  +'<div class="rc-b">'+RECADO_CFG.map(r=>'<div class="prm"><span class="ic">'+r[0]+'</span><span class="t"><b>'+esc(r[1])+'</b><small>'+esc(r[2])+'</small></span></div>').join('')+'</div>'
+  +'<div class="rc-f"><button type="button" id="rc-ok">Entendi</button></div></div>';
+ document.body.appendChild(o);
+ const fim=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
+ const kd=e=>{if(e.key==='Escape')fim()};
+ document.addEventListener('keydown',kd,true);
+ o.querySelector('.dev-x').onclick=fim;o.querySelector('#rc-ok').onclick=fim;
+ setTimeout(()=>{try{o.querySelector('#rc-ok').focus()}catch(e){}},50)}
+/* espera o bloqueio por senha e as outras caixas saírem da frente, para não empilhar */
+function recadoConfigQuandoLivre(n){n=n||0;
+ if(!S.user||!S.user.name)return;
+ try{if(localStorage.getItem(RECADO_CFG_KEY))return}catch(e){return}
+ if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<180)setTimeout(()=>recadoConfigQuandoLivre(n+1),1000);return}
+ recadoConfig()}
+
 /* depois de puxar para atualizar, volta para a mesma página onde o usuário estava */
 try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma-ptr');const o=JSON.parse(r)||{};
  if(S.user&&S.user.name&&(o.tab==='config'||TABS.some(t=>t[0]===o.tab))){tab=o.tab;
@@ -2499,7 +2552,7 @@ try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma
   if(typeof o.cSub==='string')cSub=o.cSub;if(typeof o.cMes==='string')cMes=o.cMes;if(typeof o.sel==='string')sel=o.sel;if(typeof o.dsel==='string')dsel=o.dsel;
   if(o.mes&&!isNaN(o.mes))mes=new Date(o.mes)}}}catch(e){}
 
-applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
+applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>

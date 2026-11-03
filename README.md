@@ -2,6 +2,13 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Aviso: guia das Configurações (não é uma atualização)
+
+- **Caixa de recado com o guia das Configurações**: uma caixa com a lista de todas as funções da tela Configurações (Perfil, Conta, Backup, Lembretes e alarme, Aplicativo, Tela inicial, Idioma, Menu, Aparência, Segurança, Permissões e Sair). Ela aparece **uma única vez por aparelho** (chave `ma-recado-config-v1` no `localStorage`):
+  - **Quem já tem o app**: aparece na próxima vez que abrir (não precisa mudar o `VERSION` do `sw.js`: o app carrega o `index.html` novo sozinho), depois de liberar a senha e das outras caixas.
+  - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
+  - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
+
 ## Versão 2.9.1
 
 - **Aviso de atualização com o app fechado**: o aparelho se inscreve no tópico `atualizacoes` do Firebase (Cloud Messaging). Quando você publica uma versão nova, o Android mostra a notificação “🔄 Atualização disponível” mesmo com o app fechado. Vale só para o **APK gerado a partir desta versão** (gere de novo em Actions › *Gerar APK* e instale por cima).
