@@ -2,6 +2,10 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 2.8.2
+
+- **Moldura vertical na câmera**: ao escanear, aparece uma janela no formato de etiqueta de prateleira (o resto da tela fica escurecido). A foto é recortada só dentro da moldura antes de o texto ser lido, então nomes e preços vizinhos não atrapalham. Fotos escolhidas da galeria continuam sendo lidas inteiras.
+
 ## Versão 2.8.1
 
 - **Escanear preços corrigido**: o leitor de texto não carregava porque a pasta `ocr/` não estava no site e o workflow *Baixar leitor offline* estava fora de `.github/workflows/` (o GitHub não o enxergava). Agora: (1) o workflow foi movido para `.github/workflows/leitor-offline.yml`; (2) se a pasta `ocr/` não existir, o app baixa o leitor do CDN (jsDelivr), guarda no aparelho e passa a funcionar offline nas próximas vezes. Para ter o leitor 100% dentro do app, rode uma vez Actions › *Baixar leitor offline* › Run workflow.

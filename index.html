@@ -467,8 +467,10 @@ main{position:relative;z-index:1}
 .scan .sc-top button{background:rgba(255,255,255,.16);color:#fff;box-shadow:none;padding:9px 14px}
 .scan .sc-cam{position:relative;flex:1;min-height:0;overflow:hidden;background:#000}
 .scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.scan .sc-guia{position:absolute;left:7%;right:7%;top:24%;bottom:24%;border:3px solid rgba(255,255,255,.85);border-radius:18px;pointer-events:none}
-.scan .sc-dica{position:absolute;left:0;right:0;bottom:calc(18% - 34px);text-align:center;font-size:13px;opacity:.92;padding:0 22px;pointer-events:none;text-shadow:0 1px 4px #000}
+.scan .sc-guia{position:absolute;left:14%;top:14%;width:72%;height:62%;border:3px solid #fff;border-radius:14px;box-shadow:0 0 0 100vmax rgba(0,0,0,.58);pointer-events:none;z-index:1}
+.scan .sc-guia::before,.scan .sc-guia::after{content:'';position:absolute;left:10%;right:10%;height:2px;background:rgba(255,255,255,.35)}
+.scan .sc-guia::before{top:33%}.scan .sc-guia::after{bottom:30%}
+.scan .sc-dica{position:absolute;left:0;right:0;top:80%;text-align:center;font-size:13px;opacity:.95;padding:0 22px;pointer-events:none;text-shadow:0 1px 4px #000;z-index:1}
 .scan .sc-bar{display:flex;align-items:center;justify-content:space-around;gap:10px;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(0,0,0,.6)}
 .scan .sc-bar button{background:rgba(255,255,255,.16);color:#fff;box-shadow:none;min-width:84px;padding:11px 12px;font-size:13px}
 .scan .sc-shot{width:72px;height:72px;min-width:72px!important;border-radius:50%!important;padding:0!important;background:#fff!important;border:5px solid rgba(255,255,255,.5)!important;background-clip:padding-box!important}
@@ -1838,20 +1840,39 @@ function abrirScanner(){
 
 async function scCam(){
  const o=$('#scan');if(!o)return;scParar();
- o.innerHTML=scTopo()+`<div class="sc-cam"><video id="sc-v" autoplay playsinline muted></video><div class="sc-guia"></div><div class="sc-dica">Enquadre a etiqueta (nome e preço) e toque no botão branco.</div><div class="sc-msg" id="sc-m"><p>Abrindo a câmera…</p></div></div>`
+ o.innerHTML=scTopo()+`<div class="sc-cam"><video id="sc-v" autoplay playsinline muted></video><div class="sc-guia"></div><div class="sc-dica">Encaixe a etiqueta (nome e preço) dentro da moldura e toque no botão branco.</div><div class="sc-msg" id="sc-m"><p>Abrindo a câmera…</p></div></div>`
  +`<div class="sc-bar"><button onclick="$('#sc-f').click()">🖼️ Foto</button><button class="sc-shot" id="sc-b" onclick="scFoto()" aria-label="Tirar foto" disabled></button><button onclick="scRev()" ${SC.rows.length?'':'disabled'}>Itens (${SC.rows.length})</button></div>`
  +`<input type="file" id="sc-f" accept="image/*" capture="environment" hidden onchange="scArquivo(this)">`;
+ scBox();
  try{
   if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))throw new Error('semcam');
   const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
   if(!$('#scan')){st.getTracks().forEach(t=>t.stop());return}
-  SC.stream=st;const v=$('#sc-v');v.srcObject=st;try{await v.play()}catch(e){}
+  SC.stream=st;const v=$('#sc-v');v.srcObject=st;try{await v.play()}catch(e){}scBox();
   const m=$('#sc-m');if(m)m.remove();const b=$('#sc-b');if(b)b.disabled=false;
  }catch(e){
   const m=$('#sc-m');if(m)m.innerHTML=`<p style="font-size:42px;margin:0">📷</p><p>Não foi possível abrir a câmera ao vivo.${nat()?' Confira se a permissão da câmera está liberada.':''}</p><div class="row" style="justify-content:center"><button onclick="$('#sc-f').click()">Tirar foto pelo celular</button>${nat()?'<button class="sec" onclick="permAjustes()">Ajustes do celular</button>':''}</div>`}}
 
 function scQuadro(src,w,h){const k=Math.min(1,1600/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));c.getContext('2d').drawImage(src,0,0,c.width,c.height);return c}
-function scFoto(){const v=$('#sc-v');if(!v||!v.videoWidth)return;const c=scQuadro(v,v.videoWidth,v.videoHeight);scParar();scLer(c)}
+/* moldura vertical (formato de etiqueta): calcula o retângulo em pixels e posiciona a dica logo abaixo */
+function scBox(){const c=$('.sc-cam'),g=$('.sc-guia');if(!c||!g)return null;
+ const cw=c.clientWidth,ch=c.clientHeight;if(!cw||!ch)return null;
+ let w=cw*.72,h=w*1.4;const mh=ch*.72;if(h>mh){h=mh;w=h/1.4}
+ const x=(cw-w)/2,y=Math.max(8,(ch-h)/2-ch*.04);
+ g.style.left=x+'px';g.style.top=y+'px';g.style.width=w+'px';g.style.height=h+'px';
+ const d=$('.sc-dica');if(d)d.style.top=Math.min(ch-40,y+h+12)+'px';
+ SC.box={x,y,w,h,cw,ch};return SC.box}
+window.addEventListener('resize',()=>{if($('#scan')&&$('.sc-guia'))scBox()});
+/* recorta do vídeo só o que está dentro da moldura (o vídeo usa object-fit:cover) */
+function scRecorte(v){const b=scBox(),vw=v.videoWidth,vh=v.videoHeight;
+ if(!b)return scQuadro(v,vw,vh);
+ const k=Math.max(b.cw/vw,b.ch/vh),ox=(vw*k-b.cw)/2,oy=(vh*k-b.ch)/2;
+ let sx=(b.x+ox)/k,sy=(b.y+oy)/k,sw=b.w/k,sh=b.h/k;
+ sx=Math.max(0,sx);sy=Math.max(0,sy);sw=Math.min(sw,vw-sx);sh=Math.min(sh,vh-sy);
+ const mx=Math.max(sw,sh),m=mx>1600?1600/mx:(mx<1100?Math.min(2,1200/mx):1);
+ const c=document.createElement('canvas');c.width=Math.max(1,Math.round(sw*m));c.height=Math.max(1,Math.round(sh*m));
+ c.getContext('2d').drawImage(v,sx,sy,sw,sh,0,0,c.width,c.height);return c}
+function scFoto(){const v=$('#sc-v');if(!v||!v.videoWidth)return;const c=scRecorte(v);scParar();scLer(c)}
 function scArquivo(inp){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;scParar();
  const u=URL.createObjectURL(f),im=new Image();
  im.onload=()=>{const c=scQuadro(im,im.naturalWidth||im.width,im.naturalHeight||im.height);URL.revokeObjectURL(u);scLer(c)};
@@ -2136,6 +2157,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.8.2':[
+  '📷 Escanear preços: a câmera agora mostra uma moldura vertical no formato de etiqueta. O app lê apenas o que está dentro dela, ignorando o resto da prateleira.'
+ ],
  '2.8.1':[
   '📷 Escanear preços: corrigido o leitor de texto das fotos. Se o leitor offline ainda não estiver no aparelho, o app baixa sozinho pela internet e guarda para as próximas vezes.'
  ],
