@@ -564,6 +564,18 @@ main{position:relative;z-index:1}
  .scan .sc-bar{grid-column:2;grid-row:2;flex-direction:column;justify-content:center;gap:14px;padding:10px 14px}
  .scan .sc-rev{grid-column:1/-1;grid-row:2}
 }
+.nvhint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:29;max-width:calc(100% - 32px);padding:6px 12px;border-radius:16px;background:color-mix(in srgb,var(--sf) 92%,transparent);color:var(--mute);border:1px solid var(--ln2);box-shadow:0 6px 18px -8px var(--shc);font-size:11.5px;font-weight:500;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .4s}
+.nvhint.on{opacity:1}
+@media(orientation:landscape) and (max-height:540px){.nvhint{display:none}}
+/* menu inferior: rolagem lateral, nomes completos */
+@media not all and (orientation:landscape) and (max-height:540px){
+nav{overflow:hidden}
+nav div#nav{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;justify-content:flex-start;gap:2px}
+nav div#nav::-webkit-scrollbar{display:none}
+nav div#nav button{flex:0 0 auto;min-width:68px;padding:3px 4px 2px;font-size:10.5px;letter-spacing:0;scroll-snap-align:center}
+nav div#nav button .nl{white-space:nowrap;font-size:10.5px;letter-spacing:0}
+nav div#nav button .ni{width:46px}
+}
 </style>
 
 </head>
@@ -625,6 +637,7 @@ ROWS.push(
 ['Compromissos na agenda','Appointments in agenda','Compromisos en la agenda','Termine im Kalender'],['Entradas no diário','Journal entries','Entradas en el diario','Tagebucheinträge'],['Itens na lista de compras','Items in shopping list','Artículos en la lista de compras','Artikel auf der Einkaufsliste'],['Compras finalizadas (histórico)','Completed purchases (history)','Compras finalizadas (historial)','Abgeschlossene Einkäufe (Verlauf)'],['Produtos cadastrados','Registered products','Productos registrados','Gespeicherte Produkte'],['Plantões registrados','Logged shifts','Turnos registrados','Erfasste Dienste'],['Lançamentos na carteira','Wallet entries','Movimientos en la cartera','Einträge in den Finanzen'],
 ['{n} concluído','{n} completed','{n} completado','{n} erledigt'],['{n} concluídos','{n} completed','{n} completados','{n} erledigt'],['{n} pendente','{n} pending','{n} pendiente','{n} offen'],['{n} pendentes','{n} pending','{n} pendientes','{n} offen'],['{n} foto','{n} photo','{n} foto','{n} Foto'],['{n} fotos','{n} photos','{n} fotos','{n} Fotos']
 );
+ROWS.push(['Deslize o menu para o lado e veja mais opções','Swipe the menu sideways for more options','Desliza el menú hacia el lado para ver más opciones','Menü seitlich wischen für weitere Optionen']);
 const I18N={en:{},es:{},de:{}};ROWS.forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
 function _t(k,v){let x=(I18N[LANG]&&I18N[LANG][k])||k;if(v)x=x.replace(/\{(\w+)\}/g,(m,n)=>v[n]!=null?v[n]:m);return x}
 function setLang(l){if(!LANGS.some(x=>x[0]===l))return;S.lang=l;LANG=l;document.documentElement.lang=LOC();try{if(SC.worker){SC.worker.terminate();SC.worker=null}}catch(e){}save();nav();render();trDom(document.body)}
@@ -673,10 +686,16 @@ const ICO={
  relogio:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'
 };
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k]||''}</svg>`;
-const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Meu Mercado']];
+const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções']];
 
 
-function nav(){$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"${tab===t[0]?' aria-current="page"':''}><span class="ni">${svg(t[0])}</span><span class="nl">${_t(t[2])}</span></button>`).join('')}
+function nav(){$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"${tab===t[0]?' aria-current="page"':''}><span class="ni">${svg(t[0])}</span><span class="nl">${_t(t[2])}</span></button>`).join('');const n=$('#nav'),b=n.querySelector('.on');if(b&&n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;navHint(n)}
+function navHint(n){let seen=0;try{seen=+localStorage.getItem('nvhint')||0}catch(e){}
+ if(seen>=3||window._nvh||n.scrollWidth<=n.clientWidth)return;window._nvh=1;
+ const h=document.createElement('div');h.className='nvhint';h.textContent='👉 '+_t('Deslize o menu para o lado e veja mais opções');document.body.appendChild(h);
+ const fim=()=>{h.classList.remove('on');setTimeout(()=>h.remove(),500);n.removeEventListener('scroll',fim)};
+ setTimeout(()=>h.classList.add('on'),600);n.addEventListener('scroll',fim,{once:true});setTimeout(fim,6000);
+ try{localStorage.setItem('nvhint',seen+1)}catch(e){}}
 function go(t){tab=t;dimgsFor=null;edName=false;cEd=null;nav();render();window.scrollTo(0,0);const v=$('#v');v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter')}
 
 /* ---------- Agenda ---------- */
@@ -876,7 +895,7 @@ function calcCmp(){const el=$('#cres');if(!el)return;const A=side(cmp.a),B=side(
 
 function mmBusca(v){v=nrm(v);document.querySelectorAll('#v .mm-i').forEach(e=>{e.style.display=!v||e.dataset.t.includes(v)?'':'none'});
  document.querySelectorAll('#v .mm-c').forEach(c=>{const any=[...c.querySelectorAll('.mm-i')].some(e=>e.style.display!=='none');c.style.display=any?'':'none';const h=c.previousElementSibling;if(h&&h.tagName==='H3')h.style.display=any?'':'none'})}
-/* ---------- Meu Mercado: Assaí Atacadista (encartes de Pernambuco) ---------- */
+/* ---------- Promoções: Assaí Atacadista (encartes de Pernambuco) ---------- */
 const AS_LEVA=`
 Açúcar refinado Olho d'Água|1kg|3.40|3.19
 Farinha de trigo tipo 1 Rosa Branca|1kg|4.19|3.89
@@ -937,7 +956,7 @@ function vMeuMercadoAssai(){
   return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${e.app?'<p class="hint" style="margin:0 0 4px">Preços somente para compras pelo app Meu Assaí, com limite de unidades por produto.</p>':''}${L.map(i=>{const pc=Math.floor((i.de-i.por)/i.de*100+1e-9);
    return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.por)}</strong>${e.app?'<small style="color:var(--ac)"> app</small>':''}<br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`}).join('')}</div>`}).join('');
  return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='assai'),40)}<div><strong>Promoções do Assaí Atacadista</strong><br><small style="color:var(--mute)">Encartes oficiais · lojas de Pernambuco (exceto Petrolina) · ${tot} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da promoção. Riscado: preço normal. As validades são diferentes: o Especial App vale até 04/11 e o Leva o Assaí até 05/11, ou enquanto durarem os estoques. Confirme os valores na loja.</p></div>`+blocos}
-function vMeuMercado(){return `<h2>${_t('Meu Mercado')}</h2>`+vMeuMercadoAssai()}
+function vMeuMercado(){return `<h2>${_t('Promoções')}</h2>`+vMeuMercadoAssai()}
 
 /* ---------- Mercados ---------- */
 const MERC0=[{id:'atacadao',nome:'Atacadão',sig:'AT',h:4},{id:'assai',nome:'Assaí',sig:'AS',h:28},{id:'novo',nome:'Novo Atacarejo',sig:'NA',h:210},{id:'mix',nome:'Mix Mateus',sig:'MM',h:265},{id:'pao',nome:'Pão de Açúcar',sig:'PA',h:150}];
