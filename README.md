@@ -2,6 +2,12 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Aviso: boas-vindas para novos usuários (não é uma atualização)
+
+- **Caixa de informação com tudo o que o app oferece** (Início, Agenda, Calendário, Meus Plantões, Notas, Diário, Compras, Carteira, Promoções, Lembretes e alarme, Configurações). Aparece **uma única vez e só para usuário novo**: quem abre o app sem nome e sem dados vê a caixa logo depois de entrar com o nome ou com uma conta. Quem já usava o app nunca vê.
+  - Chaves no `localStorage`: `ma-guia-novos-pend` (é novo e ainda vai ver) e `ma-guia-novos` (já viu / não é novo). O texto fica em `GUIA_APP` no `index.html`.
+  - Não precisa mudar o `VERSION` do `sw.js`.
+
 ## Aviso: guia das Configurações (não é uma atualização)
 
 - **Caixa de recado com o guia das Configurações**: uma caixa com a lista de todas as funções da tela Configurações (Perfil, Conta, Backup, Lembretes e alarme, Aplicativo, Tela inicial, Idioma, Menu, Aparência, Segurança, Permissões e Sair). Ela aparece **uma única vez por aparelho** (chave `ma-recado-config-v1` no `localStorage`):
