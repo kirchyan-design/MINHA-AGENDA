@@ -552,6 +552,7 @@ main{position:relative;z-index:1}
 #ptr.spin span{display:inline-block;animation:ptrspin .8s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
 
+.apk-dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:15px;border-radius:14px;background:var(--ac);color:var(--onac);font-weight:800;font-size:16px;letter-spacing:.3px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 /* botão discreto de atualização */
 #updpill{position:fixed;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:44;max-width:calc(100% - 110px);display:flex;align-items:center;gap:8px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-radius:999px;padding:6px 6px 6px 14px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.22)}
 body.nv #updpill{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
@@ -2712,7 +2713,10 @@ async function apkChecar(manual){
  if(!nat())return;
  if(APK_ST&&APK_ST.tipo==='novo'&&APK_ST.fase&&APK_ST.fase!=='pronto')return;
  const P=APKP();
- if(!P){if(manual===true)info('O atualizador interno não foi encontrado neste APK. Confirme que o arquivo build-apk.yml atualizado está em .github/workflows/ e gere o APK de novo. (Plugins presentes: '+apkDiag()+')');return}
+ if(!P){ /* APK antigo (sem o atualizador interno): botão leva ao download da versão nova */
+  APK_ST={tipo:'antigo'};UPD_HIDE=false;apkDesenha();
+  if(manual===true)apkAntigoAviso();else apkAntigoQuandoLivre();
+  return}
  try{
   const inf=await P.info(),r=await P.fetchText({url:APK_VER}),v=JSON.parse(r.text||'{}');
   if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};UPD_HIDE=false;apkDesenha()}
@@ -2934,6 +2938,25 @@ function mgDeco(){document.querySelectorAll('.mg-art,.mg-ban,.mg-hat').forEach(e
  if(add)v.insertAdjacentHTML('afterbegin',add.replace('class="mg-ban"','class="mg-ban mg-art-box"'))}
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{mgDeco()}catch(e){}}})();
 
+/* ---------- aviso para quem tem o APK antigo ---------- */
+const APK_DRIVE='https://drive.google.com/drive/folders/1VDCmsmyrA_pOihFJmKkljfbnGq8yx210';
+function apkAntigoAviso(){
+ if(document.getElementById('apk-old'))return;
+ const o=document.createElement('div');o.id='apk-old';o.className='ov';o.setAttribute('role','alertdialog');o.setAttribute('aria-label','Nova versão do aplicativo');
+ o.innerHTML='<div class="dlg"><p>🆕 Nova versão do JC ORGANIZA</p>'
+  +'<div style="margin:0 0 14px;line-height:1.5;font-size:14.5px">'
+  +'<div style="margin:0 0 8px"><b>Por que atualizar?</b> A versão que você usa não consegue se atualizar sozinha, e por isso os botões de atualização deixaram de funcionar.</div>'
+  +'<div style="margin:0 0 8px">A versão nova traz o <b>atualizador interno</b>: nas próximas vezes, basta tocar em “Atualizar” e o app baixa e instala sozinho, sem abrir navegador nem outras páginas.</div>'
+  +'<div>Toque no botão, baixe o aplicativo e instale por cima do atual, sem desinstalar. Seus dados continuam salvos.</div></div>'
+  +'<a class="apk-dl" href="'+APK_DRIVE+'" target="_blank" rel="noopener">⬇️ BAIXAR NOVA VERSÃO</a>'
+  +'<div class="row" style="margin-top:10px"><button class="sec" id="apk-old-no">Agora não</button></div></div>';
+ document.body.appendChild(o);
+ o.querySelector('#apk-old-no').onclick=()=>{try{localStorage.setItem('ma-apk-dispensa',String(Date.now()))}catch(e){}o.remove()}}
+function apkAntigoQuandoLivre(n){n=n||0;
+ let d=0;try{d=+localStorage.getItem('ma-apk-dispensa')||0}catch(e){}
+ if(Date.now()-d<864e5)return; /* já dispensado hoje: só a pílula no rodapé */
+ if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>apkAntigoQuandoLivre(n+1),1000);return}
+ apkAntigoAviso()}
 /* ---------- botão discreto de atualização (rodapé) ---------- */
 let WEB_NEW=false,UPD_HIDE=false;
 function updFechar(){UPD_HIDE=true;updPill()}
@@ -2945,7 +2968,8 @@ function updPill(){
   else if(f==='instalando'){txt='Toque para concluir a instalação';fn='apkInstalar()';act='Instalar'}
   else if(f==='erro'){txt='Não foi possível atualizar';fn='apkBaixar()';act='Tentar de novo'}
   else{txt='Nova versão disponível';fn='apkBaixar()';act='Atualizar'}
- }else if(WEB_NEW){txt='Nova versão disponível';fn='location.reload()';act='Atualizar'}
+ }else if(APK_ST&&APK_ST.tipo==='antigo'){txt='Nova versão disponível';fn='apkAntigoAviso()';act='Atualizar'}
+ else if(WEB_NEW){txt='Nova versão disponível';fn='location.reload()';act='Atualizar'}
  const fixo=a&&a.fase&&a.fase!=='pronto';
  if(!txt||(UPD_HIDE&&!fixo)||!(S.user&&S.user.name)){if(el)el.remove();return}
  if(!el){el=document.createElement('div');el.id='updpill';document.body.appendChild(el)}
