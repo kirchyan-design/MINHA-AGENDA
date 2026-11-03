@@ -816,152 +816,6 @@ function calcCmp(){const el=$('#cres');if(!el)return;const A=side(cmp.a),B=side(
  const aw=A.per<B.per,w=aw?'A':'B',l=aw?'B':'A',W=aw?A:B,L=aw?B:A,econ=(L.per-W.per)/L.per*100,mais=(L.per-W.per)/W.per*100,sv=(L.per-W.per)*L.amt;
  el.innerHTML=`<div class="r"><span>Opção A</span><b>${brl(A.per)}/${lb}</b></div><div class="r"><span>Opção B</span><b>${brl(B.per)}/${lb}</b></div><div style="border-top:1px solid var(--ac);margin:10px 0"></div><div class="r"><span>Compensa mais</span><strong>Opção ${w}</strong></div><p style="margin:8px 0 0"><b>Vantagem de ${pct(econ)}:</b> a opção ${w} custa ${pct(econ)} menos por ${lb}.</p><p style="margin:6px 0 0"><b>Desvantagem de ${pct(mais)}:</b> a opção ${l} custa ${pct(mais)} mais que a ${w}.</p><p style="margin:6px 0 0;font-size:14px">Para levar o mesmo conteúdo da opção ${l} (${(+L.amt.toFixed(3)).toLocaleString(LOC())} ${lb}) pela opção ${w}, você economiza ${brl(sv)}.</p>`}
 
-/* ---------- Meu Mercado (promoções do folheto do Atacadão) ---------- */
-const MM_TXT=`
-Mercearia
-Açúcar Cristal Samuka|1kg|3.29|2.85|2.49|2.99
-Açúcar Demerara União|1kg|5.19|4.69|3.99|4.99
-Arroz Tio João Agulhinha tipo 1|1kg|6.99|6.29|5.49|6.49
-Arroz Bulnez Parboilizado tipo 1|1kg|4.99|4.39|3.79|4.79
-Feijão Carioca Kicaldo tipo 1|1kg|8.99|7.99|6.95|8.49
-Óleo de Soja Liza|Pet 900ml|8.69|7.99|6.95|8.49
-Macarrão Faixa Dourada espaguete|400g|4.49|3.19|2.79|3.49
-Macarrão instantâneo Maratá|74g|1.39|1.05|0.89|1.19
-Fécula de Mandioca Lopes|1kg|6.90|5.29|4.59|5.99
-Goma para Tapioca Bulnez|1kg|5.70|4.89|4.25|5.35
-Amido de Milho Apti|200g|3.69|2.59|2.25|2.99
-Café Pilão tradicional/extra forte|250g|15.99|12.99|11.29|14.99
-Café Solúvel Melitta sachê|40g|5.99|5.19|4.49|5.49
-Leite Condensado Moça integral|lata 395g|10.99|8.49|7.39|9.49
-Creme de Leite Betânia|200g|3.29|2.79|2.39|2.99
-Leite Longa Vida Betânia|1L|6.99|5.79|4.99|6.49
-Leite de Coco Bulnez|200ml|1.89|1.19|0.99|1.39
-Farinha Láctea Nestlé|850g|24.90|20.90|17.99|22.90
-Alimento Sustap Kids|sachê 210g|13.90|9.69|8.45|10.99
-Cremogema|180g|5.99|4.49|3.89|4.99
-Adoçante Linea Stevia|25g|10.90|7.99|6.95|8.99
-Milho Verde Bonare|lata 170g|3.69|2.60|2.25|2.89
-Maionese Hellmann's|500g|14.90|10.16|8.79|11.29
-Maionese Sófruta|200g|2.29|1.70|1.49|1.89
-Molho de Tomate Predilecta|300g|2.29|1.43|1.25|1.59
-Catchup Arisco|370g|7.99|6.29|5.49|6.99
-Azeitona Verde Bulnez fatiada/sem caroço|120g|6.99|4.90|4.25|5.45
-Azeite de Oliva Andorinha extra virgem|500ml|34.90|29.90|25.99|32.90
-Biscoito Cookie Alpino Nestlé|60g|3.79|3.09|2.69|3.39
-Amendoim Santa Helena Crokíssimo|400g|14.90|9.59|8.39|10.90
-Amendoim Pinduca branco|400g|6.90|4.79|4.19|5.49
-Barra Joy Nuts|25g|3.19|2.39|2.09|2.79
-Bombom Neugebauer Amor Carioca|200g|11.99|7.59|6.59|8.59
-Geleia Hero|345g|22.49|16.19|13.99|17.99
-Açougue
-Carne Bovina Capa de Filé Friboi congelada|kg na peça|38.90|33.90|29.49|37.90
-Carne Moída Gostosinha congelada temperada|500g|6.89|5.30|4.59|5.89
-Coração Bovino Friboi porcionado congelado|kg na peça|19.90|16.90|14.69|18.90
-Linguiça Calabresa Seara|2,5kg|62.90|44.90|38.99|49.90
-Linguiça para Churrasco Rezende congelada|5kg|99.90|71.90|61.99|79.90
-Coxinha da Asa de Frango Perdigão Nabrasa|800g|14.90|12.49|10.79|13.90
-Filé de Frango em Bifes Regina congelado|700g|22.90|15.90|13.79|17.90
-Hambúrguer Bovino Nabrasa Perdigão picanha|150g|8.49|6.29|5.49|6.99
-Frios e congelados
-Presunto Cozido Nobre|kg na peça|22.90|16.99|14.79|18.90
-Lanche Peperi|kg na peça|15.99|12.59|10.95|13.99
-Batata Pré-Frita Aurora|2kg|29.90|21.49|18.69|23.90
-Fettuccine Perdigão molho branco|300g|9.99|7.19|6.25|7.99
-Mini Chicken de Frango Perdigão queijo|275g|11.90|8.99|7.99|9.99
-Steak de Frango Sadia|100g|2.19|1.39|1.19|1.59
-Tirinhas de Frango Aurora empanado|900g|20.90|14.89|12.99|16.90
-Massa para Lasanha Gosto Mineiro|1kg|11.89|8.90|7.69|9.90
-Massa para Pastel Massa Forte|2kg|21.99|16.90|14.69|18.90
-Mini Coxinha Maricota|810g|26.90|20.90|17.99|22.90
-Mini Pizza Delícia Mineira|400g|14.99|11.90|10.29|13.49
-Pão de Queijo Delícia Mineira|1kg|18.90|13.99|11.99|15.90
-Pão de Queijo Recheado Catupiry|390g|19.90|14.99|12.99|16.49
-Polpa de Fruta Brasfrut graviola|100g|2.39|1.75|1.49|1.99
-Açaí Marujinho|3,6L|49.90|38.90|33.79|43.90
-Laticínios
-Bebida Láctea Whey Parmalat|250ml|7.49|5.69|4.95|6.49
-Bebida Láctea Polpa Betânia morango|680g|7.49|5.99|5.19|6.79
-Iogurte Pense Zero Batavo|1,15L|16.90|13.49|11.75|14.99
-Iogurte Natural Nestlé|170g|4.99|3.99|3.49|4.49
-Queijo Mussarela Galbani fatiado|150g|10.49|8.49|7.39|9.49
-Queijo Parmesão Président|180g|26.90|21.90|18.99|24.90
-Cream Cheese Philadelphia|150g|11.99|9.99|8.69|10.99
-Requeijão Nestlé|200g|10.49|8.29|7.19|8.99
-Manteiga Itambé com sal|500g|26.90|20.90|17.99|22.90
-Padaria
-Pão de Forma Visconti tradicional|400g|7.90|6.19|5.39|6.99
-Pão de Forma Visconti integral|400g|8.90|6.99|5.99|7.99
-Pão de Forma Panevita integral|500g|8.49|6.99|6.09|7.99
-Bisnaguinha Leite Pan|300g|6.39|5.19|4.49|5.99
-Pão Brioche Mini Santa Edwiges|270g|11.90|8.69|7.49|9.90
-Hortifruti
-Brócolis Japonês|unidade|12.89|9.89|8.59|10.89
-Mexerica comum|kg|8.75|7.19|6.25|7.89
-Tomate Grape|bandeja 180g|4.95|4.19|3.65|4.59
-Ovo Branco Galinhas Livres|10 unidades|8.45|6.69|5.79|7.45
-Bebidas
-Refrigerante Guaraná Antarctica tradicional/zero|2L|8.99|7.99|6.95|8.59
-Refrigerante Guaraná Antarctica/Pepsi|1L|5.39|4.99|4.29|5.19
-Suco Del Valle Frut|1,5L|7.49|6.25|5.45|6.99
-Cerveja Petra puro malte|lata 350ml|3.59|3.09|2.69|3.29
-Cerveja Michelob Ultra|lata 350ml|5.99|5.39|4.69|5.69
-Cerveja Stella Artois|long neck 330ml|7.49|6.99|5.99|7.19
-Bebida Alcoólica Mista Bananazinha|900ml|42.90|34.90|29.99|36.90
-Vodka Slova|980ml|13.90|10.90|9.49|11.90
-Gin Tanqueray London Dry|375ml|74.90|59.90|51.99|65.90
-Rum Montilla|1L|35.90|25.90|22.49|29.90
-Whisky Passport|1L|59.90|39.90|34.69|49.90
-Whisky Johnnie Walker Red Label|1L|119.90|89.90|77.90|99.90
-Higiene
-Creme Dental Oral-B Extra Branco|tubo|8.90|4.89|4.25|5.49
-Escova Dental Colgate Classic Clean macia|4 unidades|13.90|7.90|6.79|8.90
-Kit Pantene shampoo 350ml + condicionador 175ml|vários tipos|38.90|21.90|18.99|24.90
-Desodorante Aerossol Axe|200ml|14.90|10.49|8.99|11.90
-Desodorante Aerossol Nivea|200ml|19.90|15.29|13.29|16.90
-Espuma de Barbear Gillette Sensitive|150g|21.90|13.49|11.79|14.90
-Aparelho de Barbear Bic Flex 3|unidade|24.90|18.90|16.39|20.90
-Sabonete Líquido Protex Cream|650ml|29.90|17.90|15.49|19.90
-Sabonete Líquido Nivea refil|200ml|9.90|6.99|6.09|7.90
-Sabonete Líquido Johnson's Baby|200ml|26.90|17.90|15.79|19.90
-Sabonete Johnson's|80g|2.90|2.05|1.79|2.29
-Absorvente Sym Suave com abas|8 unidades|2.90|1.89|1.65|2.19
-Hastes Flexíveis Johnson's|150 unidades|14.90|10.79|9.39|11.90
-Toalha Umedecida Piquitucho|60 unidades|7.90|5.29|4.59|5.90
-Fralda-Calça Mamypoko|pacote, vários tamanhos|38.90|30.59|26.59|33.90
-Kit Dentalclean Peppa Pig|gel 50g + fio + escova|31.90|22.39|19.49|24.90
-Kit Infantil|vários tipos|26.90|20.59|17.89|23.90
-Limpeza
-Lava Roupas Líquido Urca|5L|26.90|20.90|17.99|22.90
-Lava Roupas em Pó Brilhante ação total|4kg|54.90|31.90|27.69|35.90
-Amaciante Amacitel|2L|15.90|10.49|8.99|12.90
-Amaciante Mon Bijou|1,7L|13.90|7.79|6.79|8.69
-Amaciante Concentrado Downy refil|750ml|21.90|13.49|11.49|14.90
-Sabão em Pedaço Ypê|5x160g|13.90|11.69|9.99|12.90
-Kit Tira Manchas Semorin|+ sabão de coco|35.90|27.90|24.29|29.90
-Desinfetante Guarani|2L|6.49|5.39|4.69|5.69
-Desinfetante Lysoform|2L|27.90|17.90|15.49|19.90
-Limpador Ajax lavanda|1,75L|15.90|10.90|9.49|11.90
-Limpador Perfumado Bulnez|2L|17.90|12.90|11.19|14.90
-Limpador Perfumado Casa & Perfume|1L|11.90|7.90|6.89|9.90
-Kit Uau cloro/desengordurante/multiuso|kit|18.90|13.49|11.69|14.90
-Lustra Móveis Peroba|200ml|7.90|5.90|5.19|6.90
-Inseticida Aerossol SBP|380ml|19.90|11.49|9.90|12.90
-Lã de Aço Bombril|45g|2.59|1.59|1.39|1.79
-Esponja Multiuso Vip|unidade|0.99|0.79|0.69|0.89
-Bazar e pet
-Filme de PVC Bulnez|28cm x 15m|5.99|4.49|3.90|4.99
-Folha de Alumínio Pratsy|30cm x 4m|4.99|3.69|3.19|3.99
-Copo Descartável Cristalcopo 150ml|100 unidades|6.99|4.99|4.29|5.49
-Garrafa New York Plasútil|1,8L|17.90|13.90|11.99|15.90
-Caixa Organizadora Bioprátika|2,5L com tampa|9.90|6.90|5.99|7.90
-Pano Alvejado Alklin|3 unidades|15.90|11.90|10.29|13.90
-Vassoura Original Noviça|unidade|14.90|10.90|9.49|12.90
-Mop Balde Celeste giratório|unidade|49.90|39.90|34.69|42.90
-Alimento para Gatos Friskies|sachê 85g|3.69|2.59|2.25|2.99
-Alimento para Gatos Friskies|850g|29.90|22.90|19.90|25.90
-Alimento para Cães Dog Chow|10,1kg|149.90|115.90|99.90|129.90
-`;
-function mmLista(){const out=[];let cat='';MM_TXT.split('\n').forEach(l=>{l=l.trim();if(!l)return;if(l.indexOf('|')<0){cat=l;return}const a=l.split('|');out.push({c:cat,n:a[0],d:a[1],de:+a[2],app:+a[3],car:+a[4],v:+a[5]})});return out}
 function mmBusca(v){v=nrm(v);document.querySelectorAll('#v .mm-i').forEach(e=>{e.style.display=!v||e.dataset.t.includes(v)?'':'none'});
  document.querySelectorAll('#v .mm-c').forEach(c=>{const any=[...c.querySelectorAll('.mm-i')].some(e=>e.style.display!=='none');c.style.display=any?'':'none';const h=c.previousElementSibling;if(h&&h.tagName==='H3')h.style.display=any?'':'none'})}
 /* ---------- Meu Mercado: Assaí Atacadista (encartes de Pernambuco) ---------- */
@@ -1019,21 +873,13 @@ const dm=iso=>iso.slice(8,10)+'/'+iso.slice(5,7);
 function mmVal(fim){const h=new Date(),t=h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
  if(t>fim)return{k:'off',txt:'Encerrada em '+dm(fim)};if(t===fim)return{k:'last',txt:'Último dia · até '+dm(fim)};return{k:'on',txt:'Válido até '+dm(fim)}}
 const mmChip=v=>`<span style="display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:${v.k==='off'?'color-mix(in srgb,var(--mute) 18%,transparent)':v.k==='last'?'color-mix(in srgb,#d97706 20%,transparent)':'var(--acs)'};color:${v.k==='off'?'var(--mute)':v.k==='last'?'#b45309':'var(--ac)'}">${v.txt}</span>`;
-let mmMk='atacadao';
-function mmPick(id){mmMk=id;render();window.scrollTo(0,0)}
-function mmSeg(){const g=id=>MERC0.find(m=>m.id===id);
- return `<div class="seg s3" role="tablist">${[['atacadao','Atacadão'],['assai','Assaí']].map(a=>`<button role="tab" aria-selected="${mmMk===a[0]}" class="${mmMk===a[0]?'on':''}" style="display:flex;align-items:center;justify-content:center;gap:8px" onclick="mmPick('${a[0]}')">${logo(g(a[0]),26)}<span>${a[1]}</span></button>`).join('')}</div>`}
 function vMeuMercadoAssai(){
  let tot=0;
  const blocos=AS_ENC.map(e=>{const L=asLista(e.txt),v=mmVal(e.fim);tot+=L.length;
   return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${e.app?'<p class="hint" style="margin:0 0 4px">Preços somente para compras pelo app Meu Assaí, com limite de unidades por produto.</p>':''}${L.map(i=>{const pc=Math.floor((i.de-i.por)/i.de*100+1e-9);
    return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.por)}</strong>${e.app?'<small style="color:var(--ac)"> app</small>':''}<br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`}).join('')}</div>`}).join('');
  return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='assai'),40)}<div><strong>Promoções do Assaí Atacadista</strong><br><small style="color:var(--mute)">Encartes oficiais · lojas de Pernambuco (exceto Petrolina) · ${tot} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da promoção. Riscado: preço normal. As validades são diferentes: o Especial App vale até 04/11 e o Leva o Assaí até 05/11, ou enquanto durarem os estoques. Confirme os valores na loja.</p></div>`+blocos}
-function vMeuMercado(){
- if(mmMk==='assai')return `<h2>${_t('Meu Mercado')}</h2>`+mmSeg()+vMeuMercadoAssai();
- const L=mmLista(),cats=[];L.forEach(i=>{if(!cats.includes(i.c))cats.push(i.c)});
- const blocos=cats.map(c=>`<h3>${esc(c)}</h3><div class="card mm-c">${L.filter(i=>i.c===c).map(i=>`<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.v)}</strong><br><small style="color:var(--ac)">app ${brl(i.app)} · cartão ${brl(i.car)}</small><br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small><br><small style="color:var(--mute)">até 02/11</small></span></div>`).join('')}</div>`).join('');
- return `<h2>${_t('Meu Mercado')}</h2>`+mmSeg()+`<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Promoções do Atacadão</strong><br><small style="color:var(--mute)">Folheto oficial · ${mmChip(mmVal('2026-11-02'))} · de 27/10 a 02/11/2026 · ${L.length} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o do folheto (varejo/atacado). Em azul: preço ativando a oferta no app e pagando com cartão Atacadão, Carrefour ou Sam’s Club. Riscado: preço normal. Este é o folheto das lojas do Ceará; o de Pernambuco só sai em imagem, então confirme os valores na loja de Olinda. Há limite de compra por cliente.</p></div>`+blocos}
+function vMeuMercado(){return `<h2>${_t('Meu Mercado')}</h2>`+vMeuMercadoAssai()}
 
 /* ---------- Mercados ---------- */
 const MERC0=[{id:'atacadao',nome:'Atacadão',sig:'AT',h:4},{id:'assai',nome:'Assaí',sig:'AS',h:28},{id:'novo',nome:'Novo Atacarejo',sig:'NA',h:210},{id:'mix',nome:'Mix Mateus',sig:'MM',h:265},{id:'pao',nome:'Pão de Açúcar',sig:'PA',h:150}];
