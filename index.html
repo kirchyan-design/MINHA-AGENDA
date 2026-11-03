@@ -1699,8 +1699,10 @@ function cfgPermissoes(){
  return `<h3>${_t('Permissões')}</h3><div class="card" id="perm-box">`
  +PERMS.map(p=>`<div class="prm"><span class="ic">${p.ic}</span><span class="t"><b>${p.nome}</b><small>${p.desc}</small></span><span class="pst" id="ps-${p.id}">…</span></div>`).join('')
  +`<div class="row" style="margin-top:10px"><button style="flex:1" onclick="permTudo()">Permitir tudo</button><button class="sec" style="flex:1" onclick="permAjustes()">Ajustes do celular</button></div>`
- +`<p class="hint">Se você negou alguma permissão antes, o Android só deixa mudar nos ajustes do celular.</p></div>`}
+ +`<p class="hint">Se você negou alguma permissão antes, o Android só deixa mudar nos ajustes do celular.</p><p class="hint" id="perm-diag" style="word-break:break-word"></p></div>`}
 async function permRefresh(){if(!$('#perm-box'))return;const st=await permStatus();
+ {const d=$('#perm-diag');if(d){const SR=plug('SpeechRecognition'),M=MPp();let mp='ausente';try{if(M){const x=await M.checkPermissions();mp=x&&x.microphone?'presente':'ausente (APK antigo)'}}catch(e){mp='erro'}
+  d.textContent='Diagnóstico: '+(nat()?'app instalado (APK)':'navegador')+' · plugin de voz: '+(SR?'presente':'ausente')+' · pedido nativo do microfone: '+mp+' · estado do microfone: '+st.mic}}
  PERMS.forEach(p=>{const e=$('#ps-'+p.id);if(!e)return;const v=st[p.id],g=grantOf(v);
   if(v==='na'){e.className='pst';e.textContent='Ao usar';return}
   if(g==='ok'){e.className='pst ok';e.textContent='Permitido';e.onclick=null;return}
