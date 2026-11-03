@@ -276,6 +276,14 @@ html[data-color="picapau"] #v{position:relative}
 .pp-glyph .pp-head{transform-origin:12px 14px}
 @media(prefers-reduced-motion:reduce){.pp-bg .leaf,.pp-head,.pp-chip{animation:none}}
 
+
+.nv-it{padding:10px 0;border-top:1px solid var(--ln)}
+.nv-it:first-of-type{border-top:0}
+.nv-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.nv-h b{font-size:14px;color:var(--ac)}
+.nv-tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--acs);color:var(--ac);text-transform:uppercase;letter-spacing:.04em}
+.nv-t{font-size:13.5px;line-height:1.45;margin:3px 0;color:var(--ink)}
+
 /* ---- v1.7: temas de cor, senha e permissões ---- */
 :root[data-color="azul"][data-eff="light"]{--bg:#f1f4fa;--sf:#fff;--ac:#2563eb;--acs:#dde8fd;--ln:#d9e0ee;--onac:#fff}
 :root[data-color="azul"][data-eff="dark"]{--bg:#0e1624;--sf:#16233a;--ac:#6ea0ff;--acs:#1c3257;--ln:#253756;--onac:#06122a}
@@ -1571,6 +1579,7 @@ function vConfig(){
  +`<p class="hint"><b>Último backup:</b> ${lb}.<br>${app?'Em “Salvar / compartilhar”, escolha Arquivos, Drive ou WhatsApp para guardar o arquivo. “Salvar em Documentos” grava direto na pasta Documentos/MeuPlano do celular. ':''}Seus dados ficam só neste aparelho: faça backup de vez em quando e antes de desinstalar o app.</p></div>`
  +cfgLembretes()
  +`<h3>${_t('Aplicativo')}</h3>${apkAviso()}<div class="card"><div class="row"><button class="sec" onclick="checkUpd()">🔄 Verificar atualização</button></div><p class="hint" id="ver"></p></div>`
+ +cfgNovidades()
  +cfgInicio()
  +cfgIdioma()
  +cfgMenu()
@@ -2812,6 +2821,11 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.0.2':[
+  '🎨 Novo tema “Doomsday”: verde-tóxico sobre preto, com cidadela, relógio do fim e brasas animadas (ilustrações originais).',
+  '🐦 Novo tema “Pica-pau”: um pica-pau original que bica o tronco, com banners divertidos em cada tela.',
+  '🆕 Em Configurações, logo abaixo de Aplicativo, agora tem “Novidades desta versão” com as 7 últimas atualizações.'
+ ],
  '2.9.7':[
   '🔑 A tela inicial não pede mais o nome: é só entrar com o Google ou com e-mail e senha (ou criar a conta) e você já cai direto no app.'
  ],
@@ -2889,6 +2903,7 @@ const RECADO_CFG=[
  ['💾','Backup no celular','Salvar ou compartilhar o backup, salvar em Documentos, restaurar de um arquivo e copiar ou colar o texto do backup.'],
  ['🔔','Lembretes e alarme','Ativar os lembretes de compromissos, escolher quanto tempo antes avisar, lembrar seus plantões, escolher a música do alarme e testar.'],
  ['🔄','Aplicativo','Verificar se há atualização e ver a versão instalada.'],
+ ['🆕','Novidades','Veja o que mudou nas 7 últimas atualizações do app.'],
  ['📖','Tela inicial','Ativar ou desativar o versículo bíblico do dia.'],
  ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
  ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
@@ -2997,6 +3012,14 @@ function mgDeco(){document.querySelectorAll('.mg-art,.mg-ban,.mg-hat').forEach(e
  if(add)v.insertAdjacentHTML('afterbegin',add.replace('class="mg-ban"','class="mg-ban mg-art-box"'))}
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{mgDeco()}catch(e){}}})();
 
+
+
+/* ---------- Configurações: "Novidades desta versão" (7 últimas atualizações) ---------- */
+function cfgNovidades(){
+ const vk=v=>v.split('.').map(n=>+n||0),cmp=(a,b)=>{const x=vk(a),y=vk(b);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (y[i]||0)-(x[i]||0)}return 0};
+ const ks=Object.keys(NOVIDADES).sort(cmp).slice(0,7);
+ const it=ks.map((v,i)=>`<div class="nv-it${i===0?' nv-new':''}"><div class="nv-h"><b>Versão ${esc(v)}</b>${i===0?'<span class="nv-tag">mais recente</span>':''}</div>${NOVIDADES[v].map(t=>`<div class="nv-t">${esc(t)}</div>`).join('')}</div>`).join('');
+ return `<h3>🆕 Novidades desta versão</h3><div class="card"><p class="hint" style="margin-top:0">As ${ks.length} últimas atualizações do app.</p>${it}</div>`}
 
 /* ---------- Tema Doomsday (ilustrações originais) ---------- */
 const DM={
