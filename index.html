@@ -698,7 +698,7 @@ let LOGOS={};try{const r=localStorage.getItem('minha-agenda-logos');if(r)LOGOS=J
 let FOTOS={},dimgs=[],dimgsFor=null;try{const r=localStorage.getItem('minha-agenda-fotos');if(r)FOTOS=JSON.parse(r)||{}}catch(e){}
 const saveFotos=()=>{if(TROCANDO)return true;try{localStorage.setItem('minha-agenda-fotos',JSON.stringify(FOTOS));return true}catch(e){return false}};
 function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.imgs||[]).forEach(i=>used.add(i)));let ch=false;Object.keys(FOTOS).forEach(k=>{if(!used.has(k)){delete FOTOS[k];ch=true}});if(ch)saveFotos()}
-const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}return ok};
+const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
  inicio:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
@@ -1603,13 +1603,16 @@ async function conectar(m){
   if(!S.user.full&&nome)S.user.full=nome;
   if(!S.user.phone&&u.phoneNumber)S.user.phone=u.phoneNumber;
   if(!S.user.photo&&u.photoUrl)S.user.photo=await fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c'));
-  save();render();
+  save();
+  if(await nuvSync(true,true))return;
+  render();
   if(era)setTimeout(permIntro,500);else info('Conta conectada: '+ctRot(S.user.conta));
   setTimeout(guiaNovosQuandoLivre,700);
   setTimeout(recadoConfigQuandoLivre,900);
  }catch(e){if(cancelado(e))return;info(erroAuth(e))}}
 async function contaSair(quiet){
- const A=FA();try{if(nat()&&A)await A.signOut()}catch(e){}
+ const A=FA();try{if(nat()&&A&&ct())await Promise.race([nuvSync(),new Promise(r=>setTimeout(r,8000))])}catch(e){}
+ try{if(nat()&&A)await A.signOut()}catch(e){}
  const own=ownerId();
  if(own&&trocarDados(own,'',null,quiet?'':'Conta desconectada. Os dados dela ficam guardados e voltam quando você entrar de novo com ela.'))return;
  delete S.user.conta;save();if(!quiet){render();info('Conta desconectada. Seus dados continuam salvos neste aparelho.')}}
@@ -1617,9 +1620,102 @@ function btnsConta(){const b='width:100%;padding:13px;font-size:15px';
  return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('fone')">📱 Entrar com o celular (SMS)</button>`}
 function cfgConta(){const c=ct();
  return `<h3>Conta</h3><div class="card">`
- +(c?`<div class="prm"><span class="ic">✅</span><span class="t"><b>Conectada · ${esc(PROV[c.prov]||'')}</b><small>${esc(ctRot(c))}</small></span><button class="sec" onclick="ask('Desconectar a conta deste aparelho? Os dados dela ficam guardados e voltam quando você entrar de novo com ela.',()=>contaSair(),'Desconectar')">Desconectar</button></div><p class="hint">Se esquecer a senha de 4 dígitos do app, toque em “Esqueci” na tela de senha e entre de novo com esta conta para criar outra, sem perder seus dados.</p>`
+ +(c?`<div class="prm"><span class="ic">✅</span><span class="t"><b>Conectada · ${esc(PROV[c.prov]||'')}</b><small>${esc(ctRot(c))}</small></span><button class="sec" onclick="ask('Desconectar a conta deste aparelho? Os dados dela ficam guardados na nuvem e voltam quando você entrar de novo com ela.',()=>contaSair(),'Desconectar')">Desconectar</button></div>${nuvStatus()}<p class="hint">Se esquecer a senha de 4 dígitos do app, toque em “Esqueci” na tela de senha e entre de novo com esta conta para criar outra, sem perder seus dados.</p>`
  :btnsConta()+`<p class="hint">Conecte uma conta para poder recuperar a senha do app caso você esqueça.</p>`)
  +`</div>`}
+/* ---------- v2.9.4: dados na nuvem (Firebase Firestore) ----------
+   Quem entra com Google, e-mail ou celular tem os dados guardados na nuvem, na conta dele (users/{uid}). Ao trocar de aparelho ou sair e entrar de novo, os dados voltam.
+   Usa a API REST do Firestore com o token de login do próprio usuário (as regras do Firestore deixam cada um ler e gravar só o que é seu). */
+const FS_N='projects/jc-organiza/databases/(default)/documents',FS_B='https://firestore.googleapis.com/v1/'+FS_N,NUV_PART=250000,NUV_FOTOS_MAX=8e6;
+const NUV={busy:false,ok:null,msg:'',t:0};let NUV_T=null;
+const nuvSet=(ok,msg)=>{NUV.ok=ok;NUV.msg=msg;NUV.t=Date.now();try{if(tab==='config'&&!document.querySelector('.ov'))render()}catch(e){}};
+async function fsReq(method,url,body){
+ const A=FA(),tk=(await A.getIdToken()).token;
+ const r=await fetch(url,{method:method,headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+ const j=await r.json().catch(()=>null),em=(j&&j.error&&j.error.message)||'';
+ if(r.status===404&&method==='GET'&&!/database/i.test(em))return null;
+ if(!r.ok){const e=new Error(em||('HTTP '+r.status));e.code=(j&&j.error&&j.error.status)||String(r.status);throw e}
+ return j}
+const nuvKey=uid=>'ma-nuv:'+uid;
+const nuvEst=uid=>{try{return JSON.parse(localStorage.getItem(nuvKey(uid)))||{}}catch(e){return {}}};
+const nuvGrava=(uid,o)=>{try{localStorage.setItem(nuvKey(uid),JSON.stringify(o))}catch(e){}};
+function nuvHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+':'+s.length}
+/* o que vai para a nuvem: todos os dados do app + as fotos do diário (se couberem) */
+function nuvPayload(){
+ const s=Object.assign({},S);delete s.lastBackup;
+ let p=JSON.stringify({S:s,FOTOS:FOTOS||{}});
+ if(p.length>NUV_FOTOS_MAX)p=JSON.stringify({S:s,FOTOS:null});
+ return p}
+const fsv=v=>({stringValue:String(v==null?'':v)});
+function nuvMetaCampos(c){return {email:fsv(c.email),telefone:fsv(c.phone),nome:fsv(S.user&&S.user.name),provedor:fsv(c.prov),ultimoAcesso:fsv(new Date().toISOString())}}
+async function nuvMeta(uid){
+ const d=await fsReq('GET',FS_B+'/users/'+uid);if(!d||!d.fields)return null;const f=d.fields;
+ return{at:(f.atualizadoEm&&f.atualizadoEm.stringValue)||'',partes:+((f.partes&&f.partes.integerValue)||0)}}
+async function nuvEnviar(uid,payload,meta){
+ const c=ct()||{},parts=[];for(let i=0;i<payload.length;i+=NUV_PART)parts.push(payload.slice(i,i+NUV_PART));
+ const at=new Date().toISOString(),campos=Object.assign(nuvMetaCampos(c),{partes:{integerValue:String(parts.length)},tamanho:{integerValue:String(payload.length)},atualizadoEm:fsv(at)});
+ const mask=Object.keys(campos);if(!meta){campos.criadoEm=fsv(at);mask.push('criadoEm')}
+ const w=[{update:{name:FS_N+'/users/'+uid,fields:campos},updateMask:{fieldPaths:mask}}];
+ parts.forEach((d,i)=>w.push({update:{name:FS_N+'/users/'+uid+'/dados/p'+i,fields:{d:fsv(d)}}}));
+ for(let i=parts.length;i<((meta&&meta.partes)||0);i++)w.push({delete:FS_N+'/users/'+uid+'/dados/p'+i});
+ await fsReq('POST',FS_B+':commit',{writes:w});return at}
+async function nuvToque(uid,meta){ /* só registra o acesso (e-mail, data), sem enviar dados */
+ const c=ct()||{},campos=nuvMetaCampos(c),mask=Object.keys(campos);
+ await fsReq('POST',FS_B+':commit',{writes:[{update:{name:FS_N+'/users/'+uid,fields:campos},updateMask:{fieldPaths:mask}}]})}
+async function nuvBaixar(uid,meta){
+ const nomes=[];for(let i=0;i<meta.partes;i++)nomes.push(FS_N+'/users/'+uid+'/dados/p'+i);
+ const r=await fsReq('POST',FS_B+':batchGet',{documents:nomes}),m={};
+ (r||[]).forEach(x=>{if(x.found)m[x.found.name]=(x.found.fields.d&&x.found.fields.d.stringValue)||''});
+ let t='';for(const n of nomes){if(m[n]===undefined)throw new Error('Dados incompletos na nuvem.');t+=m[n]}
+ return t}
+/* troca os dados deste aparelho pelos da nuvem e reinicia o app */
+function nuvAplicar(uid,txt,at){
+ let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Dados da nuvem inválidos.')}
+ if(!d||!d.S||typeof d.S!=='object')throw new Error('Dados da nuvem inválidos.');
+ const novo=d.S;novo.user=novo.user||{name:''};novo.user.conta=Object.assign({},ct()||{},novo.user.conta||{},{uid:uid});
+ TROCANDO=true;
+ try{
+  const ant=localStorage.getItem('minha-agenda');if(ant!==null)localStorage.setItem('ma-pre-nuvem:'+uid,ant); /* cópia de segurança dos dados anteriores */
+  localStorage.setItem('minha-agenda',JSON.stringify(novo));
+  if(d.FOTOS&&typeof d.FOTOS==='object')localStorage.setItem('minha-agenda-fotos',JSON.stringify(d.FOTOS));
+  nuvGrava(uid,{at:at,hash:'',pend:1});
+  localStorage.setItem('ma-msg','Dados da sua conta carregados da nuvem.');
+ }catch(e){TROCANDO=false;throw new Error('Sem espaço no aparelho para carregar os dados da nuvem.')}
+ location.reload()}
+/* Sincroniza. Devolve true se reiniciou o app com os dados da nuvem. */
+async function nuvSync(manual,login){
+ if(NUV.busy||!nat()||!FA()||!ct())return false;
+ const uid=ct().uid;if(!uid)return false;
+ NUV.busy=true;if(manual)nuvSet(null,'Sincronizando…');
+ try{
+  const meta=await nuvMeta(uid),est=nuvEst(uid),local=nuvPayload(),h=nuvHash(local);
+  if(!meta){const at=await nuvEnviar(uid,local,null);nuvGrava(uid,{at:at,hash:h,pend:0,touch:Date.now()});nuvSet(true,'Dados enviados para a nuvem.');return false}
+  if(est.pend&&est.at===meta.at){est.hash=h;est.pend=0;nuvGrava(uid,est)}
+  const sujo=est.hash!==h,igual=est.at===meta.at;
+  if(igual){
+   if(sujo){const at=await nuvEnviar(uid,local,meta);nuvGrava(uid,{at:at,hash:h,pend:0,touch:Date.now()});nuvSet(true,'Sincronizado.');return false}
+   if(login||Date.now()-(est.touch||0)>12*3600e3){await nuvToque(uid,meta);est.touch=Date.now();nuvGrava(uid,est)}
+   nuvSet(true,'Tudo sincronizado.');return false}
+  /* a nuvem mudou desde a última sincronização deste aparelho */
+  let usarNuvem=false;
+  if(vazioS()||(!sujo&&est.at))usarNuvem=true;
+  else{
+   const d=await formDlg({title:'Dados na nuvem',sub:'A sua conta já tem dados na nuvem e este aparelho também tem dados diferentes. Quais você quer manter? Os do outro lado serão substituídos.',fields:[],ok:'Usar os da nuvem',links:[{id:'loc',t:'Manter os deste aparelho'}]});
+   if(!d){nuvSet(null,'Sincronização pendente: escolha quais dados manter.');return false}
+   usarNuvem=!d.link}
+  if(usarNuvem){const t=await nuvBaixar(uid,meta);nuvAplicar(uid,t,meta.at);return true}
+  const at=await nuvEnviar(uid,local,meta);nuvGrava(uid,{at:at,hash:h,pend:0,touch:Date.now()});nuvSet(true,'Dados deste aparelho enviados para a nuvem.');return false
+ }catch(e){
+  const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();
+  nuvSet(false,/permission|403|unauthenticated/.test(t)?'A nuvem ainda não está liberada para o app (regras do Firestore).':/database|not_found|not exist/.test(t)?'O banco de dados do Firestore ainda não foi criado no Firebase.':/failed to fetch|network|load failed/.test(t)?'Sem conexão. Sincroniza quando a internet voltar.':'Não foi possível sincronizar: '+t.trim().slice(0,100));
+  return false
+ }finally{NUV.busy=false}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){try{if(ct()&&!NUV.busy)nuvSync()}catch(e){}}else{try{if(ct()&&Date.now()-NUV.t>60000&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||''))nuvSync()}catch(e){}}});
+function nuvAgendar(){if(TROCANDO||!nat()||!ct())return;clearTimeout(NUV_T);NUV_T=setTimeout(()=>nuvSync(),5000)}
+function nuvStatus(){if(!ct())return '';
+ const hh=NUV.t?new Date(NUV.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';
+ const ic=NUV.ok===true?'☁️✅':NUV.ok===false?'☁️⚠️':'☁️';
+ return `<div class="prm" style="margin-top:10px"><span class="ic">${ic}</span><span class="t"><b>Dados na nuvem</b><small>${esc(NUV.msg||'Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}${hh&&NUV.ok!==null?' · '+hh:''}</small></span><button class="sec" onclick="nuvSync(true)">Sincronizar</button></div>`}
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};
@@ -2571,6 +2667,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.4':[
+  '☁️ Seus dados agora ficam guardados na nuvem, na sua conta (Google, e-mail ou celular). Se trocar de celular ou sair e entrar de novo, tudo volta: agenda, notas, diário, compras e plantões.'
+ ],
  '2.9.3':[
   '⚖️ Promoções: nova aba “Comparar preços”. O app compara os produtos equivalentes do Assaí, do Atacadão e do Novo Atacarejo, mostra qual mercado está mais barato em cada setor e no total geral.'
  ],
@@ -2716,7 +2815,7 @@ try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma
   if(typeof o.cSub==='string')cSub=o.cSub;if(typeof o.cMes==='string')cMes=o.cMes;if(typeof o.sel==='string')sel=o.sel;if(typeof o.dsel==='string')dsel=o.dsel;
   if(o.mes&&!isNaN(o.mes))mes=new Date(o.mes)}}}catch(e){}
 
-guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
+guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>

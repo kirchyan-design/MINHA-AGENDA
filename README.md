@@ -15,6 +15,15 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 2.9.4
+
+- **Dados na nuvem**: quem entra com Google, e-mail ou celular tem os dados (agenda, notas, diário com fotos, compras, plantões, etc.) guardados no Firestore, em `users/{uid}` (e-mail, telefone, nome, provedor, criadoEm, ultimoAcesso) e `users/{uid}/dados/p0…` (dados em partes). Ao trocar de celular ou sair e entrar de novo, os dados voltam. Sincroniza 5 s depois de cada alteração, ao fechar/abrir o app e pelo botão **Sincronizar** em Configurações › Conta. Se este aparelho e a nuvem tiverem dados diferentes, o app pergunta quais manter. Não sincroniza: logos dos mercados e quem usa o app só com o nome (sem conta).
+- **Configuração, uma vez só** (sem isso a nuvem não funciona; o app mostra “A nuvem ainda não está liberada”):
+  1. Firebase › Build › **Firestore Database** › Criar banco de dados (modo produção, região `southamerica-east1`).
+  2. Firestore › aba **Regras** › cole o conteúdo do arquivo `firestore.rules` › Publicar.
+- **Ver quem usa o app**: Firebase › Firestore › coleção `users` (e-mail, último acesso) e Authentication › Usuários.
+- Os dados ficam legíveis para quem administra o projeto Firebase: informe isso na política de privacidade.
+
 ## Versão 2.9.3
 
 - **Promoções › Comparar preços**: nova aba que compara o Assaí, o Atacadão e o Novo Atacarejo. Os produtos equivalentes ficam na tabela `CMP` do `index.html` (nome exato do produto no encarte + tamanho da embalagem em relação à referência); o preço é normalizado (por kg, L etc.). Mostra o mercado mais barato por setor e no total, e permite incluir ou não os preços de app/cartão. Só entram itens que aparecem em 2 ou mais mercados e encartes ainda válidos. **Ao subir encartes novos, confira se os nomes em `CMP` ainda existem.**
