@@ -2681,7 +2681,8 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
    O plugin nativo ApkUpdate (criado no workflow) faz a checagem, o download e a instalação. */
 const APK_BASE='https://github.com/kirchyan-design/MINHA-AGENDA/releases/latest/download/';
 const APK_URL=APK_BASE+'JC-Organiza.apk',APK_VER=APK_BASE+'version.json';
-const APKP=()=>plug('ApkUpdate');
+const APKP=()=>{let p=plug('ApkUpdate');if(p)return p;try{const C=window.Capacitor;if(C&&C.registerPlugin&&C.isPluginAvailable&&C.isPluginAvailable('ApkUpdate'))return C.registerPlugin('ApkUpdate')}catch(e){}return null};
+function apkDiag(){try{const C=window.Capacitor||{};const n=new Set(Object.keys(C.Plugins||{}));(C.PluginHeaders||[]).forEach(h=>n.add(h.name));return [...n].join(', ')||'nenhum'}catch(e){return 'indisponível'}}
 let APK_ST=null,APK_L=null; /* APK_ST: null = sem aviso | {tipo:'novo'|'antigo',fase,pct,msg,nome} */
 function apkCard(){const s=APK_ST;if(!s)return '';
  const ver=s.nome?' ('+esc(s.nome)+')':'';let corpo,btn='';
@@ -2711,7 +2712,7 @@ async function apkChecar(manual){
  if(!nat())return;
  if(APK_ST&&APK_ST.tipo==='novo'&&APK_ST.fase&&APK_ST.fase!=='pronto')return;
  const P=APKP();
- if(!P){if(manual===true)info('Este aplicativo ainda não tem o atualizador interno. Instale a versão mais recente uma única vez; depois disso as atualizações acontecem por dentro do app, com um toque.');return}
+ if(!P){if(manual===true)info('O atualizador interno não foi encontrado neste APK. Confirme que o arquivo build-apk.yml atualizado está em .github/workflows/ e gere o APK de novo. (Plugins presentes: '+apkDiag()+')');return}
  try{
   const inf=await P.info(),r=await P.fetchText({url:APK_VER}),v=JSON.parse(r.text||'{}');
   if((+v.versionCode||0)>(+inf.versionCode||0)){APK_ST={tipo:'novo',fase:'pronto',nome:v.versionName||''};UPD_HIDE=false;apkDesenha()}
