@@ -54,7 +54,7 @@ jobs:
             else
               echo "::warning::google-services.json nao encontrado na raiz do repositorio. Login Firebase DESATIVADO neste APK (o app abre normalmente)."
             fi
-            npm uninstall @capacitor-firebase/authentication
+            npm uninstall @capacitor-firebase/authentication @capacitor-firebase/messaging
           fi
 
       - name: Assinatura fixa e versão (permite instalar por cima)
@@ -242,6 +242,20 @@ jobs:
             if [ -f "$R/values/ic_launcher_background.xml" ]; then sed -i 's/#FFFFFF/#EAF2FF/I' "$R/values/ic_launcher_background.xml"; fi
           fi
           if [ -f notif-icon.png ]; then mkdir -p "$R/drawable"; cp notif-icon.png "$R/drawable/ic_stat_agenda.png"; fi
+
+      - name: Ícone e cor das notificações de atualização (push) (Android)
+        run: |
+          # Usa o mesmo ícone das notificações locais (notif-icon.png -> drawable/ic_stat_agenda).
+          M=android/app/src/main/AndroidManifest.xml
+          R=android/app/src/main/res
+          if ls "$R"/drawable/ic_stat_agenda.* >/dev/null 2>&1; then
+            mkdir -p "$R/values"
+            echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="jc_notif_color">#0F7B8A</color></resources>' > "$R/values/jc_notif_color.xml"
+            grep -q default_notification_icon "$M" || sed -i 's#</application>#    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_agenda" />\n        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/jc_notif_color" />\n    </application>#' "$M"
+            grep -n "default_notification" "$M" || true
+          else
+            echo "::warning::notif-icon.png nao encontrado: notificacoes ficam com o icone padrao do Android."
+          fi
 
       - name: Copiar o app para o Android
         run: npx cap sync android
