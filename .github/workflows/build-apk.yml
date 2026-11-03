@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Baixar o código
         uses: actions/checkout@v4
@@ -203,11 +205,173 @@ jobs:
               @Override
               public void onCreate(Bundle savedInstanceState) {
                   registerPlugin(MediaPermissionsPlugin.class);
+                  registerPlugin(ApkUpdatePlugin.class);
                   super.onCreate(savedInstanceState);
               }
           }
           EOF
           grep -n "uses-permission" "$M" || true
+
+      - name: Atualizador interno do app (plugin ApkUpdate) (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q "android.permission.REQUEST_INSTALL_PACKAGES" "$M" || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n</manifest>#' "$M"
+          grep -q "android.permission.REQUEST_INSTALL_PACKAGES" "$M" || { echo "::error::Nao consegui declarar REQUEST_INSTALL_PACKAGES"; cat "$M"; exit 1; }
+          # a pasta de cache precisa estar liberada no FileProvider (o instalador do Android le o APK de la)
+          FP=android/app/src/main/res/xml/file_paths.xml
+          if [ -f "$FP" ]; then
+            grep -q "cache-path" "$FP" || sed -i 's#</paths>#    <cache-path name="jc_update" path="." />\n</paths>#' "$FP"
+            cat "$FP"
+          else
+            echo "::warning::file_paths.xml nao encontrado; criando"
+            mkdir -p android/app/src/main/res/xml
+            printf '<?xml version="1.0" encoding="utf-8"?>\n<paths xmlns:android="http://schemas.android.com/apk/res/android">\n    <external-path name="my_images" path="." />\n    <cache-path name="my_cache_images" path="." />\n</paths>\n' > "$FP"
+          fi
+          D=android/app/src/main/java/com/minhaagenda/app
+          mkdir -p "$D"
+          cat > "$D/ApkUpdatePlugin.java" <<'EOF'
+          package com.minhaagenda.app;
+
+          import android.content.Context;
+          import android.content.Intent;
+          import android.content.pm.PackageInfo;
+          import android.net.Uri;
+          import android.os.Build;
+          import android.provider.Settings;
+          import androidx.core.content.FileProvider;
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+          import java.io.ByteArrayOutputStream;
+          import java.io.File;
+          import java.io.FileOutputStream;
+          import java.io.InputStream;
+          import java.net.HttpURLConnection;
+          import java.net.URL;
+
+          @CapacitorPlugin(name = "ApkUpdate")
+          public class ApkUpdatePlugin extends Plugin {
+
+              private HttpURLConnection abrir(String u) throws Exception {
+                  HttpURLConnection c = (HttpURLConnection) new URL(u).openConnection();
+                  c.setInstanceFollowRedirects(true);
+                  c.setConnectTimeout(15000);
+                  c.setReadTimeout(30000);
+                  c.setRequestProperty("User-Agent", "JC-Organiza");
+                  return c;
+              }
+
+              private File arquivo() {
+                  return new File(getContext().getCacheDir(), "JC-Organiza.apk");
+              }
+
+              @PluginMethod
+              public void info(PluginCall call) {
+                  try {
+                      Context ctx = getContext();
+                      PackageInfo pi = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
+                      long code = Build.VERSION.SDK_INT >= 28 ? pi.getLongVersionCode() : pi.versionCode;
+                      JSObject r = new JSObject();
+                      r.put("versionCode", code);
+                      r.put("versionName", pi.versionName);
+                      call.resolve(r);
+                  } catch (Exception e) {
+                      call.reject(String.valueOf(e.getMessage()));
+                  }
+              }
+
+              @PluginMethod
+              public void fetchText(final PluginCall call) {
+                  final String u = call.getString("url");
+                  new Thread(() -> {
+                      try {
+                          HttpURLConnection c = abrir(u);
+                          int cod = c.getResponseCode();
+                          if (cod != 200) { call.reject("HTTP " + cod); return; }
+                          InputStream in = c.getInputStream();
+                          ByteArrayOutputStream o = new ByteArrayOutputStream();
+                          byte[] b = new byte[4096];
+                          int n;
+                          while ((n = in.read(b)) > 0) o.write(b, 0, n);
+                          in.close();
+                          JSObject r = new JSObject();
+                          r.put("text", o.toString("UTF-8"));
+                          call.resolve(r);
+                      } catch (Exception e) {
+                          call.reject(String.valueOf(e.getMessage()));
+                      }
+                  }).start();
+              }
+
+              @PluginMethod
+              public void download(final PluginCall call) {
+                  final String u = call.getString("url");
+                  new Thread(() -> {
+                      try {
+                          HttpURLConnection c = abrir(u);
+                          int cod = c.getResponseCode();
+                          if (cod != 200) { call.reject("HTTP " + cod + " (APK nao encontrado na Release)"); return; }
+                          long total = c.getContentLengthLong();
+                          File f = arquivo();
+                          if (f.exists()) f.delete();
+                          InputStream in = c.getInputStream();
+                          FileOutputStream out = new FileOutputStream(f);
+                          byte[] b = new byte[16384];
+                          long lido = 0;
+                          int n, ult = -1;
+                          while ((n = in.read(b)) > 0) {
+                              out.write(b, 0, n);
+                              lido += n;
+                              if (total > 0) {
+                                  int pct = (int) (lido * 100 / total);
+                                  if (pct != ult) {
+                                      ult = pct;
+                                      JSObject e = new JSObject();
+                                      e.put("percent", pct);
+                                      notifyListeners("progress", e);
+                                  }
+                              }
+                          }
+                          out.close();
+                          in.close();
+                          call.resolve();
+                      } catch (Exception e) {
+                          call.reject(String.valueOf(e.getMessage()));
+                      }
+                  }).start();
+              }
+
+              @PluginMethod
+              public void install(PluginCall call) {
+                  try {
+                      Context ctx = getContext();
+                      JSObject r = new JSObject();
+                      if (Build.VERSION.SDK_INT >= 26 && !ctx.getPackageManager().canRequestPackageInstalls()) {
+                          Intent p = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + ctx.getPackageName()));
+                          p.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                          ctx.startActivity(p);
+                          r.put("permissao", false);
+                          call.resolve(r);
+                          return;
+                      }
+                      File f = arquivo();
+                      if (!f.exists()) { call.reject("arquivo baixado nao encontrado"); return; }
+                      Uri uri = FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".fileprovider", f);
+                      Intent i = new Intent(Intent.ACTION_VIEW);
+                      i.setDataAndType(uri, "application/vnd.android.package-archive");
+                      i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                      ctx.startActivity(i);
+                      r.put("permissao", true);
+                      call.resolve(r);
+                  } catch (Exception e) {
+                      call.reject(String.valueOf(e.getMessage()));
+                  }
+              }
+          }
+          EOF
+          test -s "$D/ApkUpdatePlugin.java" && echo "Plugin ApkUpdate criado."
 
       - name: Permissão da câmera (Android)
         run: |
@@ -289,3 +453,16 @@ jobs:
         with:
           name: JC-Organiza-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publicar o APK na Release (atualização dentro do app)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.run_number }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk JC-Organiza.apk
+          echo "{\"versionCode\":$RUN,\"versionName\":\"1.3.$RUN\"}" > version.json
+          cat version.json
+          gh release create "v1.3.$RUN" JC-Organiza.apk version.json \
+            --title "JC ORGANIZA 1.3.$RUN" \
+            --notes "Versão 1.3.$RUN. Os aparelhos com o app já instalado atualizam sozinhos por dentro do aplicativo." \
+            --latest
