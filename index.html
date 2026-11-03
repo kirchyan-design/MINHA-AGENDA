@@ -587,6 +587,22 @@ nav div#nav button{flex:0 0 auto;min-width:68px;padding:3px 4px 2px;font-size:10
 nav div#nav button .nl{white-space:nowrap;font-size:10.5px;letter-spacing:0}
 nav div#nav button .ni{width:46px}
 }
+/* comparador de preços (Promoções) */
+.cp-tg{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:14px;cursor:pointer}
+.cp-win{display:flex;align-items:center;gap:10px;margin:2px 0 10px}.cp-win b{font:800 24px "Bricolage Grotesque",sans-serif;color:var(--ac);line-height:1.1}
+.cp-r{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--ln)}.cp-r:first-of-type{border-top:0}
+.cp-r .cp-m{flex:1;min-width:0}.cp-r .cp-m small{display:block;color:var(--mute);font-size:12px}
+.cp-r .cp-v{text-align:right;flex:none;white-space:nowrap}.cp-r .cp-v b{display:block;font-size:16px}.cp-r .cp-v small{color:var(--mute);font-size:12px}
+.cp-r.w .cp-v b{color:var(--ac)}
+.cp-pos{display:inline-block;min-width:18px;font-size:13px;text-align:center;font-weight:800;color:var(--mute)}
+.cp-badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--acs);color:var(--ac)}
+.cp-d summary{cursor:pointer;font-weight:700;color:var(--ac);font-size:14px;padding:8px 0 2px}
+.cp-i{padding:10px 0;border-top:1px solid var(--ln)}.cp-n{font-size:14px;font-weight:600}.cp-n small{color:var(--mute);font-weight:400}
+.cp-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.cp-c{border:1px solid var(--ln);border-radius:10px;padding:6px 7px;min-width:0}.cp-c>small{display:block;color:var(--mute);font-size:11px}
+.cp-c b{display:block;font-size:14px}.cp-c .cp-s{display:block;font-size:10.5px;color:var(--mute);line-height:1.25;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word}
+.cp-c.win{background:var(--acs);border-color:var(--ac)}.cp-c.win b{color:var(--ac)}.cp-c.off{opacity:.5}
+.cp-tb{width:100%;border-collapse:collapse;font-size:13px}.cp-tb td,.cp-tb th{padding:5px 0;text-align:right;border-top:1px solid var(--ln)}.cp-tb th{font-weight:600;color:var(--mute)}.cp-tb td:first-child,.cp-tb th:first-child{text-align:left}
 </style>
 
 </head>
@@ -1179,9 +1195,110 @@ function vMercadoNovo(){
  return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. Confirme os valores na loja.</p></div>`+blocos}
 let mmMk='assai';
 function mmSet(k){mmMk=k;render();window.scrollTo(0,0)}
+/* ---------- Promoções: comparador de preços entre mercados ---------- */
+const CMP_MK=[['assai','Assaí','Assaí'],['atacadao','Atacadão','Atacadão'],['novo','Novo Atacarejo','Novo']];
+const CMP_SET=[['Mercearia','🛒'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽']];
+/* Produtos equivalentes: [id, setor, nome, quantidade de referência, Assaí, Atacadão, Novo].
+   Cada mercado lista [nome exato do produto no encarte, tamanho da embalagem em relação à referência]. O preço é dividido por esse tamanho,
+   para comparar o mesmo conteúdo (ex.: 3L de refrigerante = 3 × a referência de 1 L). Se houver mais de um produto, vale o mais barato. */
+const CMP=[
+ ['acucar','Mercearia','Açúcar','1 kg',[["Açúcar refinado Olho d'Água",1]],[["Açúcar Petribu Cristal",1]],[["Açúcar Olho D'Água",1]]],
+ ['feijao','Mercearia','Feijão carioca tipo 1','1 kg',[["Feijão carioca tipo 1 Pai Heleno",1]],[["Feijão Carioca Kicaldo",1]],[["Feijão Carioca Turquesa",1]]],
+ ['arroz','Mercearia','Arroz parboilizado','1 kg',null,[["Arroz Mariano",1]],[["Arroz Parboilizado Pop",1]]],
+ ['trigo','Mercearia','Farinha de trigo tipo 1','1 kg',[["Farinha de trigo tipo 1 Rosa Branca",1]],[["Farinha de Trigo Tia Mara",1]],null],
+ ['trigof','Mercearia','Farinha de trigo com fermento','1 kg',[["Farinha de trigo com fermento Rosa Branca",1]],[["Farinha de Trigo Boa Sorte",1]],null],
+ ['flocao','Mercearia','Flocão de milho','400 g',[["Flocão de milho Vitamilho",1.25]],[["Flocão de Milho Flokão",1]],[["Farinha de Milho Flocada Flokão",1]]],
+ ['macarrao','Mercearia','Macarrão espaguete','400 g',[["Macarrão espaguete Galo",1]],[["Macarrão Comum Aliança",1]],[["Macarrão Vitarella",1]]],
+ ['lamen','Mercearia','Macarrão instantâneo','70 g',null,[["Macarrão Instantâneo Nosso Sabor Lámen",74/70]],[["Macarrão Instantâneo Nissin Nosso Sabor",1]]],
+ ['molho','Mercearia','Molho de tomate','300 g',[["Molho de tomate Predilecta sachê",1],["Molho de tomate Stella D'oro",1]],[["Molho de Tomate Palmeiron",1]],[["Molho de Tomate Tambaú",1]]],
+ ['condensado','Mercearia','Leite condensado semidesnatado','395 g',[["Leite condensado semidesnatado Italac",1],["Leite condensado semidesnatado Sabe",1]],[["Leite Condensado Betânia",1]],[["Leite Condensado Betânia",1]]],
+ ['cafe','Mercearia','Café torrado e moído','250 g',[["Café Melitta tradicional ou extraforte",1]],[["Café São Braz",1]],null],
+ ['cafesol','Mercearia','Café solúvel (sachê)','40 g',[["Café solúvel Melitta sachê",1]],[["Café Solúvel Melitta",1]],null],
+ ['oleo','Mercearia','Óleo de soja','900 ml',null,[["Óleo de Soja Liza",1]],[["Óleo de Soja Soya",1]]],
+ ['azeite','Mercearia','Azeite extravirgem','500 ml',null,[["Azeite de Oliva Andorinha",1]],[["Azeite Extravirgem Gallo",1]]],
+ ['milho','Mercearia','Milho verde / ervilha em lata','170 g',null,[["Ervilha e Milho Bonare Dueto",1]],[["Milho Verde ou Dueto Bonare",1]]],
+ ['panettone','Mercearia','Panettone Bauducco','400 g',null,[["Chocottone/Panettone Bauducco",1]],[["Panettone Bauducco",1]]],
+ ['leite','Laticínios','Leite longa vida','1 L',null,[["Leite Longa Vida Elegê",1]],[["Leite UHT Betânia ou Natville",1]]],
+ ['margarina','Laticínios','Margarina com sal','3 kg',null,[["Margarina Primor",1]],[["Margarina Deline",1]]],
+ ['sobrecoxa','Carnes e congelados','Sobrecoxa de frango congelada','1 kg',[["Sobrecoxas de frango congeladas Sadia",1]],null,[["Coxa Sobrecoxa com Porção Dorsal Lar / Canção",1]]],
+ ['filefrango','Carnes e congelados','Filé de peito de frango congelado','1 kg',[["Filé de peito de frango congelado Mauricéa",1]],[["Filezinho de Peito de Frango Seara Congelado",1]],null],
+ ['tilapia','Carnes e congelados','Filé de tilápia congelado','500 g',null,[["Filé de Peixe Tilápia Seara Congelado",1.2]],[["Filé de Tilápia Brazilian Fish",1]]],
+ ['salsicha','Carnes e congelados','Salsicha hot dog congelada','5 kg',null,[["Salsicha Hot Dog Rezende Congelada",1]],[["Salsicha Hot Dog Perdigão",1]]],
+ ['cola','Bebidas','Refrigerante de cola','1 L',[["Refrigerante Coca-Cola original",3]],[["Refrigerante Pepsi Cola",1]],null],
+ ['papelh','Higiene','Papel higiênico folha dupla','12 rolos de 30 m',[["Papel higiênico folha dupla Supra",1]],[["Papel Higiênico Familiar",240/360]],[["Papel Higiênico Caprice",1]]],
+ ['desod','Higiene','Desodorante aerossol','150 ml',[["Desodorante aerossol Above",1]],[["Desodorante Aerossol ONE Above",1]],[["Desodorante Aerossol Dove",200/150]]],
+ ['sabonete','Higiene','Sabonete em barra','90 g',[["Sabonete Francis fragrâncias",1]],[["Sabonete Above Extreme Black/Cream Original",5]],[["Sabonete Even Suave",85/90]]],
+ ['dental','Higiene','Creme dental','90 g',null,[["Creme Dental Oral-B",2],["Creme Dental Even",70/90]],[["Creme Dental Colgate",4]]],
+ ['deterg','Limpeza','Detergente líquido de louça','500 ml',[["Detergente líquido Absoluto",4]],[["Detergente Líquido Dragão",1]],[["Lava-Louças Líquido Ypê",1]]],
+ ['amaciante','Limpeza','Amaciante concentrado','1 L',[["Amaciante Coala concentrado",1]],[["Amaciante para Roupas Concentrado Downy",1.5]],null],
+ ['multiuso','Limpeza','Limpador multiuso','500 ml',[["Limpador multiuso Becker",1]],[["Limpador Multiuso Veja",1],["Limpador Casa & Perfume",1]],null],
+ ['sabaob','Limpeza','Sabão em barra','160 g',[["Sabão em barra Bem-te-vi",1]],[["Sabão em Pedaço Ypê",5]],null],
+ ['lavapo','Limpeza','Lava-roupas em pó','400 g',null,[["Lava Roupas em Pó Ala",1]],[["Detergente em Pó Ala",1]]],
+ ['lavaliq','Limpeza','Lava-roupas líquido','1 L',null,[["Lava Roupas Líquido Tixan",3],["Lava Roupas Líquido Dragão Azul",3]],[["Lava Roupas Líquido Toplin",5]]]
+];
+let mmView='lista',cmpApp=true;try{cmpApp=localStorage.getItem('ma-cmp-app')!=='0'}catch(e){}
+function mmVw(v){mmView=v;render();window.scrollTo(0,0)}
+function cmpTog(v){cmpApp=!!v;try{localStorage.setItem('ma-cmp-app',v?'1':'0')}catch(e){}render()}
+/* preços de cada mercado: nome do produto → {p: preço da loja, x: preço exclusivo do app/cartão (ou 0), tx: nome do tipo, fim}. Encartes encerrados ficam de fora. */
+function cmpPrecos(){
+ const vivo=fim=>mmVal(fim).k!=='off',R={assai:{},atacadao:{},novo:{}};
+ AS_ENC.forEach(e=>{if(!vivo(e.fim))return;asLista(e.txt).forEach(i=>{if(!(i.por>0))return;R.assai[i.n]=e.app?{p:0,x:i.por,tx:'app Meu Assaí',fim:e.fim}:{p:i.por,x:0,tx:'',fim:e.fim}})});
+ if(vivo(AT_FIM))atParse(AT_TXT).forEach(s=>s.it.forEach(i=>{if(!(i.at>0))return;const ex=[[i.app,'app Meu Atacadão'],[i.car,'cartão']].filter(a=>a[0]>0&&a[0]<i.at).sort((a,b)=>a[0]-b[0])[0];
+  R.atacadao[i.n]={p:i.at,x:ex?ex[0]:0,tx:ex?ex[1]:'',fim:AT_FIM}}));
+ nvParse(NV_TXT).forEach(s=>{const fim=NV_ENC[s.e].fim;if(!vivo(fim))return;s.it.forEach(i=>{if(i.p>0)R.novo[i.n]={p:i.p,x:0,tx:'',fim:fim}})});
+ return R}
+/* preço usado na comparação: com a opção ligada vale o menor (loja, app ou cartão); desligada, só o preço da loja */
+function cmpPreco(o){if(!o)return null;if(cmpApp){const v=[o.p,o.x].filter(n=>n>0);return v.length?{p:Math.min.apply(null,v),tag:o.x>0&&(!o.p||o.x<o.p)?o.tx:''}:null}
+ return o.p>0?{p:o.p,tag:''}:null}
+function cmpCalc(){
+ const P=cmpPrecos(),EPS=0.005,itens=[];
+ CMP.forEach(r=>{const cel={};let n=0;
+  CMP_MK.forEach((m,j)=>{const cands=r[4+j];if(!cands)return;let best=null;
+   cands.forEach(c=>{const o=cmpPreco(P[m[0]][c[0]]);if(!o)return;const np=o.p/c[1];if(!best||np<best.np)best={np:np,p:o.p,f:c[1],nome:c[0],tag:o.tag}});
+   if(best){cel[m[0]]=best;n++}});
+  if(n<2)return;const min=Math.min.apply(null,Object.values(cel).map(c=>c.np));
+  Object.values(cel).forEach(c=>{c.win=c.np<=min+EPS});itens.push({k:r[0],s:r[1],n:r[2],r:r[3],cel:cel,min:min})});
+ const stats=list=>{const o={};CMP_MK.forEach(m=>o[m[0]]={n:0,tot:0,min:0,wins:0});
+  list.forEach(it=>Object.keys(it.cel).forEach(id=>{const c=it.cel[id],s=o[id];s.n++;s.tot+=c.np;s.min+=it.min;if(c.win)s.wins++}));
+  const rank=CMP_MK.filter(m=>o[m[0]].n>0).map(m=>{const s=o[m[0]];s.id=m[0];s.nome=m[1];s.over=s.min>0?(s.tot/s.min-1)*100:0;return s})
+   .sort((a,b)=>a.over-b.over||b.wins-a.wins||a.tot-b.tot);
+  return{o:o,rank:rank,best:list.reduce((t,it)=>t+it.min,0),n:list.length}};
+ /* soma simples de todos os produtos de cada encarte (informativa) */
+ const raw={};CMP_MK.forEach(m=>{let t=0,n=0;Object.values(P[m[0]]).forEach(o=>{const c=cmpPreco(o);if(c){t+=c.p;n++}});raw[m[0]]={tot:t,n:n}});
+ const setores=CMP_SET.map(s=>{const l=itens.filter(i=>i.s===s[0]);return l.length?{nome:s[0],em:s[1],itens:l,st:stats(l)}:null}).filter(Boolean);
+ return{itens:itens,tot:stats(itens),setores:setores,raw:raw,P:P}}
+function cmpRows(st){
+ return st.rank.map((s,i)=>{const m=MERC0.find(x=>x.id===s.id),w=i===0&&st.rank.length>1&&(s.over<st.rank[1].over-1e-9||s.wins>st.rank[1].wins);
+  return `<div class="cp-r${w?' w':''}"><span class="cp-pos">${i+1}º</span>${logo(m,30)}<div class="cp-m"><strong>${esc(m.nome)}</strong><small>${w?'🏆 mais barato · ':''}${s.wins} de ${s.n} ${s.n===1?'item':'itens'} no menor preço</small></div><div class="cp-v"><b>${brl(s.tot)}</b><small>${s.over<0.05?'menor preço':'+'+pct(s.over)+' vs. melhor'}</small></div></div>`}).join('')}
+function cmpItem(it){
+ return `<div class="cp-i"><div class="cp-n">${esc(it.n)} <small>· preço por ${esc(it.r)}</small></div><div class="cp-g">${CMP_MK.map(m=>{const c=it.cel[m[0]];
+  if(!c)return `<div class="cp-c off"><small>${m[2]}</small><b>—</b><span class="cp-s">não está no encarte</span></div>`;
+  return `<div class="cp-c${c.win?' win':''}"><small>${m[2]}${c.win?' 🏆':''}</small><b>${brl(c.np)}</b><span class="cp-s">${esc(c.nome)}${c.f!==1?' (embalagem '+brl(c.p)+')':''}${c.tag?' · '+esc(c.tag):''}</span></div>`}).join('')}</div></div>`}
+function vCompMerc(){
+ const R=cmpCalc(),T=R.tot,ok=R.itens.length>0;
+ let h=`<div class="card"><div style="display:flex;align-items:center;gap:10px">${CMP_MK.map(m=>logo(MERC0.find(x=>x.id===m[0]),34)).join('')}<div><strong>Comparar os mercados</strong><br><small style="color:var(--mute)">${R.itens.length} produtos equivalentes · Assaí, Atacadão e Novo Atacarejo</small></div></div>
+<p class="hint">O app junta os produtos parecidos de cada encarte (mesmo tipo e mesmo conteúdo, marcas podem mudar) e traz o preço para a mesma quantidade, por exemplo, por 1 kg ou por 1 L. Só entram produtos que aparecem em pelo menos 2 mercados e encartes que ainda estão válidos.</p>
+<label class="cp-tg"><input type="checkbox" ${cmpApp?'checked':''} onchange="cmpTog(this.checked)"><span>Incluir preços exclusivos do app e do cartão</span></label>
+<p class="hint">${cmpApp?'Vale o menor preço de cada mercado, inclusive o do app Meu Assaí, do app Meu Atacadão e do cartão Atacadão.':'Só os preços da loja, para todos os clientes.'}</p></div>`;
+ if(!ok)return h+`<div class="card"><p style="margin:0">Não há produtos para comparar agora. As ofertas dos encartes podem ter encerrado.</p></div>`;
+ const w=T.rank[0],wm=MERC0.find(x=>x.id===w.id),clear=T.rank.length<2||w.over<T.rank[1].over-1e-9||w.wins>T.rank[1].wins;
+ h+=`<h3>Resultado total</h3><div class="card tot"><div class="cp-win">${logo(wm,44)}<div><small style="color:var(--mute)">${clear?'Mercado mais barato no geral':'Empate técnico'}</small><br><b>${clear?esc(wm.nome):esc(T.rank.filter(s=>s.over-w.over<0.05).map(s=>s.nome).join(' e '))}</b></div></div>
+${cmpRows(T)}
+<div style="border-top:1px solid var(--ac);margin:10px 0 8px"></div>
+<div class="r" style="display:flex;justify-content:space-between;gap:8px"><span>Comprando cada item no mercado mais barato</span><strong style="font:700 18px 'Bricolage Grotesque',sans-serif">${brl(T.best)}</strong></div>
+<p class="hint">O total de cada mercado soma o preço dos itens que ele tem no encarte, e o “acima do melhor preço” compara com o menor preço desses mesmos itens, então um mercado com menos produtos não leva vantagem. Ganha o mercado com menor diferença.</p></div>`;
+ h+=`<h3>Por setor</h3>`;
+ R.setores.forEach(s=>{const wn=s.st.rank[0],mm=MERC0.find(x=>x.id===wn.id),cl=s.st.rank.length<2||wn.over<s.st.rank[1].over-1e-9||wn.wins>s.st.rank[1].wins;
+  h+=`<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><strong style="font-size:16px">${s.em} ${esc(s.nome)}</strong><small style="color:var(--mute)">${s.itens.length} ${s.itens.length===1?'produto':'produtos'}</small></div>
+<div style="margin:2px 0 4px">${cl?`<span class="cp-badge">🏆 ${esc(mm.nome)} é o mais barato</span>`:`<span class="cp-badge">Empate técnico</span>`}</div>${cmpRows(s.st)}
+<details class="cp-d"><summary>Ver os ${s.itens.length} ${s.itens.length===1?'produto':'produtos'} do setor</summary>${s.itens.map(cmpItem).join('')}</details></div>`});
+ h+=`<h3>Soma de todos os produtos</h3><div class="card"><p class="hint" style="margin:0 0 6px">Soma simples dos preços de todos os produtos de cada encarte válido (cada um 1 vez). Só informativo: cada mercado tem produtos diferentes, então use o resultado acima para comparar.</p>${CMP_MK.map(m=>`<div class="cp-r">${logo(MERC0.find(x=>x.id===m[0]),28)}<div class="cp-m"><strong>${esc(m[1])}</strong><small>${R.raw[m[0]].n} produtos</small></div><div class="cp-v"><b>${brl(R.raw[m[0]].tot)}</b></div></div>`).join('')}</div>`;
+ return h+`<p class="hint">Preços tirados dos encartes e das ofertas de Pernambuco. Confirme os valores na loja.</p>`}
 function vMeuMercado(){
+ const top=`<div class="seg">${[['lista','🏷️ Ofertas'],['comp','⚖️ Comparar preços']].map(m=>`<button class="${mmView===m[0]?'on':''}" onclick="mmVw('${m[0]}')">${m[1]}</button>`).join('')}</div>`;
+ if(mmView==='comp')return `<h2>${_t('Promoções')}</h2>`+top+vCompMerc();
  const seg=`<div class="seg">${[['assai','Assaí'],['atacadao','Atacadão'],['novo','Novo Atacarejo']].map(m=>`<button class="${mmMk===m[0]?'on':''}" onclick="mmSet('${m[0]}')">${m[1]}</button>`).join('')}</div>`;
- return `<h2>${_t('Promoções')}</h2>`+seg+(mmMk==='atacadao'?vMercadoAtac():mmMk==='novo'?vMercadoNovo():vMeuMercadoAssai())}
+ return `<h2>${_t('Promoções')}</h2>`+top+seg+(mmMk==='atacadao'?vMercadoAtac():mmMk==='novo'?vMercadoNovo():vMeuMercadoAssai())}
 
 
 /* ---------- Mercados ---------- */
@@ -2454,6 +2571,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.3':[
+  '⚖️ Promoções: nova aba “Comparar preços”. O app compara os produtos equivalentes do Assaí, do Atacadão e do Novo Atacarejo, mostra qual mercado está mais barato em cada setor e no total geral.'
+ ],
  '2.9.2':[
   '🖼️ As notificações do app agora mostram o ícone do JC ORGANIZA (antes apareciam com um “i” genérico). Vale para o APK gerado a partir desta versão.'
  ],
@@ -2559,7 +2679,7 @@ const GUIA_APP=[
  ['📖','Diário','Escreva sobre o seu dia, com humor e fotos.'],
  ['🛒','Compras','Lista de compras que você pode montar falando o produto e o preço. Também escaneia etiquetas com a câmera, compara preços entre mercados, guarda os seus mercados e o histórico das compras.'],
  ['💰','Carteira','Resumo, gastos, contas fixas e renda.'],
- ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo.'],
+ ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
  ['⚙️','Configurações','Perfil, conta (Google, e-mail ou celular), backup, idioma, cores do tema, menu e senha do app.']];
 function guiaNovosInit(){

@@ -1,6 +1,6 @@
 /* JC ORGANIZA - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='2.9.2';
+const VERSION='2.9.3';
 const CACHE='jc-organiza-'+VERSION;
 const OCR_CACHE='jc-ocr-1'; /* leitor de texto offline (pasta ocr/): cache próprio, não é apagado a cada versão */
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];

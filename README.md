@@ -15,6 +15,10 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 2.9.3
+
+- **Promoções › Comparar preços**: nova aba que compara o Assaí, o Atacadão e o Novo Atacarejo. Os produtos equivalentes ficam na tabela `CMP` do `index.html` (nome exato do produto no encarte + tamanho da embalagem em relação à referência); o preço é normalizado (por kg, L etc.). Mostra o mercado mais barato por setor e no total, e permite incluir ou não os preços de app/cartão. Só entram itens que aparecem em 2 ou mais mercados e encartes ainda válidos. **Ao subir encartes novos, confira se os nomes em `CMP` ainda existem.**
+
 ## Versão 2.9.1
 
 - **Aviso de atualização com o app fechado**: o aparelho se inscreve no tópico `atualizacoes` do Firebase (Cloud Messaging). Quando você publica uma versão nova, o Android mostra a notificação “🔄 Atualização disponível” mesmo com o app fechado. Vale só para o **APK gerado a partir desta versão** (gere de novo em Actions › *Gerar APK* e instale por cima).
