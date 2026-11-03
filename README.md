@@ -2,6 +2,12 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 2.8.3
+
+- **Rotação de tela**: o app deixou de ser travado em pé (`orientation` no `manifest.webmanifest` agora é `any`) e todas as telas se adaptam. Em pé, nada muda. Deitado: o menu inferior vira uma barra lateral, o calendário e os diálogos ficam mais baixos, o teclado do PIN encolhe, os botões flutuantes (microfone, aviso de atualização) saem da frente do menu e respeitam o recorte da câmera/notch.
+- **Moldura do scanner**: com o celular em pé ela ocupa ~92% da largura (bem maior que antes); deitado, vira uma moldura mais larga e refaz o cálculo quando a tela gira. O recorte da foto continua sendo só o que está dentro da moldura.
+- O APK acompanha a rotação conforme a opção *Girar automaticamente* do Android.
+
 ## Versão 2.8.2
 
 - **Moldura vertical na câmera**: ao escanear, aparece uma janela no formato de etiqueta de prateleira (o resto da tela fica escurecido). A foto é recortada só dentro da moldura antes de o texto ser lido, então nomes e preços vizinhos não atrapalham. Fotos escolhidas da galeria continuam sendo lidas inteiras.
