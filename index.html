@@ -1643,6 +1643,15 @@ document.addEventListener('visibilitychange',()=>{const r=pinRec();if(!r)return;
 
 /* ---------- v1.7: Permissões (arquivos, fotos/vídeos, música/áudio, notificações) ---------- */
 const MPp=()=>plug('MediaPermissions');
+/* microfone: pede direto ao Android (janela do sistema); usa o plugin de voz como reserva */
+async function micEstado(){const M=MPp(),SR=plug('SpeechRecognition');
+ try{if(M){const p=await M.checkPermissions();if(p&&p.microphone)return p.microphone}}catch(e){}
+ try{if(SR)return (await SR.checkPermissions()).speechRecognition}catch(e){}
+ return 'na'}
+async function micPedirNativo(){const M=MPp(),SR=plug('SpeechRecognition');
+ try{if(M){const p=await M.requestPermissions({permissions:['microphone']});if(p&&p.microphone==='granted')return 'granted'}}catch(e){}
+ try{if(SR){const p=await SR.requestPermissions();return p.speechRecognition}}catch(e){}
+ return await micEstado()}
 const PERMS=[
  {id:'arq',ic:'📁',nome:'Arquivos, fotos e vídeos',desc:'Salvar backups e anexar fotos e vídeos no app.'},
  {id:'aud',ic:'🎵',nome:'Música e áudio',desc:'Escolher a música do alarme.'},
@@ -1654,7 +1663,7 @@ async function permStatus(){
  const out={arq:'na',aud:'na',not:'na',cam:'na',mic:'na'};
  if(!nat()){if('Notification' in window)out.not={granted:'granted',denied:'denied'}[Notification.permission]||'prompt';try{const q=await navigator.permissions.query({name:'camera'});out.cam=q.state}catch(e){}try{const q=await navigator.permissions.query({name:'microphone'});out.mic=q.state}catch(e){}return out}
  const L=LNp(),M=MPp(),F=plug('Filesystem'),SR=plug('SpeechRecognition');
- try{if(SR)out.mic=(await SR.checkPermissions()).speechRecognition}catch(e){}
+ try{const m=await micEstado();if(m!=='na')out.mic=m}catch(e){}
  try{if(L)out.not=(await L.checkPermissions()).display}catch(e){}
  try{if(M){const p=await M.checkPermissions();out.arq=(p.images==='granted'&&p.video==='granted')?'granted':(p.images==='denied'||p.video==='denied'?'denied':'prompt');out.aud=p.audio;out.cam=p.camera||'prompt'}
   else if(F){const p=await F.checkPermissions();out.arq=p.publicStorage}}catch(e){}
@@ -1671,7 +1680,7 @@ async function permPedir(id,quiet){
    else if(!quiet)info('Este aparelho não permite usar a câmera por aqui.');
   }else if(id==='mic'){
    const SR=plug('SpeechRecognition');
-   if(nat()&&SR){const p=await SR.requestPermissions();if(p.speechRecognition!=='granted'&&!quiet)info('Microfone bloqueado. Ative em: Ajustes do celular › Apps › JC ORGANIZA › Permissões › Microfone.')}
+   if(nat()&&(SR||MPp())){const st=await micPedirNativo();if(st!=='granted'&&!quiet)info('Microfone bloqueado. Ative em: Ajustes do celular › Apps › JC ORGANIZA › Permissões › Microfone.')}
    else if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop())}
    else if(!quiet)info('Este aparelho não permite usar o microfone por aqui.');
   }else if(id==='arq'){
@@ -1705,7 +1714,7 @@ function permIntro(){
  const o=document.createElement('div');o.className='ov';o.setAttribute('role','alertdialog');
  o.innerHTML=`<div class="dlg"><p>Permissões do JC ORGANIZA</p>${PERMS.map(p=>`<div class="prm"><span class="ic">${p.ic}</span><span class="t"><b>${p.nome}</b><small>${p.desc}</small></span></div>`).join('')}<div class="row" style="margin-top:12px"><button id="pi-ok" style="background:var(--ac)">Permitir</button><button class="sec" id="pi-no">Agora não</button></div></div>`;
  document.body.appendChild(o);
- const fim=()=>{try{localStorage.setItem('mp-perm-asked','1');localStorage.setItem('ma-mic-asked','1')}catch(e){}permAsking=false;o.remove()};
+ const fim=()=>{try{localStorage.setItem('mp-perm-asked','1');localStorage.setItem('ma-mic-dia',new Date().toISOString().slice(0,10))}catch(e){}permAsking=false;o.remove()};
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
@@ -1979,11 +1988,11 @@ async function vozIni(ev){
  clearTimeout(V.max);V.max=setTimeout(()=>{if(V.hold||V.on)vozFim()},20000);
  try{
   if(N){
-   let p=await N.checkPermissions();
-   if(p.speechRecognition!=='granted'){
+   let ps=await micEstado();
+   if(ps!=='granted'){
     V.hold=false;clearTimeout(V.max);
-    p=await N.requestPermissions();
-    if(p.speechRecognition==='granted')vozAviso('✅','Microfone liberado. Agora segure o botão 🎤 e fale o produto e o preço.');
+    ps=await micPedirNativo();
+    if(ps==='granted')vozAviso('✅','Microfone liberado. Agora segure o botão 🎤 e fale o produto e o preço.');
     else vozMicNegado();
     return}
    try{const a=await N.available();if(a&&a.available===false){V.hold=false;clearTimeout(V.max);vozAviso('⚠️','O reconhecimento de voz não está disponível neste celular. <small>Confira se o app Google está instalado e atualizado.</small>',8000);return}}catch(e){}
@@ -2053,19 +2062,17 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
 /* ---------- v2.8: pede o microfone (uma vez) e mostra as novidades depois de cada atualização ---------- */
 async function micPerguntar(){
  if(!nat()||PIN_LK||permAsking||!S.user.name)return;
- const SR=plug('SpeechRecognition');if(!SR)return;
- let k='';try{k=localStorage.getItem('ma-mic-asked')||''}catch(e){}
- if(k)return;
- let p='';try{p=(await SR.checkPermissions()).speechRecognition}catch(e){return}
- const marca=()=>{try{localStorage.setItem('ma-mic-asked','1')}catch(e){}};
- if(p==='granted'){marca();return}
- permAsking=true;
+ const st=await micEstado();if(st==='granted'||st==='na')return;
+ /* enquanto o microfone não estiver liberado, pergunta de novo (no máximo uma vez por dia) */
+ const hoje=new Date().toISOString().slice(0,10);let d='';try{d=localStorage.getItem('ma-mic-dia')||''}catch(e){}
+ if(d===hoje)return;
+ permAsking=true;const neg=st==='denied';
  const o=document.createElement('div');o.className='ov';o.setAttribute('role','alertdialog');
- o.innerHTML='<div class="dlg"><p>🎤 Permitir o microfone?</p><div class="hint" style="margin:0 0 14px">Usado só na lista de compras: você segura o botão do microfone, fala o produto e o preço, e o item é registrado.</div><div class="row"><button id="mc-ok">Permitir</button><button class="sec" id="mc-no">Agora não</button></div></div>';
+ o.innerHTML='<div class="dlg"><p>🎤 '+(neg?'Microfone bloqueado':'Permitir o microfone?')+'</p><div class="hint" style="margin:0 0 14px">'+(neg?'Para falar o produto e o preço na lista de compras, permita o microfone nos ajustes do celular.':'Usado só na lista de compras: você segura o botão do microfone, fala o produto e o preço, e o item é registrado.')+'</div><div class="row"><button id="mc-ok">'+(neg?'Abrir ajustes':'Permitir')+'</button><button class="sec" id="mc-no">Agora não</button></div></div>';
  document.body.appendChild(o);
- const fim=()=>{marca();permAsking=false;o.remove()};
+ const fim=()=>{try{localStorage.setItem('ma-mic-dia',hoje)}catch(e){}permAsking=false;o.remove()};
  o.querySelector('#mc-no').onclick=fim;
- o.querySelector('#mc-ok').onclick=async()=>{fim();await permPedir('mic',false)}}
+ o.querySelector('#mc-ok').onclick=async()=>{fim();if(neg)permAjustes();else await permPedir('mic',false)}}
 function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>micQuandoLivre(n+1),1000);return}micPerguntar()}
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
