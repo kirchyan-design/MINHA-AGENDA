@@ -206,30 +206,6 @@ header h1{font-size:25px}
 :root[data-color="ambar"][data-eff="dark"]{--bg:#1b160a;--sf:#292110;--ac:#f2c14e;--acs:#4a3b10;--ln:#3d3317;--onac:#261b00}
 :root[data-color="grafite"][data-eff="light"]{--bg:#f1f2f4;--sf:#fff;--ac:#475569;--acs:#e2e8f0;--ln:#d8dce2;--onac:#fff}
 :root[data-color="grafite"][data-eff="dark"]{--bg:#121417;--sf:#1c2025;--ac:#a8b8cc;--acs:#2c3440;--ln:#2b3036;--onac:#101820}
-/* Tema Natal */
-:root[data-color="natal"][data-eff="light"]{--bg:#f8f3ef;--sf:#fff;--ac:#c62828;--acs:#fde4e1;--ln:#eadcd6;--onac:#fff;--ok:#1f7a3e}
-:root[data-color="natal"][data-eff="dark"]{--bg:#0f1f17;--sf:#17291f;--ac:#ff7a6b;--acs:#3b2a2c;--ln:#2a4034;--onac:#2b0805;--ok:#5fd08a}
-:root[data-color="natal"] header h1::after{content:" 🎄"}
-/* Natal grande: neve, luzes, faixa e enfeites */
-:root[data-color="natal"][data-eff="light"]{--flake:#8fb8e0}
-:root[data-color="natal"][data-eff="dark"]{--flake:#fff}
-:root[data-color="natal"] main{padding-top:26px}
-#natal-neve{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden;z-index:25}
-#natal-neve .nv{position:absolute;top:-30px;color:var(--flake,#fff);font-style:normal;text-shadow:0 0 4px rgba(255,255,255,.7);animation-name:natal-neve;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
-@keyframes natal-neve{from{transform:translate3d(0,-6vh,0) rotate(0deg)}to{transform:translate3d(var(--dx,0px),108vh,0) rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){#natal-neve .nv{animation:none;top:calc(var(--y,0)*1%)}}
-#natal-luzes{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:20px;pointer-events:none;z-index:26;background:radial-gradient(circle at 12px 10px,#ff3b30 0 4px,transparent 5px),radial-gradient(circle at 36px 13px,#ffd60a 0 4px,transparent 5px),radial-gradient(circle at 60px 10px,#34c759 0 4px,transparent 5px),radial-gradient(circle at 84px 13px,#0a84ff 0 4px,transparent 5px);background-size:96px 20px;background-repeat:repeat-x;filter:drop-shadow(0 0 3px rgba(255,255,255,.65));animation:natal-pisca 1.4s ease-in-out infinite alternate}
-#natal-luzes::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#2e4a36;opacity:.8}
-@keyframes natal-pisca{from{opacity:.5}to{opacity:1}}
-#natal-faixa{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 14px;padding:11px 12px;border-radius:16px;background:linear-gradient(135deg,#a51d1d,#c62828 48%,#1b7a3d);color:#fff;font-size:15px;letter-spacing:.07em;text-align:center;box-shadow:0 6px 16px -6px rgba(198,40,40,.55),inset 0 0 0 1px rgba(255,255,255,.18)}
-#natal-faixa b{font-weight:800}
-#natal-faixa span{font-size:20px;line-height:1}
-:root[data-color="natal"] nav::before{content:"⛄";position:absolute;left:18px;top:-26px;font-size:26px;line-height:1;pointer-events:none}
-:root[data-color="natal"] nav::after{content:"🎁";position:absolute;right:18px;top:-24px;font-size:24px;line-height:1;pointer-events:none}
-:root[data-color="natal"] .card{position:relative}
-:root[data-color="natal"] .card::after{content:"❄";position:absolute;top:8px;right:12px;font-size:13px;color:var(--ac);opacity:.35;pointer-events:none}
-:root[data-color="natal"] main h2::before{content:"⭐ ";font-size:.7em;vertical-align:.1em}
-:root[data-color="natal"] main h3::before{content:"❄ ";color:var(--ac)}
 .swg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .cor{background:var(--sf);color:var(--ink);border:2px solid var(--ln);padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:500;border-radius:12px}
 .cor::before{content:"";width:28px;height:28px;border-radius:50%;background:var(--sc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px}
@@ -1188,22 +1164,7 @@ function applyTheme(){const t=S.theme||'auto',r=document.documentElement,cc=(typ
  if(t==='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;
  r.dataset.eff=effMode();
  if(!cc||cc[0]==='teal')r.removeAttribute('data-color');else r.dataset.color=cc[0];
- try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=cc?cc[2]:'#0f7b8a'}catch(e){}
- try{natalDeco(!!cc&&cc[0]==='natal')}catch(e){}}
-/* Natal: neve caindo, luzes, faixa no topo. Só existem enquanto a cor Natal estiver ativa. */
-function natalDeco(on){
- const ids=['natal-neve','natal-luzes','natal-faixa'];
- if(!on){ids.forEach(i=>{const e=document.getElementById(i);if(e)e.remove()});return}
- if(document.getElementById('natal-neve'))return;
- const nv=document.createElement('div');nv.id='natal-neve';nv.setAttribute('aria-hidden','true');
- const ch=['❄','❅','❆'];let h='';
- for(let i=0;i<34;i++){const sz=10+Math.random()*14,l=Math.random()*100,du=9+Math.random()*10,de=-Math.random()*du,dx=Math.random()*60-30,y=Math.random()*100;
-  h+='<i class="nv" style="left:'+l.toFixed(1)+'%;font-size:'+sz.toFixed(0)+'px;animation-duration:'+du.toFixed(1)+'s;animation-delay:'+de.toFixed(1)+'s;--dx:'+dx.toFixed(0)+'px;--y:'+y.toFixed(0)+';opacity:'+(.55+Math.random()*.4).toFixed(2)+'">'+ch[i%3]+'</i>'}
- nv.innerHTML=h;document.body.appendChild(nv);
- const lz=document.createElement('div');lz.id='natal-luzes';lz.setAttribute('aria-hidden','true');document.body.appendChild(lz);
- if(!document.getElementById('natal-faixa')){const fx=document.createElement('div');fx.id='natal-faixa';fx.innerHTML='<span>🎄</span><b>O NATAL ESTÁ CHEGANDO</b><span>🎁</span>';
-  const mn=document.querySelector('main');if(mn)mn.insertBefore(fx,mn.firstChild)}
-}
+ try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=cc?cc[2]:'#0f7b8a'}catch(e){}}
 function setTheme(t){S.theme=t;save();applyTheme();render()}
 const saud=()=>{const h=new Date().getHours();return h<12?_t('Bom dia'):h<18?_t('Boa tarde'):_t('Boa noite')};
 const dataLonga=()=>new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
@@ -1640,7 +1601,7 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['natal','Natal','#c62828']];
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
@@ -1772,7 +1733,6 @@ function vEscanear(){
 
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>applyTheme())}catch(e){}
 
-try{if(!S.natalTeste){S.color='natal';S.natalTeste=1;save()}}catch(e){}
 applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>setTimeout(permIntro,600));
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
