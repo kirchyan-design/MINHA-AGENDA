@@ -718,6 +718,7 @@ const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅'
 
 function nav(){$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"${tab===t[0]?' aria-current="page"':''}><span class="ni">${svg(t[0])}</span><span class="nl">${_t(t[2])}</span></button>`).join('');const n=$('#nav'),b=n.querySelector('.on');if(b&&n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;navHint(n)}
 function navHint(n){
+ if(!(S.user&&S.user.name))return; /* tela de login: sem aviso */
  if(window._nvh||n.scrollWidth<=n.clientWidth)return;window._nvh=1;
  const h=document.createElement('div');h.className='nvhint';h.textContent='👉 '+_t('Deslize o menu para o lado e veja mais opções');document.body.appendChild(h);
  const fim=()=>{h.classList.remove('on');setTimeout(()=>h.remove(),500);n.removeEventListener('scroll',fim)};
@@ -1515,7 +1516,13 @@ function formDlg(o){return new Promise(res=>{
  (o.links||[]).forEach(l=>{el.querySelector('#fd-l-'+l.id).onclick=()=>fim({link:l.id,v:vals()})});
  const p=el.querySelector('input');if(p)setTimeout(()=>p.focus(),50)})}
 async function fotoDataUrl(url){try{const r=await fetch(url),b=await r.blob();return await new Promise((ok,er)=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=er;f.readAsDataURL(b)})}catch(e){return url}}
-/* Faz a autenticação pelo método m ('google' | 'email'). modo 'verificar' = confirmar a conta já conectada. Devolve o resultado ou null. */
+/* Cria a conta; se o e-mail já estiver cadastrado, entra direto com a mesma senha (sem avisos nem espera). */
+async function criarOuEntrar(A,em,pw){
+ try{const r=await A.createUserWithEmailAndPassword({email:em,password:pw});try{Promise.resolve(A.sendEmailVerification()).catch(()=>{})}catch(e){}return r}
+ catch(e){const t=(String((e&&e.code)||'')+' '+String((e&&(e.message||e.errorMessage))||e)).toLowerCase();
+  if(t.includes('email-already-in-use')||t.includes('already in use'))return A.signInWithEmailAndPassword({email:em,password:pw});
+  throw e}}
+/* Faz a autenticação pelo método m ('google' | 'email' | 'cadastro'). modo 'verificar' = confirmar a conta já conectada. Devolve o resultado ou null. */
 async function autenticar(m,modo){
  const A=FA(),ver=modo==='verificar',c=ct()||{};
  if(m==='google')return A.signInWithGoogle();
@@ -1528,8 +1535,18 @@ async function autenticar(m,modo){
   if(!em){info('Digite o e-mail.');return null}
   if(d.link==='rec'){await A.sendPasswordResetEmail({email:em});info('Enviamos um e-mail para '+em+' com o link para criar uma nova senha da conta. Depois de criar, volte ao app e entre.');return null}
   if(!pw){info('Digite a senha.');return null}
-  if(d.link==='new'){const r=await A.createUserWithEmailAndPassword({email:em,password:pw});try{await A.sendEmailVerification()}catch(e){}return r}
+  if(d.link==='new')return criarOuEntrar(A,em,pw);
   return A.signInWithEmailAndPassword({email:em,password:pw})}
+ if(m==='cadastro'){
+  const d=await formDlg({title:'Inscreva-se com e-mail',sub:'Digite seu e-mail e crie uma senha. Se o e-mail já tiver conta, você entra direto.',
+   fields:[{id:'em',label:'E-mail',type:'email',ph:'voce@email.com',ex:'autocomplete="email"'},{id:'pw',label:'Senha da conta',type:'password',ph:'mínimo 6 caracteres',ex:'autocomplete="new-password"'}],
+   ok:'Inscrever-se',links:[{id:'rec',t:'Esqueci a senha da conta'}]});
+  if(!d)return null;
+  const em=d.v.em.trim(),pw=d.v.pw;
+  if(!em){info('Digite o e-mail.');return null}
+  if(d.link==='rec'){await A.sendPasswordResetEmail({email:em});info('Enviamos um e-mail para '+em+' com o link para criar uma nova senha da conta. Depois de criar, volte ao app e entre.');return null}
+  if(!pw){info('Digite a senha.');return null}
+  return criarOuEntrar(A,em,pw)}
  if(m==='fone'){info('O login por celular (SMS) foi desativado. Entre com o Google ou com e-mail e senha.');return null}
  return null}
 /* ---------- v2.6: troca de conta ---------- */
@@ -1560,6 +1577,7 @@ async function conectar(m){
  if(!nat()||!A){info('O login funciona no aplicativo instalado no celular.');return}
  try{
   const r=await autenticar(m),u=r&&r.user;if(!u)return;
+  const prov=m==='cadastro'?'email':m;
   const era=!S.user.name,nome=(u.displayName||'').trim();
   const id=acctId(u),own=ownerId();
   if(id&&own!==id){
@@ -1569,25 +1587,25 @@ async function conectar(m){
     if(!dest){
      let n=nome.split(/\s+/)[0]||(u.email||'').split('@')[0]||'';
      if(!n){const d=await formDlg({title:'Como quer ser chamado(a)?',fields:[{id:'n',label:'Seu nome',ex:'maxlength="30"'}],ok:'Continuar'});n=(d&&d.v.n.trim())||'Usuário'}
-     semente={user:{name:n.slice(0,30),conta:{uid:u.uid,prov:m,email:u.email||'',phone:u.phoneNumber||'',name:nome}}};
+     semente={user:{name:n.slice(0,30),conta:{uid:u.uid,prov:prov,email:u.email||'',phone:u.phoneNumber||'',name:nome}}};
      if(nome)semente.user.full=nome;
      if(u.phoneNumber)semente.user.phone=u.phoneNumber;
-     if(u.photoUrl)semente.user.photo=await fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c'));
+     if(u.photoUrl)semente.user.photo=await Promise.race([fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c')),new Promise(r=>setTimeout(()=>r(''),1500))]);
     }
-    if(trocarDados(own||(vazioS()?'':'_local'),id,semente,'Conta conectada: '+(u.email||u.phoneNumber||'')))return;
+    if(trocarDados(own||(vazioS()?'':'_local'),id,semente,''))return;
     info('Não foi possível trocar de conta: falta espaço no aparelho.');return}
    try{localStorage.setItem(OWNK,id)}catch(e){}}
-  S.user.conta={uid:u.uid,prov:m,email:u.email||'',phone:u.phoneNumber||'',name:nome};
+  S.user.conta={uid:u.uid,prov:prov,email:u.email||'',phone:u.phoneNumber||'',name:nome};
   if(!S.user.name){
    let n=nome.split(/\s+/)[0]||(u.email||'').split('@')[0]||'';
    if(!n){const d=await formDlg({title:'Como quer ser chamado(a)?',fields:[{id:'n',label:'Seu nome',ex:'maxlength="30"'}],ok:'Continuar'});n=(d&&d.v.n.trim())||'Usuário'}
    S.user.name=n.slice(0,30)}
   if(!S.user.full&&nome)S.user.full=nome;
   if(!S.user.phone&&u.phoneNumber)S.user.phone=u.phoneNumber;
-  if(!S.user.photo&&u.photoUrl)S.user.photo=await fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c'));
+  if(!S.user.photo&&u.photoUrl)fotoDataUrl(String(u.photoUrl).replace(/=s\d+(-c)?$/,'=s256-c')).then(d=>{if(d&&!S.user.photo){S.user.photo=d;save()}}).catch(()=>{});
   save();
   if(await nuvSync(true,true))return;
-  render();
+  render();nav();
   if(era)setTimeout(permIntro,500);else info('Conta conectada: '+ctRot(S.user.conta));
   setTimeout(guiaNovosQuandoLivre,700);
   setTimeout(recadoConfigQuandoLivre,900);
@@ -1600,6 +1618,8 @@ async function contaSair(quiet){
  delete S.user.conta;save();if(!quiet){render();info('Conta desconectada. Seus dados continuam salvos neste aparelho.')}}
 function btnsConta(){const b='width:100%;padding:13px;font-size:15px';
  return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button>`}
+function btnsInscrever(){const b='width:100%;padding:13px;font-size:15px';
+ return `<p style="margin:0 0 10px;text-align:center;font-weight:800;letter-spacing:.06em">${_t('INSCREVA-SE')}</p><button style="${b}" onclick="conectar('google')">${GLOGO}${_t('Inscrever-se com o Google')}</button><button style="${b};margin-top:8px" onclick="conectar('cadastro')">✉️ ${_t('Inscrever-se com e-mail')}</button><p style="color:var(--mute);font-size:13px;margin:16px 0 8px;text-align:center">${_t('Já tem conta? Entre:')}</p>${btnsConta()}`}
 function cfgConta(){const c=ct();
  return `<h3>Conta</h3><div class="card">`
  +(c?`<div class="prm"><span class="ic">✅</span><span class="t"><b>Conectada · ${esc(PROV[c.prov]||'')}</b><small>${esc(ctRot(c))}</small></span><button class="sec" onclick="ask('Desconectar a conta deste aparelho? Os dados dela ficam guardados na nuvem e voltam quando você entrar de novo com ela.',()=>contaSair(),'Desconectar')">Desconectar</button></div>${nuvStatus()}<p class="hint">Se esquecer a senha de 4 dígitos do app, toque em “Esqueci” na tela de senha e entre de novo com esta conta para criar outra, sem perder seus dados.</p>`
@@ -1744,7 +1764,8 @@ function head(){try{vozFabSync()}catch(e){}applyTheme();const ok=!!S.user.name;$
  $('#greet').innerHTML=!ok||tab==='inicio'?'':`<div class="greet">${saudBloco()}</div>`;
  const cb=$('#cfgb');if(cb){cb.style.display=ok?'':'none';cb.classList.toggle('on',tab==='config')}}
 function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
-function welcomeView(){$('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsConta()}<p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
+function welcomeView(){try{document.querySelectorAll('.nvhint').forEach(x=>x.remove())}catch(e){}
+ $('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsInscrever()}<p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
 function evEdit(e){return `<div class="item" style="flex-wrap:wrap"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título"><div class="row" style="width:100%"><input type="date" id="ee-d" value="${e.date}"><input type="time" id="ee-h" value="${e.time||''}"><button onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
 function saveEv(id){const e=S.ev.find(x=>x.id===id),t=$('#ee-t').value.trim();if(!t){$('#ee-t').focus();return}e.title=t;e.date=$('#ee-d').value||e.date;e.time=$('#ee-h').value;edEv=null;save();render()}
 function startH(id){edH=id;edD=JSON.parse(JSON.stringify(S.hist.find(x=>x.id===id)));render()}
@@ -1768,13 +1789,13 @@ async function updNotificar(w){
   if('Notification' in window&&Notification.permission==='granted'){
    if(SWREG&&SWREG.showNotification)await SWREG.showNotification(title,{body,icon:'icon-192.png',tag:'jc-update'});else new Notification(title,{body,icon:'icon-192.png'});marca()}
  }catch(e){}}
-function updBanner(w){try{updNotificar(w)}catch(e){}if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
+function updBanner(w){try{w.postMessage('SKIP_WAITING')}catch(e){}return; /* atualização silenciosa: sem aviso */ if($('#upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';d.innerHTML='<span>Nova versão disponível</span><button id="upb">Atualizar</button>';document.body.appendChild(d);$('#upb').onclick=()=>{$('#upb').textContent='Atualizando…';w.postMessage('SKIP_WAITING')}}
 function showVer(){const e=$('#ver');if(!e||!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;const mc=new MessageChannel();mc.port1.onmessage=m=>{const x=$('#ver');if(x)x.textContent='Versão '+m.data};navigator.serviceWorker.controller.postMessage('VERSION',[mc.port2])}
 function checkUpd(){if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
- SWREG.update().then(()=>{if(SWREG.installing||SWREG.waiting)info('Nova versão encontrada. Toque em Atualizar no aviso que apareceu.');else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
+ SWREG.update().then(()=>{if(SWREG.installing||SWREG.waiting)info('Nova versão encontrada. Ela passa a valer na próxima vez que você abrir o app.');else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
 function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol))return;
  const had=!!navigator.serviceWorker.controller;let rl=false;
- navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rl||!had)return;rl=true;location.reload()});
+ /* atualização silenciosa: a versão nova vale na próxima abertura, sem recarregar a tela */
  navigator.serviceWorker.register('sw.js').then(reg=>{SWREG=reg;
   if(reg.waiting&&navigator.serviceWorker.controller)updBanner(reg.waiting);
   reg.addEventListener('updatefound',()=>{const n=reg.installing;if(n)n.addEventListener('statechange',()=>{if(n.state==='installed'&&navigator.serviceWorker.controller)updBanner(n)})});
@@ -1784,9 +1805,8 @@ function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location
    O aparelho se inscreve no tópico 'atualizacoes'; quando sai versão nova, o workflow
    avisar-atualizacao.yml (ou o console do Firebase) envia o push e o Android mostra a notificação. */
 async function pushAtualizacoes(){
- try{const FM=plug('FirebaseMessaging'),L=LNp();if(!nat()||!FM)return;
-  if(L)try{await L.createChannel({id:'atualizacoes',name:'Atualizações do app',description:'Avisos de nova versão',importance:4,visibility:1,vibration:true})}catch(e){}
-  await FM.subscribeToTopic({topic:'atualizacoes'})
+ try{const FM=plug('FirebaseMessaging');if(!nat()||!FM)return;
+  await FM.unsubscribeFromTopic({topic:'atualizacoes'}) /* atualização silenciosa: não recebe aviso de versão */
  }catch(e){}}
 /* ---------- Lembretes e alarme ---------- */
 const NOTIF0={on:false,lead:10,plOn:true,plLead:60};
@@ -2622,6 +2642,7 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
 const APK_LINK='https://drive.google.com/drive/folders/1VDCmsmyrA_pOihFJmKkljfbnGq8yx210';
 const apkNovoFlag=()=>{try{return localStorage.getItem('ma-apk-novo')==='1'}catch(e){return false}};
 function apkAviso(){
+ return ''; /* atualização silenciosa: sem aviso */
  if(!nat()||apkNovoFlag())return '';
  return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização disponível: ative o microfone</h4><p>Baixe a nova versão do aplicativo para liberar o microfone. Assim você poderá registrar suas compras por voz na hora de montar a lista. Instale por cima do app atual, sem desinstalar.</p><a class="apk-btn" href="${APK_LINK}" target="_blank" rel="noopener">⬇️ BAIXAR ATUALIZAÇÃO</a><p class="hint">Depois do download, abra o arquivo e toque em Instalar. Se o Android pedir, permita a instalação. Este aviso some sozinho quando a atualização estiver instalada.</p></div>`}
 /* o APK novo traz o pedido nativo do microfone; quando ele existe, o aviso é removido para sempre */
@@ -2709,8 +2730,7 @@ async function novidadesChecar(){
   const marca=()=>{try{localStorage.setItem('ma-novidades-visto',v)}catch(e){}};
   const lista=NOVIDADES[v];
   /* sem texto para esta versão, ou aparelho novo (sem conta ainda): só registra a versão, sem mostrar */
-  if(!lista||!(S.user&&S.user.name)){marca();return}
-  novidadesDialog(v,lista,marca)
+  marca() /* atualização silenciosa: não mostra novidades */
  }catch(e){}}
 function novidadesQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<120)setTimeout(()=>novidadesQuandoLivre(n+1),1000);return}novidadesChecar()}
 

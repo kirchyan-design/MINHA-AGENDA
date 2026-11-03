@@ -1,10 +1,10 @@
 /* JC ORGANIZA - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='2.9.7';
+const VERSION='2.9.8';
 const CACHE='jc-organiza-'+VERSION;
 const OCR_CACHE='jc-ocr-1'; /* leitor de texto offline (pasta ocr/): cache próprio, não é apagado a cada versão */
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))))});
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>(k.startsWith('meu-plano-')||k.startsWith('jc-organiza-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('message',e=>{
  if(e.data==='SKIP_WAITING')self.skipWaiting();
