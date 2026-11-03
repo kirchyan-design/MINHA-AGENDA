@@ -29,7 +29,7 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 - **Produto escaneado entra na lista de compras**: ao confirmar, cada produto vai direto para a lista que está sendo feita (se já estiver lá, só atualiza o preço) e o preço continua registrado no mercado.
 - **Notificação de atualização**: quando sai uma versão nova, o app avisa por notificação do celular (uma vez por versão) e mostra o botão Atualizar. A checagem acontece ao abrir o app, ao voltar para ele e a cada 20 minutos enquanto está aberto. **Para cada atualização, aumente o número `VERSION` no `sw.js`** (ex.: 2.7.0 → 2.7.1); é isso que dispara o aviso.
 - **Comando de voz na lista de compras**: escolha o mercado, segure o botão 🎤 e diga o produto e o preço (ex.: “arroz turquesa 6,99”). O item entra na lista e o preço é registrado no mercado; dá para **Desfazer**. Usa o reconhecimento de voz do Android (plugin `@capacitor-community/speech-recognition`), então é preciso gerar o APK de novo.
-- Promoções mostra apenas as promoções do Assaí Atacadista.
+- Promoções mostra as ofertas do Assaí Atacadista, do Atacadão e do Novo Atacarejo (escolha no topo da tela).
 
 ## Versão 2.6
 
