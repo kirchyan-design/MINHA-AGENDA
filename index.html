@@ -513,6 +513,13 @@ main{position:relative;z-index:1}
 #ptr.spin span{display:inline-block;animation:ptrspin .8s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
 
+/* ---------- aviso de atualização do APK (tela inicial) ---------- */
+.apk{border:2px solid var(--ac);background:var(--acs);color:var(--ink)}
+.apk h4{margin:0 0 6px;font-size:16px}
+.apk p{margin:0 0 12px;line-height:1.45}
+.apk .apk-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:16px;border-radius:14px;background:var(--ac);color:var(--onac);font-weight:800;font-size:17px;letter-spacing:.3px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25);animation:apkp 1.1s ease-in-out infinite}
+@keyframes apkp{0%,100%{opacity:1}50%{opacity:.4}}
+
 /* ---------- comando de voz ---------- */
 #vozfab{position:fixed;right:16px;bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:47;width:66px;height:66px;min-width:0;border-radius:50%;border:0;padding:0;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;background:var(--ac);color:var(--onac);box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;transition:transform .12s}
 #vozfab.on{background:var(--rd);color:#fff;transform:scale(1.18);animation:fabp 1s ease-in-out infinite}
@@ -1033,7 +1040,7 @@ function vInicio(){
   +qa('diario',_t('Diário'),'#e0609a',"dsel=HOJE;go('diario')")
   +qa('compras',_t('Compra'),'#f08a24',foc("go('compras')",'#st'))
   +`</div>`;
- return fraseCard()+gsearch+hero+acoes
+ return apkAviso()+fraseCard()+gsearch+hero+acoes
  +`<h3>${_t('Hoje')}</h3><div class="card">${plHtml}${hoje.length?hoje.map(evItem).join(''):(plh.length?'':'<div class="vazio" style="padding:10px;border:0;margin:0">Nada marcado para hoje.<br>Use <b>Compromisso</b> acima para planejar algo.</div>')}</div>`
  +`<h3>${_t('Seus espaços')}</h3><div class="stats">`
  +st('agenda','var(--ac)',_t('Agenda'),hoje.length?pend+' de '+hoje.length+' pendentes hoje':'Nada hoje',`go('agenda')`)
@@ -2061,6 +2068,18 @@ function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
  if(u.scan)S.scans=S.scans.filter(x=>x.id!==u.scan);
  save();if(tab==='compras'&&sub==='atual')render();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800)}
 
+/* ---------- aviso para baixar o APK novo (some sozinho depois de instalado) ---------- */
+const APK_LINK='https://drive.google.com/drive/folders/1VDCmsmyrA_pOihFJmKkljfbnGq8yx210';
+const apkNovoFlag=()=>{try{return localStorage.getItem('ma-apk-novo')==='1'}catch(e){return false}};
+function apkAviso(){
+ if(!nat()||apkNovoFlag())return '';
+ return `<div class="card apk" id="apk-aviso" role="region" aria-label="Atualização disponível"><h4>📣 Atualização disponível: ative o microfone</h4><p>Baixe a nova versão do aplicativo para liberar o microfone. Assim você poderá registrar suas compras por voz na hora de montar a lista. Instale por cima do app atual, sem desinstalar.</p><a class="apk-btn" href="${APK_LINK}" target="_blank" rel="noopener">⬇️ BAIXAR ATUALIZAÇÃO</a><p class="hint">Depois do download, abra o arquivo e toque em Instalar. Se o Android pedir, permita a instalação. Este aviso some sozinho quando a atualização estiver instalada.</p></div>`}
+/* o APK novo traz o pedido nativo do microfone; quando ele existe, o aviso é removido para sempre */
+async function apkChecar(){
+ if(!nat()||apkNovoFlag())return;
+ try{const M=MPp();if(!M)return;const p=await M.checkPermissions();
+  if(p&&p.microphone){try{localStorage.setItem('ma-apk-novo','1')}catch(e){}const e=$('#apk-aviso');if(e)e.remove()}}catch(e){}}
+
 /* ---------- v2.8: pede o microfone (uma vez) e mostra as novidades depois de cada atualização ---------- */
 async function micPerguntar(){
  if(!nat()||PIN_LK||permAsking||!S.user.name)return;
@@ -2111,7 +2130,7 @@ try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma
   if(typeof o.cSub==='string')cSub=o.cSub;if(typeof o.cMes==='string')cMes=o.cMes;if(typeof o.sel==='string')sel=o.sel;if(typeof o.dsel==='string')dsel=o.dsel;
   if(o.mes&&!isNaN(o.mes))mes=new Date(o.mes)}}}catch(e){}
 
-applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(ocrAquecer,6000)});
+applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>
