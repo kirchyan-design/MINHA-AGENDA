@@ -690,12 +690,11 @@ const TABS=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅'
 
 
 function nav(){$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"${tab===t[0]?' aria-current="page"':''}><span class="ni">${svg(t[0])}</span><span class="nl">${_t(t[2])}</span></button>`).join('');const n=$('#nav'),b=n.querySelector('.on');if(b&&n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;navHint(n)}
-function navHint(n){let seen=0;try{seen=+localStorage.getItem('nvhint')||0}catch(e){}
- if(seen>=3||window._nvh||n.scrollWidth<=n.clientWidth)return;window._nvh=1;
+function navHint(n){
+ if(window._nvh||n.scrollWidth<=n.clientWidth)return;window._nvh=1;
  const h=document.createElement('div');h.className='nvhint';h.textContent='👉 '+_t('Deslize o menu para o lado e veja mais opções');document.body.appendChild(h);
  const fim=()=>{h.classList.remove('on');setTimeout(()=>h.remove(),500);n.removeEventListener('scroll',fim)};
- setTimeout(()=>h.classList.add('on'),600);n.addEventListener('scroll',fim,{once:true});setTimeout(fim,6000);
- try{localStorage.setItem('nvhint',seen+1)}catch(e){}}
+ setTimeout(()=>h.classList.add('on'),600);n.addEventListener('scroll',fim,{once:true});setTimeout(fim,6000)}
 function go(t){tab=t;dimgsFor=null;edName=false;cEd=null;nav();render();window.scrollTo(0,0);const v=$('#v');v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter')}
 
 /* ---------- Agenda ---------- */
@@ -2434,6 +2433,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '2.9.0':[
+  '↔️ O aviso discreto do menu inferior (deslize para o lado) agora aparece toda vez que você abre o app.'
+ ],
  '2.8.9':[
   '🏷️ Promoções: agora também tem o Novo Atacarejo, com as ofertas Super Ofertas e Semana dos Laticínios, com logo, preços e validade.'
  ],
