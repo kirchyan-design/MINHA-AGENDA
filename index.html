@@ -957,6 +957,11 @@ nav div#nav button .ni{width:46px}
 #kay-mic{flex:none;width:44px;height:44px;min-width:44px;padding:0;border-radius:50%;font-size:20px;line-height:1;display:inline-flex;align-items:center;justify-content:center;background:var(--acs);color:var(--ac)}
 #kay-mic.listening{background:#d92d45;color:#fff;border-color:#d92d45}
 @media(prefers-reduced-motion:no-preference){#kay-mic.listening{animation:kmic 1.1s ease-in-out infinite}@keyframes kmic{50%{box-shadow:0 0 0 7px rgba(217,45,69,.25)}}}
+
+/* ---- Modo Preto (fundo totalmente preto, ideal para telas OLED) ---- */
+:root[data-theme="black"]{--bg:#000;--sf:#0b0b0c;--ink:#f1f3f4;--mute:#9aa0a6;--ac:#4fc3d1;--acs:#12262b;--ln:#222427;--ok:#4cc58d;--rd:#e8776b;--onac:#06232a;color-scheme:dark}
+:root[data-theme="black"][data-eff="dark"]{--bg:#000;--sf:#0b0b0c;--ln:#222427}
+html[data-theme="black"][data-eff="dark"] body{background:#000}
 </style>
 
 </head>
@@ -2180,12 +2185,12 @@ function render(){head();if(!S.user.name){welcomeView();return}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
 }
 let edEv=null,edH=null,edD=null,edName=false;
-function effMode(){const t=S.theme||'auto';return t==='auto'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}
+function effMode(){const t=S.theme||'auto';return t==='auto'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t==='black'?'dark':t}
 function applyTheme(){const t=S.theme||'auto',r=document.documentElement,cc=(typeof COR!=='undefined'&&COR.find(x=>x[0]===S.color))||null;
  if(t==='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;
  r.dataset.eff=effMode();
  if(!cc||cc[0]==='teal')r.removeAttribute('data-color');else r.dataset.color=cc[0];
- try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=cc?cc[2]:'#0f7b8a'}catch(e){}}
+ try{const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='black'?'#000000':cc?cc[2]:'#0f7b8a'}catch(e){}}
 function setTheme(t){S.theme=t;save();applyTheme();render()}
 const saud=()=>{const h=new Date().getHours();return h<12?_t('Bom dia'):h<18?_t('Boa tarde'):_t('Boa noite')};
 const dataLonga=()=>new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
@@ -2670,10 +2675,10 @@ function permIntro(){
 const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a'],['cyber','Cyberpunk','#ff2bd6'],['viking','Viking','#e0a93b'],['vt','V BTS','#9b6dff'],['escritorio','Escritório','#2f5d8a']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();try{nav()}catch(e){}render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
- tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
+ tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')],['black','⚫ '+_t('Preto')]];
  return `<h3>${_t('Aparência')}</h3><div class="card"><label class="fl" style="margin-top:0">${_t('Modo')}</label><div class="seg">${tm.map(a=>`<button class="${tema===a[0]?'on':''}" onclick="setTheme('${a[0]}')">${a[1]}</button>`).join('')}</div>`
  +`<label class="fl">${_t('Cor do tema')}</label><div class="swg">${COR.filter(c=>!c[3]).map(c=>`<button class="cor ${cor===c[0]?'on':''}" style="--sc:${c[2]}" aria-pressed="${cor===c[0]}" onclick="setColor('${c[0]}')">${_t(c[1])}</button>`).join('')}</div>`
- +`<p class="hint">Combine qualquer cor com o modo claro ou escuro. “Auto” acompanha o tema do aparelho.</p></div>`}
+ +`<p class="hint">Combine qualquer cor com o modo claro, escuro ou preto. “Preto” usa fundo totalmente preto (economiza bateria em telas OLED). “Auto” acompanha o tema do aparelho.</p></div>`}
 
 /* ---------- v2.1: mercados cadastrados pelo usuário ---------- */
 const sigla=n=>{const w=String(n||'').trim().split(/\s+/).filter(Boolean);if(!w.length)return'?';return(w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase()};
@@ -3189,6 +3194,10 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.2.9':[
+  '⚫ Novo modo “Preto”: fundo totalmente preto (ótimo para telas OLED e economia de bateria). Funciona com qualquer cor do tema.',
+  '⚙️ Para usar: Configurações › Aparência › Modo › Preto. Ou peça à Kayla: “tema preto”.'
+ ],
  '3.2.0':[
   '⚔️ Novo tema “Viking”: papel de parede com aurora boreal, lua, fiorde, montanhas nevadas, pinheiros e um drakkar navegando; fonte rúnica, ícones de casa longa, escudo, baú, moeda com runa, navio e machados, cartões de madeira e ferro com frisos de runas.',
   '⚙️ Para usar: Configurações › Aparência › Cor do tema › Viking.',
@@ -3310,7 +3319,7 @@ const RECADO_CFG=[
  ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
  ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
  ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções) para ele aparecer ou sumir da navegação.'],
- ['🎨','Aparência','Modo automático, claro ou escuro e a cor do tema.'],
+ ['🎨','Aparência','Modo automático, claro, escuro ou preto e a cor do tema.'],
  ['🔒','Segurança','Criar uma senha de 4 dígitos, alterar, remover e escolher quando o app bloqueia de novo.'],
  ['🛡️','Permissões','Arquivos, fotos e vídeos, música e áudio, notificações, câmera e microfone. Tem o botão “Permitir tudo” e o atalho para os ajustes do celular.'],
  ['🚪','Sair','Desconecta e volta para a tela inicial. Seus dados ficam guardados no aparelho e voltam quando você entrar de novo.']];
@@ -3791,7 +3800,7 @@ const kFaq=[
  [/compra|lista|mercado|escane/,'Em Compras você monta a lista, marca o que pegou e vê o total. Eu também adiciono itens: “comprar arroz, feijão e café”.'],
  [/flow|menu giratorio|carrossel/,'O menu Flow é um carrossel 3D opcional. Ative em Configurações › Menu.'],
  [/nuvem|conta|google|sincroni/,'Conecte uma conta em Configurações › Conta para sincronizar seus dados entre aparelhos e recuperar a senha.'],
- [/tema|cor|escuro/,'Em Configurações › Aparência você troca tema e cores. Ou peça: “tema escuro”, “tema claro”.']];
+ [/tema|cor|escuro/,'Em Configurações › Aparência você troca tema e cores. Ou peça: “tema escuro”, “tema preto”, “tema claro”.']];
 const KTOUR=[['inicio','Este é o Início: o resumo do seu dia e atalhos para criar compromisso, nota, diário e compra.'],['agenda','Na Agenda você cria compromissos com data e hora. Com os lembretes ativados, o app avisa antes.'],['cal','No Calendário você vê o mês inteiro e registra seus plantões.'],['notas','Em Notas você guarda anotações rápidas, com cores.'],['diario','No Diário você escreve como foi o dia e marca seu humor.'],['compras','Em Compras você monta a lista, vê o total e compara preços.'],['carteira','Na Carteira você controla gastos, contas fixas e renda do mês.'],['mercado','Em Promoções você acompanha ofertas dos mercados.'],['config','Por fim, as Configurações: perfil, conta, backup, lembretes, aparência e segurança. Pronto, tour concluído! Pode me pedir qualquer coisa.']];
 let K={open:false,tour:-1,pend:null,msgs:[]};
 const kEsc=s=>esc(String(s)).replace(/\n/g,'<br>');
@@ -4076,7 +4085,7 @@ function kRun(txt){txt=String(txt||'').trim();if(!txt)return;kAdd('u',txt);const
  if(/o que (voce|vc|tu) (faz|sabe|pode)|ajuda\b|^help/.test(n)){kAdd('k','Eu posso:\n• Agendar: “marcar dentista amanhã às 14h”\n• Lembrete: “me lembre de ligar pro João às 18h”\n• Nota: “anotar: ideia do projeto”\n• Compras: “comprar arroz, feijão e café”, ou já com preço: “arroz 8,99”, “2 kg de carne 32,90”, “mudar arroz para 9,50”\n• Carteira: “gastei 50 no mercado”, “recebi 300 de freela”, “conta fixa luz 120 dia 10”, “meu salário é 2500”, “mudar gasto do uber para 30”, “apagar gasto do uber”, “mude minha renda para 3000”, “mude o vencimento da internet para dia 15”, “45 reais de gasto com feira”, “adicione 5000 reais a minha renda”, “adicione 75 reais de internet em gastos fixos”, “remova todos os meus gastos fixos”. Também entendo pedidos livres, como “troca o valor da luz pra 150”\n• Ver agenda: “o que tenho hoje?”\n• Concluir: “concluir dentista”\n• Apagar: “apagar dentista”, “apagar notas”, “limpar a lista de feira”, “apagar gastos de outubro”, “apagar tudo”, “desfazer”\n• Abrir: “abrir carteira”\n• Tema e lembretes: “tema escuro”, “ativar lembretes”',['Fazer o tour']);return}
  if((m=n.match(/\b(ativar|ligar|desativar|desligar)\b.*\blembretes?\b/))){const on=/^(ativar|ligar)/.test(m[1]);if(typeof ativarLembretes==='function'){ativarLembretes(on);kAdd('k',on?'Certo, ativando os lembretes. Se o celular pedir permissão, toque em Permitir.':'Lembretes desativados.')}return}
  if(/^ativar lembretes$/.test(n)){ativarLembretes(true);kAdd('k','Certo, ativando os lembretes. Se o celular pedir permissão, toque em Permitir.');return}
- if((m=n.match(/\btema\s+(escuro|claro|automatico)\b|\bmodo\s+(escuro|claro)\b/))){const v=m[1]||m[2];setTheme(v==='escuro'?'dark':v==='claro'?'light':'auto');kAdd('k','Tema '+v+' aplicado.');return}
+ if((m=n.match(/\btema\s+(escuro|claro|preto|automatico)\b|\bmodo\s+(escuro|claro|preto)\b/))){const v=m[1]||m[2];setTheme(v==='escuro'?'dark':v==='preto'?'black':v==='claro'?'light':'auto');kAdd('k','Tema '+v+' aplicado.');return}
  if(/\b(esconder|sumir|ocultar)\b.*kayla|\bkayla\b.*\b(esconder|sumir|ocultar)/.test(n)){kCfg().off=1;save();kClose();kSync();info('Kayla desativada. Para ativá-la de novo: Configurações › Assistente Kayla.');return}
  if(/^(abrir|abre|ir para|ir pra|va para|va pra|me leva|mostrar|mostra|ver|abra)\b/.test(n)){const alvo=kTabs.find(t=>t[1].test(n));
   if(alvo){if(alvo[0]!=='config'&&!TABS.some(t=>t[0]===alvo[0])){kAdd('k','Esse menu está desativado. Ative em Configurações › Menus do app.');return}go(alvo[0]);kAdd('k','Pronto, abri para você.');return}}
@@ -4271,7 +4280,8 @@ function canon(c,n){let m;c=typo(c);c=c.replace(/^(anot\w*|escrev\w*|marc\w*|lem
  if(/^(?:some|sai|desaparece|vai embora|te esconde|se esconde|fica quieta|fecha)(?:\s+(?:daqui|da tela))*$/.test(n))return 'esconder kayla';
  if(/^(?:ativ\w*|lig\w*|habilit\w*|acion\w*|quero|bota|poe|deixa)\s+(?:os?\s+|as?\s+)?(?:meus\s+)?(?:avisos?|notificacoes|alertas?|alarmes|lembretes)(?:\s+ligados?)?$/.test(n))return 'ativar lembretes';
  if(/^(?:desativ\w*|deslig\w*|desabilit\w*|para(?:r)? de|silenci\w*|tira(?:r)?|chega de)\s+(?:de\s+)?(?:os?\s+|as?\s+)?(?:meus\s+)?(?:avisos?|notificacoes|alertas?|alarmes|lembretes)/.test(n))return 'desativar lembretes';
- if(/(?:modo|tema|fundo)\s+(?:noturno|escuro|preto|dark|da noite)|dark mode|escurec\w+|modo noite/.test(n))return 'tema escuro';
+ if(/(?:modo|tema|fundo)\s+(?:preto|black|amoled|oled)|(?:tudo|totalmente)\s+preto|preto\s+total/.test(n))return 'tema preto';
+ if(/(?:modo|tema|fundo)\s+(?:noturno|escuro|dark|da noite)|dark mode|escurec\w+|modo noite/.test(n))return 'tema escuro';
  if(/(?:modo|tema|fundo)\s+(?:claro|branco|dia|diurno|light)|light mode/.test(n))return 'tema claro';
  if(/(?:modo|tema)\s+(?:automatico|auto|do celular|do sistema)/.test(n))return 'tema automatico';
  if(/^(?:volta atras|desfaz\w*|cancela isso|nao era pra apagar|errei|apaguei sem querer|restaura\w*)$/.test(n))return 'desfazer';
@@ -4341,12 +4351,12 @@ function cfg(txt){const n=N(txt);let m;
  if(/^abrir configuracoes$/.test(n)){go('config');kAdd('u',txt);kAdd('k','Pronto, abri as configurações.');return true}
  if(/(?:como (?:esta|estao|ta)|quais (?:sao )?|qual (?:e )?|mostr\w+|ver|me diz\w*|resumo d\w+).*(?:configuracoes|ajustes|tema|cor do app|meu app)/.test(n)&&!/\b(?:mud|troc|deix|colo)/.test(n)){
   const N0=S.notif||{},off=S.tabsOff||[];
-  return fim(txt,'⚙️ Suas configurações:\n• Modo: '+({auto:'automático',light:'claro',dark:'escuro'}[S.theme||'auto'])+'\n• Cor: '+nomeCor(S.color||'teal')+'\n• Menu: '+(S.flow?'giratório (Flow)':S.menu==='bottom'?'embaixo':'lateral')+'\n• Menus ativos: '+TABS_ALL.filter(t=>!off.includes(t[0])).map(t=>t[2]).join(', ')+'\n• Lembretes: '+(N0.on?'ligados, avisam '+(N0.lead?N0.lead+' min antes':'na hora'):'desligados')+(N0.plOn?'; plantões '+N0.plLead+' min antes':'')+'\n• Idioma: '+((LANGS.find(l=>l[0]===LANG)||[0,'Português'])[1])+'\n• Kayla: '+(kCfg().off?'desativada':'ativada'))}
+  return fim(txt,'⚙️ Suas configurações:\n• Modo: '+({auto:'automático',light:'claro',dark:'escuro',black:'preto'}[S.theme||'auto'])+'\n• Cor: '+nomeCor(S.color||'teal')+'\n• Menu: '+(S.flow?'giratório (Flow)':S.menu==='bottom'?'embaixo':'lateral')+'\n• Menus ativos: '+TABS_ALL.filter(t=>!off.includes(t[0])).map(t=>t[2]).join(', ')+'\n• Lembretes: '+(N0.on?'ligados, avisam '+(N0.lead?N0.lead+' min antes':'na hora'):'desligados')+(N0.plOn?'; plantões '+N0.plLead+' min antes':'')+'\n• Idioma: '+((LANGS.find(l=>l[0]===LANG)||[0,'Português'])[1])+'\n• Kayla: '+(kCfg().off?'desativada':'ativada'))}
  if(/(?:resetar|restaurar|voltar|padrao).*(?:aparencia|cores|cor|tema|visual)|(?:aparencia|cores|visual).*(?:padrao|original)/.test(n)){const t0=S.theme||'auto',c0=S.color||'teal';S.color='teal';setTheme('auto');return fim(txt,'Aparência restaurada: modo automático e cor Turquesa.',()=>{S.color=c0;setTheme(t0)})}
  /* cor */
  if(/\b(?:cor|cores|tema|deix\w+|mud\w+|troc\w+|troqu\w+|colo\w+|pint\w+|alter\w+|bot\w+|quero)\b/.test(n)&&!/\b(?:comprar|nota|anotar|agendar|marcar)\b/.test(n)){
   const c=CORES.find(x=>x[1].test(n));
-  if(c&&!/\b(?:modo|tema)\s+(?:escuro|claro|noturno|dark)\b/.test(n)){const c0=S.color||'teal';setColor(c[0]);return fim(txt,'Pronto! Cor '+nomeCor(c[0])+' aplicada. 🎨',()=>setColor(c0))}}
+  if(c&&!/\b(?:modo|tema)\s+(?:escuro|claro|preto|noturno|dark)\b/.test(n)){const c0=S.color||'teal';setColor(c[0]);return fim(txt,'Pronto! Cor '+nomeCor(c[0])+' aplicada. 🎨',()=>setColor(c0))}}
  /* menu */
  if(/menu.*(?:giratorio|flow|carrossel)|(?:giratorio|flow|carrossel)/.test(n)&&/\b(?:ativ|lig|quero|usa|bota|colo|volta|desativ|deslig|tira|sem|para de|nao quero)/.test(n)){
   const off=/desativ|deslig|tira|sem |para de|nao quero/.test(n);if(!!S.flow===!off)return fim(txt,'O menu giratório já está '+(off?'desativado.':'ativado.'));flTog();return fim(txt,'Menu giratório '+(off?'desativado.':'ativado. Gire o menu com o dedo.'),()=>flTog())}
