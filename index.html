@@ -745,6 +745,7 @@ nav div#nav button .ni{width:46px}
 /* ---- Kayla ---- */
 #kay-f{position:fixed;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:40;width:66px;height:66px;padding:0;border:3px solid var(--ac);border-radius:50%;background:#0b1620;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.4);overflow:visible}
 #kay-f.hid{display:none!important}
+#kay-f{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}#kay-f.drg{animation:none!important;cursor:grabbing;transform:scale(1.06)}
 #kay-f img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 22%;display:block;pointer-events:none}
 #kay-f .k-dot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#2ee6c8;box-shadow:0 0 0 3px rgba(46,230,200,.3)}
 @media(prefers-reduced-motion:no-preference){#kay-f{animation:kfl 3.2s ease-in-out infinite}@keyframes kfl{50%{transform:translateY(-5px)}}#kay-p{transition:opacity .2s ease}}
@@ -3439,6 +3440,7 @@ const K_MODELOS=['gemini-3.6-flash','gemini-3.5-flash','gemini-2.5-flash']; /* t
 const K_AI={ai:null,mod:null,modelo:null};
 const K_PERSONA='Você é a Kayla, assistente virtual do app JC ORGANIZA (agenda, lembretes, notas, diário, lista de compras e carteira). '
  +'Responda sempre em português do Brasil, de forma simpática, direta e curta (no máximo 4 frases). '
+ +'Pode bater papo leve sobre o dia a dia, contar piadas e curiosidades e dar dicas de organização, produtividade e rotina. Entenda gírias, abreviações, regionalismos nordestinos (oxe, visse, arretado) e erros de digitação. '
  +'Você só conversa e orienta: quem executa ações no app são os comandos do app. Se o usuário quiser agendar, anotar ou comprar algo, ensine a frase certa, por exemplo: '
  +'"marcar dentista amanhã às 14h", "me lembre de ligar pro João às 18h", "anotar: ideia do projeto", "comprar arroz, feijão e café". '
  +'Nunca diga que já criou, apagou ou alterou algo: você não faz isso nesta conversa. '
@@ -3615,6 +3617,269 @@ function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!
  f.style.display=ok&&!K.open?'':'none';if(!ok){const p=$('#kay-p');if(p)p.classList.remove('on');K.open=false}}
 function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div></div>`}
 function kayTog(){kCfg().off=kCfg().off?0:1;save();kSync();render()}
+/* ===== KAYLA · VOCABULÁRIO AMPLIADO: gírias, sinônimos, erros de digitação, números por extenso, conversa do dia a dia ===== */
+(function(){
+const AC={a:'[aáàâã]',e:'[eéê]',i:'[ií]',o:'[oóôõ]',u:'[uú]',c:'[cç]'};
+const R=(s,f)=>new RegExp(s.replace(/[aeiouc]/g,c=>AC[c]),f||'i');
+const E=s=>new RegExp('^(?:'+s+')[\\s!?.,:;)]*$');
+const B1='(?<![\\wÀ-ÿ])',B2='(?![\\wÀ-ÿ])';
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const N=s=>kNorm(s);
+const nome=()=>((S.user&&S.user.name)||'').split(' ')[0];
+const saud=()=>{const h=new Date().getHours();return h<5?'Boa madrugada':h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'};
+const dmy=d=>kP2(d.getDate())+'/'+kP2(d.getMonth()+1)+'/'+d.getFullYear();
+const NW={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,quatorze:14,catorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30,quarenta:40,cinquenta:50,primeiro:1,primeira:1,segundo:2,segunda:2,terceiro:3,terceira:3};
+const W1='(?:vinte|trinta)(?:\\s+e\\s+(?:um|dois|tres|quatro|cinco|seis|sete|oito|nove))?|dezesseis|dezessete|dezoito|dezenove|quatorze|catorze|quarenta|cinquenta|quinze|onze|doze|treze|duas|dois|tres|quatro|cinco|seis|sete|oito|nove|dez|uma|um|primeiro';
+const w2n=s=>{const x=N(s).trim();if(/^\d+$/.test(x))return +x;let t=0;for(const w of x.split(/\s+e\s+|\s+/)){if(!(w in NW))return null;t+=NW[w]}return t};
+/* ---- 1. gírias e abreviações ---- */
+const G={vc:'você',vcs:'vocês',pq:'porque',q:'que',tb:'também',tbm:'também',hj:'hoje',amh:'amanhã',amnh:'amanhã',dps:'depois',n:'não',pfv:'',pfvr:'',pf:'',plmds:'',pls:'',plz:'',plis:'',cmg:'comigo',oq:'o que',qdo:'quando',qnd:'quando',kd:'cadê',fds:'fim de semana',blz:'beleza',vlw:'valeu',vlws:'valeu',obg:'obrigado',obgd:'obrigado',obgda:'obrigada',flw:'falou',mt:'muito',mto:'muito',msm:'mesmo',td:'tudo',nd:'nada',agr:'agora',aq:'aqui',sab:'sábado',eai:'e aí',eae:'e aí',opa:'oi',oie:'oi',oii:'oi',oiee:'oi',oxe:'',eita:'',visse:'',ne:'',vamo:'vamos',bora:'vamos',pra:'para',pro:'para o',tmj:'valeu',ta:'está',to:'estou','tô':'estou','tá':'está','né':''};
+const gir=t=>t.replace(/(?<![\wÀ-ÿ])(?:k{3,}|rs+|haha+|kk+)(?![\wÀ-ÿ])/gi,' ').replace(/(?<![\wÀ-ÿ])([A-Za-zÀ-ÿ]{1,5})(?![\wÀ-ÿ])/g,(m,w)=>{const k=w.toLowerCase();return Object.prototype.hasOwnProperty.call(G,k)?G[k]:m}).replace(/\s+/g,' ').trim();
+/* ---- 2. tempo: números por extenso, "e meia", "semana que vem", "de manhã"... ---- */
+function pre(t){const now=new Date();
+ t=t.replace(R(B1+'meio[- ]dia e meia','gi'),'12:30').replace(R(B1+'meia[- ]noite e meia','gi'),'00:30').replace(/(\d)\s*hrs?(?![A-Za-zÀ-ÿ])/gi,'$1h');
+ t=t.replace(R(B1+'(?:daqui a|em|dentro de)\\s+meia hora','gi'),'daqui a 30 min');
+ t=t.replace(R(B1+'(?:daqui a|em|dentro de)\\s+('+W1+'|\\d+)\\s+(minutos?|min|horas?|dias?|semanas?)'+B2,'gi'),(m,w,u)=>{const k=w2n(w);if(k==null)return m;const un=N(u);
+  if(/^min/.test(un))return 'daqui a '+k+' min';if(/^hora/.test(un))return 'daqui a '+k+' hora';
+  const d=new Date(now);d.setDate(d.getDate()+k*(/^sem/.test(un)?7:1));return dmy(d)});
+ t=t.replace(R(B1+'(?:semana que vem|proxima semana|na semana seguinte)'+B2,'gi'),()=>{const d=new Date(now);d.setDate(d.getDate()+7);return dmy(d)});
+ t=t.replace(R(B1+'(?:mes que vem|proximo mes)'+B2,'gi'),()=>{const d=new Date(now);d.setMonth(d.getMonth()+1);return dmy(d)});
+ t=t.replace(R(B1+'(?:no |neste |nesse )?(?:fim|final) de semana'+B2,'gi'),'sábado');
+ t=t.replace(R(B1+'dia\\s+('+W1+')'+B2,'gi'),(m,w)=>{const k=w2n(w);return k&&k<=31?'dia '+k:m});
+ const MM={meia:'30','um quarto':'15',quinze:'15','vinte e cinco':'25',vinte:'20',trinta:'30','quarenta e cinco':'45',quarenta:'40',dez:'10',cinco:'05'};
+ t=t.replace(R('(?<![\\wÀ-ÿ:])(?:(?:as|às|pelas|umas|por volta das|la pelas)\\s+)?('+W1+'|\\d{1,2})\\s*(?:horas?|h)?\\s+e\\s+(meia|um quarto|quinze|vinte e cinco|vinte|trinta|quarenta e cinco|quarenta|dez|cinco)'+B2,'gi'),(m,w,mm)=>{const h=w2n(w);if(h==null||h>23)return m;return 'às '+h+':'+MM[N(mm)]});
+ t=t.replace(R('(?<![\\wÀ-ÿ:])(?:(?:as|às)\\s+)?(?<!dia\\s)('+W1+'|\\d{1,2})\\s+(?:da|de|pela)\\s+(manha|tarde|noite|madrugada)','gi'),(m,w,p)=>{const h=w2n(w);if(h==null||h>23)return m;return 'às '+h+' da '+p});
+ t=t.replace(R(B1+'(?:as|às|pelas|umas|por volta das|la pelas)\\s+('+W1+'|\\d{1,2})(?![\\wÀ-ÿ:])','gi'),(m,w)=>{const h=w2n(w);if(h==null||h>23)return m;return 'às '+h});
+ t=t.replace(R('(?<!daqui a\\s)(?<![\\wÀ-ÿ:])(\\d{1,2})\\s*horas?'+B2,'gi'),'$1h');
+ const tem=/(\d\s*(h|:)\d*)|(?<![\wÀ-ÿ])(as|às)\s+\d|meio[- ]dia|meia[- ]noite|daqui a/i.test(t);
+ if(!tem){const P=[[B1+'(?:cedinho|cedo)'+B2,7],[B1+'(?:(?:de|pela|na)\\s+)?manha(?:zinha)?'+B2,8],[B1+'(?:(?:à|a|de|pela)\\s+)?tarde(?:zinha)?'+B2,15],[B1+'(?:(?:à|a|de|pela)\\s+)?noite(?:zinha)?'+B2,20]];
+  for(const [p,h] of P){const r=R(p,'i');if(r.test(t)){t=t.replace(r,'às '+h+'h');break}}}
+ return t}
+const VERB=/^\s*(?:(?:me\s+)?(?:agend\w*|marc\w*|lembr\w*|anot\w*|cri\w+|colo\w+|adicion\w+|bot\w+)\s+)+(?:(?:um|uma|o|a|de|do|da|para|pra)\s+)?(?:(?:compromisso|lembrete|alarme)\s+)?(?:(?:de|do|da|para|pra)\s+)?/i;
+const _kp=kParse;kParse=function(t,now){const r=_kp(pre(t),now);if(r.title){let x=r.title.replace(VERB,'').trim();if(x)r.title=x[0].toUpperCase()+x.slice(1)}return r};
+/* agendar do jeito que foi pedido: título = “Dentista às 14h”, resposta = “Dentista agendado às 14h” */
+const hLab=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?(+m[1])+'h'+(m[2]==='00'?'':m[2]):''};
+kCriar=function(tipo,p){const lab=hLab(p.time);let tit=p.title;
+ if(lab&&!/\d\s*h\b|\d:\d\d/i.test(tit))tit+=' às '+lab;
+ const ev={id:uid(),title:tit,date:p.date||kHoje(),time:p.time||'',done:false};S.ev.push(ev);save();try{schedSoon()}catch(e){}render();
+ const on=S.notif&&S.notif.on,base=p.title[0].toUpperCase()+p.title.slice(1);
+ kAdd('k',(tipo==='lembrete'?'Lembrete: ':'')+base+(tipo==='lembrete'?'':' agendado')+(lab?' às '+lab:'')+' ('+kFmtD(ev.date)+'). ✓'+(ev.time&&!on?'\nOs lembretes estão desligados: quer que eu ative?':''),ev.time&&!on?['Ativar lembretes','Obrigado']:null)};
+/* ---- 3. limpeza da frase ---- */
+const limpa=t=>{let s=gir(t).replace(/^[\s,.!¡¿?]+/,'');
+ for(let i=0;i<3;i++)s=s.replace(R('^(?:kayla|amiga|mana|minha linda|linda|querida|ei|psiu|ô|oh|ola kayla)\\b[\\s,!:-]*','i'),'').replace(R('^(?:entao|então|ai|aí|bom|olha|escuta|ouve)\\s*,\\s*','i'),'').replace(R('^(?:por favor)\\s*,?\\s*','i'),'').replace(R('^(?:voce\\s+)?(?:pode|poderia|consegue|conseguiria|da pra|daria pra|sera que (?:voce )?pode)\\s+','i'),'').replace(R('^(?:eu\\s+)?(?:queria|quero que voce|quero|gostaria que voce|gostaria de|me ajuda a|me ajude a|preciso que voce|vou querer)\\s+','i'),'');
+ s=s.replace(R('[,\\s]+(?:por favor|kayla|amiga|mana|linda|querida|obrigad(?:o|a))[\\s!.?]*$','i'),'').replace(/\s+/g,' ').trim();return s};
+/* ---- 4. conversa (cumprimentos, humor, carinho, dicas, apoio...) ---- */
+const CH1=['O que tenho hoje?','O que você faz?'];
+const J=['Por que o livro de matemática ficou triste? Porque tinha muitos problemas.','O que o zero disse pro oito? Que cinto bonito!','Por que o computador foi ao médico? Porque estava com um vírus.','Qual é o café mais perigoso? O ex-presso.','O que o tomate foi fazer no banco? Tirar extrato.','Por que o jacaré tirou o filho da escola? Porque ele réptil de ano.','Qual é o animal mais antigo? A zebra, porque é em preto e branco.','O que a agenda disse pro lembrete? Sem você eu me esqueço de tudo!','Por que a vaca foi pro espaço? Para ver a Via Láctea.','O que a impressora disse pra outra? Essa folha é sua ou é impressão minha?'];
+const CU=['O mel não estraga: já acharam potes de mel com milhares de anos ainda comestíveis.','Polvos têm três corações e sangue azulado.','Em Vênus, um dia dura mais do que um ano inteiro de lá.','A Torre Eiffel pode crescer alguns centímetros no verão, porque o ferro dilata com o calor.','O cocô do wombat tem formato de cubinhos.','Os tubarões existem há mais tempo do que as árvores.','O coração do camarão fica na cabeça dele.','Morango não é uma fruta de verdade no sentido botânico, mas a banana é uma baga.'];
+const DI=['Regra dos 2 minutos: se leva menos de 2 minutos, faça agora em vez de agendar.','Escolha só 3 tarefas principais por dia. O resto é bônus.','Pomodoro: 25 minutos de foco total e 5 de pausa. Depois de 4 ciclos, uma pausa maior.','Anote tudo que está na sua cabeça: mente vazia pensa melhor. Eu guardo em notas pra você.','Divida tarefa grande em passos pequenos e agende o primeiro passo ainda hoje.','Revise a agenda de amanhã à noite: você acorda já sabendo o que fazer.','Agrupe tarefas parecidas (ligações, compras, e-mails) no mesmo horário.','Coloque horário de descanso na agenda também. Descansar faz parte da produtividade.','Todo compromisso com hora fica melhor com lembrete ativado. Quer que eu ative?'];
+const MO=['Um passo pequeno hoje já é movimento. Bora?','Você não precisa fazer tudo hoje, só o próximo passo.','Constância vence intensidade. Um pouquinho por dia já muda o jogo.','Respira fundo: você já deu conta de dias difíceis antes.','Feito é melhor que perfeito. Começa do jeito que der.','Cada tarefa riscada é uma vitória, por menor que pareça.','Descansar também é avançar. Cuide de você.','Organizar a cabeça é metade do caminho. E você já começou.','O seu esforço de hoje é o descanso tranquilo de amanhã.','Hoje pode ser o dia em que você faz o que vinha adiando. Só 5 minutinhos!'];
+const SOC=[
+ [/suicid|quero morrer(?! de )|nao aguento mais viver|vou me matar|nao quero mais viver|acabar com tudo|me machucar|tirar a minha vida|tirar minha vida/,()=>'Sinto muito que você esteja passando por isso. Você importa e não precisa carregar isso sozinho(a). Procure agora alguém de confiança. No Brasil, o CVV atende pelo 188, a qualquer hora, e em perigo imediato ligue 192 (SAMU) ou 190. Eu sou só uma assistente de agenda, mas estou por aqui se quiser conversar um pouco.'],
+ [E('(?:oxe|eita|vixe|ixe|nossa|uau|wow|caramba)(?:\\s+\\w+){0,2}'),()=>pick(['Pois é! Em que posso ajudar?','Diz aí, o que você precisa?','Oxe! Me conta o que aconteceu.'])],
+ [E('(?:oi+|ola|opa|e ai|fala(?: ai)?|salve|hey|hi|hello|alo|bom dia|boa tarde|boa noite|boa madrugada|coe|iai|tudo bem|tudo certo|tudo joia|como vai|como voce esta|como esta voce|como voce ta|como ta voce|como ce ta|sumida)(?:\\s+\\w+){0,5}'),n=>{const q=/tudo|como|sumida/.test(n);return saud()+(nome()?', '+nome():'')+'! '+(q?pick(['Tudo ótimo por aqui! ','Tudo certo, obrigada por perguntar! ','Estou bem demais! ']):'')+pick(['Como posso ajudar?','No que posso ajudar hoje?','Quer que eu veja sua agenda?'])},CH1],
+ [E('(?:obrigad[oa]s?|brigad[oa]o?|muito obrigad[oa]|valeu(?: demais)?|agradeco|show|top|massa|perfeito|otimo|legal|joia|estamos juntos|de nada)(?:\\s+\\w+){0,3}'),()=>pick(['De nada! Qualquer coisa é só chamar.','Imagina! Estou aqui pra isso.','Por nada! Conte comigo.','Disponha! 💜'])],
+ [E('(?:sim|isso|ok|certo|entendi|beleza|combinado|fechado|pode ser|claro|aham|uhum|ta bom|esta bom|tudo bem entao|pronto)'),()=>pick(['Certo! Se precisar de algo, é só chamar.','Combinado!','Beleza! Estou por aqui.'])],
+ [E('(?:nao|nada|deixa|esquece|nao precisa|nao quero|deixa pra la)'),()=>pick(['Tudo bem!','Sem problemas. Se mudar de ideia, é só falar.'])],
+ [E('(?:tchau|xau|ate (?:mais|logo|amanha|depois|breve)|falou|fui|vou nessa|vou dormir|vou sair|durma bem|bye|adeus|ate)(?:\\s+\\w+){0,3}'),()=>pick(['Até mais! Qualquer coisa, me chame.','Tchau! Bom descanso e boa sorte nos compromissos.','Até logo! Estarei por aqui.'])],
+ [E('(?:quem (?:e|eh) voce|quem e a kayla|qual (?:e )?(?:o )?(?:seu|teu) nome|como voce se chama|como se chama|voce (?:e|eh) (?:uma )?(?:ia|robo|pessoa|gente|humana|de verdade|real)|quem (?:te )?(?:criou|fez|programou)|o que e a kayla|voce existe)'),()=>'Sou a Kayla, a assistente virtual do app JC ORGANIZA. Sou um programa, não uma pessoa: entendo seus comandos para agendar, lembrar, anotar e listar compras, e uso um pouco de inteligência artificial para conversar.'],
+ [E('(?:te amo|amo voce|voce (?:e|eh) (?:a |uma )?(?:linda|fofa|demais|incrivel|otima|inteligente|esperta|top|melhor|maravilhosa|perfeita|um amor|querida|boa|legal)(?: assistente)?|arrasou|mandou bem|gostei|adorei|amei|parabens|melhor assistente|que fofa|fofa)(?:\\s+\\w+){0,3}'),()=>pick(['Aaah, que gentileza! Fico feliz em ajudar. 💜','Obrigada, você também é demais! Vamos organizar o dia?','Que carinho! Isso me motiva a ajudar ainda mais.'])],
+ [/(?:burra|boba|idiota|inutil|lixo|nao serve|voce nao entende|nao entendeu|nao entende|errou|nao era isso|nao e isso|nao funcionou|nao funciona|que droga|que raiva|odeio|horrivel|pessima)/,()=>pick(['Desculpe por não ter acertado! Tente de outro jeito, por exemplo: “marcar dentista amanhã às 14h” ou “comprar leite e pão”. Vou fazer o meu melhor.','Poxa, desculpa! Me explique de novo com outras palavras que eu tento entender melhor.']),['O que você faz?']],
+ [E('(?:que dia (?:e|eh|ta|esta) hoje|data (?:de )?hoje|qual (?:a )?data|dia de hoje|que dia (?:da semana|estamos)|hoje (?:e|eh) que dia|em que dia (?:estamos|estou|a gente esta)|que data)'),()=>'Hoje é '+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'.'],
+ [E('(?:que horas?(?: sao| e| eh)?|horas?|hora (?:certa|atual)|(?:me )?(?:diz|fala|da|passa) (?:a |as )?horas?|qual (?:a )?hora)'),()=>'Agora são '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'.'],
+ [E('(?:em que mes(?: estamos)?|que mes (?:e|eh|estamos)|que ano (?:e|eh|estamos)|qual (?:o )?(?:ano|mes))'),()=>'Estamos em '+new Date().toLocaleDateString('pt-BR',{month:'long',year:'numeric'})+'.'],
+ [/\bpiadas?\b|anedota|me faz rir|engracad[oa]|charada|me alegra|risada/,()=>pick(J),['Outra piada']],
+ [/^(?:outra piada)/,()=>pick(J),['Outra piada']],
+ [/curiosidade|voce sabia|fato curioso|me ensina algo|algo interessante|me surpreende/,()=>pick(CU),['Outra curiosidade']],
+ [/frase (?:motivacional|do dia|de motivacao|inspiradora)|me motiva|motivacao|inspiracao|me da (?:um )?(?:animo|forca)|me anima|mensagem (?:do dia|positiva)|preciso de (?:animo|motivacao|forca|inspiracao)|^outra frase/,()=>pick(MO),['Outra frase']],
+ [/(?:estou|me sinto|ando|sinto) (?:muito |super |bem |meio |tao )?(?:triste|cansad[oa]|desanimad[oa]|estressad[oa]|ansios[oa]|sobrecarregad[oa]|exaust[oa]|esgotad[oa]|sem energia|sem animo|preguicos[oa]|pra baixo|nervos[oa]|preocupad[oa]|sem vontade|perdid[oa]|confus[oa]|sozinh[oa]|com sono|com fome|entediad[oa]|irritad[oa]|estafad[oa])/,n=>{
+  if(/sono|cansad|exaust|esgotad|estafad|sem energia/.test(n))return 'Parece que seu corpo está pedindo pausa. Se der, descanse um pouco e deixe só o essencial na agenda de hoje. Posso mostrar o que tem marcado?';
+  if(/ansios|estressad|nervos|preocupad|sobrecarregad|perdid|confus/.test(n))return 'Vamos aliviar a cabeça: escreva aqui tudo que está pesando, assim: “anotar: …”. Depois escolhemos só as 3 coisas mais importantes e o resto espera. Respira fundo, um passo de cada vez.';
+  if(/trist|pra baixo|sozinh/.test(n))return 'Sinto muito que você esteja assim. Se quiser desabafar, o Diário do app guarda o que você escrever. E vale conversar com alguém de confiança, ok? Estou por aqui.';
+  if(/fome/.test(n))return 'Hora de comer! E já que está pensando em comida, quer que eu monte sua lista de compras? É só dizer: “comprar arroz, feijão e ovos”.';
+  if(/entediad/.test(n))return 'Vamos resolver isso: quer uma piada, uma curiosidade ou organizar algo divertido na agenda?';
+  return 'Entendo. Comece com um passo bem pequeno, só 5 minutinhos, que já ajuda a destravar. Se quiser, me diga a tarefa e eu agendo.'}],
+ [/(?:dica|dicas)\b.*(?:organiz|produtiv|foco|estudo|rotina|tempo)|como (?:me )?(?:organizar|focar|ser mais produtiv|criar (?:uma )?rotina|parar de procrastinar|estudar melhor|gerenciar (?:meu )?tempo)|procrastin|pomodoro|me ajuda a (?:organizar|focar|planejar)|planejar (?:meu|a) (?:dia|semana)|^dica$|^dicas$/,()=>pick(DI),['Outra dica']],
+ [/(?:previsao do tempo|vai chover|^clima|^tempo (?:hoje|amanha|esta|ta)|temperatura|^chuva)/,()=>'Eu não consigo ver o clima daqui, mas o app de previsão do seu celular mostra certinho. Quer que eu agende um lembrete de levar o guarda-chuva?'],
+ [E('(?:o que (?:voce|vc|tu) (?:faz|sabe|pode)(?: fazer)?|ajuda|help|comandos|exemplos|opcoes|funcoes|funcionalidades|socorro|manual|o que posso (?:pedir|falar|dizer|perguntar)|do que (?:voce )?(?:e|eh) capaz)'),()=>'Eu entendo o jeito que você fala! Alguns exemplos:\n• Agendar: “marcar dentista amanhã às 14h”, “tenho consulta sexta às duas da tarde”\n• Lembrar: “me avisa de ligar pro João às 18h”, “me acorda às 6h”\n• Anotar: “anotar: ideia do projeto”\n• Compras: “comprar arroz e feijão”, “acabou o café”, “já comprei o leite”, “tirar o pão da lista”\n• Ver: “o que tenho hoje/amanhã/essa semana?”, “próximo compromisso”, “minha lista”, “minhas notas”, “quantos compromissos tenho?”\n• Concluir/apagar: “terminei o dentista”, “apagar reunião”, “desfazer”\n• Abrir: “abrir carteira”, “me leva pras promoções”\n• Ajustes: “deixa o app azul”, “modo escuro”, “avisar 15 min antes”, “menu embaixo”, “esconder carteira do menu”, “idioma inglês”, “me chame de Ana”, “como estão minhas configurações”\n• Avisos: “ligar os avisos”\n• Mover: arraste a minha bolinha pela tela (“voltar a Kayla pro canto” devolve ao lugar)\n• Papo: piada, curiosidade, dica de organização, frase motivacional, que dia é hoje, que horas são',['Fazer o tour']]
+];
+function social(txt,c,n){
+ if(!n){kAdd('u',txt);kAdd('k',/oxe|eita|vixe|ixe/.test(N(txt))?pick(['Pois é! Em que posso ajudar?','Oxe! Me conta o que aconteceu.']):'Oi! Estou aqui. Em que posso ajudar?',CH1);return true}
+ for(const s of SOC){if(s[0].test(n)){kAdd('u',txt);const r=typeof s[1]==='function'?s[1](n):s[1];kAdd('k',r,s[2]||null);return true}}
+ return false}
+/* ---- 5. consultas aos seus dados ---- */
+function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||null);return true};
+ const sh=S.shop||[],nt=S.notes||[],ev=(S.ev||[]).filter(e=>!e.done);
+ const q=x=>N(x||'');const now=new Date();const agora=kHoje()+' '+kP2(now.getHours())+':'+kP2(now.getMinutes());
+ if(/^(?:limp\w+|zerar|esvaziar|apag\w+ tud\w+(?: da)?)\s+(?:a |minha )?(?:lista|compras)/.test(n)){ask('Limpar toda a lista de compras?',()=>{S.shop=[];save();render();kAdd('k','Lista de compras limpa.')},'Limpar');kAdd('u',txt);return true}
+ if(/^(?:limp\w+|tir\w+|remov\w+|apag\w+)\s+(?:os |as |o que )?(?:ja )?(?:comprad\w+|marcad\w+|pegos?|riscad\w+)/.test(n)){const q2=sh.filter(i=>i.done).length;S.shop=sh.filter(i=>!i.done);save();render();return say(q2?'Tirei '+q2+' item(ns) já comprado(s) da lista.':'Não há itens marcados como comprados.')}
+ if((m=c.match(R('^(?:tir\\w+|remov\\w+|apag\\w+|exclu\\w+|delet\\w+|risc\\w+|some\\w*\\s+com|sum\\w+\\s+com|cancel\\w+)\\s+(?:o |a |os |as )?(.+?)\\s+d(?:a|o|e)s?\\s+(?:minha\\s+)?(?:lista|compras)(?:\\s+de\\s+compras)?$')))){const k=q(m[1]);const f=sh.filter(i=>q(i.title).includes(k));if(!f.length)return say('Não achei “'+m[1]+'” na lista de compras.');S.shop=sh.filter(i=>!f.includes(i));save();render();return say('Tirei da lista: '+f.map(i=>i.title).join(', ')+'.')}
+ if((m=c.match(R('^(?:ja\\s+)?(?:comprei|peguei|trouxe|marca\\w*\\s+(?:como\\s+)?(?:comprad(?:o|a)s?|pego))\\s+(?:o |a |os |as |um |uma )*(.+)$')))){const its=m[1].split(/\s*,\s*|\s+e\s+/i).map(q).filter(Boolean);const f=sh.filter(i=>!i.done&&its.some(k=>q(i.title).includes(k)));if(f.length){f.forEach(i=>i.done=true);save();render();return say('Marquei como comprado: '+f.map(i=>i.title).join(', ')+'. ✓')}}
+ if(/\b(?:lista|compras|comprar)\b/.test(n)&&!/\b(?:adicion\w*|coloc\w*|incl\w*|bota\w*|poe|add)\b/.test(n)&&(/^(?:o que|quais|que|me (?:mostra|diz|fala|le)|mostr\w+|ver|veja|list\w+|le |qual|como esta)/.test(n)||/^(?:minha |a |as )?(?:lista(?: de compras)?|compras)$/.test(n))&&!/^(?:comprar|compre)\b/.test(n)){
+  const p=sh.filter(i=>!i.done);if(!p.length)return say('Sua lista de compras está vazia'+(sh.length?' (tudo marcado como comprado).':'.'),['Abrir compras']);
+  return say('🛒 Falta comprar ('+p.length+'):\n'+p.slice(0,15).map(i=>'• '+i.title+(i.qty>1?' ×'+i.qty:'')).join('\n')+(p.length>15?'\n… e mais '+(p.length-15):'')+(sh.length>p.length?'\nJá marcados: '+(sh.length-p.length):''),['Abrir compras'])}
+ if(/^(?:(?:me )?(?:mostr\w+|ver|veja|list\w+|le)\s+(?:as |minhas |meus )?(?:ultimas )?notas?|minhas notas|quais (?:sao )?(?:minhas )?notas|ultimas notas|o que (?:eu )?(?:anotei|escrevi|guardei))$/.test(n)){
+  if(!nt.length)return say('Você ainda não tem notas.',['Abrir notas']);
+  return say('📝 Últimas notas:\n'+nt.slice().sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,5).map(x=>'• '+String(x.title||x.text||'').slice(0,50)).join('\n'),['Abrir notas'])}
+ if((m=n.match(/^quant[oa]s?\s+(compromissos?|notas?|itens|coisas)\b/))){
+  if(/^comp/.test(m[1])){const h=/hoje/.test(n),L=ev.filter(e=>h?e.date===kHoje():e.date>=kHoje());return say(L.length?'Você tem '+L.length+(L.length===1?' compromisso':' compromissos')+(h?' hoje.':' pela frente.'):'Nenhum compromisso '+(h?'hoje.':'pela frente.'))}
+  if(/^nota/.test(m[1]))return say('Você tem '+nt.length+(nt.length===1?' nota.':' notas.'));
+  const p=sh.filter(i=>!i.done).length;return say('Faltam '+p+' itens na lista de compras ('+sh.length+' no total).')}
+ if(/(?:proximo|proxima)\b.*\b(?:compromisso|evento|lembrete|reuniao|consulta)|^(?:qual|o que)\s+(?:e |eh )?(?:o )?(?:meu )?proximo|o que vem agora/.test(n)){
+  const L=ev.filter(e=>(e.date+' '+(e.time||'23:59'))>=agora).sort((a,b)=>(a.date+' '+(a.time||'23:59')).localeCompare(b.date+' '+(b.time||'23:59')));
+  return say(L.length?'Seu próximo compromisso: '+(L[0].time?L[0].time+' · ':'')+L[0].title+' ('+kFmtD(L[0].date)+').':'Você não tem compromissos pela frente. Dia livre! 🎉')}
+ if(/^(?:o que|quais?|como|me (?:mostra|diz|fala)|agenda|meus compromissos|ver|mostr\w+)\b.*\b(?:semana|proximos dias|proximos 7 dias|7 dias)\b|^semana$/.test(n)){
+  const prox=/semana que vem|proxima semana/.test(n),d0=new Date(now);if(prox)d0.setDate(d0.getDate()+7);const out=[];
+  for(let i=0;i<7;i++){const d=new Date(d0);d.setDate(d.getDate()+i);const ds=iso(d);const L=ev.filter(e=>e.date===ds).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
+   if(L.length)out.push(kFmtD(ds)+' ('+['dom','seg','ter','qua','qui','sex','sáb'][d.getDay()]+'):\n'+L.map(e=>'  • '+(e.time?e.time+' · ':'')+e.title).join('\n'))}
+  return say(out.length?'Agenda dos próximos 7 dias:\n'+out.join('\n'):'Nenhum compromisso '+(prox?'na semana que vem.':'nos próximos 7 dias.'))}
+ return false}
+/* ---- 6. traduz o jeito de falar para os comandos do app ---- */
+const TABAL=[['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
+const tabDe=n=>{for(const [t,r] of TABAL)if(new RegExp('(?:^|\\s)(?:'+r+')(?:\\s|$)').test(n))return t;return null};
+const TABOUT={cal:'calendario',config:'configuracoes'};
+const DICT=['agendar','agende','marcar','marque','lembrar','lembre','anotar','anote','comprar','compre','apagar','apague','excluir','exclua','remover','remova','concluir','conclua','finalizar','abrir','abra','desfazer','ativar','desativar','esconder','mostrar','adicionar','adicione','incluir','inclua','colocar','coloque','criar','crie','cancelar','cancele','deletar','limpar','tirar','escrever','guardar','salvar','registrar','cadastrar','reservar','programar'];
+function lev(a,b){const d=[];for(let i=0;i<=a.length;i++){d[i]=[i];for(let j=1;j<=b.length;j++)d[i][j]=i?0:j}
+ for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function typo(c){const m=c.match(/^(\S+)(.*)$/);if(!m)return c;const w=N(m[1]);if(w.length<5||DICT.includes(w))return c;
+ let best=null,bd=9;for(const v of DICT){const d=lev(w,v);if(d<bd){bd=d;best=v}}
+ return best&&bd<=(w.length>=9?2:1)?best+m[2]:c}
+const DATA='(?:\\bhoje\\b|\\bamanha\\b|depois de amanha|\\bdia \\d|\\d{1,2}\\s*(?:h|:|\\/)|\\bas \\d|\\bas \\d|segunda|terca|quarta|quinta|sexta|sabado|domingo|semana que vem|mes que vem)';
+const NOTHING='tempo|dinheiro|grana|paciencia|energia|internet|sinal|bateria|animo|sono|fome|vontade|saco|nocao|folga|ideia|noticia';
+function canon(c,n){let m;c=typo(c);c=c.replace(/^(anot\w*|escrev\w*|marc\w*|lembr\w*|compr\w*|agend\w*|bot\w*|coloc\w*)\s+a[ií]\b\s*[:,-]?\s*/i,'$1 ');n=N(c);
+ if(/^(?:some|sai|desaparece|vai embora|te esconde|se esconde|fica quieta|fecha)(?:\s+(?:daqui|da tela))*$/.test(n))return 'esconder kayla';
+ if(/^(?:ativ\w*|lig\w*|habilit\w*|acion\w*|quero|bota|poe|deixa)\s+(?:os?\s+|as?\s+)?(?:meus\s+)?(?:avisos?|notificacoes|alertas?|alarmes|lembretes)(?:\s+ligados?)?$/.test(n))return 'ativar lembretes';
+ if(/^(?:desativ\w*|deslig\w*|desabilit\w*|para(?:r)? de|silenci\w*|tira(?:r)?|chega de)\s+(?:de\s+)?(?:os?\s+|as?\s+)?(?:meus\s+)?(?:avisos?|notificacoes|alertas?|alarmes|lembretes)/.test(n))return 'desativar lembretes';
+ if(/(?:modo|tema|fundo)\s+(?:noturno|escuro|preto|dark|da noite)|dark mode|escurec\w+|modo noite/.test(n))return 'tema escuro';
+ if(/(?:modo|tema|fundo)\s+(?:claro|branco|dia|diurno|light)|light mode/.test(n))return 'tema claro';
+ if(/(?:modo|tema)\s+(?:automatico|auto|do celular|do sistema)/.test(n))return 'tema automatico';
+ if(/^(?:volta atras|desfaz\w*|cancela isso|nao era pra apagar|errei|apaguei sem querer|restaura\w*)$/.test(n))return 'desfazer';
+ const ehPerg=/\?\s*$/.test(c)||/^(?:o que|oq|como|quais|qual|tem\b|me\b|to livre|estou livre|resumo|meu dia|meus planos|agenda|mostr|ver\b)/.test(n);
+ if((ehPerg||!/^tenho\b/.test(n))&&/(?:como (?:esta|ta) (?:o )?meu dia|^meu dia|meus planos|\b(?:tem|tenho) (?:algo|alguma coisa|compromissos?|coisas?|reuniao|consulta|evento)s?|o que (?:tem|rola|vai ter|eu tenho|esta marcado|ta marcado|ta agendado|esta agendado|tem marcado|eu faco|tenho que fazer|devo fazer|preciso fazer)|agenda d[eoa]|resumo d[oae]|me (?:atualiza|diz|fala|mostra|conta) (?:a |minha |sobre )?(?:agenda|o dia|meu dia|compromissos)|to livre|estou livre|tem horario)/.test(n)&&!/\d\s*h\b|\d:\d/.test(n))return (/^o que/.test(n)&&/\b(?:tenho|tem|compromissos|agenda)\b/.test(n))?c:'o que tenho '+c;
+ if(/^(?:abr\w+|ir\s+(?:para|pra)|va\s+(?:para|pra)|vamos\s+(?:para|pra)|me\s+(?:leva\w*|mostra\w*)|mostr\w+|ver|veja|quero ver|cade|onde (?:fica|esta|ta)|entr\w+|acess\w+|exib\w+|volt\w+ (?:para|pra)|leva\w*)\b/.test(n)){const t=tabDe(n);if(t)return 'abrir '+(TABOUT[t]||t)}
+ if(n.split(' ').length<=2){const t=tabDe(n);if(t&&!/^(?:lista|compras)$/.test(n))return 'abrir '+(TABOUT[t]||t)}
+ if(R('^(?:tir\\w+|some\\w*\\s+com|sum\\w+\\s+com|elimin\\w+|limp\\w+|descadastr\\w+|desmarc\\w+|joga\\w*\\s+fora|esquece\\s+(?:o|a)|desist\\w+\\s+d(?:e|o|a)|nao vou mais)\\b').test(c))return 'apagar '+c.replace(R('^(?:tir\\w+|some\\w*\\s+com|sum\\w+\\s+com|elimin\\w+|limp\\w+|descadastr\\w+|desmarc\\w+|joga\\w*\\s+fora|esquece\\s+(?:o|a)|desist\\w+\\s+d(?:e|o|a)|nao vou mais)\\s*','i'),'');
+ if((m=c.match(R('^(?:terminei|acabei|finalizei|conclui|ja fiz|ja foi|foi feito|ta feito|esta feito|resolvi|ja resolvi|fiz|marca\\w*\\s+(?:o |a )?(?:compromisso |lembrete )?como (?:feito|concluido|pronto|resolvido))\\s+(?:de\\s+|com\\s+|o\\s+|a\\s+)*(.+)$')))){const k=N(m[1]);if(S.ev.some(e=>!e.done&&(N(e.title).includes(k)||k.includes(N(e.title)))))return 'concluir '+m[1]}
+ if((m=c.match(/^anota\s*[:\-]?\s+(.+)$/i)))return 'anotar: '+m[1];
+ if((m=c.match(R('^(?:escrev\\w+|grav\\w+|rascunh\\w+|apont\\w+|nota rapida|ideias?|anotacao|(?:me )?faz(?:er)? uma nota|cri\\w+ uma nota|bot\\w+ uma nota|poe uma nota|joga\\w* nas notas|guard\\w+ nas notas|salv\\w+ nas notas|salv\\w+ uma nota|guard\\w+ uma nota)\\s*(?:uma nota|nota|isso|aqui|que)?\\s*[:\\-]?\\s*(.+)$')))&&m[1])return 'anotar: '+m[1];
+ if((m=c.match(R('^(?:acabou|acabaram|falta|faltam|faltou|faltaram|(?:estou|ando)\\s+sem|nao tenho mais|(?:esta|ta)\\s+faltando|tenho que comprar|temos que comprar|lembra(?:r)? de comprar|nao esquece de comprar)\\s+(?:(?:o|a|os|as|um|uma|uns|umas|mais)\\s+)*(.+)$')))&&m[1].split(' ').length<=5&&!new RegExp('\\b(?:'+NOTHING+')\\b').test(N(m[1])))return 'comprar '+m[1];
+ if((m=c.match(R('^(?:me\\s+)?(?:acord\\w+|desperta\\w*|despertador|bota\\w* despertador|poe despertador)\\s*(.*)$')))&&/\d|manha|cedo/.test(n))return 'alarme acordar '+m[1];
+ if((m=c.match(R('^(?:me\\s+)?(?:avis\\w+|alert\\w+|chama\\w*|cutuc\\w+|bipa\\w*|lembra(?:r)?|lembre|nao me deixa esquecer|nao me deixe esquecer|nao deixa eu esquecer|nao esquece|nao esqueca|toca\\w* alarme)\\s+(?:de |do |da |que |sobre |para |pra |quando )?(.+)$')))&&m[1])return 'me lembre de '+m[1];
+ if((m=c.match(R('^(?:tenho|vou ter|vai ter|vou (?:ao|na|no|a)|preciso ir (?:ao|na|no|a)|tenho que ir (?:ao|na|no|a)|marquei|combinei|fechei)\\s+(.+)$')))&&new RegExp(DATA).test(n)&&!/\?\s*$/.test(c))return 'marcar '+c.replace(R('^(?:tenho|vou ter|vai ter|preciso ir|tenho que ir|marquei|combinei|fechei)\\s+','i'),'');
+ if(/^(?:reserv\w+|cadastr\w+|program\w+|inser\w+|combin\w+)\b/.test(n))return c.replace(R('^(?:reserv\\w+|cadastr\\w+|program\\w+|inser\\w+|combin\\w+)','i'),'marcar');
+ if(/^(?:bot\w+|po(?:e|i)\w*|coloc\w+|joga\w*|cri\w+|faz\w*|fazer|inclu\w+|adicion\w+|regist\w+|salv\w+)\b/.test(n)&&/\b(?:compromisso|lembrete|alarme|evento|agendamento|reuniao|consulta|na agenda|no calendario)\b/.test(n))return c.replace(R('^(?:bot\\w+|po(?:e|i)\\w*|coloc\\w+|joga\\w*|cri\\w+|faz\\w*|fazer|inclu\\w+|adicion\\w+|regist\\w+|salv\\w+)\\s+(?:um |uma |o |a )?','i'),'marcar ');
+ if(/^(?:bot\w+|po(?:e|i)\w*|coloc\w+|joga\w*|cri\w+|faz\w*)\s/.test(n)&&new RegExp(DATA).test(n)&&!/\b(?:lista|compras|nota|notas)\b/.test(n))return c.replace(R('^(?:bot\\w+|po(?:e|i)\\w*|coloc\\w+|joga\\w*|cri\\w+|faz\\w*)\\s+(?:um |uma |o |a )?','i'),'marcar ');
+ if(/daqui a|^em \d+ (?:min|hora)/.test(n)&&!ehPerg)return 'me lembre de '+c;
+ if(!ehPerg&&!/agend|marc|lembr|compromisso|reuniao|consulta|alarme|aniversario/.test(n)&&c.split(' ').length<=8&&!/^(?:por que|porque|quando|onde|quem|quanto)/.test(n)&&/(?:\d{1,2}\s*(?:h|:\d)|\bamanha\b|\bhoje\b|\bdia \d)/.test(n)&&/\d{1,2}\s*(?:h|:\d)|daqui a/.test(N(pre(c))))return 'marcar '+c;
+ return c}
+/* ---- 7. liga tudo ---- */
+const _run=kRun;
+kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
+ try{
+  if(K.pend&&K.pend.t==='titulo')return _run(txt);
+  const c=limpa(txt),n=N(c);
+  if(K.pend&&K.pend.t==='apagar'){const x=w2n(n.replace(/^(?:o|a|numero|n)\s+/,''));
+   if(x&&K.pend.L[x-1])return _run(String(x));
+   if(/^(?:todos|todas|tudo|os dois|as duas)\b/.test(n))return _run('todos');
+   if(/^(?:nenhum|nao|deixa|esquece|cancela|cancelar|melhor nao|desisti)\b/.test(n))return _run('cancelar');
+   return _run(c)}
+  if(K.tour>=0){if(/^(?:proxim\w*|seguinte|avanca\w*|continu\w*|sim|ok|vamos|bora|vai|next|pode ser|segue|conclu\w*|manda ver|beleza|show|pode)\b/.test(n))return _run('proximo');
+   if(/^(?:sair|para(?:r)?|chega|pular|pula|deixa|encerr\w*|cansei|nao quero)\b/.test(n))return _run('sair')}
+  if(social(txt,c,n))return;
+  if(dados(txt,c,n))return;
+  const k=canon(c,n),ant=K.msgs.length;
+  _run(k);
+  for(let i=ant;i<K.msgs.length;i++){if(K.msgs[i].who==='u'){K.msgs[i].txt=txt;break}}
+ }catch(e){try{console.warn('Kayla vocab:',e)}catch(x){}_run(txt)}};
+/* ---- 8. mais respostas de ajuda ---- */
+kFaq.push([/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Mercado) você acompanha as ofertas dos mercados. Posso abrir: digite “abrir promoções”.'],
+ [/diari|desabaf/,'No Diário você escreve como foi o dia e marca seu humor. Quer abrir? Digite “abrir diário”.'],
+ [/nota|anotac/,'Em Notas você guarda anotações com cores. Para salvar rápido, escreva: “anotar: sua ideia”.'],
+ [/calend|escala/,'No Calendário você vê o mês inteiro e registra seus plantões.'],
+ [/offline|sem internet|sem net|sem wifi/,'Meus comandos de agenda funcionam no próprio aparelho; só as respostas de conversa livre precisam de internet.'],
+ [/privacidade|meus dados|seguranca dos dados/,'Sua senha do app fica só no aparelho. Para proteger seus dados, ative a senha em Configurações › Segurança.']);
+})();
+/* ===== KAYLA · AJUSTA AS CONFIGURAÇÕES DO APP conforme o pedido ===== */
+(function(){
+const N=s=>kNorm(s).replace(/\bvc\b/g,'voce').replace(/\bpra\b/g,'para').replace(/\bmin\b/g,'minutos').replace(/\bq\b/g,'que').replace(/[^a-z0-9: ]/g,' ').replace(/\s+/g,' ').trim();
+const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['picapau',/pica ?pau/]];
+const TABN=[['inicio',/inicio|home/],['agenda',/agenda/],['cal',/calendario/],['notas',/notas?/],['diario',/diario/],['compras',/compras|lista/],['carteira',/carteira|gastos|financas/],['mercado',/promocoes|promocao|mercado|ofertas/]];
+const LG=[['en',/ingles|english/],['es',/espanhol|spanish|espanol/],['de',/alemao|german|deutsch/],['pt',/portugues/]];
+const near=(v,L)=>L.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
+const nomeTab=id=>(TABS_ALL.find(t=>t[0]===id)||[0,0,id])[2];
+const nomeCor=id=>(COR.find(c=>c[0]===id)||[0,id])[1];
+let UND=null;
+const fim=(txt,r,undo,ch)=>{kAdd('u',txt);UND=undo||null;kAdd('k',r,(undo?['Desfazer ajuste']:[]).concat(ch||[]).length?(undo?['Desfazer ajuste']:[]).concat(ch||[]):null);return true};
+const min2=(n)=>{if(/na hora|no horario/.test(n))return 0;const m=n.match(/(\d+|uma|um|duas|tres|meia|meio)\s*(minutos?|horas?|h)?/);if(!m)return null;let v={uma:1,um:1,duas:2,tres:3,meia:30,meio:30}[m[1]]||+m[1];const u=m[2]||'';if(/^h/.test(u)||(m[1]==='meia'&&/hora/.test(n)&&0))v*=60;if(m[1]==='meia'||m[1]==='meio')v=30;return v};
+function cfg(txt){const n=N(txt);let m;
+ if(/(?:senha|pin|bloqueio).*(?:troc|mud|cri|ativ|remov|tir|alter|defin|colo)|(?:troc|mud|cri|ativ|remov|tir|alter|defin|colo).*(?:senha|pin|bloqueio)/.test(n))return fim(txt,'Por segurança, a senha do app só pode ser criada ou alterada por você em Configurações › Segurança.',null,['Abrir configurações']);
+ if(/(?:apag|limp|delet|zer|reset)\w*.*(?:todos os dados|tudo do app|o app todo|meus dados)/.test(n))return fim(txt,'Não apago seus dados por aqui, por segurança. Se quiser mesmo, faça em Configurações. Dica: antes, salve um backup.',null,['Abrir configurações']);
+ if(/^abrir configuracoes$/.test(n)){go('config');kAdd('u',txt);kAdd('k','Pronto, abri as configurações.');return true}
+ if(/(?:como (?:esta|estao|ta)|quais (?:sao )?|qual (?:e )?|mostr\w+|ver|me diz\w*|resumo d\w+).*(?:configuracoes|ajustes|tema|cor do app|meu app)/.test(n)&&!/\b(?:mud|troc|deix|colo)/.test(n)){
+  const N0=S.notif||{},off=S.tabsOff||[];
+  return fim(txt,'⚙️ Suas configurações:\n• Modo: '+({auto:'automático',light:'claro',dark:'escuro'}[S.theme||'auto'])+'\n• Cor: '+nomeCor(S.color||'teal')+'\n• Menu: '+(S.flow?'giratório (Flow)':S.menu==='bottom'?'embaixo':'lateral')+'\n• Menus ativos: '+TABS_ALL.filter(t=>!off.includes(t[0])).map(t=>t[2]).join(', ')+'\n• Lembretes: '+(N0.on?'ligados, avisam '+(N0.lead?N0.lead+' min antes':'na hora'):'desligados')+(N0.plOn?'; plantões '+N0.plLead+' min antes':'')+'\n• Idioma: '+((LANGS.find(l=>l[0]===LANG)||[0,'Português'])[1])+'\n• Kayla: '+(kCfg().off?'desativada':'ativada'))}
+ if(/(?:resetar|restaurar|voltar|padrao).*(?:aparencia|cores|cor|tema|visual)|(?:aparencia|cores|visual).*(?:padrao|original)/.test(n)){const t0=S.theme||'auto',c0=S.color||'teal';S.color='teal';setTheme('auto');return fim(txt,'Aparência restaurada: modo automático e cor Turquesa.',()=>{S.color=c0;setTheme(t0)})}
+ /* cor */
+ if(/\b(?:cor|cores|tema|deix\w+|mud\w+|troc\w+|colo\w+|pint\w+|alter\w+|bot\w+|quero)\b/.test(n)&&!/\b(?:comprar|nota|anotar|agendar|marcar)\b/.test(n)){
+  const c=CORES.find(x=>x[1].test(n));
+  if(c&&!/\b(?:modo|tema)\s+(?:escuro|claro|noturno|dark)\b/.test(n)){const c0=S.color||'teal';setColor(c[0]);return fim(txt,'Pronto! Cor '+nomeCor(c[0])+' aplicada. 🎨',()=>setColor(c0))}}
+ /* menu */
+ if(/menu.*(?:giratorio|flow|carrossel)|(?:giratorio|flow|carrossel)/.test(n)&&/\b(?:ativ|lig|quero|usa|bota|colo|volta|desativ|deslig|tira|sem|para de|nao quero)/.test(n)){
+  const off=/desativ|deslig|tira|sem |para de|nao quero/.test(n);if(!!S.flow===!off)return fim(txt,'O menu giratório já está '+(off?'desativado.':'ativado.'));flTog();return fim(txt,'Menu giratório '+(off?'desativado.':'ativado. Gire o menu com o dedo.'),()=>flTog())}
+ if(/menu/.test(n)&&/(?:embaixo|em baixo|de baixo|inferior|barra de baixo|rodape)|(?:lateral|do lado|gaveta|hamburguer|3 tracos)/.test(n)&&(/\b(?:mud|troc|deix|colo|bot|quero|usa|volta|passa|ponha|poe)/.test(n)||n.split(' ').length<=3)){
+  const bx=/embaixo|em baixo|de baixo|inferior|rodape/.test(n),m0=S.menu;S.flow&&flTog();setMenu(bx?'bottom':'side');return fim(txt,'Menu '+(bx?'embaixo':'lateral')+' ativado.',()=>setMenu(m0))}
+ /* esconder / mostrar menus */
+ if((m=n.match(/\b(esconde\w*|ocult\w+|mostr\w+|exib\w+|tir\w+|remov\w+|desativ\w+|ativ\w+|adicion\w+|colo\w+|volt\w+)\b/))){
+  const ocultar=/^(?:esconde|ocult|tir|remov|desativ)/.test(m[1]),forte=/^(?:esconde|ocult)/.test(m[1]);
+  if((forte||/\b(?:menu|menus|aba|abas)\b/.test(n))&&!/lembret|aviso|kayla|alarme|notifica|menu giratorio|flow/.test(n)){
+   const t=TABN.filter(x=>x[1].test(n.replace(/\b(?:menu|menus|aba|abas|do|da|de|o|a)\b/g,' ')));
+   if(t.length&&!/\b(?:compromiss|lembrete)s?\b/.test(n)){const out=[];const antes=(S.tabsOff||[]).slice();
+    for(const [id] of t){const off=(S.tabsOff||[]).includes(id);if(ocultar&&!off){if(TABS_ALL.length-(S.tabsOff||[]).length<=1){out.push('Pelo menos um menu precisa ficar ativo.');break}togTab(id);out.push('Menu '+nomeTab(id)+' escondido')}else if(!ocultar&&off){togTab(id);out.push('Menu '+nomeTab(id)+' ativado')}else out.push('Menu '+nomeTab(id)+' já está '+(ocultar?'escondido':'ativo'))}
+    return fim(txt,out.join(' · ')+'.',()=>{S.tabsOff=antes;save();nav();render()})}}}
+ /* idioma */
+ if(/(?:idioma|lingua|language|traduz\w*|fal\w+|mud\w+|troc\w+|colo\w+|deix\w+|em )/.test(n)){const l=LG.find(x=>x[1].test(n));
+  if(l&&/(?:idioma|lingua|language|traduz|fal|app|tudo|mud|troc|deix|colo)/.test(n)&&!/\b(?:agendar|marcar|anotar|lembrar)\b/.test(n)){const l0=LANG;setLang(l[0]);return fim(txt,'Idioma alterado para '+LANGS.find(x=>x[0]===l[0])[1]+'.',()=>setLang(l0))}}
+ /* antecedência dos lembretes */
+ if(/(?:avis\w+|lembr\w+|alert\w+|notific\w+|tocar|toque|alarme)/.test(n)&&/(?:antes|na hora|no horario|nao lembrar)/.test(n)&&!/\b(?:marcar|agendar|dentista|reuniao|consulta)\b/.test(n)){
+  const N0=S.notif;
+  if(/plant/.test(n)){const v=/nao lembrar|desativ|deslig/.test(n)?0:min2(n);if(v==null)return false;const L=[0,30,60,120,180],p=near(v,L),a0=N0.plOn?N0.plLead:0;setNotif('plLead',p);return fim(txt,p?'Vou lembrar seus plantões '+(p>=60?(p/60)+'h':p+' min')+' antes.':'Lembretes de plantão desligados.',()=>setNotif('plLead',a0))}
+  const v=min2(n);if(v==null)return false;const L=[0,5,10,15,30,60],p=near(v,L),a0=N0.lead;setNotif('lead',p);
+  return fim(txt,(p===v?'Combinado! ':'As opções do app são 5, 10, 15, 30 e 60 min, então usei '+(p?p+' min':'na hora')+'. ')+'Vou avisar '+(p?(p===60?'1 hora':p+' min')+' antes':'na hora')+'.'+(N0.on?'':'\nMas os lembretes estão desligados: quer ativar?'),()=>setNotif('lead',a0),N0.on?null:['Ativar lembretes'])}
+ /* nome */
+ if((m=txt.match(/(?:me cham\w+ de|pode me chamar de|meu nome (?:e|é|agora e|agora é|passa a ser)|troc\w+ meu nome (?:para|pra)|mud\w+ meu nome (?:para|pra))\s+([^\n.!?,]{1,30})/i))){
+  const nm=m[1].trim().replace(/^(?:de |para |pra )/i,'');if(nm){const n0=S.user.name;S.user.name=nm.replace(/(^|\s)(\S)/g,(a,b,c)=>b+c.toUpperCase());save();render();return fim(txt,'Prazer, '+S.user.name+'! Vou te chamar assim.',()=>{S.user.name=n0;save();render()})}}
+ return false}
+const _r2=kRun;
+kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
+ try{if(!(K.pend)&&K.tour<0){
+   if(/^desfazer ajuste$/.test(kNorm(txt))){kAdd('u',txt);if(UND){const f=UND;UND=null;f();kAdd('k','Ajuste desfeito.')}else kAdd('k','Não tenho ajuste para desfazer.');return}
+   if(cfg(txt))return}}catch(e){try{console.warn('Kayla cfg:',e)}catch(x){}}
+ _r2(txt)};
+})();
+/* ===== KAYLA · BOLINHA FLUTUANTE MÓVEL (arraste para qualquer lugar; a posição fica salva) ===== */
+(function(){
+const W=66,M=8,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+function place(f){const p=kCfg().pos;
+ if(!p||typeof p.x!=='number'){f.style.left='';f.style.top='';f.style.right='';f.style.bottom='';return}
+ f.style.left=(M+cl(p.x,0,1)*Math.max(1,innerWidth-W-2*M))+'px';f.style.top=(M+cl(p.y,0,1)*Math.max(1,innerHeight-W-2*M))+'px';f.style.right='auto';f.style.bottom='auto'}
+function kDrag(){const f=document.getElementById('kay-f');if(!f||f._dr)return;f._dr=1;
+ let sx=0,sy=0,ox=0,oy=0,mv=false,id=null;
+ f.onclick=function(e){if(f._mv){f._mv=false;e.preventDefault();return}kOpen()};
+ f.addEventListener('pointerdown',e=>{id=e.pointerId;mv=false;f.classList.add('drg');const r=f.getBoundingClientRect();sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;f._l=ox;f._t=oy;try{f.setPointerCapture(id)}catch(x){}});
+ f.addEventListener('pointermove',e=>{if(id!==e.pointerId)return;const dx=e.clientX-sx,dy=e.clientY-sy;if(!mv&&Math.hypot(dx,dy)<8)return;mv=true;
+  const l=cl(ox+dx,M,Math.max(M,innerWidth-W-M)),t=cl(oy+dy,M,Math.max(M,innerHeight-W-M));
+  f.style.left=l+'px';f.style.top=t+'px';f.style.right='auto';f.style.bottom='auto';f._l=l;f._t=t;e.preventDefault()});
+ const fim=e=>{if(id!==e.pointerId)return;id=null;f.classList.remove('drg');
+  if(mv){f._mv=true;setTimeout(()=>{f._mv=false},350);kCfg().pos={x:cl((f._l-M)/Math.max(1,innerWidth-W-2*M),0,1),y:cl((f._t-M)/Math.max(1,innerHeight-W-2*M),0,1)};save()}mv=false};
+ f.addEventListener('pointerup',fim);f.addEventListener('pointercancel',fim);
+ place(f)}
+const _ks=kSync;kSync=function(){_ks.apply(this,arguments);try{kDrag()}catch(e){}};
+window.addEventListener('resize',()=>{const f=document.getElementById('kay-f');if(f&&kCfg().pos)place(f)});
+const _r3=kRun;
+kRun=function(txt){const n=kNorm(String(txt||''));
+ if(!K.pend&&K.tour<0&&/(?:volt|colo|bot|poe|devolv|reset|restaur)\w*.*(?:kayla|bolinha|circulo|icone).*(?:lugar|canto|posicao|original|padrao)|(?:posicao|lugar).*(?:kayla|bolinha|circulo).*(?:padrao|original|reset)/.test(n)){
+  kAdd('u',String(txt).trim());delete kCfg().pos;save();const f=document.getElementById('kay-f');if(f)place(f);kAdd('k','Voltei para o cantinho de sempre.');return}
+ _r3(txt)};
+})();
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{kSync()}catch(e){}}})();
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
