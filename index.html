@@ -302,6 +302,27 @@ html[data-color="picapau"] #v{position:relative}
 .nw-ch button{flex:none;background:var(--sf);color:var(--mute);border:1px solid var(--ln);border-radius:999px;padding:8px 13px;font-size:13px;font-weight:600}
 .nw-ch button.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}
 
+
+/* ---- Menu Flow giratório (opcional, em Configurações › Menu) ---- */
+#flow{display:none}
+@media(orientation:portrait),(min-height:541px){
+ body.flow nav,body.flow .nvhint{display:none!important}
+ body.flow #flow{display:block;position:fixed;left:0;right:0;bottom:0;height:calc(118px + env(safe-area-inset-bottom,0px));z-index:30;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--bg) 90%,transparent) 45%)}
+ body.flow{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+ body.flow .upd{bottom:calc(128px + env(safe-area-inset-bottom,0px))}
+ body.flow #updpill{bottom:calc(128px + env(safe-area-inset-bottom,0px))}
+ body.flow #vozfab{bottom:calc(142px + env(safe-area-inset-bottom,0px))}
+ body.flow #voz{bottom:calc(220px + env(safe-area-inset-bottom,0px))}
+}
+#flow::before{content:"";position:absolute;left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom,0px));height:84px;border-radius:32px;background:color-mix(in srgb,var(--sf) 90%,transparent);border:1px solid var(--ln);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 12px 30px -14px rgba(0,0,0,.4)}
+#flow .fl-st{position:absolute;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom,0px));height:84px;overflow:hidden;border-radius:32px;margin:0 12px}
+#flow .fl-i{position:absolute;left:50%;top:50%;width:78px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;padding:0;margin:0;color:var(--mute);will-change:transform,opacity;cursor:pointer}
+#flow .fl-ic{display:grid;place-items:center;width:54px;height:46px;border-radius:18px;background:var(--sf);border:1px solid var(--ln)}
+#flow .fl-ic svg{width:24px;height:24px}
+#flow .fl-i.c .fl-ic{background:var(--ac);color:var(--onac);border-color:transparent;box-shadow:0 8px 18px -6px var(--ac)}
+#flow .fl-l{font-size:11.5px;font-weight:800;white-space:nowrap;color:var(--ac);line-height:1}
+#flow .fl-i:focus-visible .fl-ic{outline:2px solid var(--ac);outline-offset:2px}
+
 /* ---- v1.7: temas de cor, senha e permissões ---- */
 :root[data-color="azul"][data-eff="light"]{--bg:#f1f4fa;--sf:#fff;--ac:#2563eb;--acs:#dde8fd;--ln:#d9e0ee;--onac:#fff}
 :root[data-color="azul"][data-eff="dark"]{--bg:#0e1624;--sf:#16233a;--ac:#6ea0ff;--acs:#1c3257;--ln:#253756;--onac:#06122a}
@@ -1601,6 +1622,7 @@ function vConfig(){
  +cfgNovidades()
  +cfgInicio()
  +cfgNoticias()
+ +cfgFlow()
  +cfgIdioma()
  +cfgMenu()
  +cfgAparencia()
@@ -1730,6 +1752,7 @@ async function conectar(m){
   if(era)setTimeout(permIntro,500);else info('Conta conectada: '+ctRot(S.user.conta));
   setTimeout(guiaNovosQuandoLivre,700);
   setTimeout(recadoConfigQuandoLivre,900);
+  setTimeout(avisoFlowQuandoLivre,1300);
  }catch(e){if(cancelado(e))return;info(erroAuth(e))}}
 async function contaSair(quiet){
  const A=FA();try{if(nat()&&A&&ct())await Promise.race([nuvSync(),new Promise(r=>setTimeout(r,8000))])}catch(e){}
@@ -2841,6 +2864,10 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.0.4':[
+  '🎡 Novo menu Flow giratório: um carrossel 3D no lugar do menu de baixo. Arraste para os lados para girar e a tela muda sozinha; toque num ícone para ir até ele.',
+  '⚙️ Para ligar ou desligar: Configurações › Menu. Vem desligado, e o menu comum continua disponível.'
+ ],
  '3.0.3':[
   '📰 Novo letreiro de notícias: manchetes passando no topo de todas as telas, de CNN Brasil, G1, Jornal do Commercio, Diário de Pernambuco e Jovem Pan.',
   '⚙️ Em Configurações › Notícias você liga ou desliga o letreiro e escolhe a fonte. Com “Todas”, o app mostra manchetes sortidas de todos os veículos.'
@@ -2929,6 +2956,7 @@ const RECADO_CFG=[
  ['🔄','Aplicativo','Verificar se há atualização e ver a versão instalada.'],
  ['🆕','Novidades','Veja o que mudou nas 7 últimas atualizações do app.'],
  ['📰','Notícias','Ligar ou desligar o letreiro de notícias e escolher a fonte (CNN, G1, JC, Diário de Pernambuco, Jovem Pan ou todas).'],
+ ['🎡','Menu','Trocar o menu de baixo pelo menu Flow giratório, em carrossel 3D.'],
  ['📖','Tela inicial','Ativar ou desativar o versículo bíblico do dia.'],
  ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
  ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
@@ -3176,6 +3204,108 @@ function cfgNoticias(){
 document.addEventListener('visibilitychange',()=>{try{if(!document.hidden&&nwCfg().on&&Date.now()-NW.t>=NW_TTL)nwLoad(false)}catch(e){}});
 setInterval(()=>{try{if(nwCfg().on&&!document.hidden&&Date.now()-NW.t>=NW_TTL)nwLoad(false)}catch(e){}},5*60*1000);
 
+
+/* ---------- Menu Flow giratório: carrossel 3D no lugar do menu de baixo (Configurações › Menu) ---------- */
+const FL={rot:0,tgt:0,raf:0,drag:null,lang:'',N:TABS.length,PX:2.4};
+const flStep=()=>360/FL.N;
+const flIdx=()=>{const i=Math.round(FL.tgt/flStep());return ((i%FL.N)+FL.N)%FL.N};
+function flBuild(){
+ let el=document.getElementById('flow');
+ if(!el){el=document.createElement('div');el.id='flow';el.setAttribute('role','tablist');el.setAttribute('aria-label','Menu');document.body.appendChild(el);flBind(el);window.addEventListener('resize',flLayout)}
+ el.innerHTML='<div class="fl-st">'+TABS.map((t,i)=>`<button class="fl-i" type="button" data-i="${i}" role="tab" aria-label="${esc(_t(t[2]))}"><span class="fl-ic">${svg(t[0])}</span><span class="fl-l">${esc(_t(t[2]))}</span></button>`).join('')+'</div>';
+ FL.lang=(typeof LANG!=='undefined'?LANG:'')}
+function flLayout(){
+ const el=document.getElementById('flow');if(!el)return;
+ const st=el.querySelector('.fl-st');if(!st)return;
+ const R=Math.min(150,(st.clientWidth||window.innerWidth)*.34),step=flStep();
+ const ci=Math.round(FL.rot/step);
+ el.querySelectorAll('.fl-i').forEach(b=>{
+  const i=+b.dataset.i;let th=((i*step-FL.rot)%360+540)%360-180;
+  const rad=th*Math.PI/180,z=(Math.cos(rad)+1)/2;
+  const x=R*Math.sin(rad)*1.18,sc=.5+.5*Math.pow(z,2.2),op=.2+.8*Math.pow(z,1.6),y=-8*Math.cos(rad);
+  b.style.transform=`translate(-50%,-50%) translate(${x.toFixed(1)}px,${y.toFixed(1)}px) perspective(520px) rotateY(${(th*.6).toFixed(1)}deg) scale(${sc.toFixed(3)})`;
+  b.style.opacity=op.toFixed(2);b.style.zIndex=Math.round(z*100);
+  b.style.pointerEvents=z<.25?'none':'auto';
+  const l=b.querySelector('.fl-l');if(l)l.style.opacity=Math.max(0,1-Math.abs(th)/38).toFixed(2);
+  const c=Math.abs(th)<step/2;b.classList.toggle('c',c);b.setAttribute('aria-selected',c?'true':'false')})}
+function flAnim(){
+ cancelAnimationFrame(FL.raf);
+ const red=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+ const f=()=>{
+  const d=FL.tgt-FL.rot;
+  if(red||Math.abs(d)<.12){FL.rot=FL.tgt;flLayout();flCommit();return}
+  FL.rot+=d*.2;flLayout();FL.raf=requestAnimationFrame(f)};
+ FL.raf=requestAnimationFrame(f)}
+function flCommit(){const t=TABS[flIdx()][0];if(t!==tab)go(t)}
+function flTo(i){
+ const step=flStep(),d=((i*step-FL.rot)%360+540)%360-180;
+ FL.tgt=Math.round((FL.rot+d)/step)*step;flAnim()}
+function flSync(jump){
+ const el=document.getElementById('flow');if(!el)return;
+ const i=Math.max(0,TABS.findIndex(t=>t[0]===tab)),step=flStep();
+ if(FL.drag)return;
+ const d=((i*step-FL.rot)%360+540)%360-180;
+ if(Math.abs(d)<.5&&Math.abs(FL.tgt-FL.rot)<.5){flLayout();return}
+ if(flIdx()===i&&FL.raf&&Math.abs(FL.tgt-FL.rot)>.5)return; /* já girando para este ícone */
+ FL.tgt=FL.rot+d;
+ if(jump){FL.rot=FL.tgt;flLayout()}else flAnim()}
+function flBind(el){
+ el.addEventListener('pointerdown',e=>{if(e.button&&e.button!==0)return;cancelAnimationFrame(FL.raf);FL.drag={x:e.clientX,r:FL.rot,mv:false,lx:e.clientX,lt:performance.now(),v:0,id:e.pointerId};try{el.setPointerCapture(e.pointerId)}catch(_){}});
+ el.addEventListener('pointermove',e=>{const d=FL.drag;if(!d||e.pointerId!==d.id)return;
+  const dx=e.clientX-d.x;if(Math.abs(dx)>6)d.mv=true;
+  if(d.mv){FL.rot=d.r-dx/FL.PX;const now=performance.now(),dt=now-d.lt;if(dt>0){d.v=(d.lx-e.clientX)/FL.PX/dt;d.lx=e.clientX;d.lt=now}flLayout()}});
+ const fim=e=>{const d=FL.drag;if(!d||e.pointerId!==d.id)return;FL.drag=null;
+  if(!d.mv){const b=document.elementFromPoint(e.clientX,e.clientY),it=b&&b.closest&&b.closest('.fl-i');if(it)flTo(+it.dataset.i);else{FL.tgt=Math.round(FL.rot/flStep())*flStep();flAnim()}return}
+  const step=flStep();FL.tgt=Math.round((FL.rot+d.v*140)/step)*step;flAnim()};
+ el.addEventListener('pointerup',fim);el.addEventListener('pointercancel',fim);
+ el.addEventListener('click',e=>{if(e.detail===0){const it=e.target.closest&&e.target.closest('.fl-i');if(it)flTo(+it.dataset.i)}}) /* teclado */ }
+function flApply(){
+ const on=!!S.flow&&!!(S.user&&S.user.name);
+ document.body.classList.toggle('flow',on);
+ if(!on)return;
+ if(!document.getElementById('flow')||FL.lang!==(typeof LANG!=='undefined'?LANG:'')){flBuild();flSync(true)}else flSync(false)}
+function flTog(){S.flow=!S.flow;save();flApply();render()}
+function cfgFlow(){
+ const on=!!S.flow;
+ return `<h3>🎡 Menu</h3><div class="card"><div class="prm"><span class="ic">🎡</span><span class="t"><b>Menu Flow giratório</b><small>${on?'Gire o menu com o dedo para trocar de tela.':'Usando o menu comum, na parte de baixo.'}</small></span><button class="${on?'':'sec'}" onclick="flTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div>`
+ +(on?`<p class="hint">Arraste para os lados para girar. Toque num ícone para ir até ele. Com o celular deitado, o app usa o menu lateral comum.</p>`:`<p class="hint">Troca o menu de baixo por um carrossel 3D que gira. Dá para voltar ao menu comum quando quiser.</p>`)
+ +`</div>`}
+(function(){const _n=nav;nav=function(){_n.apply(this,arguments);try{flApply()}catch(e){}}})();
+
+
+/* ---------- aviso único: novo menu Flow giratório (aparece uma só vez para cada usuário) ----------
+   Marca no aparelho (localStorage) e na conta (S.avisoFlow, que acompanha o backup/nuvem). */
+const AVISO_FLOW_KEY='ma-aviso-flow-v1';
+function avisoFlowVisto(){try{return !!(localStorage.getItem(AVISO_FLOW_KEY)||(S&&S.avisoFlow))}catch(e){return true}}
+function avisoFlowMarca(){try{localStorage.setItem(AVISO_FLOW_KEY,'1')}catch(e){}S.avisoFlow=1;try{save()}catch(e){}}
+function avisoFlow(){
+ if(!S.user||!S.user.name||document.querySelector('.af-ov'))return;
+ if(avisoFlowVisto())return;
+ if(S.flow){avisoFlowMarca();return} /* já está usando: não precisa avisar */
+ avisoFlowMarca();
+ const o=document.createElement('div');o.className='ov af-ov';
+ const ic=['📋','📅','🏠','📝','📖'],tam=[40,50,62,50,40],op=[.5,.8,1,.8,.5];
+ const demo='<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 0 6px;perspective:300px">'+ic.map((e,i)=>`<span style="display:grid;place-items:center;width:${tam[i]}px;height:${tam[i]-6}px;border-radius:16px;font-size:${Math.round(tam[i]*.45)}px;opacity:${op[i]};background:${i===2?'var(--ac)':'var(--sf)'};border:1px solid var(--ln);box-shadow:${i===2?'0 8px 18px -6px var(--ac)':'none'};transform:rotateY(${(i-2)*-22}deg)">${e}</span>`).join('')+'</div>';
+ o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Novo menu Flow giratório"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
+  +'<div class="rc-h"><p>🎡 Novo: menu Flow giratório!</p><small>Uma forma nova de navegar: um carrossel 3D que gira com o dedo. É opcional. Este aviso aparece só uma vez.</small></div>'
+  +'<div class="rc-b">'+demo
+  +'<div class="prm"><span class="ic">👆</span><span class="t"><b>Como usar</b><small>Arraste o menu para os lados para girar: a tela muda quando ele para. Ou toque direto num ícone.</small></span></div>'
+  +'<div class="prm"><span class="ic">⚙️</span><span class="t"><b>Como ativar</b><small>Toque na engrenagem no topo para abrir Configurações, ache a seção “🎡 Menu” e toque em Ativar. Para voltar ao menu comum, é só desativar no mesmo lugar.</small></span></div>'
+  +'</div>'
+  +'<div class="rc-f" style="display:flex;gap:8px"><button type="button" class="sec" id="af-no">Agora não</button><button type="button" id="af-ok">Ativar agora</button></div></div>';
+ document.body.appendChild(o);
+ const fim=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
+ const kd=e=>{if(e.key==='Escape')fim()};
+ document.addEventListener('keydown',kd,true);
+ o.querySelector('.dev-x').onclick=fim;o.querySelector('#af-no').onclick=fim;
+ o.querySelector('#af-ok').onclick=()=>{fim();if(!S.flow)flTog();info('Menu Flow ativado! Gire o menu de baixo com o dedo. Para desativar: Configurações › Menu.')};
+ setTimeout(()=>{try{o.querySelector('#af-ok').focus()}catch(e){}},50)}
+function avisoFlowQuandoLivre(n){n=n||0;
+ if(!S.user||!S.user.name)return;
+ if(avisoFlowVisto())return;
+ if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<240)setTimeout(()=>avisoFlowQuandoLivre(n+1),1000);return}
+ avisoFlow()}
+
 /* ---------- aviso para quem tem o APK antigo ---------- */
 const APK_DRIVE='https://drive.google.com/drive/folders/1VDCmsmyrA_pOihFJmKkljfbnGq8yx210';
 function apkAntigoAviso(){
@@ -3212,7 +3342,7 @@ function updPill(){
  if(!txt||(UPD_HIDE&&!fixo)||!(S.user&&S.user.name)){if(el)el.remove();return}
  if(!el){el=document.createElement('div');el.id='updpill';document.body.appendChild(el)}
  el.innerHTML='<span id="upd-t">'+txt+'</span>'+(fn&&!busy?'<button class="u-a" onclick="'+fn+'">'+act+'</button>':'')+(busy?'':'<button class="u-x" aria-label="Fechar" onclick="updFechar()">✕</button>')}
-guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
+guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>
