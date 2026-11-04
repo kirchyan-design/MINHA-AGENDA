@@ -3426,6 +3426,109 @@ const KTOUR=[['inicio','Este é o Início: o resumo do seu dia e atalhos para cr
 let K={open:false,tour:-1,pend:null,msgs:[]};
 const kEsc=s=>esc(String(s)).replace(/\n/g,'<br>');
 function kCfg(){if(!S.kayla||typeof S.kayla!=='object')S.kayla={};return S.kayla}
+/* ---------- IA da Kayla: Firebase AI Logic (Gemini, plano gratuito) ----------
+   O SDK só é baixado na primeira pergunta de IA; se algo falhar, a Kayla continua funcionando com os comandos. */
+const K_FB={apiKey:"AIzaSyBTQTbt9TdSEt9yL-FzLyZxPVsqKQVkM10",authDomain:"jc-organiza.firebaseapp.com",projectId:"jc-organiza",storageBucket:"jc-organiza.firebasestorage.app",messagingSenderId:"172594112404",appId:"1:172594112404:web:50349e571e1f3f99bc1181"};
+const K_FB_FONTES=[ /* [app, ai, app-check]: tenta na ordem até uma carregar */
+ ['https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js','https://www.gstatic.com/firebasejs/13.1.0/firebase-ai.js','https://www.gstatic.com/firebasejs/13.1.0/firebase-app-check.js'],
+ ['https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js','https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js','https://www.gstatic.com/firebasejs/12.8.0/firebase-app-check.js'],
+ ['https://cdn.jsdelivr.net/npm/firebase@12.8.0/app/+esm','https://cdn.jsdelivr.net/npm/firebase@12.8.0/ai/+esm','https://cdn.jsdelivr.net/npm/firebase@12.8.0/app-check/+esm']];
+try{window.addEventListener('securitypolicyviolation',function(e){K_AI.csp=(e.violatedDirective||'')+' '+(e.blockedURI||'')})}catch(x){}
+const K_APPCHECK_KEY='';            /* chave de SITE do reCAPTCHA v3 (passo do App Check). Vazio = sem App Check */
+const K_MODELOS=['gemini-3.6-flash','gemini-3.5-flash','gemini-2.5-flash']; /* tenta na ordem; guarda o primeiro que funcionar */
+const K_AI={ai:null,mod:null,modelo:null};
+const K_PERSONA='Você é a Kayla, assistente virtual do app JC ORGANIZA (agenda, lembretes, notas, diário, lista de compras e carteira). '
+ +'Responda sempre em português do Brasil, de forma simpática, direta e curta (no máximo 4 frases). '
+ +'Você só conversa e orienta: quem executa ações no app são os comandos do app. Se o usuário quiser agendar, anotar ou comprar algo, ensine a frase certa, por exemplo: '
+ +'"marcar dentista amanhã às 14h", "me lembre de ligar pro João às 18h", "anotar: ideia do projeto", "comprar arroz, feijão e café". '
+ +'Nunca diga que já criou, apagou ou alterou algo: você não faz isso nesta conversa. '
+ +'Se não souber ou se o assunto fugir do app, seja honesta e ofereça ajuda com a agenda. Não invente compromissos: use só os da lista abaixo.';
+async function kIaInit(){
+ if(K_AI.ai)return K_AI.ai;
+ let ultimo=null;
+ for(const f of K_FB_FONTES){
+  try{
+   const [A,AI]=await Promise.all([import(f[0]),import(f[1])]);
+   const app=(A.getApps().find(x=>x.name==='kayla'))||A.initializeApp(K_FB,'kayla');
+   if(K_APPCHECK_KEY){const AC=await import(f[2]);AC.initializeAppCheck(app,{provider:new AC.ReCaptchaV3Provider(K_APPCHECK_KEY),isTokenAutoRefreshEnabled:true})}
+   K_AI.mod=AI;K_AI.ai=AI.getAI(app,{backend:new AI.GoogleAIBackend()});K_AI.fonte=f[0];return K_AI.ai
+  }catch(e){ultimo=e}}
+ throw ultimo||new Error('sem SDK')}
+async function kIaPerguntar0(txt,ev,hist){
+ if(typeof navigator!=='undefined'&&navigator.onLine===false)throw new Error('offline');
+ const ai=await kIaInit();
+ const eventos=ev.map(e=>'• '+e.d+' '+(e.h||'')+' '+e.t).join('\n')||'(nenhum)';
+ const system=K_PERSONA+'\n\nHoje é '+kHoje()+'.\nPróximos compromissos do usuário:\n'+eventos;
+ const contents=[];
+ hist.forEach(h=>{const role=h.r==='user'?'user':'model';if(!h.t)return;
+  if(contents.length&&contents[contents.length-1].role===role)contents[contents.length-1].parts[0].text+='\n'+h.t;else contents.push({role:role,parts:[{text:h.t}]})});
+ while(contents.length&&contents[0].role!=='user')contents.shift();
+ if(contents.length&&contents[contents.length-1].role==='user')contents[contents.length-1].parts[0].text+='\n'+txt;else contents.push({role:'user',parts:[{text:txt}]});
+ const lista=K_AI.modelo?[K_AI.modelo]:K_MODELOS;let ultimo=null;
+ for(const nome of lista){
+  try{const m=K_AI.mod.getGenerativeModel(ai,{model:nome,systemInstruction:system,generationConfig:{maxOutputTokens:1024}});
+   const r=await m.generateContent({contents:contents});const t=(r.response.text()||'').trim();K_AI.modelo=nome;return t||'Não consegui responder agora.'}
+  catch(e){ultimo=e;const msg=String((e&&(e.code||''))+' '+(e&&e.message||e));
+   if(/not.?found|404|not supported|no longer|deprecat/i.test(msg)){K_AI.modelo=null;continue}throw e}}
+ throw ultimo||new Error('sem modelo')}
+/* Algumas extensões do navegador (ou telas de pré-visualização) interceptam o fetch e quebram quando o SDK envia um objeto Headers/AbortSignal
+   ("DataCloneError ... Headers object could not be cloned"). Durante a chamada da IA, convertemos os cabeçalhos para um objeto simples. */
+async function kSemHeaders(fn){
+ const orig=window.fetch;
+ window.fetch=function(u,o){
+  try{if(o&&typeof Headers!=='undefined'&&o.headers instanceof Headers){const h={};o.headers.forEach(function(v,k){h[k]=v});const n={};for(const k in o){if(k!=='signal')n[k]=o[k]}n.headers=h;o=n}}catch(e){}
+  return orig.call(this,u,o)};
+ try{return await fn()}finally{window.fetch=orig}}
+const kIaPerguntar=(a,b,c)=>kSemHeaders(()=>kIaPerguntar0(a,b,c));
+function kIaMonta(txt,ev,hist){
+ const eventos=ev.map(e=>'• '+e.d+' '+(e.h||'')+' '+e.t).join('\n')||'(nenhum)';
+ const system=K_PERSONA+'\n\nHoje é '+kHoje()+'.\nPróximos compromissos do usuário:\n'+eventos;
+ const contents=[];
+ hist.forEach(h=>{const role=h.r==='user'?'user':'model';if(!h.t)return;
+  if(contents.length&&contents[contents.length-1].role===role)contents[contents.length-1].parts[0].text+='\n'+h.t;else contents.push({role:role,parts:[{text:h.t}]})});
+ while(contents.length&&contents[0].role!=='user')contents.shift();
+ if(contents.length&&contents[contents.length-1].role==='user')contents[contents.length-1].parts[0].text+='\n'+txt;else contents.push({role:'user',parts:[{text:txt}]});
+ return {system:system,contents:contents}}
+function kXhr(url,body){return new Promise((ok,er)=>{const x=new XMLHttpRequest();x.open('POST',url);x.setRequestHeader('Content-Type','application/json');x.setRequestHeader('x-goog-api-key',K_FB.apiKey);x.timeout=25000;
+ x.onload=()=>ok({s:x.status,t:x.responseText});x.onerror=()=>er(new Error('XHR bloqueado'));x.ontimeout=()=>er(new Error('XHR demorou demais'));x.send(JSON.stringify(body))})}
+/* Caminho alternativo: chama o Gemini (via Firebase AI Logic) direto por REST, sem baixar o SDK. Não envia App Check. */
+async function kIaRest(txt,ev,hist){
+ const m=kIaMonta(txt,ev,hist);const lista=K_AI.modelo?[K_AI.modelo]:K_MODELOS;let ult='';
+ for(const nome of lista){
+  const r=await kXhr('https://firebasevertexai.googleapis.com/v1beta/projects/'+K_FB.projectId+'/models/'+nome+':generateContent',
+   {contents:m.contents,systemInstruction:{parts:[{text:m.system}]},generationConfig:{maxOutputTokens:1024}});
+  let j=null;try{j=JSON.parse(r.t)}catch(e){}
+  if(r.s===200&&j){const c=j.candidates&&j.candidates[0],t=c&&c.content&&c.content.parts?c.content.parts.map(p=>p.text||'').join('').trim():'';K_AI.modelo=nome;return t||'Não consegui responder agora.'}
+  const msg=(j&&j.error&&(j.error.message||j.error.status))||String(r.t).slice(0,160);
+  ult='HTTP '+r.s+' '+String(msg).replace(/\s+/g,' ').slice(0,170);
+  if(r.s===404){K_AI.modelo=null;continue}
+  throw new Error(ult)}
+ throw new Error(ult||'nenhum modelo respondeu')}
+async function kIaTudo(txt,ev,hist){
+ try{return await kIaPerguntar(txt,ev,hist)}
+ catch(e1){
+  const m1=String((e1&&(e1.code||''))+' '+((e1&&e1.message)||e1)).toLowerCase();
+  if(!/failed to fetch|import|network|load failed|datacl|ai\/error/.test(m1))throw e1;
+  try{return await kIaRest(txt,ev,hist)}
+  catch(e2){const er=new Error('SDK: '+String((e1&&e1.message)||e1).replace(/https?:\/\/\S+/g,'').slice(0,60)+' | REST: '+String((e2&&e2.message)||e2));throw er}}}
+async function kIaDiag(e){
+ const txt=kIaErro(e);
+ if(!/\(rede/.test(txt))return txt;
+ let f='?';
+ try{const c=new AbortController(),to=setTimeout(()=>c.abort(),6000);const r=await fetch('https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js',{mode:'cors',signal:c.signal,cache:'no-store'});clearTimeout(to);f='HTTP '+r.status}catch(x){f='sem acesso'}
+ const amb=(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())?'APK':(location.protocol==='file:'?'arquivo local':'navegador');
+ return txt+'\n[diag: '+amb+' · '+location.protocol+'//'+location.host+' · online='+navigator.onLine+' · gstatic='+f+(K_AI.csp?' · csp='+K_AI.csp:'')+']'}
+function kIaErro(e){
+ try{console.warn('Kayla IA:',e)}catch(x){}
+ const msg=String((e&&(e.code||''))+' '+(e&&e.message||e)).toLowerCase();
+ let cod='erro';
+ if(msg.includes('offline'))cod='sem internet';
+ else if(msg.includes('app-check')||msg.includes('appcheck')||msg.includes('app check'))cod='app-check';
+ else if(msg.includes('429')||msg.includes('quota')||msg.includes('rate')||msg.includes('exhausted'))cod='limite grátis atingido';
+ else if(msg.includes('403')||msg.includes('permission')||msg.includes('api key')||msg.includes('not enabled')||msg.includes('disabled'))cod='permissão';
+ else if(msg.includes('failed to fetch')||msg.includes('importing')||msg.includes('network')||msg.includes('load failed'))cod='rede';
+ const det=cod==='sem internet'?'':' — '+String((e&&e.message)||e).replace(/https?:\/\/\S+/g,'').slice(0,260);
+ return 'Não consegui pensar agora ('+cod+det+'). Mas entendo comandos como:\n• “marcar dentista amanhã às 14h”\n• “anotar: comprar presente”\n• “comprar leite e pão”\n• “o que tenho hoje?”'}
 function kAdd(who,txt,chips){K.msgs.push({who:who,txt:txt,chips:chips||null});kDraw()}
 function kDraw(){const b=$('#kay-msgs');if(!b)return;
  let li=-1;K.msgs.forEach((m,i)=>{if(m.who==='k')li=i});const m=li>=0?K.msgs[li]:null;
@@ -3497,7 +3600,9 @@ function kRun(txt){txt=String(txt||'').trim();if(!txt)return;kAdd('u',txt);const
  const f=kFaq.find(x=>x[0].test(n));if(f){kAdd('k',f[1],/lembret/.test(n)?['Ativar lembretes']:null);return}
  const url=kCfg().url;if(url){kAdd('k','Pensando…');const ev=S.ev.filter(e=>!e.done&&e.date>=kHoje()).slice(0,15).map(e=>({t:e.title,d:e.date,h:e.time}));
   fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:txt,today:kHoje(),events:ev})}).then(r=>r.json()).then(d=>{K.msgs.pop();kAdd('k',d.reply||'Não consegui responder agora.')}).catch(()=>{K.msgs.pop();kAdd('k','Sem conexão com o meu servidor agora.')});return}
- kAdd('k','Ainda não entendi esse pedido. Tente por exemplo:\n• “marcar dentista amanhã às 14h”\n• “anotar: comprar presente”\n• “comprar leite e pão”\n• “o que tenho hoje?”',['O que você faz?','Fazer o tour'])
+ kAdd('k','Pensando…');{const ev=S.ev.filter(e=>!e.done&&e.date>=kHoje()).slice(0,15).map(e=>({t:e.title,d:e.date,h:e.time}));
+  const hist=K.msgs.filter(x=>x.txt&&x.txt!=='Pensando…').slice(-7,-1).map(x=>({r:x.who==='u'?'user':'k',t:String(x.txt).slice(0,400)}));
+  kIaTudo(txt,ev,hist).then(r=>({ok:1,t:r}),e=>kIaDiag(e).then(t=>({ok:0,t:t}))).then(o=>{K.msgs.pop();kAdd('k',o.t,o.ok?null:['O que você faz?','Fazer o tour'])});return}
  }catch(e){kAdd('k','Ops, tive um problema ao fazer isso. Tente de outro jeito.')}}
 function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!=='undefined'&&PIN_LK);
  let f=$('#kay-f');
