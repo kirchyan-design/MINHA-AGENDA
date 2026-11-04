@@ -3849,14 +3849,39 @@ function pre(t){const now=new Date();
   for(const [p,h] of P){const r=R(p,'i');if(r.test(t)){t=t.replace(r,'às '+h+'h');break}}}
  return t}
 const VERB=/^\s*(?:(?:me\s+)?(?:agend\w*|marc\w*|lembr\w*|anot\w*|cri\w+|colo\w+|adicion\w+|bot\w+)\s+)+(?:(?:um|uma|o|a|de|do|da|para|pra)\s+)?(?:(?:compromisso|lembrete|alarme)\s+)?(?:(?:de|do|da|para|pra)\s+)?/i;
-const _kp=kParse;kParse=function(t,now){const r=_kp(pre(t),now);if(r.title){let x=r.title.replace(VERB,'').trim();if(x)r.title=x[0].toUpperCase()+x.slice(1)}return r};
+/* título limpo: tira “adicionar na agenda…”, vírgulas soltas e resume o jeito de falar (jogar bola → Futebol, ir ao dentista → Dentista) */
+const PUN=/^[\s,;:.\-–—!?]+|[\s,;:.\-–—!?]+$/g,capT=s=>s?s[0].toUpperCase()+s.slice(1):s;
+const DEST=R('^(?:isso\\s+|ai\\s+)?(?:(?:na|no|em|pra|para|a|à|ao|da|de|do)\\s+)?(?:minha\\s+|meu\\s+|a\\s+|o\\s+)?(?:agenda|calendario|compromissos?)\\b\\s*[:,\\-–]?\\s*','i');
+function ativ(x){let m;
+ if((m=x.match(/^(?:ir\s+)?(?:jogar|bater|jogo\s+de|vou\s+jogar|vamos\s+jogar)\s+(?:uma?\s+)?(?:bola|pelada|bolinha|futebol|fut)(?![A-Za-zÀ-ÿ])\s*(.*)$/i)))return 'Futebol'+(m[1]?' '+m[1].trim():'');
+ if((m=x.match(/^(?:ir\s+)?(?:jogar|jogo\s+de)\s+(?!fora(?![A-Za-zÀ-ÿ]))(?:um\s+|uma\s+|o\s+|a\s+)?(.+)$/i)))return capT(m[1].trim());
+ if((m=x.match(/^(?:fazer|ter|tenho|vou\s+ter)\s+(?:uma?\s+|o\s+|a\s+)?(consulta|reuni[ãa]o|exames?|prova|entrevista|treino|aulas?|cirurgia|retorno)(?![A-Za-zÀ-ÿ])\s*(.*)$/i)))return capT(m[1])+(m[2]?' '+m[2].trim():'');
+ if((m=x.match(/^ir\s+(?:ao|à|aos|às|no|na|nos|nas|pro|pra|para\s+o|para\s+a|para|em)\s+(?:o\s+|a\s+)?(.+)$/i)))return capT(m[1].trim());
+ if(/^(?:treinar|malhar|ir\s+malhar|fazer\s+academia)$/i.test(x))return 'Academia';
+ return x}
+function titLimpo(x){x=String(x||'').replace(/\s+([,;.!?])/g,'$1').replace(PUN,'');
+ for(let i=0;i<3;i++){const y=x.replace(VERB,'').replace(DEST,'').replace(PUN,'');if(y===x)break;x=y}
+ x=x.replace(/(?:\s+(?:no|na|em|para|pra|de|do|da|dia|às|as|à|com))+$/i,'').replace(PUN,'');
+ return capT(ativ(x))}
+const _kp=kParse;kParse=function(t,now){const r=_kp(pre(t),now);if(r.title)r.title=titLimpo(r.title);return r};
 /* agendar do jeito que foi pedido: título = “Dentista às 14h”, resposta = “Dentista agendado às 14h” */
 const hLab=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?(+m[1])+'h'+(m[2]==='00'?'':m[2]):''};
+/* resposta falada do jeito do dia a dia: “Futebol adicionado, dia 6, às 8 horas da noite.” */
+const MESES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const diaTxt=d=>{if(d===kHoje())return 'hoje';const a=new Date();a.setDate(a.getDate()+1);if(d===iso(a))return 'amanhã';const t=new Date(d+'T12:00:00'),h=new Date();return 'dia '+t.getDate()+((t.getMonth()!==h.getMonth()||t.getFullYear()!==h.getFullYear())?' de '+MESES[t.getMonth()]:'')};
+const horaTxt=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');if(!m)return '';const h=+m[1],mi=+m[2];
+ if(h===12&&!mi)return 'ao meio-dia';if(h===0&&!mi)return 'à meia-noite';
+ const per=h<6?'da madrugada':h<12?'da manhã':h<18?'da tarde':'da noite',h12=h%12||12,pre=h12===1?'à ':'às ';
+ return pre+(mi===30?h12+' e meia':mi===15?h12+' e quinze':mi?h12+' e '+mi:h12+(h12===1?' hora':' horas'))+' '+per};
+let VERBO='adicionado';
+const MASCA=['dia','mapa','planeta','problema','sistema','cinema','programa','drama','tema','clima','pijama','colega','guia','telefonema','diploma','sofa','trabalho'];
+const ehFem=b=>{const w=N(String(b||'').split(/\s+/)[0]);return /(?:a|cao|sao|iao|dade)$/.test(w)&&!/ista$/.test(w)&&!MASCA.includes(w)};
+const agora_=v=>v==='agendado'?'agendada':'adicionada';
 kCriar=function(tipo,p){const lab=hLab(p.time);let tit=p.title;
  if(lab&&!/\d\s*h\b|\d:\d\d/i.test(tit))tit+=' às '+lab;
  const ev={id:uid(),title:tit,date:p.date||kHoje(),time:p.time||'',done:false};S.ev.push(ev);save();try{schedSoon()}catch(e){}render();
- const on=S.notif&&S.notif.on,base=p.title[0].toUpperCase()+p.title.slice(1);
- kAdd('k',(tipo==='lembrete'?'Lembrete: ':'')+base+(tipo==='lembrete'?'':' agendado')+(lab?' às '+lab:'')+' ('+kFmtD(ev.date)+'). ✓'+(ev.time&&!on?'\nOs lembretes estão desligados: quer que eu ative?':''),ev.time&&!on?['Ativar lembretes','Obrigado']:null)};
+ const on=S.notif&&S.notif.on,base=capT(p.title),hr=horaTxt(ev.time);
+ kAdd('k',(tipo==='lembrete'?'Lembrete criado: '+base:base+' '+(ehFem(base)?agora_(VERBO):VERBO))+', '+diaTxt(ev.date)+(hr?', '+hr:'')+'. ✓'+(ev.time&&!on?'\nOs lembretes estão desligados: quer que eu ative?':''),ev.time&&!on?['Ativar lembretes','Obrigado']:null)};
 /* ---- 3. limpeza da frase ---- */
 const limpa=t=>{let s=gir(t).replace(/^[\s,.!¡¿?]+/,'');
  for(let i=0;i<3;i++)s=s.replace(R('^(?:kayla|amiga|mana|minha linda|linda|querida|ei|psiu|ô|oh|ola kayla)\\b[\\s,!:-]*','i'),'').replace(R('^(?:entao|então|ai|aí|bom|olha|escuta|ouve)\\s*,\\s*','i'),'').replace(R('^(?:por favor)\\s*,?\\s*','i'),'').replace(R('^(?:voce\\s+)?(?:pode|poderia|consegue|conseguiria|da pra|daria pra|sera que (?:voce )?pode)\\s+','i'),'').replace(R('^(?:eu\\s+)?(?:queria|quero que voce|quero|gostaria que voce|gostaria de|me ajuda a|me ajude a|preciso que voce|vou querer)\\s+','i'),'');
@@ -3939,7 +3964,7 @@ function typo(c){const m=c.match(/^(\S+)(.*)$/);if(!m)return c;const w=N(m[1]);i
  return best&&bd<=(w.length>=9?2:1)?best+m[2]:c}
 const DATA='(?:\\bhoje\\b|\\bamanha\\b|depois de amanha|\\bdia \\d|\\d{1,2}\\s*(?:h|:|\\/)|\\bas \\d|\\bas \\d|segunda|terca|quarta|quinta|sexta|sabado|domingo|semana que vem|mes que vem)';
 const NOTHING='tempo|dinheiro|grana|paciencia|energia|internet|sinal|bateria|animo|sono|fome|vontade|saco|nocao|folga|ideia|noticia';
-function canon(c,n){let m;c=typo(c);c=c.replace(/^(anot\w*|escrev\w*|marc\w*|lembr\w*|compr\w*|agend\w*|bot\w*|coloc\w*)\s+a[ií]\b\s*[:,-]?\s*/i,'$1 ');n=N(c);
+function canon(c,n){let m;c=typo(c);c=c.replace(/^(anot\w*|escrev\w*|marc\w*|lembr\w*|compr\w*|agend\w*|bot\w*|coloc\w*)\s+a[ií]\b\s*[:,-]?\s*/i,'$1 ');n=N(c);VERBO=/^(?:me\s+)?(?:agend|marc|program|reserv)/.test(n)?'agendado':'adicionado';
  if(/^(?:some|sai|desaparece|vai embora|te esconde|se esconde|fica quieta|fecha)(?:\s+(?:daqui|da tela))*$/.test(n))return 'esconder kayla';
  if(/^(?:ativ\w*|lig\w*|habilit\w*|acion\w*|quero|bota|poe|deixa)\s+(?:os?\s+|as?\s+)?(?:meus\s+)?(?:avisos?|notificacoes|alertas?|alarmes|lembretes)(?:\s+ligados?)?$/.test(n))return 'ativar lembretes';
  if(/^(?:desativ\w*|deslig\w*|desabilit\w*|para(?:r)? de|silenci\w*|tira(?:r)?|chega de)\s+(?:de\s+)?(?:os?\s+|as?\s+)?(?:meus\s+)?(?:avisos?|notificacoes|alertas?|alarmes|lembretes)/.test(n))return 'desativar lembretes';
@@ -3960,10 +3985,13 @@ function canon(c,n){let m;c=typo(c);c=c.replace(/^(anot\w*|escrev\w*|marc\w*|lem
  if((m=c.match(R('^(?:me\\s+)?(?:avis\\w+|alert\\w+|chama\\w*|cutuc\\w+|bipa\\w*|lembra(?:r)?|lembre|nao me deixa esquecer|nao me deixe esquecer|nao deixa eu esquecer|nao esquece|nao esqueca|toca\\w* alarme)\\s+(?:de |do |da |que |sobre |para |pra |quando )?(.+)$')))&&m[1])return 'me lembre de '+m[1];
  if((m=c.match(R('^(?:tenho|vou ter|vai ter|vou (?:ao|na|no|a)|preciso ir (?:ao|na|no|a)|tenho que ir (?:ao|na|no|a)|marquei|combinei|fechei)\\s+(.+)$')))&&new RegExp(DATA).test(n)&&!/\?\s*$/.test(c))return 'marcar '+c.replace(R('^(?:tenho|vou ter|vai ter|preciso ir|tenho que ir|marquei|combinei|fechei)\\s+','i'),'');
  if(/^(?:reserv\w+|cadastr\w+|program\w+|inser\w+|combin\w+)\b/.test(n))return c.replace(R('^(?:reserv\\w+|cadastr\\w+|program\\w+|inser\\w+|combin\\w+)','i'),'marcar');
+ if(/^(?:ir\s+)?(?:jogar|bater)\s+(?!fora\b|isso\b|tudo\b|na\s|no\s|nas\s|nos\s)/.test(n)&&new RegExp(DATA).test(n)&&!/\b(?:lista|compras|nota|notas|gasto|gastos)\b/.test(n))return 'marcar '+c;
+ if((m=c.match(R('^(?:me\\s+)?(?:adicion\\w+|inclu\\w+|coloc\\w+|bot\\w+|po(?:e|i|nha)\\w*|cri\\w+|salv\\w+|regist\\w+|cadastr\\w+|anot\\w+)\\s+(?:um\\s+|uma\\s+|o\\s+|a\\s+)?(.+?)\\s+(?:na|no|em|pra|para|a|à|ao)\\s+(?:minha\\s+|meu\\s+|a\\s+|o\\s+)?(?:agenda|calendario)\\b\\s*[:,\\-–]?\\s*(.*)$')))&&m[1]&&!/\b(?:gasto|despesa|renda|salario|conta fixa|nota|notas|lista|compras)\b/.test(n))return 'marcar '+m[1]+' '+(m[2]||'');
+ if((m=c.match(R('^(?:me\\s+)?(?:adicion\\w+|inclu\\w+|coloc\\w+|bot\\w+|po(?:e|i|nha)\\w*|cri\\w+|salv\\w+|regist\\w+|cadastr\\w+|program\\w+|reserv\\w+|agend\\w+|marc\\w+|anot\\w+)\\s+(?:isso\\s+|ai\\s+)?(?:(?:na|no|em|pra|para|a|à|ao|da|de|do)\\s+)?(?:minha\\s+|meu\\s+|a\\s+|o\\s+)?(?:agenda|calendario|compromissos?)\\b\\s*[:,\\-–]?\\s*(.+)$')))&&m[1]&&!/\b(?:gasto|despesa|renda|salario|conta fixa|nota|notas)\b/.test(n))return 'marcar '+m[1];
  if(/^(?:bot\w+|po(?:e|i)\w*|coloc\w+|joga\w*|cri\w+|faz\w*|fazer|inclu\w+|adicion\w+|regist\w+|salv\w+)\b/.test(n)&&/\b(?:compromisso|lembrete|alarme|evento|agendamento|reuniao|consulta|na agenda|no calendario)\b/.test(n))return c.replace(R('^(?:bot\\w+|po(?:e|i)\\w*|coloc\\w+|joga\\w*|cri\\w+|faz\\w*|fazer|inclu\\w+|adicion\\w+|regist\\w+|salv\\w+)\\s+(?:um |uma |o |a )?','i'),'marcar ');
  if(/^(?:bot\w+|po(?:e|i)\w*|coloc\w+|joga\w*|cri\w+|faz\w*)\s/.test(n)&&new RegExp(DATA).test(n)&&!/\b(?:lista|compras|nota|notas)\b/.test(n))return c.replace(R('^(?:bot\\w+|po(?:e|i)\\w*|coloc\\w+|joga\\w*|cri\\w+|faz\\w*)\\s+(?:um |uma |o |a )?','i'),'marcar ');
  if(/daqui a|^em \d+ (?:min|hora)/.test(n)&&!ehPerg)return 'me lembre de '+c;
- if(!ehPerg&&!/agend|marc|lembr|compromisso|reuniao|consulta|alarme|aniversario/.test(n)&&c.split(' ').length<=8&&!/^(?:por que|porque|quando|onde|quem|quanto)/.test(n)&&/(?:\d{1,2}\s*(?:h|:\d)|\bamanha\b|\bhoje\b|\bdia \d)/.test(n)&&/\d{1,2}\s*(?:h|:\d)|daqui a/.test(N(pre(c))))return 'marcar '+c;
+ if(!ehPerg&&!/agend|marc|lembr|compromisso|reuniao|consulta|alarme|aniversario/.test(n)&&c.split(' ').length<=10&&!/^(?:por que|porque|quando|onde|quem|quanto)/.test(n)&&/(?:\d{1,2}\s*(?:h|:\d)|\bamanha\b|\bhoje\b|\bdia \d)/.test(n)&&/\d{1,2}\s*(?:h|:\d)|daqui a|(?<![a-z])as\s+\d/.test(N(pre(c))))return 'marcar '+c;
  return c}
 /* ---- 7. liga tudo ---- */
 const _run=kRun;
