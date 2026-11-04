@@ -1285,11 +1285,42 @@ Saco de Lixo Brilhus|Preto 50L/100L, rolo com 30/15 un|13.90|11.90|10.19|8.69|3 
 `;
 function atParse(txt){const out=[];let c=null;txt.split('\n').map(l=>l.trim()).filter(Boolean).forEach(l=>{if(l[0]==='#'){c={t:l.slice(1),it:[]};out.push(c);return}
  const a=l.split('|');c.it.push({n:a[0],d:a[1],de:+a[2]||0,at:+a[3],app:+a[4],car:+a[5],lim:a[6]||''})});return out}
+/* Listas de produtos e preços (PDF): um único preço promocional, validade própria de cada lista */
+const AT_LISTAS=[
+{t:'Lista de ofertas · Molhos, óleos e maionese',ini:'2026-10-28',fim:'2026-11-06',txt:`
+Extrato de Tomate Elefante Cebola e Alho|Pote 300g|7.50
+Extrato de Tomate Elefante Só Tomate|Pote 300g|7.50
+Maionese Mariana|Balde 3kg|33.90
+Molho para Salada Liza Queijos|Frasco 234ml|8.90
+Molho de Tomate Pomarola Passata|Pouch 300g|4.50
+Molho de Tomate Pomarola Chef Tradicional|Vidro 420g|16.90
+Molho de Tomate Cica Pomodoro Tradicional|Sachê 300g|1.29
+Molho de Tomate Tarantella Tradicional|Pouch 300g|1.89
+Molho de Tomate Tarantella Tradicional|Pouch 1,7kg|11.90
+Óleo de Algodão Liza|PET 900ml|14.90
+Óleo Composto Maria Tradicional|PET 500ml|13.90
+Óleo Composto Olívia Cebola e Alho|PET 500ml|12.50
+Óleo Liza Girassol|PET 900ml|13.90
+Óleo de Milho Mazola|PET 900ml|16.90
+Polpa de Tomate Pomodoro|TP 520g|5.60
+`},
+{t:'Lista de ofertas · Linha Apti',ini:'2026-11-02',fim:'2026-11-09',txt:`
+Fermento em Pó Apti|Pote 100g|2.29
+Achocolatado em Pó Apti Power|Pacote 1kg|15.89
+Amido de Milho Apti|Caixeta 500g|5.69
+Aveia Apti Flocos/Flocos Finos|Caixeta 150g|2.39
+Caldo Apti Galinha/Carne|Pacote 1,05kg|9.99
+Chocolate em Pó Apti 50% Cacau|Caixeta 200g|17.90
+Gelatina em Pó Apti (vários sabores)|Caixeta 20g|1.19
+Mistura para Bolo Apti (vários sabores)|Pouch 400g|3.79
+`}];
+function atListas(){return AT_LISTAS.map(e=>{const L=e.txt.trim().split('\n').map(l=>l.split('|')),v=mmVal(e.fim);
+ return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${L.map(a=>`<div class="item mm-i" data-t="${esc(nrm(a[0]+' '+a[1]))}"><span class="t">${esc(a[0])}<br><small style="color:var(--mute)">${esc(a[1])}</small></span><span style="text-align:right;flex:none"><strong>${brl(+a[2])}</strong><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('')}
 function vMercadoAtac(){
  const sec=atParse(AT_TXT),v=mmVal(AT_FIM);let tot=0;sec.forEach(s=>tot+=s.it.length);
  const blocos=sec.map(s=>`<h3>${esc(s.t)}</h3><div class="card mm-c">${s.it.map(i=>{const pc=i.de?Math.floor((i.de-i.at)/i.de*100+1e-9):0;
   return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.at)}</strong><br><small style="color:var(--ac)">App <b>${brl(i.app)}</b></small> · <small style="color:var(--ac)">Cartão <b>${brl(i.car)}</b></small><br>${i.de?`<small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small> `:''}<small style="color:var(--mute)">até ${dm(AT_FIM)}</small></span></div>`}).join('')}</div>`).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot} produtos</small></div></div><div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Confirme os valores na loja.</p></div>`+blocos}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot+AT_LISTAS.reduce((a,e)=>a+e.txt.trim().split('\n').length,0)} produtos</small></div></div><div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Confirme os valores na loja.</p></div>`+blocos+atListas()}
 /* ---------- Promoções: Novo Atacarejo (encartes de Pernambuco) ---------- */
 const NV_ENC={sup:{t:'Super Ofertas',ini:'2026-11-03',fim:'2026-11-06'},lat:{t:'Semana dos Laticínios',ini:'2026-11-03',fim:'2026-11-07'}};
 const NV_TXT=`
@@ -1385,7 +1416,8 @@ const CMP=[
  ['flocao','Mercearia','Flocão de milho','400 g',[["Flocão de milho Vitamilho",1.25]],[["Flocão de Milho Flokão",1]],[["Farinha de Milho Flocada Flokão",1]]],
  ['macarrao','Mercearia','Macarrão espaguete','400 g',[["Macarrão espaguete Galo",1]],[["Macarrão Comum Aliança",1]],[["Macarrão Vitarella",1]]],
  ['lamen','Mercearia','Macarrão instantâneo','70 g',null,[["Macarrão Instantâneo Nosso Sabor Lámen",74/70]],[["Macarrão Instantâneo Nissin Nosso Sabor",1]]],
- ['molho','Mercearia','Molho de tomate','300 g',[["Molho de tomate Predilecta sachê",1],["Molho de tomate Stella D'oro",1]],[["Molho de Tomate Palmeiron",1]],[["Molho de Tomate Tambaú",1]]],
+ ['molho','Mercearia','Molho de tomate','300 g',[["Molho de tomate Predilecta sachê",1],["Molho de tomate Stella D'oro",1]],[["Molho de Tomate Palmeiron",1],["Molho de Tomate Cica Pomodoro Tradicional",1],["Molho de Tomate Tarantella Tradicional · Pouch 300g",1]],[["Molho de Tomate Tambaú",1]]],
+ ['aveia','Mercearia','Aveia em flocos','170 g',null,[["Aveia Apti Flocos/Flocos Finos",150/170]],[["Aveia Nestlé",1]]],
  ['condensado','Mercearia','Leite condensado semidesnatado','395 g',[["Leite condensado semidesnatado Italac",1],["Leite condensado semidesnatado Sabe",1]],[["Leite Condensado Betânia",1]],[["Leite Condensado Betânia",1]]],
  ['cafe','Mercearia','Café torrado e moído','250 g',[["Café Melitta tradicional ou extraforte",1]],[["Café São Braz",1]],null],
  ['cafesol','Mercearia','Café solúvel (sachê)','40 g',[["Café solúvel Melitta sachê",1]],[["Café Solúvel Melitta",1]],null],
@@ -1420,6 +1452,9 @@ function cmpPrecos(){
  AS_ENC.forEach(e=>{if(!vivo(e.fim))return;asLista(e.txt).forEach(i=>{if(!(i.por>0))return;R.assai[i.n]=e.app?{p:0,x:i.por,tx:'app Meu Assaí',fim:e.fim}:{p:i.por,x:0,tx:'',fim:e.fim}})});
  if(vivo(AT_FIM))atParse(AT_TXT).forEach(s=>s.it.forEach(i=>{if(!(i.at>0))return;const ex=[[i.app,'app Meu Atacadão'],[i.car,'cartão']].filter(a=>a[0]>0&&a[0]<i.at).sort((a,b)=>a[0]-b[0])[0];
   R.atacadao[i.n]={p:i.at,x:ex?ex[0]:0,tx:ex?ex[1]:'',fim:AT_FIM}}));
+ /* listas de produtos e preços (PDF): preço único; nomes repetidos com embalagens diferentes levam a embalagem no nome */
+ AT_LISTAS.forEach(e=>{if(!vivo(e.fim))return;const L=e.txt.trim().split('\n').map(l=>l.split('|'));
+  L.forEach(a=>{if(!(+a[2]>0))return;const dup=L.filter(b=>b[0]===a[0]).length>1;R.atacadao[dup?a[0]+' · '+a[1]:a[0]]={p:+a[2],x:0,tx:'',fim:e.fim}})});
  nvParse(NV_TXT).forEach(s=>{const fim=NV_ENC[s.e].fim;if(!vivo(fim))return;s.it.forEach(i=>{if(i.p>0)R.novo[i.n]={p:i.p,x:0,tx:'',fim:fim}})});
  return R}
 /* preço usado na comparação: com a opção ligada vale o menor (loja, app ou cartão); desligada, só o preço da loja */
