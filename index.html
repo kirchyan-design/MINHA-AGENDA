@@ -3439,13 +3439,34 @@ function kList(date){const L=S.ev.filter(e=>!e.done&&e.date===date).sort((a,b)=>
 function kCriar(tipo,p){const ev={id:uid(),title:p.title,date:p.date||kHoje(),time:p.time||'',done:false};S.ev.push(ev);save();try{schedSoon()}catch(e){}render();
  const on=S.notif&&S.notif.on;
  kAdd('k',`Pronto! ${tipo==='lembrete'?'Lembrete':'Compromisso'} criado: “${ev.title}” para ${kFmtD(ev.date)}${ev.time?' às '+ev.time:' (sem hora)'}.`+(ev.time&&!on?'\nOs lembretes estão desligados: quer que eu ative?':''),ev.time&&!on?['Ativar lembretes','Obrigado']:null)}
+function kEvTxt(e){return '• '+(e.time?e.time+' · ':'')+e.title+' ('+kFmtD(e.date)+')'}
+function kApagarEv(L){if(!L.length)return;const ids=L.map(e=>e.id);
+ ask(L.length===1?'Apagar “'+L[0].title+'” ('+kFmtD(L[0].date)+')?':'Apagar '+L.length+' compromissos?',()=>{
+  K.undo=S.ev.filter(x=>ids.includes(x.id));S.ev=S.ev.filter(x=>!ids.includes(x.id));save();try{schedSoon()}catch(e){}render();
+  kAdd('k',L.length===1?'Apaguei “'+L[0].title+'”.':'Apaguei '+L.length+' compromissos.',['Desfazer'])},'Apagar')}
+function kApagar(txt){
+ const rest=txt.replace(/^\s*(apagar|apague|excluir|exclua|remover|remova|cancelar|cancele|deletar|delete)\s*/i,'');
+ const todos=/\b(todos|todas|tudo)\b/i.test(rest);
+ const p=kParse(rest.replace(/\b(todos|todas|tudo|os|as|meus|minhas|meu|minha)\b/gi,' '));
+ const q=kNorm(p.title.replace(/\b(compromissos?|lembretes?|agendamentos?|agenda|eventos?)\b/gi,' ').replace(/^\s*(de|do|da|dos|das|para|pra|o|a)\s+/i,' ')).replace(/\s+/g,' ').trim();
+ if(!q&&!p.date&&!todos){kAdd('k','Qual compromisso você quer apagar? Diga o nome ou a data. Ex.: “apagar dentista” ou “apagar tudo de amanhã”.');return}
+ let pool=S.ev.slice();if(p.date)pool=pool.filter(e=>e.date===p.date);if(p.time)pool=pool.filter(e=>e.time===p.time);if(q)pool=pool.filter(e=>kNorm(e.title).includes(q));
+ pool.sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+ if(!pool.length){kAdd('k','Não achei nenhum compromisso'+(q?' com “'+q+'”':'')+(p.date?' em '+kFmtD(p.date):'')+'.');return}
+ if(pool.length===1||todos){if(pool.length>1)kAdd('k',pool.slice(0,10).map(kEvTxt).join('\n')+(pool.length>10?'\n… e mais '+(pool.length-10):''));kApagarEv(pool);return}
+ const L=pool.slice(0,8);K.pend={t:'apagar',L:L};
+ kAdd('k','Achei '+pool.length+' compromissos. Qual apagar?\n'+L.map((e,i)=>(i+1)+'. '+(e.time?e.time+' · ':'')+e.title+' ('+kFmtD(e.date)+')').join('\n'),L.map((e,i)=>String(i+1)).concat(['Todos','Cancelar']))}
 function kRun(txt){txt=String(txt||'').trim();if(!txt)return;kAdd('u',txt);const n=kNorm(txt);let m;
  try{
  if(K.pend&&K.pend.t==='titulo'){const p=K.pend;K.pend=null;if(/^(cancelar|deixa|esquece|nao)\b/.test(n)){kAdd('k','Tudo bem, cancelei.');return}p.title=txt[0].toUpperCase()+txt.slice(1);kCriar(p.tipo,p);return}
+ if(K.pend&&K.pend.t==='apagar'){const P=K.pend;K.pend=null;
+  if(/^\d+$/.test(n)&&P.L[+n-1]){kApagarEv([P.L[+n-1]]);return}
+  if(/^(todos|todas|tudo)/.test(n)){kApagarEv(P.L);return}
+  if(/^(cancelar|nao|deixa|esquece)/.test(n)){kAdd('k','Ok, não apaguei nada.');return}}
  if(K.tour>=0){if(/^(proximo|continuar|sim|ok|vamos|concluir)/.test(n)){kTourStep(K.tour+1);return}if(/^(sair|parar|cancelar|chega)/.test(n)){K.tour=-1;kAdd('k','Tour encerrado. Se quiser retomar, é só pedir “tour”.');return}}
  if(/^(oi|ola|e ai|bom dia|boa tarde|boa noite|hey)\b/.test(n)){kAdd('k','Oi! Como posso ajudar? Posso agendar algo, criar um lembrete, anotar, montar sua lista de compras ou abrir uma tela.',['O que tenho hoje?','Fazer o tour']);return}
  if(/\btour\b|como (eu )?(uso|usar|funciona)|primeira vez|me (ensina|mostra)|^comecar/.test(n)){kTourStep(0);return}
- if(/o que (voce|vc|tu) (faz|sabe|pode)|ajuda\b|^help/.test(n)){kAdd('k','Eu posso:\n• Agendar: “marcar dentista amanhã às 14h”\n• Lembrete: “me lembre de ligar pro João às 18h”\n• Nota: “anotar: ideia do projeto”\n• Compras: “comprar arroz, feijão e café”\n• Ver agenda: “o que tenho hoje?”\n• Concluir/apagar: “concluir dentista”\n• Abrir: “abrir carteira”\n• Tema e lembretes: “tema escuro”, “ativar lembretes”',['Fazer o tour']);return}
+ if(/o que (voce|vc|tu) (faz|sabe|pode)|ajuda\b|^help/.test(n)){kAdd('k','Eu posso:\n• Agendar: “marcar dentista amanhã às 14h”\n• Lembrete: “me lembre de ligar pro João às 18h”\n• Nota: “anotar: ideia do projeto”\n• Compras: “comprar arroz, feijão e café”\n• Ver agenda: “o que tenho hoje?”\n• Concluir: “concluir dentista”\n• Apagar: “apagar dentista”, “apagar tudo de amanhã”, “desfazer”\n• Abrir: “abrir carteira”\n• Tema e lembretes: “tema escuro”, “ativar lembretes”',['Fazer o tour']);return}
  if((m=n.match(/\b(ativar|ligar|desativar|desligar)\b.*\blembretes?\b/))){const on=/^(ativar|ligar)/.test(m[1]);if(typeof ativarLembretes==='function'){ativarLembretes(on);kAdd('k',on?'Certo, ativando os lembretes. Se o celular pedir permissão, toque em Permitir.':'Lembretes desativados.')}return}
  if(/^ativar lembretes$/.test(n)){ativarLembretes(true);kAdd('k','Certo, ativando os lembretes. Se o celular pedir permissão, toque em Permitir.');return}
  if((m=n.match(/\btema\s+(escuro|claro|automatico)\b|\bmodo\s+(escuro|claro)\b/))){const v=m[1]||m[2];setTheme(v==='escuro'?'dark':v==='claro'?'light':'auto');kAdd('k','Tema '+v+' aplicado.');return}
@@ -3453,12 +3474,13 @@ function kRun(txt){txt=String(txt||'').trim();if(!txt)return;kAdd('u',txt);const
  if(/^(abrir|abre|ir para|ir pra|va para|va pra|me leva|mostrar|mostra|ver|abra)\b/.test(n)){const alvo=kTabs.find(t=>t[1].test(n));
   if(alvo){if(alvo[0]!=='config'&&!TABS.some(t=>t[0]===alvo[0])){kAdd('k','Esse menu está desativado. Ative em Configurações › Menus do app.');return}go(alvo[0]);kAdd('k','Pronto, abri para você.');return}}
  if(/\b(o que|quais?)\b.*\b(tenho|tem|compromissos|agenda)\b|\bmeus compromissos\b|\bagenda d[eo]\b/.test(n)){const p=kParse(txt);kAdd('k',kList(p.date||kHoje()));return}
- if((m=n.match(/^(concluir|conclua|concluido|finalizar|feito|ja fiz|apagar|apague|excluir|exclua|remover|remova|cancelar|cancele)\s+(?:o |a )?(?:compromisso |lembrete )?(.+)$/))){
-  const q=m[2].trim(),del=/^(apagar|apague|excluir|exclua|remover|remova|cancelar|cancele)/.test(m[1]);
-  const c=S.ev.filter(e=>!e.done&&kNorm(e.title).includes(q));
+ if(/^(desfazer|voltar atras|restaurar)\b/.test(n)){if(K.undo&&K.undo.length){S.ev=S.ev.concat(K.undo);const q=K.undo.length;K.undo=null;save();try{schedSoon()}catch(e){}render();kAdd('k','Pronto, restaurei '+q+(q===1?' compromisso.':' compromissos.'))}else kAdd('k','Não tenho nada para desfazer.');return}
+ if(/^(apagar|apague|excluir|exclua|remover|remova|cancelar|cancele|deletar|delete)\b/.test(n)){if(/\b(nota|notas|compras|diario|carteira|gasto|gastos)\b/.test(n)){kAdd('k','Por enquanto eu só apago compromissos da agenda. Notas, compras e gastos você apaga direto nas telas deles.');return}kApagar(txt);return}
+ if((m=n.match(/^(concluir|conclua|concluido|finalizar|feito|ja fiz)\s+(?:o |a )?(?:compromisso |lembrete )?(.+)$/))){
+  const q=m[2].trim(),c=S.ev.filter(e=>!e.done&&kNorm(e.title).includes(q));
   if(!c.length){kAdd('k','Não achei compromisso com “'+q+'”.');return}
-  if(c.length>1){kAdd('k','Achei mais de um:\n'+c.slice(0,5).map(e=>'• '+e.title+' ('+kFmtD(e.date)+')').join('\n')+'\nDiga o nome completo.');return}
-  const e=c[0];if(del){ask('Apagar o compromisso “'+e.title+'”?',()=>{S.ev=S.ev.filter(x=>x.id!==e.id);save();try{schedSoon()}catch(x){}render();kAdd('k','Apaguei “'+e.title+'”.')},'Apagar')}else{e.done=true;save();try{schedSoon()}catch(x){}render();kAdd('k','Marquei “'+e.title+'” como concluído. ✓')}return}
+  if(c.length>1){kAdd('k','Achei mais de um:\n'+c.slice(0,5).map(kEvTxt).join('\n')+'\nDiga o nome completo.');return}
+  c[0].done=true;save();try{schedSoon()}catch(x){}render();kAdd('k','Marquei “'+c[0].title+'” como concluído. ✓');return}
  if((m=txt.match(/^\s*(?:criar nota|nova nota|anotar|anote|nota)\s*[:\-]?\s*(.+)$/i))){S.notes.push({id:uid(),title:m[1].slice(0,40),text:m[1],color:'',at:Date.now()});save();render();kAdd('k','Nota salva: “'+m[1].slice(0,60)+'”.',['Abrir notas']);return}
  if(/^abrir notas$/.test(n)){go('notas');return}
  if((m=txt.match(/^\s*(?:preciso comprar|comprar|compre|adicionar|adicione|colocar|coloque|incluir|inclua)\s+(.+?)(?:\s+(?:na|a|à)\s+(?:minha\s+)?(?:lista|compras)(?:\s+de\s+compras)?)?\s*$/i))&&/compra|lista|comprar|compre/.test(n)){
