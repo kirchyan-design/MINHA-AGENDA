@@ -4907,8 +4907,8 @@ function vkBg(){let el=document.querySelector('.vk-bg');
    • só “Kayla” → o painel abre e o microfone liga sozinho para você dar a ordem.
    A opção é guardada só neste aparelho (localStorage ma-kayla-wake: 0 = desligado), não vai para a nuvem.
    O Android corta a escuta depois de alguns segundos de silêncio: um vigia religa sozinho (e o botão “Testar” mostra o estado). */
-const WK={on:false,busy:false,seq:0,txt:'',heard:false,dt:null,ls:null,ls2:null,w:null,espera:0,falhas:0,ini:0,ult:0,ouvido:'',sess:0,erro:'',pediu:0};
-const WK_RX=/\b(?:kayla|cayla|kaila|caila|keila|queila|keyla|kaela|caela)\b/;
+const WK={on:false,busy:false,seq:0,txt:'',heard:false,dt:null,ls:null,ls2:null,w:null,espera:0,falhas:0,ini:0,ult:0,ouvido:'',alts:'',sess:0,erro:'',pediu:0};
+const WK_RX=/\b(?:(?:k|c|qu|cl|kl)(?:[ae][iy]|ae|ea)\s?l{1,2}a|l[ae][iy]l{1,2}a|t[ae][iy]l{1,2}a)\b/;
 const wakeBase=s=>String(s||'').replace(/[\s\S]/g,c=>c.normalize('NFD')[0]).toLowerCase();
 const wakeLig=()=>{try{return localStorage.getItem('ma-kayla-wake')!=='0'}catch(e){return true}};
 function wakeSet(v){try{localStorage.setItem('ma-kayla-wake',v?'1':'0')}catch(e){}}
@@ -4930,7 +4930,7 @@ async function wakeParar(){
  try{if(WK.ls)WK.ls.remove()}catch(e){}try{if(WK.ls2)WK.ls2.remove()}catch(e){}WK.ls=WK.ls2=null;
  try{if(N&&had)await N.stop()}catch(e){}
  try{const w=WK.w;WK.w=null;if(w){w.onend=null;w.onerror=null;w.onresult=null;try{w.abort()}catch(x){try{w.stop()}catch(y){}}}}catch(e){}
- wakeUi();if(had)await new Promise(r=>setTimeout(r,350))}
+ wakeUi();if(had)await new Promise(r=>setTimeout(r,200))}
 /* tira da frase tudo o que veio depois do nome (ou, se nada veio depois, o que veio antes) */
 function wakeCmd(t){
  const m=WK_RX.exec(wakeBase(t));if(!m)return '';
@@ -4949,16 +4949,25 @@ async function wakeAgir(){
   kAdd('k','Pode falar, estou ouvindo. 🎙️');
   setTimeout(()=>{WK.busy=false;kVoice()},300)
  }catch(e){WK.busy=false;try{console.warn('Kayla wake:',e)}catch(x){}}}
+function wakeAlts(arr){
+ arr=(arr||[]).filter(Boolean).map(String);if(!arr.length)return;
+ WK.alts=arr.join(' | ').slice(0,100);
+ const hit=arr.find(x=>WK_RX.test(wakeBase(x)));wakeOuviu(hit||arr[0])}
 function wakeOuviu(txt){
- if(WK.busy||!WK.on)return;WK.txt=txt;WK.ult=Date.now();WK.ouvido=String(txt).slice(0,60);
- if(!WK.heard){if(!WK_RX.test(wakeBase(txt)))return;WK.heard=true}
+ if(WK.busy||!WK.on)return;txt=String(txt);WK.ult=Date.now();WK.ouvido=txt.slice(0,60);
+ const tem=WK_RX.test(wakeBase(txt));
+ if(!WK.heard){if(!tem)return;WK.heard=true;WK.txt=txt}
+ else if(tem)WK.txt=txt;
+ /* já ouviu o nome e a transcrição nova perdeu o nome: mantém “Kayla” na frente para não perder o comando */
+ else if(txt.length>WK.txt.length)WK.txt='Kayla '+txt;
  /* espera uma pausa na fala para pegar o comando inteiro */
  clearTimeout(WK.dt);WK.dt=setTimeout(wakeAgir,1200)}
 /* o reconhecedor do Android/Chrome encerra sozinho depois de um silêncio: se já ouviu o nome, age; senão, o vigia religa */
 function wakeFimSessao(sq){
  if(sq!==WK.seq)return;
  if(WK.heard){clearTimeout(WK.dt);wakeAgir();return}
- wakeParar();WK.espera=Date.now()+400}
+ const dur=Date.now()-WK.ini;
+ wakeParar().then(()=>{WK.espera=dur<2500?Date.now()+600:0;if(wakeDeve()&&Date.now()>=WK.espera)wakeIniciar()})}
 async function wakeIniciar(){
  if(WK.on||WK.busy)return;
  const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -4971,19 +4980,19 @@ async function wakeIniciar(){
     WK.erro='microfone sem permissão';await wakeParar();WK.espera=Date.now()+15000;return}
    try{const a=await N.available();if(a&&a.available===false){WK.erro='reconhecimento de voz indisponível (app Google)';await wakeParar();WK.espera=Date.now()+60000;return}}catch(e){}
    if(sq!==WK.seq)return;
-   WK.ls=await N.addListener('partialResults',e=>{if(sq!==WK.seq)return;const m=e&&e.matches&&e.matches[0];if(m)wakeOuviu(m)});
+   WK.ls=await N.addListener('partialResults',e=>{if(sq!==WK.seq)return;wakeAlts(e&&e.matches)});
    try{WK.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped'&&Date.now()-WK.ini>900)wakeFimSessao(sq)})}catch(e){}
    if(sq!==WK.seq){try{WK.ls.remove()}catch(x){}return}
    wakeUi();WK.ini=WK.ult=Date.now();
    const r=await N.start({language:LOC(),maxResults:3,partialResults:true,popup:false});
    WK.erro='';
-   if(r&&r.matches&&r.matches[0])wakeOuviu(r.matches[0]);
+   if(r&&r.matches&&r.matches.length)wakeAlts(r.matches);
    /* em alguns aparelhos o start só volta quando a escuta termina: então a sessão acabou */
    if(Date.now()-WK.ini>1500)wakeFimSessao(sq);
    else WK.falhas=0
   }else{
-   const r=new W();WK.w=r;r.lang=LOC();r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
-   r.onresult=e=>{if(sq!==WK.seq)return;try{const i=e.results.length-1;wakeOuviu(e.results[i][0].transcript)}catch(x){}};
+   const r=new W();WK.w=r;r.lang=LOC();r.continuous=true;r.interimResults=true;r.maxAlternatives=3;
+   r.onresult=e=>{if(sq!==WK.seq)return;try{const i=e.results.length-1,a=[];for(let j=0;j<e.results[i].length;j++)a.push(e.results[i][j].transcript);wakeAlts(a)}catch(x){}};
    r.onerror=e=>{const er=(e&&e.error)||'';WK.erro=er;
     if(er==='not-allowed'||er==='service-not-allowed'){wakeSet(false);try{render()}catch(x){}info('Preciso da permissão do microfone para ouvir o nome “Kayla”. Libere o microfone neste navegador e ligue a opção de novo.')}};
    r.onend=()=>wakeFimSessao(sq);
@@ -5009,14 +5018,14 @@ async function wakeDiag(){
  try{mic=await micEstado()}catch(e){}
  try{if(N){const a=await N.available();disp=a&&a.available?'sim':'não'}else disp=(window.SpeechRecognition||window.webkitSpeechRecognition)?'sim':'não'}catch(e){}
  const m=wakeMotivo();
- info((WK.on?'👂 OUVINDO agora':'⏸️ Parada')+(m?' ('+m+')':'')+' · '+(nat()?'app instalado':'navegador')+' · plugin de voz: '+(N?'sim':'não')+' · reconhecimento disponível: '+disp+' · microfone: '+mic+' · sessões: '+WK.sess+' · último texto ouvido: '+(WK.ouvido||'(nada ainda)')+(WK.erro?' · último erro: '+WK.erro:'')+'. Diga “Kayla” e toque em Testar de novo para ver se ela ouviu.')}
+ info((WK.on?'👂 OUVINDO agora':'⏸️ Parada')+(m?' ('+m+')':'')+' · '+(nat()?'app instalado':'navegador')+' · plugin de voz: '+(N?'sim':'não')+' · reconhecimento disponível: '+disp+' · microfone: '+mic+' · sessões: '+WK.sess+' · último texto ouvido: '+(WK.alts||WK.ouvido||'(nada ainda)')+(WK.erro?' · último erro: '+WK.erro:'')+'. Diga “Kayla” e toque em Testar de novo para ver se ela ouviu.')}
 setInterval(()=>{try{
  const d=wakeDeve();
  if(d&&!WK.on&&Date.now()>=WK.espera)wakeIniciar();
  else if(!d&&WK.on&&!WK.busy)wakeParar();
  /* vigia: se o Android parou de escutar sem avisar, religa (a cada ~7 s de silêncio) */
- else if(WK.on&&!WK.heard&&!WK.w&&Date.now()-WK.ult>7000){wakeParar();WK.espera=Date.now()+300}
- wakeUi()}catch(e){}},1200);
+ else if(WK.on&&!WK.heard&&!WK.w&&Date.now()-WK.ult>9000){wakeParar();WK.espera=Date.now()+100}
+ wakeUi()}catch(e){}},500);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)wakeParar()});
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
