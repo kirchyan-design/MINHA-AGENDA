@@ -743,25 +743,28 @@ nav div#nav button .ni{width:46px}
 .cp-c.win{background:var(--acs);border-color:var(--ac)}.cp-c.win b{color:var(--ac)}.cp-c.off{opacity:.5}
 .cp-tb{width:100%;border-collapse:collapse;font-size:13px}.cp-tb td,.cp-tb th{padding:5px 0;text-align:right;border-top:1px solid var(--ln)}.cp-tb th{font-weight:600;color:var(--mute)}.cp-tb td:first-child,.cp-tb th:first-child{text-align:left}
 /* ---- Kayla ---- */
-#kay-f{position:fixed;right:10px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:40;width:70px;height:92px;padding:0;border:0;background:none;cursor:pointer;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+#kay-f{position:fixed;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:40;width:66px;height:66px;padding:0;border:3px solid var(--ac);border-radius:50%;background:#0b1620;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.4);overflow:visible}
 #kay-f.hid{display:none!important}
-#kay-f img{width:100%;height:100%;object-fit:contain;object-position:bottom;display:block;pointer-events:none;-webkit-mask-image:linear-gradient(#000 68%,transparent);mask-image:linear-gradient(#000 68%,transparent)}
-#kay-f .k-dot{position:absolute;top:6px;right:6px;width:12px;height:12px;border-radius:50%;background:#2ee6c8;box-shadow:0 0 0 3px rgba(46,230,200,.3)}
-@media(prefers-reduced-motion:no-preference){#kay-f{animation:kfl 3.2s ease-in-out infinite}@keyframes kfl{50%{transform:translateY(-5px)}}#kay-p{transition:transform .25s ease}}
-#kay-p{position:fixed;left:0;right:0;bottom:0;z-index:60;max-height:80vh;height:min(80vh,560px);display:flex;flex-direction:column;background:var(--sf);border:1px solid var(--ln);border-radius:20px 20px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.3);transform:translateY(105%);visibility:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
-#kay-p.on{transform:none;visibility:visible}
-#kay-p .k-h{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--ln)}
-#kay-p .k-h img{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:50% 25%;background:#0b1620}
-#kay-p .k-h div{flex:1;min-width:0}#kay-p .k-h b{display:block}#kay-p .k-h small{color:var(--mute)}
-#kay-x{background:none;border:0;color:var(--ink);font-size:20px;padding:6px 10px;width:auto}
-#kay-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
-.k-m{display:flex;gap:8px;align-items:flex-end;max-width:88%}.k-m.u{align-self:flex-end;flex-direction:row-reverse}
-.k-m>img{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:50% 25%;background:#0b1620;flex:none}
-.k-b{background:var(--acs);color:var(--ink);padding:9px 12px;border-radius:14px 14px 14px 4px;line-height:1.4;overflow-wrap:anywhere}
-.k-m.u .k-b{background:var(--ac);color:var(--onac);border-radius:14px 14px 4px 14px}
-.k-c{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.k-c button{width:auto;padding:6px 10px;font-size:13px;border-radius:999px;background:var(--sf);color:var(--ac);border:1px solid var(--ac)}
-#kay-p .k-in{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--ln)}
-#kay-i{flex:1;min-width:0;margin:0}#kay-s{width:auto;padding:0 16px}
+#kay-f img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 22%;display:block;pointer-events:none}
+#kay-f .k-dot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#2ee6c8;box-shadow:0 0 0 3px rgba(46,230,200,.3)}
+@media(prefers-reduced-motion:no-preference){#kay-f{animation:kfl 3.2s ease-in-out infinite}@keyframes kfl{50%{transform:translateY(-5px)}}#kay-p{transition:opacity .2s ease}}
+#kay-p{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:calc(66px + env(safe-area-inset-top,0px)) 12px calc(86px + env(safe-area-inset-bottom,0px));background:none;border:0;pointer-events:none;opacity:0;visibility:hidden}
+#kay-p.on{opacity:1;visibility:visible}
+#kay-p .k-h{display:flex;align-items:center;gap:10px;flex:none;padding:0;border:0}
+#kay-p .k-h img{width:46px;height:46px;border-radius:50%;object-fit:cover;object-position:50% 22%;background:#0b1620;border:3px solid var(--ac);box-shadow:0 6px 14px rgba(0,0,0,.4)}
+#kay-p .k-h div{display:none;flex:0 1 auto;min-width:0;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:4px 10px;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#kay-p .k-h b{display:block}#kay-p .k-h small{color:var(--mute);font-size:11px}
+#kay-x{margin-left:auto;pointer-events:auto;width:36px;height:36px;padding:0;border-radius:50%;background:var(--sf);border:1px solid var(--ln);color:var(--ink);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#kay-msgs{position:absolute;top:calc(66px + env(safe-area-inset-top,0px));left:70px;right:58px;max-height:34vh;overflow-y:auto;padding:2px;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;pointer-events:none}
+.k-m{display:flex;max-width:100%;pointer-events:auto;margin-left:7px}.k-m.u{margin-left:0;margin-right:7px}.k-m.u{align-self:flex-end;flex-direction:row-reverse}
+.k-m>img{display:none}
+.k-b{position:relative;background:var(--sf);color:var(--ink);border:1px solid var(--ln);box-shadow:0 4px 12px rgba(0,0,0,.3);padding:7px 11px;border-radius:16px;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.k-m:not(.u) .k-b::after{content:"";position:absolute;left:-6px;top:14px;width:10px;height:10px;background:var(--sf);border-left:1px solid var(--ln);border-bottom:1px solid var(--ln);transform:rotate(45deg);border-radius:0 0 0 3px}
+.k-m.u .k-b::after{content:"";position:absolute;right:-5px;bottom:10px;width:10px;height:10px;background:var(--ac);transform:rotate(45deg);border-radius:0 3px 0 0}
+.k-m.u .k-b{background:var(--ac);color:var(--onac);border-color:transparent}
+.k-c{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.k-c button{width:auto;padding:4px 9px;font-size:12px;border-radius:999px;background:var(--sf);color:var(--ac);border:1px solid var(--ac)}
+#kay-p .k-in{position:absolute;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;padding:8px;background:var(--sf);border:1px solid var(--ln);border-radius:28px;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:auto}
+#kay-i{flex:1;min-width:0;margin:0;border-radius:20px}#kay-s{width:auto;padding:0 16px;border-radius:20px}
 </style>
 
 </head>
@@ -1939,8 +1942,9 @@ function head(){try{vozFabSync()}catch(e){}applyTheme();const ok=!!S.user.name;$
  $('#greet').innerHTML=!ok||tab==='inicio'?'':`<div class="greet">${saudBloco()}</div>`;
  const cb=$('#cfgb');if(cb){cb.style.display=ok?'':'none';cb.classList.toggle('on',tab==='config')}}
 function saveName(){const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.user.name=n;edName=false;save();render()}
+function testeNome(){return `<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--ln)"><p style="margin:0 0 8px;text-align:center;font-weight:800;letter-spacing:.06em">TESTE NO NAVEGADOR</p><input id="gn" placeholder="Seu nome" maxlength="30" autocomplete="given-name" aria-label="Seu nome" onkeydown="if(event.key==='Enter')saveName()"><button style="width:100%;margin-top:8px;padding:13px;font-size:15px" onclick="saveName()">Entrar só com o nome</button><p style="color:var(--mute);font-size:12px;margin:8px 0 0;text-align:center">Só aparece aqui na página da internet. Os dados ficam só neste navegador (sem nuvem).</p></div>`}
 function welcomeView(){try{document.querySelectorAll('.nvhint').forEach(x=>x.remove())}catch(e){}
- $('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${btnsInscrever()}<p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
+ $('#v').innerHTML=`<div class="welcome"><div class="wl">${$('.logo').outerHTML}</div><h1 class="wt">JC <span>ORGANIZA</span></h1><p class="ws">${_t('Agenda, notas, diário, compras, plantões e finanças. Tudo em um só lugar, simples de usar.')}</p><ul class="wf"><li>📋 ${_t('Agenda')}</li><li>🩺 ${_t('Plantões')}</li><li>🛒 ${_t('Compras')}</li><li>💰 ${_t('Carteira')}</li><li>📖 ${_t('Diário')}</li></ul><div class="card">${nat()?'':testeNome()}${btnsInscrever()}<p style="color:var(--mute);font-size:13px;margin:12px 0 0;text-align:center">🔒 ${_t('Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}</p><button class="sec" style="margin-top:12px;width:100%" onclick="$('#imp').click()">⬆ ${_t('Já tenho um backup: restaurar')}</button><input type="file" id="imp" style="display:none" onchange="importar(this)"></div></div>`}
 function evEdit(e){return `<div class="item" style="flex-wrap:wrap"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título"><div class="row" style="width:100%"><input type="date" id="ee-d" value="${e.date}"><input type="time" id="ee-h" value="${e.time||''}"><button onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
 function saveEv(id){const e=S.ev.find(x=>x.id===id),t=$('#ee-t').value.trim();if(!t){$('#ee-t').focus();return}e.title=t;e.date=$('#ee-d').value||e.date;e.time=$('#ee-h').value;edEv=null;save();render()}
 function startH(id){edH=id;edD=JSON.parse(JSON.stringify(S.hist.find(x=>x.id===id)));render()}
@@ -3424,11 +3428,12 @@ const kEsc=s=>esc(String(s)).replace(/\n/g,'<br>');
 function kCfg(){if(!S.kayla||typeof S.kayla!=='object')S.kayla={};return S.kayla}
 function kAdd(who,txt,chips){K.msgs.push({who:who,txt:txt,chips:chips||null});kDraw()}
 function kDraw(){const b=$('#kay-msgs');if(!b)return;
- b.innerHTML=K.msgs.map((m,i)=>`<div class="k-m ${m.who}">${m.who==='k'?`<img src="${K_IMG}" alt="">`:''}<div class="k-b">${kEsc(m.txt)}${m.chips&&i===K.msgs.length-1?`<div class="k-c">${m.chips.map(c=>`<button type="button" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:''}</div></div>`).join('');
+ let li=-1;K.msgs.forEach((m,i)=>{if(m.who==='k')li=i});const m=li>=0?K.msgs[li]:null;
+ b.innerHTML=m?`<div class="k-m k"><div class="k-b">${kEsc(m.txt)}${m.chips?`<div class="k-c">${m.chips.map(c=>`<button type="button" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:''}</div></div>`:'';
  b.scrollTop=b.scrollHeight}
 function kOpen(){K.open=true;const p=$('#kay-p');if(!p)return;p.classList.add('on');$('#kay-f').classList.add('hid');
  if(!K.msgs.length){const nome=(S.user&&S.user.name)||'';const novo=!kCfg().seen;kCfg().seen=1;save();
-  kAdd('k',`Oi${nome?', '+nome:''}! Eu sou a Kayla, sua assistente. Eu só escrevo, mas controlo o app por você: agendo compromissos, crio lembretes, notas, itens de compras, abro telas e tiro dúvidas.`,novo?['Fazer o tour','O que você faz?']:['O que tenho hoje?','Fazer o tour','O que você faz?'])}
+  kAdd('k',`Oi${nome?', '+nome:''}! Sou a Kayla. Agendo, crio lembretes, notas e compras por você.`,novo?['Fazer o tour','O que você faz?']:['O que tenho hoje?','Fazer o tour','O que você faz?'])}
  else kDraw();setTimeout(()=>{try{$('#kay-i').focus()}catch(e){}},250)}
 function kClose(){K.open=false;const p=$('#kay-p');if(p)p.classList.remove('on');const f=$('#kay-f');if(f)f.classList.remove('hid')}
 function kTourStep(i){const T=KTOUR.filter(x=>x[0]==='config'||TABS.some(t=>t[0]===x[0]));if(i>=T.length){K.tour=-1;kAdd('k','Tour concluído! Pode me pedir qualquer coisa.',['O que tenho hoje?']);return}
