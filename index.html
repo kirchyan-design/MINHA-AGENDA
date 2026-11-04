@@ -766,6 +766,9 @@ nav div#nav button .ni{width:46px}
 .k-c{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.k-c button{width:auto;padding:4px 9px;font-size:12px;border-radius:999px;background:var(--sf);color:var(--ac);border:1px solid var(--ac)}
 #kay-p .k-in{position:absolute;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;padding:8px;background:var(--sf);border:1px solid var(--ln);border-radius:28px;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:auto}
 #kay-i{flex:1;min-width:0;margin:0;border-radius:20px}#kay-s{width:auto;padding:0 16px;border-radius:20px}
+#kay-mic{flex:none;width:44px;height:44px;min-width:44px;padding:0;border-radius:50%;font-size:20px;line-height:1;display:inline-flex;align-items:center;justify-content:center;background:var(--acs);color:var(--ac)}
+#kay-mic.listening{background:#d92d45;color:#fff;border-color:#d92d45}
+@media(prefers-reduced-motion:no-preference){#kay-mic.listening{animation:kmic 1.1s ease-in-out infinite}@keyframes kmic{50%{box-shadow:0 0 0 7px rgba(217,45,69,.25)}}}
 </style>
 
 </head>
@@ -3688,6 +3691,41 @@ function kIaErro(e){
  const det=cod==='sem internet'?'':' — '+String((e&&e.message)||e).replace(/https?:\/\/\S+/g,'').slice(0,260);
  return 'Não consegui pensar agora ('+cod+det+'). Mas entendo comandos como:\n• “marcar dentista amanhã às 14h”\n• “anotar: comprar presente”\n• “comprar leite e pão”\n• “o que tenho hoje?”'}
 function kAdd(who,txt,chips){K.msgs.push({who:who,txt:txt,chips:chips||null});kDraw()}
+/* ---------- Kayla por voz: toque no 🎙️ e fale o comando. Ela só obedece: não fala nem lê as respostas em voz alta. ---------- */
+let K_VOZ=null;
+function kMicUi(on){const b=$('#kay-mic'),i=$('#kay-i');
+ if(b){b.classList.toggle('listening',!!on);b.textContent=on?'⏹️':'🎙️';b.setAttribute('aria-label',on?'Parar de ouvir':'Falar com a Kayla');b.title=on?'Toque para parar':'Toque e fale o comando'}
+ if(i){if(on){if(i.dataset.ph==null)i.dataset.ph=i.placeholder;i.placeholder='Ouvindo… fale o comando'}else if(i.dataset.ph!=null){i.placeholder=i.dataset.ph;delete i.dataset.ph}}}
+function kVoiceAbort(){const t=K_VOZ;if(!t)return;t.dead=true;K_VOZ=null;clearTimeout(t.max);
+ try{if(t.n)t.n.stop();else if(t.w)t.w.abort()}catch(e){}kMicUi(false)}
+async function kVoiceStop(){const t=K_VOZ;if(!t||t.dead)return;
+ try{if(t.n)await t.n.stop();else if(t.w)t.w.stop()}catch(e){}
+ setTimeout(()=>{if(!t.dead)t.fim('')},2500)}
+async function kVoice(){
+ if(K_VOZ){kVoiceStop();return}
+ if(typeof V!=='undefined'&&(V.on||V.hold)){kAdd('k','O microfone da lista de compras está em uso agora. Solte o botão e tente de novo.');return}
+ const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!N&&!W){kAdd('k',nat()?'O reconhecimento de voz ainda não está neste app. Instale a versão nova do aplicativo para usar a voz.':'Este navegador não tem reconhecimento de voz. Abra pelo Google Chrome ou use o app instalado.');return}
+ const t={n:N,w:null,dead:false,err:'',max:null};
+ t.fim=txt=>{if(t.dead)return;t.dead=true;clearTimeout(t.max);if(K_VOZ===t)K_VOZ=null;kMicUi(false);
+  txt=String(txt||'').trim();
+  if(txt)kRun(txt);
+  else if(t.err==='not-allowed'||t.err==='service-not-allowed')kAdd('k','Preciso da permissão do microfone para ouvir você. Libere em Configurações › Permissões.');
+  else kAdd('k','Não ouvi nada. Toque no 🎙️ e fale de novo.')};
+ K_VOZ=t;kMicUi(true);t.max=setTimeout(()=>{if(!t.dead)kVoiceStop()},15000);
+ try{
+  if(N){
+   let ps=await micEstado();
+   if(ps!=='granted'){ps=await micPedirNativo();
+    if(ps!=='granted'){t.err='not-allowed';t.fim('');return}}
+   try{const a=await N.available();if(a&&a.available===false){t.dead=true;clearTimeout(t.max);K_VOZ=null;kMicUi(false);kAdd('k','O reconhecimento de voz não está disponível neste celular. Confira se o app Google está instalado e atualizado.');return}}catch(e){}
+   const r=await N.start({language:LOC(),maxResults:3,partialResults:false,popup:false});
+   t.fim(r&&r.matches&&r.matches[0])
+  }else{
+   const r=new W();t.w=r;r.lang=LOC();r.interimResults=false;r.continuous=false;r.maxAlternatives=1;
+   let got='';r.onresult=e=>{try{got=e.results[0][0].transcript}catch(x){}};
+   r.onerror=e=>{t.err=(e&&e.error)||''};r.onend=()=>t.fim(got);r.start()}
+ }catch(e){t.err=/permission|denied|not-allowed/i.test(String((e&&e.message)||e))?'not-allowed':'';t.fim('')}}
 function kDraw(){const b=$('#kay-msgs');if(!b)return;
  let li=-1;K.msgs.forEach((m,i)=>{if(m.who==='k')li=i});const m=li>=0?K.msgs[li]:null;
  b.innerHTML=m?`<div class="k-m k"><div class="k-b">${kEsc(m.txt)}${m.chips?`<div class="k-c">${m.chips.map(c=>`<button type="button" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:''}</div></div>`:'';
@@ -3696,7 +3734,7 @@ function kOpen(){K.open=true;const p=$('#kay-p');if(!p)return;p.classList.add('o
  if(!K.msgs.length){const nome=(S.user&&S.user.name)||'';const novo=!kCfg().seen;kCfg().seen=1;save();
   kAdd('k',`Oi${nome?', '+nome:''}! Sou a Kayla. Agendo, crio lembretes, notas e compras por você.`,novo?['Fazer o tour','O que você faz?']:['O que tenho hoje?','Fazer o tour','O que você faz?'])}
  else kDraw();setTimeout(()=>{try{$('#kay-i').focus()}catch(e){}},250)}
-function kClose(){K.open=false;const p=$('#kay-p');if(p)p.classList.remove('on');const f=$('#kay-f');if(f)f.classList.remove('hid')}
+function kClose(){kVoiceAbort();K.open=false;const p=$('#kay-p');if(p)p.classList.remove('on');const f=$('#kay-f');if(f)f.classList.remove('hid')}
 function kTourStep(i){const T=KTOUR.filter(x=>x[0]==='config'||TABS.some(t=>t[0]===x[0]));if(i>=T.length){K.tour=-1;kAdd('k','Tour concluído! Pode me pedir qualquer coisa.',['O que tenho hoje?']);return}
  K.tour=i;const s=T[i];go(s[0]);kAdd('k',s[1],i<T.length-1?['Próximo','Sair do tour']:['Concluir'])}
 function kList(date){const L=S.ev.filter(e=>!e.done&&e.date===date).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
@@ -3766,8 +3804,8 @@ function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!
  let f=$('#kay-f');
  if(!f){f=document.createElement('button');f.id='kay-f';f.type='button';f.setAttribute('aria-label','Abrir a assistente Kayla');f.innerHTML=`<img src="${K_IMG}" alt="Kayla"><span class="k-dot"></span>`;f.onclick=kOpen;document.body.appendChild(f);
   const p=document.createElement('div');p.id='kay-p';p.setAttribute('role','dialog');p.setAttribute('aria-label','Kayla, assistente');
-  p.innerHTML=`<div class="k-h"><img src="${K_IMG}" alt=""><div><b>Kayla</b><small>assistente do JC ORGANIZA</small></div><button type="button" id="kay-x" aria-label="Fechar">✕</button></div><div id="kay-msgs"></div><div class="k-in"><input id="kay-i" placeholder="Escreva para a Kayla…" autocomplete="off" enterkeyhint="send"><button type="button" id="kay-s" aria-label="Enviar">➤</button></div>`;document.body.appendChild(p);
-  $('#kay-x').onclick=kClose;const env=()=>{const i=$('#kay-i'),v=i.value;i.value='';kRun(v)};$('#kay-s').onclick=env;$('#kay-i').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();env()}});
+  p.innerHTML=`<div class="k-h"><img src="${K_IMG}" alt=""><div><b>Kayla</b><small>assistente do JC ORGANIZA</small></div><button type="button" id="kay-x" aria-label="Fechar">✕</button></div><div id="kay-msgs"></div><div class="k-in"><input id="kay-i" placeholder="Escreva para a Kayla…" autocomplete="off" enterkeyhint="send"><button type="button" id="kay-mic" aria-label="Falar com a Kayla" title="Toque e fale o comando">🎙️</button><button type="button" id="kay-s" aria-label="Enviar">➤</button></div>`;document.body.appendChild(p);
+  $('#kay-x').onclick=kClose;const env=()=>{const i=$('#kay-i'),v=i.value;i.value='';kRun(v)};$('#kay-s').onclick=env;$('#kay-mic').onclick=kVoice;$('#kay-i').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();env()}});
   p.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.k-c button');if(b)kRun(b.dataset.c)});
   if(!kCfg().seen){const esp=n=>{if(K.open||kCfg().seen||!(S.user&&S.user.name)||n>90)return;if(document.querySelector('.ov')||(typeof permAsking!=='undefined'&&permAsking)||(typeof PIN_LK!=='undefined'&&PIN_LK)){setTimeout(()=>esp(n+1),2000);return}kOpen()};setTimeout(()=>esp(0),6000)}}
  f.style.display=ok&&!K.open?'':'none';if(!ok){const p=$('#kay-p');if(p)p.classList.remove('on');K.open=false}}
