@@ -4593,6 +4593,25 @@ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
 (function(){const _p=kRun;kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
  try{if(tab==='compras'){const c=feiraCmd(txt,true);if(c){kAdd('u',txt);const un=c.undo;K.undo=null;K.undoG=un?()=>{un()}:null;kAdd('k',String(c.msg+(c.sub?'. '+c.sub:'')).replace(/&#?\w+;/g,' ')+(un?'':''),un?['Desfazer']:null);return}}}catch(e){try{console.warn('Kayla feira:',e)}catch(x){}}
  _p(txt)}})();
+/* Kayla na Carteira: “limpar valores” / “zerar valores” coloca todos os valores em R$ 0,00. Lançamentos, nomes e datas ficam; dá para desfazer. */
+(function(){const _p=kRun;
+ const ehZerar=txt=>{const n=kNorm(String(txt||''));
+  if(/\b(gastos?|rendas?|fixas?|salario|extras?|compras?|lista|notas?)\b/.test(n))return false;
+  if(!/\b(limp\w*|zer\w*|reset\w*|esvazi\w*)\b/.test(n))return false;
+  const noCart=(typeof tab!=='undefined'&&tab==='carteira');
+  if(/\bvalores\b/.test(n))return noCart||/carteira/.test(n);
+  return /\b(zer\w*|reset\w*)\b.*\bcarteira\b/.test(n)||(noCart&&/^(?:kayla[\s,]*)?(?:zer\w*|reset\w*)\s+(?:tudo|geral)$/.test(n))};
+ const zera=()=>{normCart();const c=S.cart;
+  const bk={base:c.base,g:c.gastos.map(x=>Object.assign({},x)),r:c.rendas.map(x=>Object.assign({},x)),f:c.fixas.map(x=>Object.assign({},x))};
+  const com=!!(bk.base||bk.g.some(x=>+x.val)||bk.r.some(x=>+x.val)||bk.f.some(x=>+x.val));
+  if(!com){kAdd('k','Sua Carteira já está com todos os valores zerados.',['Abrir carteira']);return}
+  ask('Zerar todos os valores da Carteira? A renda fixa e os valores de '+bk.g.length+' gasto(s), '+bk.r.length+' renda(s) extra(s) e '+bk.f.length+' conta(s) fixa(s) vão para R$ 0,00. Os lançamentos, nomes e datas ficam. Dá para desfazer.',()=>{
+   c.base=0;c.gastos.forEach(x=>{x.val=0});c.rendas.forEach(x=>{x.val=0});c.fixas.forEach(x=>{x.val=0});
+   K.undo=null;K.undoG=()=>{c.base=bk.base;c.gastos=bk.g;c.rendas=bk.r;c.fixas=bk.f};
+   save();render();kAdd('k','Pronto! Todos os valores da Carteira estão em R$ 0,00. Mantive os lançamentos, nomes e datas.',['Abrir carteira','Desfazer'])},'Zerar valores')};
+ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
+  try{if(!K.pend&&K.tour<0&&ehZerar(txt)){kAdd('u',txt);zera();return}}catch(e){try{console.warn('Kayla zerar carteira:',e)}catch(x){}}
+  _p(txt)}})();
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{kSync()}catch(e){}}})();
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
