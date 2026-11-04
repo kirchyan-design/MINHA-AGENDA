@@ -247,6 +247,57 @@ html[data-color="doom"] #v{position:relative}
 @media(prefers-reduced-motion:reduce){.dm-bg .ember,.dm-bg .fog,.dm-bg .ring,.dm-hand,.dm-glyph{animation:none}}
 
 
+/* ---- Tema Cyberpunk TOTAL: cidade neon, fonte futurista, ícones angulares, cantos cortados, chuva (o rosto da Kayla não é alterado) ---- */
+:root[data-color="cyber"][data-eff]{--bg:#06020f;--sf:#0f0720;--ink:#eafcff;--mute:#9188bd;--ac:#00f0ff;--acs:#0b2a3d;--ln:#35145f;--ln2:#4b1f86;--fld:#0a0518;--ok:#39ff14;--rd:#ff2e63;--onac:#02050a;--ac2:#ff2bd6;--ac3:#fcee0a;--sh:0 0 0 1px rgba(255,43,214,.30),0 0 22px -8px #ff2bd6;color-scheme:dark}
+html[data-color="cyber"]{background:#06020f}
+html[data-color="cyber"] body{background:none;font-family:"Rajdhani","Bahnschrift","Roboto Condensed",sans-serif-condensed,system-ui,sans-serif;font-size:17px;font-weight:500;letter-spacing:.02em}
+html[data-color="cyber"] h1,html[data-color="cyber"] h2{font-family:"Orbitron","Bahnschrift","Arial Black",sans-serif;text-transform:uppercase;letter-spacing:.1em;font-weight:800;text-shadow:0 0 12px color-mix(in srgb,var(--ac) 70%,transparent),2px 0 rgba(255,43,214,.6),-2px 0 rgba(0,240,255,.35)}
+html[data-color="cyber"] h1{animation:cyglitch 7s infinite}
+html[data-color="cyber"] header{gap:10px}
+html[data-color="cyber"] header .brand{flex:1 1 0;min-width:0}
+html[data-color="cyber"] header h1{font-size:clamp(12px,4.1vw,19px);letter-spacing:.04em;min-width:0;overflow:hidden;text-overflow:ellipsis}
+html[data-color="cyber"] header .cfg{flex:none;position:relative;z-index:1}
+html[data-color="cyber"] h3,html[data-color="cyber"] .hoje,html[data-color="cyber"] label.fl,html[data-color="cyber"] nav button .nl,html[data-color="cyber"] .hint{font-family:"Share Tech Mono","Courier New",monospace;text-transform:uppercase;letter-spacing:.12em}
+html[data-color="cyber"] h3{color:var(--ac2);text-shadow:0 0 8px rgba(255,43,214,.6)}
+html[data-color="cyber"] h3::before{content:"// ";color:var(--ac)}
+html[data-color="cyber"] input,html[data-color="cyber"] textarea,html[data-color="cyber"] select,html[data-color="cyber"] button{font-family:inherit}
+html[data-color="cyber"] .card{position:relative;border-radius:0;border:1px solid color-mix(in srgb,var(--ac) 40%,var(--ln));background:linear-gradient(135deg,rgba(255,43,214,.07),transparent 40%),rgba(15,7,32,.88);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+html[data-color="cyber"] .card::before,html[data-color="cyber"] .card::after{content:"";position:absolute;width:14px;height:14px;pointer-events:none}
+html[data-color="cyber"] .card::before{top:-2px;left:-2px;border-top:3px solid var(--ac);border-left:3px solid var(--ac)}
+html[data-color="cyber"] .card::after{bottom:-2px;right:-2px;border-bottom:3px solid var(--ac2);border-right:3px solid var(--ac2)}
+html[data-color="cyber"] input,html[data-color="cyber"] textarea,html[data-color="cyber"] select{border-radius:0;border:1px solid var(--ln2);background:rgba(10,5,24,.92)}
+html[data-color="cyber"] input:focus,html[data-color="cyber"] textarea:focus,html[data-color="cyber"] select:focus{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac),0 0 16px -2px var(--ac);outline:none}
+html[data-color="cyber"] button{border-radius:0}
+html[data-color="cyber"] button.pri{background:var(--ac3);color:#050505;text-transform:uppercase;letter-spacing:.12em;font-weight:700;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+html[data-color="cyber"] button.sec{background:transparent;color:var(--ac);border:1px solid var(--ac);text-transform:uppercase;letter-spacing:.1em}
+html[data-color="cyber"] .seg button.on{background:var(--ac);color:#02050a;box-shadow:0 0 14px -2px var(--ac)}
+html[data-color="cyber"] header{border-bottom:1px solid color-mix(in srgb,var(--ac) 60%,transparent);padding-bottom:10px;box-shadow:0 10px 22px -16px #ff2bd6}
+html[data-color="cyber"] nav{border-radius:0;border:0;border-top:2px solid var(--ac);background:rgba(6,2,15,.94);box-shadow:0 -6px 26px -8px var(--ac2),0 -1px 0 var(--ac2)}
+html[data-color="cyber"] nav button{border-radius:0;color:var(--mute)}
+html[data-color="cyber"] nav button .ni{border-radius:0;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))}
+html[data-color="cyber"] nav button.on{color:var(--ac);background:none;text-shadow:0 0 8px var(--ac)}
+html[data-color="cyber"] nav button.on .ni{background:rgba(0,240,255,.16);box-shadow:inset 0 -2px 0 var(--ac2)}
+html[data-color="cyber"] nav button.on .ni svg{filter:drop-shadow(0 0 5px var(--ac))}
+html[data-color="cyber"] .prm .ic{filter:grayscale(1) sepia(1) hue-rotate(150deg) saturate(6) drop-shadow(0 0 5px var(--ac))}
+html[data-color="cyber"] .dlg{border-radius:0;border:1px solid var(--ac);box-shadow:0 0 30px -6px var(--ac2),0 0 0 1px var(--ac2)}
+html[data-color="cyber"] #kay-p{border:1px solid var(--ac);box-shadow:0 0 28px -6px var(--ac2)}
+html[data-color="cyber"] #kay-f{box-shadow:0 0 0 2px var(--ac),0 0 20px 2px var(--ac2)}
+html[data-color="cyber"] ::selection{background:var(--ac2);color:#000}
+html[data-color="cyber"] [data-c=vermelho]{--nc:#ff2e63}html[data-color="cyber"] [data-c=laranja]{--nc:#ff9f1c}html[data-color="cyber"] [data-c=amarelo]{--nc:#fcee0a}html[data-color="cyber"] [data-c=verde]{--nc:#39ff14}html[data-color="cyber"] [data-c=azul]{--nc:#00f0ff}html[data-color="cyber"] [data-c=roxo]{--nc:#bd00ff}html[data-color="cyber"] [data-c=rosa]{--nc:#ff2bd6}
+html[data-color="cyber"]::after{content:"";position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);opacity:.38}
+.cy-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:linear-gradient(180deg,#04010b 0%,#10042a 42%,#3b0a58 74%,#8a1177 100%)}
+.cy-bg svg.cy-city{position:absolute;left:0;bottom:0;width:100%;height:100%}
+.cy-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,2,15,.55),transparent 35%,rgba(6,2,15,.45))}
+.cy-r{position:absolute;top:-80px;width:1px;height:64px;background:linear-gradient(transparent,rgba(0,240,255,.8));opacity:.45;animation:cyrain linear infinite}
+.cy-neon{filter:drop-shadow(0 0 3px #ff2bd6) drop-shadow(0 0 8px #ff2bd6)}
+.cy-neon2{filter:drop-shadow(0 0 3px #00f0ff) drop-shadow(0 0 8px #00f0ff)}
+.cy-car{animation:cycar 16s linear infinite}.cy-car.b{animation-duration:23s;animation-delay:-9s}
+@keyframes cyrain{to{transform:translate3d(-38px,125vh,0)}}
+@keyframes cycar{from{transform:translateX(-60px)}to{transform:translateX(470px)}}
+@keyframes cyglitch{0%,92%,100%{transform:none}93%{transform:translateX(-2px) skewX(-6deg)}94%{transform:translateX(3px)}95%{transform:none}97%{transform:translateX(2px) skewX(5deg)}}
+@media(prefers-reduced-motion:reduce){html[data-color="cyber"] h1,.cy-r,.cy-car{animation:none}}
+
+
 /* ---- Tema Pica-pau (personagem original: pássaro verde-oliva de topete amarelo) ---- */
 :root[data-color="picapau"][data-eff="light"]{--bg:#f8f0dc;--sf:#fffaf0;--ac:#b4541a;--acs:#f7dfc2;--ln:#e6d2ae;--onac:#fff}
 :root[data-color="picapau"][data-eff="dark"]{--bg:#16100a;--sf:#221810;--ac:#f4b63f;--acs:#41301a;--ln:#3b2c1c;--onac:#2a1a00}
@@ -882,7 +933,19 @@ const ICO={
  plantao:'<path d="M12 4v16M4 12h16"/>',
  relogio:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'
 };
-const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k]||''}</svg>`;
+const CYICO={
+ inicio:'<path d="M3 12 12 3l9 9"/><path d="M6 10v10h5v-6h2v6h5V10"/><path d="M12 3v2"/>',
+ agenda:'<path d="M6 4h12v13l-3 3H6z"/><path d="M9 3v3h6V3"/><path d="M9 11h6M9 15h3"/>',
+ cal:'<path d="M3 6h18v14H3z"/><path d="M3 10h18M8 3v5M16 3v5"/><path d="M7 14h2M11 14h2M15 14h2"/>',
+ notas:'<path d="M4 4h16v11l-5 5H4z"/><path d="M15 20v-5h5"/><path d="M8 9h8M8 13h4"/>',
+ diario:'<path d="M5 3h14v18H5z"/><path d="M9 3v18"/><path d="M12 8h4M12 12h4"/>',
+ compras:'<path d="M2 3h3l2 12h12l2-8H6"/><path d="M8.5 19h2v2h-2zM16.5 19h2v2h-2z"/>',
+ carteira:'<path d="M3 7h15l3 3v10H3z"/><path d="M3 7l3-3h12"/><path d="M16 14h5"/>',
+ mercado:'<path d="M3 9l2-5h14l2 5"/><path d="M3 9h18"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/>',
+ plantao:'<path d="M12 4v5M12 15v5M4 12h5M15 12h5"/><path d="M10 10h4v4h-4z"/>',
+ relogio:'<path d="M12 3l7 4v10l-7 4-7-4V7z"/><path d="M12 8v4l3 2"/>'
+};
+const svg=k=>{const c=document.documentElement.dataset.color==='cyber'&&CYICO[k];return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${c?1.7:1.9}" stroke-linecap="${c?'square':'round'}" stroke-linejoin="${c?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
 const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
@@ -2455,8 +2518,8 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a']];
-function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();render()}
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a'],['cyber','Cyberpunk','#ff2bd6']];
+function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();try{nav()}catch(e){}render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
  return `<h3>${_t('Aparência')}</h3><div class="card"><label class="fl" style="margin-top:0">${_t('Modo')}</label><div class="seg">${tm.map(a=>`<button class="${tema===a[0]?'on':''}" onclick="setTheme('${a[0]}')">${a[1]}</button>`).join('')}</div>`
@@ -3098,6 +3161,44 @@ function recadoConfigQuandoLivre(n){n=n||0;
  try{if(localStorage.getItem(RECADO_CFG_KEY))return}catch(e){return}
  if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<180)setTimeout(()=>recadoConfigQuandoLivre(n+1),1000);return}
  recadoConfig()}
+
+/* ---------- recado: tudo o que a Kayla sabe fazer (uma única vez por aparelho, para todos os usuários) ----------
+   Aparece na próxima vez que o usuário abrir o app (e já entrou com nome/conta), depois da senha e das outras caixas.
+   Se a Kayla ganhar função nova, atualize a lista. Para mostrar de novo a todos, troque o número da chave (-v1 → -v2). */
+const RECADO_KAYLA_KEY='ma-recado-kayla-v1';
+const RECADO_KAYLA=[
+ ['📅','Agendar compromissos','“marcar dentista amanhã às 14h” ou “novo compromisso reunião sexta 9h”. Ela cria só o que você pediu.'],
+ ['⏰','Criar lembretes','“me lembre de ligar pro João às 18h”.'],
+ ['📝','Anotar','“nova nota: ideia do projeto”. Ela salva só a nota, sem a expressão “nova nota”.'],
+ ['🗑️','Apagar e limpar','“apagar dentista”, “apagar tudo de amanhã”, “limpar a lista de compras”. Ela apaga na hora, e dá para tocar em Desfazer.'],
+ ['✅','Concluir tarefas','“concluir dentista”.'],
+ ['🔎','Mostrar sua agenda','“o que tenho hoje?”, “agenda de sexta”.'],
+ ['🛒','Lista de compras','“comprar arroz, feijão e café”, “arroz 8,99”, “2 kg de carne 32,90”, “mudar arroz para 9,50”.'],
+ ['💰','Carteira','“gastei 50 no mercado”, “recebi 300 de freela”, “conta fixa luz 120 dia 10”, “meu salário é 2500”. Também edita e apaga gastos.'],
+ ['🧭','Abrir telas','“abrir carteira”, “abrir notas”, “ir para o calendário”.'],
+ ['🎨','Ajustes do app','“tema escuro”, “tema cyberpunk”, “ativar lembretes”.'],
+ ['🎙️','Falar com ela','Toque no microfone do chat e diga o comando.'],
+ ['🧑‍🏫','Tour e dúvidas','Diga “tour” para aprender o app, ou pergunte como algo funciona.']];
+function recadoKayla(){
+ if(!S.user||!S.user.name)return;
+ if(document.querySelector('.rc-ov'))return;
+ try{if(localStorage.getItem(RECADO_KAYLA_KEY))return;localStorage.setItem(RECADO_KAYLA_KEY,'1')}catch(e){return}
+ const o=document.createElement('div');o.className='ov rc-ov';
+ o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="O que a Kayla faz"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
+  +'<div class="rc-h"><p>💬 Conheça a Kayla: tudo o que ela faz por você</p><small>Toque no botão da Kayla na tela e escreva o pedido do seu jeito. Esta mensagem aparece só uma vez.</small></div>'
+  +'<div class="rc-b">'+RECADO_KAYLA.map(r=>'<div class="prm"><span class="ic">'+r[0]+'</span><span class="t"><b>'+esc(r[1])+'</b><small>'+esc(r[2])+'</small></span></div>').join('')+'</div>'
+  +'<div class="rc-f"><button type="button" id="rc-ok">Entendi</button></div></div>';
+ document.body.appendChild(o);
+ const fim=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
+ const kd=e=>{if(e.key==='Escape')fim()};
+ document.addEventListener('keydown',kd,true);
+ o.querySelector('.dev-x').onclick=fim;o.querySelector('#rc-ok').onclick=fim;
+ setTimeout(()=>{try{o.querySelector('#rc-ok').focus()}catch(e){}},50)}
+function recadoKaylaQuandoLivre(n){n=n||0;
+ try{if(localStorage.getItem(RECADO_KAYLA_KEY))return;if(kCfg().off)return}catch(e){return}
+ if(n>600)return;
+ if(!S.user||!S.user.name||PIN_LK||permAsking||document.querySelector('.ov')){setTimeout(()=>recadoKaylaQuandoLivre(n+1),1000);return}
+ recadoKayla()}
 
 /* ---------- aviso para NOVOS usuários: tudo o que o app oferece (só uma caixa de informação, aparece uma única vez) ----------
    Novo = abriu o app sem nome e sem dados (tela de boas-vindas). Quem já usava o app nunca vê esta caixa.
@@ -3745,7 +3846,7 @@ function kCriar(tipo,p){const ev={id:uid(),title:p.title,date:p.date||kHoje(),ti
  kAdd('k',`Pronto! ${tipo==='lembrete'?'Lembrete':'Compromisso'} criado: “${ev.title}” para ${kFmtD(ev.date)}${ev.time?' às '+ev.time:' (sem hora)'}.`+(ev.time&&!on?'\nOs lembretes estão desligados: quer que eu ative?':''),ev.time&&!on?['Ativar lembretes','Obrigado']:null)}
 function kEvTxt(e){return '• '+(e.time?e.time+' · ':'')+e.title+' ('+kFmtD(e.date)+')'}
 function kApagarEv(L){if(!L.length)return;const ids=L.map(e=>e.id);
- ask(L.length===1?'Apagar “'+L[0].title+'” ('+kFmtD(L[0].date)+')?':'Apagar '+L.length+' compromissos?',()=>{
+ kAsk(L.length===1?'Apagar “'+L[0].title+'” ('+kFmtD(L[0].date)+')?':'Apagar '+L.length+' compromissos?',()=>{
   K.undo=S.ev.filter(x=>ids.includes(x.id));S.ev=S.ev.filter(x=>!ids.includes(x.id));save();try{schedSoon()}catch(e){}render();
   kAdd('k',L.length===1?'Apaguei “'+L[0].title+'”.':'Apaguei '+L.length+' compromissos.',['Desfazer'])},'Apagar')}
 function kApagar(txt){
@@ -3929,7 +4030,7 @@ function social(txt,c,n){
 function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||null);return true};
  const sh=S.shop||[],nt=S.notes||[],ev=(S.ev||[]).filter(e=>!e.done);
  const q=x=>N(x||'');const now=new Date();const agora=kHoje()+' '+kP2(now.getHours())+':'+kP2(now.getMinutes());
- if(/^(?:limp\w+|zerar|esvaziar|apag\w+ tud\w+(?: da)?)\s+(?:a |minha )?(?:lista|compras)/.test(n)){ask('Limpar toda a lista de compras?',()=>{S.shop=[];save();render();kAdd('k','Lista de compras limpa.')},'Limpar');kAdd('u',txt);return true}
+ if(/^(?:limp\w+|zerar|esvaziar|apag\w+ tud\w+(?: da)?)\s+(?:a |minha )?(?:lista|compras)/.test(n)){kAsk('Limpar toda a lista de compras?',()=>{S.shop=[];save();render();kAdd('k','Lista de compras limpa.')},'Limpar');kAdd('u',txt);return true}
  if(/^(?:limp\w+|tir\w+|remov\w+|apag\w+)\s+(?:os |as |o que )?(?:ja )?(?:comprad\w+|marcad\w+|pegos?|riscad\w+)/.test(n)){const q2=sh.filter(i=>i.done).length;S.shop=sh.filter(i=>!i.done);save();render();return say(q2?'Tirei '+q2+' item(ns) já comprado(s) da lista.':'Não há itens marcados como comprados.')}
  if((m=c.match(R('^(?:tir\\w+|remov\\w+|apag\\w+|exclu\\w+|delet\\w+|risc\\w+|some\\w*\\s+com|sum\\w+\\s+com|cancel\\w+)\\s+(?:o |a |os |as )?(.+?)\\s+d(?:a|o|e)s?\\s+(?:minha\\s+)?(?:lista|compras)(?:\\s+de\\s+compras)?$')))){const k=q(m[1]);const f=sh.filter(i=>q(i.title).includes(k));if(!f.length)return say('Não achei “'+m[1]+'” na lista de compras.');S.shop=sh.filter(i=>!f.includes(i));save();render();return say('Tirei da lista: '+f.map(i=>i.title).join(', ')+'.')}
  if((m=c.match(R('^(?:ja\\s+)?(?:comprei|peguei|trouxe|marca\\w*\\s+(?:como\\s+)?(?:comprad(?:o|a)s?|pego))\\s+(?:o |a |os |as |um |uma )*(.+)$')))){const its=m[1].split(/\s*,\s*|\s+e\s+/i).map(q).filter(Boolean);const f=sh.filter(i=>!i.done&&its.some(k=>q(i.title).includes(k)));if(f.length){f.forEach(i=>i.done=true);save();render();return say('Marquei como comprado: '+f.map(i=>i.title).join(', ')+'. ✓')}}
@@ -4023,7 +4124,7 @@ kFaq.push([/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Me
 /* ===== KAYLA · AJUSTA AS CONFIGURAÇÕES DO APP conforme o pedido ===== */
 (function(){
 const N=s=>kNorm(s).replace(/\bvc\b/g,'voce').replace(/\bpra\b/g,'para').replace(/\bmin\b/g,'minutos').replace(/\bq\b/g,'que').replace(/[^a-z0-9: ]/g,' ').replace(/\s+/g,' ').trim();
-const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['picapau',/pica ?pau/]];
+const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['cyber',/cyber|ciberpunk|neon/],['picapau',/pica ?pau/]];
 const TABN=[['inicio',/inicio|home/],['agenda',/agenda/],['cal',/calendario/],['notas',/notas?/],['diario',/diario/],['compras',/compras|lista/],['carteira',/carteira|gastos|financas/],['mercado',/promocoes|promocao|mercado|ofertas/]];
 const LG=[['en',/ingles|english/],['es',/espanhol|spanish|espanol/],['de',/alemao|german|deutsch/],['pt',/portugues/]];
 const near=(v,L)=>L.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
@@ -4103,7 +4204,7 @@ kRun=function(txt){const n=kNorm(String(txt||''));
  _r3(txt)};
 })();
 /* ===== KAYLA · APAGAR TUDO: notas, lista de compras (feira), diário, carteira, plantões, histórico, mercados e mais =====
-   Todo pedido de exclusão pede confirmação (itens soltos da lista de compras saem direto) e pode ser desfeito logo depois ("desfazer"). */
+   Todo pedido de exclusão é executado direto, sem confirmação, e pode ser desfeito logo depois ("desfazer"). */
 (function(){
 const N=s=>kNorm(s);
 const C=()=>{try{normCart()}catch(e){}return S.cart};
@@ -4195,13 +4296,13 @@ function pedir(key,L,tudo,extra){const c=CATS[key];
   kAdd('k',L.length===1?'Apaguei “'+L[0].lab+'”.':'Apaguei '+L.length+' '+c.plu+'.',['Desfazer'])};
  if(c.quick&&!tudo)return go();
  const lista=L.length===1?'“'+L[0].lab+'”':L.length+' '+c.plu;
- ask('Apagar '+lista+'?'+(L.length>1&&L.length<=5?' ('+L.map(x=>x.lab).join('; ')+')':''),go,'Apagar')}
+ kAsk('Apagar '+lista+'?'+(L.length>1&&L.length<=5?' ('+L.map(x=>x.lab).join('; ')+')':''),go,'Apagar')}
 function escolher(key,pool,q){const c=CATS[key],show=pool.slice(0,8);
  K.pend={t:'apagarG',cat:key,L:pool,S:show};
  kAdd('k','Achei '+pool.length+' '+c.plu+(q?' com “'+q+'”':'')+'. Qual apagar?\n'+show.map((x,i)=>(i+1)+'. '+x.lab).join('\n')+(pool.length>show.length?'\n… e mais '+(pool.length-show.length):''),show.map((x,i)=>String(i+1)).concat(['Todos','Cancelar']))}
 function apagarTudo(){
- ask('Apagar TUDO do app? Isso remove compromissos, notas, lista de compras, histórico, produtos, diário, gastos, contas fixas, renda, plantões, hospitais, mercados e preços escaneados. Seu perfil, ajustes e senha ficam.',()=>{
-  ask('Última confirmação: tem certeza? Dá para usar “Desfazer” logo em seguida, mas só enquanto o app não for fechado.',()=>{
+ kAsk('Apagar TUDO do app? Isso remove compromissos, notas, lista de compras, histórico, produtos, diário, gastos, contas fixas, renda, plantões, hospitais, mercados e preços escaneados. Seu perfil, ajustes e senha ficam.',()=>{
+  kAsk('Última confirmação: tem certeza? Dá para usar “Desfazer” logo em seguida, mas só enquanto o app não for fechado.',()=>{
    const uns=[];let total=0;
    TUDO_ORDEM.forEach(k=>{const L=CATS[k].items();if(L.length){total+=L.length;uns.push(CATS[k].del(L))}});
    if(!uns.length){kAdd('k','Não havia nada para apagar.');return}
@@ -4404,7 +4505,7 @@ function baseCmd(t){
  const del=/^(?:apag\w*|exclu\w*|remov\w*|delet\w*|zer\w*|limp\w*)\b/.test(t);
  const kw=R('\\b(?:salario|renda\\s+(?:mensal|fixa|base)|ganho\\s+mensal)\\b');
  if(del&&kw.test(t)&&!/\b(?:extra|extras)\b/.test(t)){const old=cart().base;if(!old){say('Sua renda mensal já está zerada.');return true}
-  U();ask('Zerar a renda mensal fixa ('+BRL(old)+')?',()=>{cart().base=0;undoSet(()=>{cart().base=old});save();render();say('Renda mensal zerada.',['Desfazer'])},'Zerar');return true}
+  U();kAsk('Zerar a renda mensal fixa ('+BRL(old)+')?',()=>{cart().base=0;undoSet(()=>{cart().base=old});save();render();say('Renda mensal zerada.',['Desfazer'])},'Zerar');return true}
  if(del)return false;
  const ganho=/\b(?:ganho|recebo|ganhamos)\b.*\bpor m[eê]s\b|\bpor m[eê]s\b.*\b(?:ganho|recebo)\b/.test(t);
  if(!kw.test(t)&&!ganho)return false;
@@ -4605,16 +4706,66 @@ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
   const bk={base:c.base,g:c.gastos.map(x=>Object.assign({},x)),r:c.rendas.map(x=>Object.assign({},x)),f:c.fixas.map(x=>Object.assign({},x))};
   const com=!!(bk.base||bk.g.some(x=>+x.val)||bk.r.some(x=>+x.val)||bk.f.some(x=>+x.val));
   if(!com){kAdd('k','Sua Carteira já está com todos os valores zerados.',['Abrir carteira']);return}
-  ask('Zerar todos os valores da Carteira? A renda fixa e os valores de '+bk.g.length+' gasto(s), '+bk.r.length+' renda(s) extra(s) e '+bk.f.length+' conta(s) fixa(s) vão para R$ 0,00. Os lançamentos, nomes e datas ficam. Dá para desfazer.',()=>{
+  kAsk('Zerar todos os valores da Carteira? A renda fixa e os valores de '+bk.g.length+' gasto(s), '+bk.r.length+' renda(s) extra(s) e '+bk.f.length+' conta(s) fixa(s) vão para R$ 0,00. Os lançamentos, nomes e datas ficam. Dá para desfazer.',()=>{
    c.base=0;c.gastos.forEach(x=>{x.val=0});c.rendas.forEach(x=>{x.val=0});c.fixas.forEach(x=>{x.val=0});
    K.undo=null;K.undoG=()=>{c.base=bk.base;c.gastos=bk.g;c.rendas=bk.r;c.fixas=bk.f};
    save();render();kAdd('k','Pronto! Todos os valores da Carteira estão em R$ 0,00. Mantive os lançamentos, nomes e datas.',['Abrir carteira','Desfazer'])},'Zerar valores')};
  kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
   try{if(!K.pend&&K.tour<0&&ehZerar(txt)){kAdd('u',txt);zera();return}}catch(e){try{console.warn('Kayla zerar carteira:',e)}catch(x){}}
   _p(txt)}})();
+/* Kayla apaga direto, sem pedir confirmação (sempre dá para “Desfazer”) */
+function kAsk(msg,fn){fn()}
+/* Kayla: “novo compromisso …” e “nova nota …” — só a ordem dada vai para a agenda/notas; a expressão de comando não entra no texto */
+(function(){const _p=kRun;
+ const SEP='[\\s,:;.\\-–—]*';
+ const PRE='^\\s*(?:kayla'+SEP+')?(?:(?:criar|crie|adicionar|adicione|fazer|fa[cç]a|registrar|registre)\\s+)?(?:(?:um|uma)\\s+)?';
+ const RC=new RegExp(PRE+'novo\\s+(?:compromisso|agendamento)(?![A-Za-zÀ-ÿ])'+SEP+'([\\s\\S]*)$','i');
+ const RN=new RegExp(PRE+'nova\\s+nota(?![A-Za-zÀ-ÿ])'+SEP+'([\\s\\S]*)$','i');
+ const lim=s=>String(s||'').replace(/^[\s,:;.\-–—]+|[\s,;.\-–—]+$/g,'').trim();
+ const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
+ const salvaNota=t=>{t=cap(lim(t));if(!t){K.pend={t:'nota'};kAdd('k','O que você quer anotar? (ou diga “cancelar”)');return}
+  S.notes.push({id:uid(),title:t.slice(0,40),text:t,color:'',at:Date.now()});save();render();kAdd('k','Nota salva: “'+t.slice(0,60)+'”.',['Abrir notas'])};
+ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
+  try{
+   if(K.pend&&K.pend.t==='nota'){K.pend=null;kAdd('u',txt);if(/^(cancelar|deixa|esquece|nao|não)\b/i.test(txt)){kAdd('k','Tudo bem, cancelei.');return}salvaNota(txt);return}
+   if(!K.pend&&!(K.tour>=0)){let m;
+    if((m=txt.match(RN))){kAdd('u',txt);salvaNota(m[1]);return}
+    if((m=txt.match(RC))){kAdd('u',txt);const p=kParse(lim(m[1]));p.title=cap(lim(p.title));
+     if(!p.title){K.pend={t:'titulo',tipo:'compromisso',date:p.date,time:p.time};kAdd('k','Qual o título do compromisso? (ou diga “cancelar”)');return}
+     kCriar('compromisso',p);return}}
+  }catch(e){try{console.warn('Kayla novo compromisso/nota:',e)}catch(x){}}
+  _p(txt)}})();
+/* Cyberpunk: papel de parede (cidade neon, chuva, carros voadores) + fontes futuristas */
+function cyCity(){let q=1337;const r=()=>{q=(q*16807)%2147483647;return q/2147483647},f=n=>n.toFixed(1);
+ let far='',near='',win='',neon='',x=-6;
+ while(x<410){const w=20+r()*28,h=120+r()*190;far+=`<rect x="${f(x)}" y="${f(600-h)}" width="${f(w)}" height="${f(h)}"/>`;x+=w+1}
+ x=-8;
+ while(x<410){const w=28+r()*34,h=70+r()*230,y=600-h,c=r()>.5?'#ff2bd6':'#00f0ff';
+  near+=`<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}"/>`;win+=`<rect x="${f(x+3)}" y="${f(y+6)}" width="${f(w-6)}" height="${f(h-6)}"/>`;
+  neon+=`<path d="M${f(x)} ${f(y)}H${f(x+w)}" stroke="${c}" stroke-width="1.6" fill="none"/>`;
+  if(r()>.6)neon+=`<path d="M${f(x+w/2)} ${f(y)}V${f(y-18-r()*16)}" stroke="#ff2e63" stroke-width="1" fill="none"/><circle cx="${f(x+w/2)}" cy="${f(y-24)}" r="1.4" fill="#ff2e63"/>`;
+  if(r()>.7)neon+=`<rect x="${f(x+w-9)}" y="${f(y+22)}" width="5" height="${f(34+r()*30)}" fill="none" stroke="${c==='#ff2bd6'?'#00f0ff':'#ff2bd6'}" stroke-width="1.6"/>`;
+  x+=w+3}
+ return `<svg class="cy-city" viewBox="0 0 400 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><linearGradient id="cysun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fcee0a"/><stop offset="1" stop-color="#ff2bd6"/></linearGradient><mask id="cymk"><rect width="400" height="600" fill="#fff"/><rect x="200" y="338" width="200" height="4" fill="#000"/><rect x="200" y="352" width="200" height="6" fill="#000"/><rect x="200" y="368" width="200" height="8" fill="#000"/></mask><pattern id="cyw" width="7" height="9" patternUnits="userSpaceOnUse"><rect x="1.5" y="2" width="2.4" height="3.2" fill="#00f0ff" opacity=".75"/><rect x="4.4" y="5.2" width="1.8" height="2.4" fill="#fcee0a" opacity=".55"/></pattern></defs>
+ <circle cx="292" cy="340" r="82" fill="url(#cysun)" mask="url(#cymk)" opacity=".85"/>
+ <g fill="#1a0838" opacity=".9">${far}</g>
+ <g fill="#0a0418" stroke="#2a0f55" stroke-width=".8">${near}</g>
+ <g fill="url(#cyw)" opacity=".55">${win}</g>
+ <g class="cy-neon">${neon}</g>
+ <g class="cy-neon2"><rect x="38" y="214" width="46" height="9" fill="none" stroke="#00f0ff" stroke-width="1.6"/><path d="M300 196h36M300 204h24" stroke="#ff2bd6" stroke-width="2"/></g>
+ <g class="cy-car"><rect x="0" y="150" width="16" height="3" fill="#fff"/><circle cx="1" cy="151.5" r="2" fill="#ff2e63"/></g>
+ <g class="cy-car b"><rect x="0" y="105" width="12" height="2.4" fill="#00f0ff"/><circle cx="11" cy="106" r="1.7" fill="#fcee0a"/></g></svg>`}
+function cyBg(){let el=document.querySelector('.cy-bg');
+ if(S.color!=='cyber'){if(el)el.remove();return}
+ if(el)return;el=document.createElement('div');el.className='cy-bg';
+ let rn='';for(let i=0;i<26;i++)rn+=`<i class="cy-r" style="left:${(i*37+11)%104}%;animation-duration:${.9+(i%6)*.25}s;animation-delay:-${(i%9)*.3}s"></i>`;
+ el.innerHTML=cyCity()+rn;document.body.prepend(el)}
+(function(){const _a=applyTheme;applyTheme=function(){_a.apply(this,arguments);try{
+ if(S.color==='cyber'&&!document.getElementById('cy-font')){const l=document.createElement('link');l.id='cy-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(l)}
+ cyBg()}catch(e){}}})();
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{kSync()}catch(e){}}})();
 
-guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
+guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 </script>
