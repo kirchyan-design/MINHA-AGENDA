@@ -2184,8 +2184,8 @@ try{fired=new Set(JSON.parse(localStorage.getItem('mp-fired')||'[]'))}catch(e){}
 const LNp=()=>plug('LocalNotifications');
 const nid=k=>{let h=7;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;return h%2000000000+1};
 function gatilhos(){const N=S.notif,out=[];if(!N.on)return out;
- S.ev.forEach(e=>{if(e.done||!e.date)return;const tem=!!e.time,t=new Date(e.date+'T'+(e.time||'08:00')).getTime();if(isNaN(t))return;
-  out.push({key:'e'+e.id,at:t-(tem?N.lead*60000:0),title:(tem?'⏰ ':'📋 ')+e.title,body:tem?(N.lead?'Começa às '+e.time+' (em '+N.lead+' min)':'Agora: '+e.time):'Compromisso de hoje'})});
+ S.ev.forEach(e=>{if(e.done||!e.date)return;const tem=!!e.time,t=new Date(e.date+'T'+(e.time||'08:00')).getTime();if(isNaN(t))return;const ld=e.exato?0:N.lead;
+  out.push({key:'e'+e.id,at:t-(tem?ld*60000:0),title:(tem?'⏰ ':'📋 ')+e.title,body:tem?(ld?'Começa às '+e.time+' (em '+ld+' min)':'Agora: '+e.time):'Compromisso de hoje'})});
  if(N.plOn)S.pl.forEach(p=>{const t=new Date(p.date+'T'+p.ent).getTime();if(isNaN(t))return;
   out.push({key:'p'+p.id,at:t-N.plLead*60000,title:'🩺 Plantão '+p.ent+' → '+p.sai,body:'Começa às '+p.ent+(hospBy(p.hosp)?' · '+hospBy(p.hosp).name:'')+(p.obs?' · '+p.obs:'')})});
  if(N.cwOn!==false)cwGatilhos(N).forEach(x=>out.push(x));
@@ -5129,6 +5129,18 @@ function esBg(){let el=document.querySelector('.es-bg');
  if(S.color==='escritorio'&&!document.getElementById('es-font')){const l=document.createElement('link');l.id='es-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap';document.head.appendChild(l)}
  esBg()}catch(e){}}})();
 
+/* ---------- KAYLA · NOTIFICAÇÃO COM O APP FECHADO ----------
+   Quando a Kayla cria um compromisso/lembrete com hora, os lembretes são ligados na hora (pede a permissão de
+   notificação e de alarme exato do Android) e o aviso fica agendado no sistema (LocalNotifications, allowWhileIdle),
+   então toca mesmo com o app fechado. Lembrete/alarme dito à Kayla toca NA HORA marcada; compromisso segue o
+   “avisar antes” das Configurações. */
+(function(){const _kc=kCriar;
+ kCriar=async function(tipo,p){
+  try{if(p&&p.time&&!(S.notif&&S.notif.on))await ativarLembretes(true)}catch(e){}
+  const n0=S.ev.length;_kc.apply(this,arguments);
+  try{if(S.ev.length>n0){const ev=S.ev[S.ev.length-1];
+    if(ev&&ev.time&&(tipo==='lembrete'||/(^|\s)(lembr|alarm)/i.test(String((p&&p.title)||'')))){ev.exato=true;save()}}
+   agendarNotifs(true)}catch(e){}}})();
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
