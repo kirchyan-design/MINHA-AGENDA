@@ -2795,7 +2795,7 @@ async function vozIni(ev){
     else vozMicNegado();
     return}
    try{const a=await N.available();if(a&&a.available===false){V.hold=false;clearTimeout(V.max);vozAviso('⚠️','O reconhecimento de voz não está disponível neste celular. <small>Confira se o app Google está instalado e atualizado.</small>',8000);return}}catch(e){}
-   const ouvindo=()=>vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99</small></span>','ouve');
+   const ouvindo=()=>vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');
    ouvindo();vozBt(1);V.on=true;
    const opt={language:LOC(),maxResults:3,partialResults:true,popup:false};
    V.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m){V.txt=m;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(vozTxt())+'<small>Solte o botão para registrar</small></span>','ouve')}});
@@ -2809,7 +2809,7 @@ async function vozIni(ev){
   const r=new W();r.lang=LOC();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
   r.onresult=e=>{let x='';for(let i=0;i<e.results.length;i++)x+=e.results[i][0].transcript;V.txt=x;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(x)+'<small>Solte o botão para registrar</small></span>','ouve')};
   const sq=V.seq;r.onerror=e=>{V.erro=e&&e.error;setTimeout(()=>{if(sq===V.seq)vozProc()},300)};r.onend=()=>{if(sq===V.seq)vozProc()};
-  vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99</small></span>','ouve');vozBt(1);
+  vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');vozBt(1);
   V.sr=r;V.on=true;r.start()
  }catch(e){V.hold=false;V.on=false;clearTimeout(V.max);vozBt(0);
   const why=String((e&&(e.message||e.errorMessage))||e||'').slice(0,120);
@@ -2836,7 +2836,45 @@ async function vozProc(){
  if(!txt){const neg=V.erro==='not-allowed'||V.erro==='service-not-allowed';
   vozBolha('<span class="mic">🎙️</span><span class="tx">'+(neg?'Microfone bloqueado. Permita o microfone nas configurações.':'Não ouvi nada. Segure o botão e fale de novo.')+'</span>');vozAuto(3500);return}
  vozAdd(txt)}
+/* ---------- comandos de voz da feira: FINALIZAR · EXCLUIR (produto) · TROCAR PARA (mercado) ---------- */
+function feiraCmd(txt,soFimTroca){
+ let t=nrm(String(txt||'')).replace(/[.,!?;:]+/g,' ').replace(/\s+/g,' ').trim();
+ t=t.replace(/^(?:kayla|por favor)\s+/,'').replace(/\s+(?:por favor|kayla|obrigad[oa])$/,'').trim();
+ let m;
+ /* FINALIZAR */
+ if(/^(?:finalizar|finaliza|finalize|finalizado|encerrar|encerra|fechar|fecha)(?:\s+(?:a\s+|essa\s+|esta\s+)?(?:lista|compra|compras|feira))?$/.test(t)){
+  if(!S.shop.length)return {ic:'⚠️',msg:'A lista está vazia',sub:'Adicione produtos antes de finalizar.'};
+  if(!(S.market||'').trim()){escMk=true;render();return {ic:'🏪',msg:'Escolha o mercado para finalizar',sub:'Depois diga FINALIZAR de novo.'}}
+  const bk=S.shop.slice(),mk=S.market,n=bk.length,total=tot(bk);finish();const hid=S.hist[0]&&S.hist[0].id;
+  return {ic:'✅',msg:'Lista finalizada · '+n+(n===1?' produto':' produtos')+' · '+brl(total),sub:'Salva no histórico de '+esc(mk)+'.',
+   undo:()=>{S.hist=S.hist.filter(h=>h.id!==hid);S.shop=bk;S.market=mk;S.mkSkip=false;sub='atual';save();render()}}}
+ if(soFimTroca&&!/^(?:troc\w+|troqu\w+|mud\w+)\b/.test(t))return null;
+ /* TROCAR PARA (mercado) */
+ if((m=t.match(/^(?:trocar|troca|troque|mudar|muda|mude)\s+(?:de\s+mercado\s+)?(?:para|pra|pro)\s+(?:o\s+|a\s+)?(?:mercado\s+)?(.+)$/))){
+  const q=m[1].trim(),qs=q.replace(/[^a-z0-9]/g,'');
+  const id=mkId(q)||((MK().find(x=>{const n=nrm(x.nome).replace(/[^a-z0-9]/g,'');return n===qs||(qs.length>=3&&(n.includes(qs)||qs.includes(n)))})||{}).id)||'';
+  const mk=id&&MK().find(x=>x.id===id);
+  if(!mk)return {ic:'🤔',msg:'Não achei o mercado “'+esc(q)+'”',sub:'Mercados: '+esc(MK().map(x=>x.nome).slice(0,6).join(', '))+'. Cadastre novos em Escolher mercado.'};
+  const antes=S.market,mkAntes=S.mkSkip;S.market=mk.nome;S.mkSkip=false;escMk=false;save();render();
+  return {ic:'🏪',msg:'Mercado trocado para '+esc(mk.nome),sub:antes?'Antes: '+esc(antes):'',undo:()=>{S.market=antes;S.mkSkip=mkAntes;save();render()}}}
+ if(soFimTroca)return null;
+ /* EXCLUIR (produto) */
+ if((m=t.match(/^(?:excluir|exclui|exclua|apagar|apaga|apague|remover|remove|remova|tirar|tira|tire|deletar|deleta|delete)(?:\s+(?:o\s+|a\s+|os\s+|as\s+)?(?:produto|item)?\s*(.*))?$/))){
+  let q=(m[1]||'').replace(/^(?:o|a|os|as|produto|item)\s+/,'').trim();
+  if(/^(?:lista|compras|tudo|todos|todas|feira)/.test(q))return null;
+  let L=S.shop;if(!L.length)return {ic:'⚠️',msg:'A lista está vazia',sub:''};
+  let i=-1;
+  if(!q||/^(?:ultimo|ultima|esse|essa|este|esta|que (?:adicionei|coloquei|acabei de adicionar)|adicionado|que foi adicionado)(?:\s+(?:produto|item|adicionado))?$/.test(q))i=L.length-1;
+  else{const qn=nrm(q);for(let k=L.length-1;k>=0;k--){if(nrm(L[k].title)===qn){i=k;break}}
+   if(i<0)for(let k=L.length-1;k>=0;k--){const d=nrm(L[k].title);if(d.includes(qn)||(d.length>=3&&qn.includes(d))){i=k;break}}}
+  if(i<0)return {ic:'🤔',msg:'Não achei “'+esc(q)+'” na lista',sub:''};
+  const it=L[i];S.shop.splice(i,1);save();if(tab==='compras'&&sub==='atual')render();
+  return {ic:'🗑️',msg:esc(it.title)+' excluído da lista',sub:'',undo:()=>{S.shop.splice(Math.min(i,S.shop.length),0,it);save();if(tab==='compras'&&sub==='atual')render()}}}
+ return null}
 function vozAdd(txt){
+ const c=feiraCmd(txt);
+ if(c){V.undo=c.undo?{fn:c.undo}:null;vozBolha('<span class="mic">'+c.ic+'</span><span class="tx">'+c.msg+(c.sub?'<small>'+c.sub+'</small>':'')+'</span>',null,c.undo?'Desfazer':null);
+  const bu=$('#voz-u');if(bu)bu.onclick=vozDesfaz;vozAuto(c.undo?7000:4500);return}
  const r=parseVoz(txt);
  if(!r.nome){vozBolha('<span class="mic">🤔</span><span class="tx">Não entendi o produto<small>Ouvi: “'+esc(txt)+'”</small></span>');vozAuto(4500);return}
  const k=r.nome.toLowerCase(),mem=S.prods[k],sem=r.preco==null;
@@ -2854,6 +2892,7 @@ function vozAdd(txt){
  vozBolha('<span class="mic">'+(sem&&!preco?'⚠️':'✅')+'</span><span class="tx">'+esc(r.nome)+(preco?' · '+brl(preco)+(un==='kg'?'/kg':''):'')+(ja?' (preço atualizado)':' adicionado')+'<small>'+(sem&&!preco?'Sem preço: toque no valor na lista para digitar.':'Ouvi: “'+esc(txt)+'”')+'</small></span>',null,'Desfazer');
  const bu=$('#voz-u');if(bu)bu.onclick=vozDesfaz;vozAuto(7000)}
 function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
+ if(u.fn){u.fn();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800);return}
  if(u.novo)S.shop=S.shop.filter(x=>x.id!==u.novo);else if(u.ja)u.ja.price=u.old;
  if(u.scan)S.scans=S.scans.filter(x=>x.id!==u.scan);
  save();if(tab==='compras'&&sub==='atual')render();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800)}
@@ -3476,10 +3515,86 @@ const K_AI={ai:null,mod:null,modelo:null};
 const K_PERSONA='Você é a Kayla, assistente virtual do app JC ORGANIZA (agenda, lembretes, notas, diário, lista de compras e carteira). '
  +'Responda sempre em português do Brasil, de forma simpática, direta e curta (no máximo 4 frases). '
  +'Pode bater papo leve sobre o dia a dia, contar piadas e curiosidades e dar dicas de organização, produtividade e rotina. Entenda gírias, abreviações, regionalismos nordestinos (oxe, visse, arretado) e erros de digitação. '
- +'Você só conversa e orienta: quem executa ações no app são os comandos do app. Se o usuário quiser agendar, anotar ou comprar algo, ensine a frase certa, por exemplo: '
+ +'Agenda, lembretes, notas e lista de compras são feitos pelos comandos do app: se o usuário quiser agendar, anotar ou comprar algo, ensine a frase certa, por exemplo: '
  +'"marcar dentista amanhã às 14h", "me lembre de ligar pro João às 18h", "anotar: ideia do projeto", "comprar arroz, feijão e café". '
- +'Nunca diga que já criou, apagou ou alterou algo: você não faz isso nesta conversa. '
+ +'CARTEIRA: você PODE adicionar, alterar e excluir valores da carteira (gastos, rendas extras, contas fixas e renda mensal) usando as ferramentas carteira_adicionar, carteira_alterar, carteira_excluir e carteira_salario. '
+ +'Use a lista “Carteira do usuário” abaixo para achar o id do item. Se faltar o valor ou não ficar claro qual item mudar, pergunte antes de chamar a ferramenta. Para excluir, chame carteira_excluir (o app pede a confirmação ao usuário). '
+ +'Só diga que fez algo na carteira se chamou a ferramenta. Para qualquer outra coisa (agenda, notas, compras) nunca diga que já criou, apagou ou alterou: você não faz isso nesta conversa. '
  +'Se não souber ou se o assunto fugir do app, seja honesta e ofereça ajuda com a agenda. Não invente compromissos: use só os da lista abaixo.';
+/* ---------- Kayla IA: poder de adicionar, alterar e excluir valores na CARTEIRA (function calling do Gemini) ---------- */
+const K_CTIPOS=['gasto','renda_extra','conta_fixa'];
+const K_CCATS=['contas','feira','extra','transp','saude','outros'];
+const K_CART_TOOLS=[{functionDeclarations:[
+ {name:'carteira_adicionar',description:'Adiciona um lançamento na carteira: um gasto avulso, uma renda extra ou uma conta fixa mensal.',
+  parameters:{type:'object',properties:{tipo:{type:'string',enum:K_CTIPOS},descricao:{type:'string',description:'Nome do lançamento, ex.: Uber, Luz, Freela'},valor:{type:'number',description:'Valor em reais, maior que zero'},
+   data:{type:'string',description:'Só para gasto: AAAA-MM-DD. Se não informado, hoje.'},mes:{type:'string',description:'Só para renda_extra: AAAA-MM. Se não informado, o mês atual.'},
+   dia_vencimento:{type:'integer',description:'Só para conta_fixa: dia do mês de 1 a 31'},categoria:{type:'string',enum:K_CCATS,description:'contas, feira (mercado), extra (lazer), transp (transporte), saude, outros'}},required:['tipo','valor']}},
+ {name:'carteira_alterar',description:'Altera um lançamento existente da carteira (valor, nome, data, dia de vencimento ou categoria).',
+  parameters:{type:'object',properties:{tipo:{type:'string',enum:K_CTIPOS},id:{type:'string',description:'id do item, tirado da lista Carteira do usuário'},descricao_atual:{type:'string',description:'nome atual do item, se não souber o id'},
+   novo_valor:{type:'number'},nova_descricao:{type:'string'},nova_data:{type:'string',description:'AAAA-MM-DD, só gasto'},novo_dia_vencimento:{type:'integer'},nova_categoria:{type:'string',enum:K_CCATS}},required:['tipo']}},
+ {name:'carteira_excluir',description:'Exclui um lançamento da carteira. O app pede confirmação ao usuário antes de apagar.',
+  parameters:{type:'object',properties:{tipo:{type:'string',enum:K_CTIPOS},id:{type:'string',description:'id do item, tirado da lista Carteira do usuário'},descricao_atual:{type:'string',description:'nome do item, se não souber o id'}},required:['tipo']}},
+ {name:'carteira_salario',description:'Define a renda mensal fixa (salário) da carteira.',parameters:{type:'object',properties:{valor:{type:'number',description:'Valor mensal em reais; 0 zera'}},required:['valor']}}
+]}];
+function kCartSnap(){
+ try{normCart();const c=S.cart,hoje=kHoje(),mes=hoje.slice(0,7),ant=cPrev(mes),L=[];
+  L.push('Renda mensal fixa: '+BRL(c.base));
+  const fx=c.fixas.filter(f=>f.ini<=mes&&(!f.fim||mes<=f.fim));
+  L.push('Contas fixas:');fx.slice(0,30).forEach(f=>L.push('- id='+f.id+' | '+f.desc+' | '+f.val+' | dia '+f.dia+' | '+f.cat));if(!fx.length)L.push('(nenhuma)');
+  const re=c.rendas.filter(r=>r.m===mes||r.m===ant);L.push('Rendas extras (este mês e o anterior):');re.slice(0,20).forEach(r=>L.push('- id='+r.id+' | '+r.desc+' | '+r.val+' | '+r.m));if(!re.length)L.push('(nenhuma)');
+  const gs=c.gastos.filter(g=>g.date.slice(0,7)===mes||g.date.slice(0,7)===ant).sort((a,b)=>b.date.localeCompare(a.date));
+  L.push('Gastos (este mês e o anterior, mais recentes primeiro):');gs.slice(0,50).forEach(g=>L.push('- id='+g.id+' | '+g.desc+' | '+g.val+' | '+g.date+' | '+g.cat));if(!gs.length)L.push('(nenhum)');
+  return '\n\nCarteira do usuário (valores em reais):\n'+L.join('\n')}catch(e){return ''}}
+function kIaFim(texto,calls){
+ if(!calls||!calls.length)return texto;
+ let r='';try{r=kIaExec(calls)}catch(e){try{console.warn('Kayla carteira:',e)}catch(x){}r='Não consegui mexer na carteira agora.'}
+ return (r+(texto?'\n'+texto:'')).trim()}
+function kIaExec(calls){
+ normCart();const c=S.cart,out=[],uns=[];K.aiChips=null;
+ const kn=x=>kNorm(String(x==null?'':x));
+ const arr=t=>t==='gasto'?c.gastos:t==='renda_extra'?c.rendas:t==='conta_fixa'?c.fixas:null;
+ const nomeT=t=>t==='gasto'?'gasto':t==='renda_extra'?'renda extra':'conta fixa';
+ const val=v=>{const n=typeof v==='number'?cR2(v):cNum(v);return n>0?n:0};
+ const dOk=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(String(d||'')))return null;const t=new Date(d+'T12:00:00');return isNaN(t)||iso(t)!==d?null:d};
+ const mOk=m=>/^\d{4}-(0[1-9]|1[0-2])$/.test(String(m||''))?m:null;
+ const cat=x=>K_CCATS.includes(x)?x:null;
+ const lab=(t,x)=>(x.desc||nomeT(t))+(t==='gasto'?' · '+kFmtD(x.date):t==='renda_extra'?' · '+x.m:' · dia '+x.dia)+' · '+BRL(x.val);
+ const achar=(t,a)=>{const L=arr(t);if(!L)return {err:'Não entendi o tipo de lançamento.'};
+  let x=a.id&&L.find(i=>i.id===a.id);if(x)return {x};
+  const q=kn(a.descricao_atual||a.descricao).trim();if(q.length<2)return {err:'Qual '+nomeT(t)+'? Me diga o nome dele.'};
+  let m=L.filter(i=>kn(i.desc).trim()===q);if(!m.length)m=L.filter(i=>{const d=kn(i.desc);return d.includes(q)||(d.length>=3&&q.includes(d))});
+  if(m.length===1)return {x:m[0]};
+  if(!m.length)return {err:'Não achei '+nomeT(t)+' “'+q+'”.'};
+  m.sort((a,b)=>String(b.date||b.m||'').localeCompare(String(a.date||a.m||'')));
+  return {err:'Achei '+m.length+' com “'+q+'”. Qual deles?\n'+m.slice(0,6).map((i,k)=>(k+1)+'. '+lab(t,i)).join('\n')}};
+ calls.forEach(fc=>{const a=fc.args||{},nm=fc.name;
+  if(nm==='carteira_salario'){const v=cR2(+a.valor);if(!(v>=0)){out.push('Não entendi o valor da renda mensal.');return}const old=c.base;c.base=v;uns.push(()=>{c.base=old});out.push(v?'Renda mensal fixa definida: '+BRL(v)+(old?' (era '+BRL(old)+')':'')+'. ✓':'Renda mensal zerada. ✓');return}
+  const t=a.tipo;if(!arr(t)){out.push('Não entendi qual tipo de lançamento da carteira.');return}
+  if(nm==='carteira_adicionar'){const v=val(a.valor);if(!v){out.push('Qual o valor? Não consegui anotar sem ele.');return}
+   const desc=String(a.descricao||'').trim().replace(/^./,m=>m.toUpperCase());
+   if(t==='gasto'){const g={id:uid(),date:dOk(a.data)||kHoje(),cat:cat(a.categoria)||'outros',desc,val:v};c.gastos.push(g);try{cMes=g.date.slice(0,7)}catch(e){}uns.push(()=>{c.gastos=c.gastos.filter(x=>x.id!==g.id)});out.push('Anotei o gasto: '+(desc||'Sem descrição')+' · '+BRL(v)+' ('+kFmtD(g.date)+'). ✓')}
+   else if(t==='renda_extra'){const x={id:uid(),m:mOk(a.mes)||kHoje().slice(0,7),desc,val:v};c.rendas.push(x);try{cMes=x.m}catch(e){}uns.push(()=>{c.rendas=c.rendas.filter(y=>y.id!==x.id)});out.push('Renda extra anotada: '+(desc||'Renda')+' · '+BRL(v)+' em '+x.m.slice(5)+'/'+x.m.slice(0,4)+'. ✓')}
+   else{if(!desc){out.push('Qual o nome da conta fixa?');return}const dia=Math.min(31,Math.max(1,parseInt(a.dia_vencimento)||1));const f={id:uid(),desc,val:v,dia,cat:cat(a.categoria)||'contas',ini:kHoje().slice(0,7)};c.fixas.push(f);uns.push(()=>{c.fixas=c.fixas.filter(y=>y.id!==f.id)});out.push('Conta fixa criada: '+desc+' · '+BRL(v)+' · vence dia '+dia+'. ✓')}
+   return}
+  const r=achar(t,a);if(r.err){out.push(r.err);return}const x=r.x;
+  if(nm==='carteira_alterar'){const old=Object.assign({},x),msg=[];
+   if(a.novo_valor!=null){const v=val(a.novo_valor);if(!v){out.push('Não entendi o novo valor.');return}x.val=v;msg.push('valor '+BRL(v))}
+   if(a.nova_descricao){x.desc=String(a.nova_descricao).trim().replace(/^./,m=>m.toUpperCase());msg.push('nome “'+x.desc+'”')}
+   if(a.nova_data&&t==='gasto'){const d=dOk(a.nova_data);if(d){x.date=d;msg.push('data '+kFmtD(d))}}
+   if(a.novo_dia_vencimento&&t==='conta_fixa'){const d=parseInt(a.novo_dia_vencimento);if(d>=1&&d<=31){x.dia=d;msg.push('vence dia '+d)}}
+   if(a.nova_categoria&&t!=='renda_extra'&&cat(a.nova_categoria)){x.cat=a.nova_categoria;msg.push('categoria '+a.nova_categoria)}
+   if(!msg.length){out.push('O que você quer mudar em “'+(x.desc||nomeT(t))+'”?');return}
+   uns.push(()=>{Object.keys(x).forEach(k=>{if(!(k in old))delete x[k]});Object.assign(x,old)});out.push('Alterei “'+(old.desc||nomeT(t))+'”: '+msg.join(', ')+'. ✓');return}
+  if(nm==='carteira_excluir'){const L=lab(t,x);
+   ask('Apagar '+nomeT(t)+' “'+L+'”?',()=>{
+    const bk=arr(t).slice(),pg={};
+    if(t==='conta_fixa')Object.keys(c.pagas).forEach(m=>{if(c.pagas[m]&&c.pagas[m][x.id]){(pg[m]=pg[m]||{})[x.id]=true;delete c.pagas[m][x.id]}});
+    const nv=bk.filter(y=>y.id!==x.id);if(t==='gasto')c.gastos=nv;else if(t==='renda_extra')c.rendas=nv;else c.fixas=nv;
+    K.undo=null;K.undoG=()=>{if(t==='gasto')c.gastos.push(x);else if(t==='renda_extra')c.rendas.push(x);else{c.fixas.push(x);Object.keys(pg).forEach(m=>{c.pagas[m]=Object.assign(c.pagas[m]||{},pg[m])})}};
+    save();render();kAdd('k','Apaguei “'+L+'”. ✓',['Abrir carteira','Desfazer'])},'Apagar');
+   out.push('Pedi sua confirmação para apagar “'+L+'”.')}});
+ if(uns.length){K.undo=null;K.undoG=()=>{uns.slice().reverse().forEach(f=>{try{f()}catch(e){}})};save();render();K.aiChips=['Abrir carteira','Desfazer']}
+ return out.join('\n')}
 async function kIaInit(){
  if(K_AI.ai)return K_AI.ai;
  let ultimo=null;
@@ -3495,7 +3610,7 @@ async function kIaPerguntar0(txt,ev,hist){
  if(typeof navigator!=='undefined'&&navigator.onLine===false)throw new Error('offline');
  const ai=await kIaInit();
  const eventos=ev.map(e=>'• '+e.d+' '+(e.h||'')+' '+e.t).join('\n')||'(nenhum)';
- const system=K_PERSONA+'\n\nHoje é '+kHoje()+'.\nPróximos compromissos do usuário:\n'+eventos;
+ const system=K_PERSONA+'\n\nHoje é '+kHoje()+'.\nPróximos compromissos do usuário:\n'+eventos+kCartSnap();
  const contents=[];
  hist.forEach(h=>{const role=h.r==='user'?'user':'model';if(!h.t)return;
   if(contents.length&&contents[contents.length-1].role===role)contents[contents.length-1].parts[0].text+='\n'+h.t;else contents.push({role:role,parts:[{text:h.t}]})});
@@ -3503,10 +3618,14 @@ async function kIaPerguntar0(txt,ev,hist){
  if(contents.length&&contents[contents.length-1].role==='user')contents[contents.length-1].parts[0].text+='\n'+txt;else contents.push({role:'user',parts:[{text:txt}]});
  const lista=K_AI.modelo?[K_AI.modelo]:K_MODELOS;let ultimo=null;
  for(const nome of lista){
-  try{const m=K_AI.mod.getGenerativeModel(ai,{model:nome,systemInstruction:system,generationConfig:{maxOutputTokens:1024}});
-   const r=await m.generateContent({contents:contents});const t=(r.response.text()||'').trim();K_AI.modelo=nome;return t||'Não consegui responder agora.'}
+  for(let tent=0;tent<2;tent++){
+  try{const cfg={model:nome,systemInstruction:system,generationConfig:{maxOutputTokens:1024}};if(!K_AI.semTools)cfg.tools=K_CART_TOOLS;
+   const m=K_AI.mod.getGenerativeModel(ai,cfg);
+   const r=await m.generateContent({contents:contents});let t='',fc=null;try{t=(r.response.text()||'').trim()}catch(x){}try{fc=r.response.functionCalls()}catch(x){}
+   K_AI.modelo=nome;return kIaFim(t,fc)||'Não consegui responder agora.'}
   catch(e){ultimo=e;const msg=String((e&&(e.code||''))+' '+(e&&e.message||e));
-   if(/not.?found|404|not supported|no longer|deprecat/i.test(msg)){K_AI.modelo=null;continue}throw e}}
+   if(!K_AI.semTools&&!/not.?found|404/i.test(msg)&&/\b400\b|function|tool/i.test(msg)){K_AI.semTools=true;continue}
+   if(/not.?found|404|not supported|no longer|deprecat/i.test(msg)){K_AI.modelo=null;break}throw e}}}
  throw ultimo||new Error('sem modelo')}
 /* Algumas extensões do navegador (ou telas de pré-visualização) interceptam o fetch e quebram quando o SDK envia um objeto Headers/AbortSignal
    ("DataCloneError ... Headers object could not be cloned"). Durante a chamada da IA, convertemos os cabeçalhos para um objeto simples. */
@@ -3519,7 +3638,7 @@ async function kSemHeaders(fn){
 const kIaPerguntar=(a,b,c)=>kSemHeaders(()=>kIaPerguntar0(a,b,c));
 function kIaMonta(txt,ev,hist){
  const eventos=ev.map(e=>'• '+e.d+' '+(e.h||'')+' '+e.t).join('\n')||'(nenhum)';
- const system=K_PERSONA+'\n\nHoje é '+kHoje()+'.\nPróximos compromissos do usuário:\n'+eventos;
+ const system=K_PERSONA+'\n\nHoje é '+kHoje()+'.\nPróximos compromissos do usuário:\n'+eventos+kCartSnap();
  const contents=[];
  hist.forEach(h=>{const role=h.r==='user'?'user':'model';if(!h.t)return;
   if(contents.length&&contents[contents.length-1].role===role)contents[contents.length-1].parts[0].text+='\n'+h.t;else contents.push({role:role,parts:[{text:h.t}]})});
@@ -3532,10 +3651,12 @@ function kXhr(url,body){return new Promise((ok,er)=>{const x=new XMLHttpRequest(
 async function kIaRest(txt,ev,hist){
  const m=kIaMonta(txt,ev,hist);const lista=K_AI.modelo?[K_AI.modelo]:K_MODELOS;let ult='';
  for(const nome of lista){
-  const r=await kXhr('https://firebasevertexai.googleapis.com/v1beta/projects/'+K_FB.projectId+'/models/'+nome+':generateContent',
-   {contents:m.contents,systemInstruction:{parts:[{text:m.system}]},generationConfig:{maxOutputTokens:1024}});
+  const corpo=()=>{const b={contents:m.contents,systemInstruction:{parts:[{text:m.system}]},generationConfig:{maxOutputTokens:1024}};if(!K_AI.semTools)b.tools=K_CART_TOOLS;return b};
+  const url='https://firebasevertexai.googleapis.com/v1beta/projects/'+K_FB.projectId+'/models/'+nome+':generateContent';
+  let r=await kXhr(url,corpo());
+  if(r.s===400&&!K_AI.semTools){K_AI.semTools=true;r=await kXhr(url,corpo())}
   let j=null;try{j=JSON.parse(r.t)}catch(e){}
-  if(r.s===200&&j){const c=j.candidates&&j.candidates[0],t=c&&c.content&&c.content.parts?c.content.parts.map(p=>p.text||'').join('').trim():'';K_AI.modelo=nome;return t||'Não consegui responder agora.'}
+  if(r.s===200&&j){const c=j.candidates&&j.candidates[0],ps=c&&c.content&&c.content.parts?c.content.parts:[],t=ps.map(p=>p.text||'').join('').trim(),fc=ps.filter(p=>p.functionCall).map(p=>p.functionCall);K_AI.modelo=nome;return kIaFim(t,fc)||'Não consegui responder agora.'}
   const msg=(j&&j.error&&(j.error.message||j.error.status))||String(r.t).slice(0,160);
   ult='HTTP '+r.s+' '+String(msg).replace(/\s+/g,' ').slice(0,170);
   if(r.s===404){K_AI.modelo=null;continue}
@@ -3611,7 +3732,7 @@ function kRun(txt){txt=String(txt||'').trim();if(!txt)return;kAdd('u',txt);const
  if(K.tour>=0){if(/^(proximo|continuar|sim|ok|vamos|concluir)/.test(n)){kTourStep(K.tour+1);return}if(/^(sair|parar|cancelar|chega)/.test(n)){K.tour=-1;kAdd('k','Tour encerrado. Se quiser retomar, é só pedir “tour”.');return}}
  if(/^(oi|ola|e ai|bom dia|boa tarde|boa noite|hey)\b/.test(n)){kAdd('k','Oi! Como posso ajudar? Posso agendar algo, criar um lembrete, anotar, montar sua lista de compras ou abrir uma tela.',['O que tenho hoje?','Fazer o tour']);return}
  if(/\btour\b|como (eu )?(uso|usar|funciona)|primeira vez|me (ensina|mostra)|^comecar/.test(n)){kTourStep(0);return}
- if(/o que (voce|vc|tu) (faz|sabe|pode)|ajuda\b|^help/.test(n)){kAdd('k','Eu posso:\n• Agendar: “marcar dentista amanhã às 14h”\n• Lembrete: “me lembre de ligar pro João às 18h”\n• Nota: “anotar: ideia do projeto”\n• Compras: “comprar arroz, feijão e café”, ou já com preço: “arroz 8,99”, “2 kg de carne 32,90”, “mudar arroz para 9,50”\n• Carteira: “gastei 50 no mercado”, “recebi 300 de freela”, “conta fixa luz 120 dia 10”, “meu salário é 2500”, “mudar gasto do uber para 30”\n• Ver agenda: “o que tenho hoje?”\n• Concluir: “concluir dentista”\n• Apagar: “apagar dentista”, “apagar notas”, “limpar a lista de feira”, “apagar gastos de outubro”, “apagar tudo”, “desfazer”\n• Abrir: “abrir carteira”\n• Tema e lembretes: “tema escuro”, “ativar lembretes”',['Fazer o tour']);return}
+ if(/o que (voce|vc|tu) (faz|sabe|pode)|ajuda\b|^help/.test(n)){kAdd('k','Eu posso:\n• Agendar: “marcar dentista amanhã às 14h”\n• Lembrete: “me lembre de ligar pro João às 18h”\n• Nota: “anotar: ideia do projeto”\n• Compras: “comprar arroz, feijão e café”, ou já com preço: “arroz 8,99”, “2 kg de carne 32,90”, “mudar arroz para 9,50”\n• Carteira: “gastei 50 no mercado”, “recebi 300 de freela”, “conta fixa luz 120 dia 10”, “meu salário é 2500”, “mudar gasto do uber para 30”, “apagar gasto do uber”, “mude minha renda para 3000”, “mude o vencimento da internet para dia 15”, “45 reais de gasto com feira”, “adicione 5000 reais a minha renda”, “adicione 75 reais de internet em gastos fixos”, “remova todos os meus gastos fixos”. Também entendo pedidos livres, como “troca o valor da luz pra 150”\n• Ver agenda: “o que tenho hoje?”\n• Concluir: “concluir dentista”\n• Apagar: “apagar dentista”, “apagar notas”, “limpar a lista de feira”, “apagar gastos de outubro”, “apagar tudo”, “desfazer”\n• Abrir: “abrir carteira”\n• Tema e lembretes: “tema escuro”, “ativar lembretes”',['Fazer o tour']);return}
  if((m=n.match(/\b(ativar|ligar|desativar|desligar)\b.*\blembretes?\b/))){const on=/^(ativar|ligar)/.test(m[1]);if(typeof ativarLembretes==='function'){ativarLembretes(on);kAdd('k',on?'Certo, ativando os lembretes. Se o celular pedir permissão, toque em Permitir.':'Lembretes desativados.')}return}
  if(/^ativar lembretes$/.test(n)){ativarLembretes(true);kAdd('k','Certo, ativando os lembretes. Se o celular pedir permissão, toque em Permitir.');return}
  if((m=n.match(/\btema\s+(escuro|claro|automatico)\b|\bmodo\s+(escuro|claro)\b/))){const v=m[1]||m[2];setTheme(v==='escuro'?'dark':v==='claro'?'light':'auto');kAdd('k','Tema '+v+' aplicado.');return}
@@ -3639,7 +3760,7 @@ function kRun(txt){txt=String(txt||'').trim();if(!txt)return;kAdd('u',txt);const
   fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:txt,today:kHoje(),events:ev})}).then(r=>r.json()).then(d=>{K.msgs.pop();kAdd('k',d.reply||'Não consegui responder agora.')}).catch(()=>{K.msgs.pop();kAdd('k','Sem conexão com o meu servidor agora.')});return}
  kAdd('k','Pensando…');{const ev=S.ev.filter(e=>!e.done&&e.date>=kHoje()).slice(0,15).map(e=>({t:e.title,d:e.date,h:e.time}));
   const hist=K.msgs.filter(x=>x.txt&&x.txt!=='Pensando…').slice(-7,-1).map(x=>({r:x.who==='u'?'user':'k',t:String(x.txt).slice(0,400)}));
-  kIaTudo(txt,ev,hist).then(r=>({ok:1,t:r}),e=>kIaDiag(e).then(t=>({ok:0,t:t}))).then(o=>{K.msgs.pop();kAdd('k',o.t,o.ok?null:['O que você faz?','Fazer o tour'])});return}
+  kIaTudo(txt,ev,hist).then(r=>({ok:1,t:r}),e=>kIaDiag(e).then(t=>({ok:0,t:t}))).then(o=>{K.msgs.pop();const ch=K.aiChips;K.aiChips=null;kAdd('k',o.t,o.ok?(ch||null):['O que você faz?','Fazer o tour'])});return}
  }catch(e){kAdd('k','Ops, tive um problema ao fazer isso. Tente de outro jeito.')}}
 function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!=='undefined'&&PIN_LK);
  let f=$('#kay-f');
@@ -3854,7 +3975,7 @@ function cfg(txt){const n=N(txt);let m;
   return fim(txt,'⚙️ Suas configurações:\n• Modo: '+({auto:'automático',light:'claro',dark:'escuro'}[S.theme||'auto'])+'\n• Cor: '+nomeCor(S.color||'teal')+'\n• Menu: '+(S.flow?'giratório (Flow)':S.menu==='bottom'?'embaixo':'lateral')+'\n• Menus ativos: '+TABS_ALL.filter(t=>!off.includes(t[0])).map(t=>t[2]).join(', ')+'\n• Lembretes: '+(N0.on?'ligados, avisam '+(N0.lead?N0.lead+' min antes':'na hora'):'desligados')+(N0.plOn?'; plantões '+N0.plLead+' min antes':'')+'\n• Idioma: '+((LANGS.find(l=>l[0]===LANG)||[0,'Português'])[1])+'\n• Kayla: '+(kCfg().off?'desativada':'ativada'))}
  if(/(?:resetar|restaurar|voltar|padrao).*(?:aparencia|cores|cor|tema|visual)|(?:aparencia|cores|visual).*(?:padrao|original)/.test(n)){const t0=S.theme||'auto',c0=S.color||'teal';S.color='teal';setTheme('auto');return fim(txt,'Aparência restaurada: modo automático e cor Turquesa.',()=>{S.color=c0;setTheme(t0)})}
  /* cor */
- if(/\b(?:cor|cores|tema|deix\w+|mud\w+|troc\w+|colo\w+|pint\w+|alter\w+|bot\w+|quero)\b/.test(n)&&!/\b(?:comprar|nota|anotar|agendar|marcar)\b/.test(n)){
+ if(/\b(?:cor|cores|tema|deix\w+|mud\w+|troc\w+|troqu\w+|colo\w+|pint\w+|alter\w+|bot\w+|quero)\b/.test(n)&&!/\b(?:comprar|nota|anotar|agendar|marcar)\b/.test(n)){
   const c=CORES.find(x=>x[1].test(n));
   if(c&&!/\b(?:modo|tema)\s+(?:escuro|claro|noturno|dark)\b/.test(n)){const c0=S.color||'teal';setColor(c[0]);return fim(txt,'Pronto! Cor '+nomeCor(c[0])+' aplicada. 🎨',()=>setColor(c0))}}
  /* menu */
@@ -3871,7 +3992,7 @@ function cfg(txt){const n=N(txt);let m;
     for(const [id] of t){const off=(S.tabsOff||[]).includes(id);if(ocultar&&!off){if(TABS_ALL.length-(S.tabsOff||[]).length<=1){out.push('Pelo menos um menu precisa ficar ativo.');break}togTab(id);out.push('Menu '+nomeTab(id)+' escondido')}else if(!ocultar&&off){togTab(id);out.push('Menu '+nomeTab(id)+' ativado')}else out.push('Menu '+nomeTab(id)+' já está '+(ocultar?'escondido':'ativo'))}
     return fim(txt,out.join(' · ')+'.',()=>{S.tabsOff=antes;save();nav();render()})}}}
  /* idioma */
- if(/(?:idioma|lingua|language|traduz\w*|fal\w+|mud\w+|troc\w+|colo\w+|deix\w+|em )/.test(n)){const l=LG.find(x=>x[1].test(n));
+ if(/(?:idioma|lingua|language|traduz\w*|fal\w+|mud\w+|troc\w+|troqu\w+|colo\w+|deix\w+|em )/.test(n)){const l=LG.find(x=>x[1].test(n));
   if(l&&/(?:idioma|lingua|language|traduz|fal|app|tudo|mud|troc|deix|colo)/.test(n)&&!/\b(?:agendar|marcar|anotar|lembrar)\b/.test(n)){const l0=LANG;setLang(l[0]);return fim(txt,'Idioma alterado para '+LANGS.find(x=>x[0]===l[0])[1]+'.',()=>setLang(l0))}}
  /* antecedência dos lembretes */
  if(/(?:avis\w+|lembr\w+|alert\w+|notific\w+|tocar|toque|alarme)/.test(n)&&/(?:antes|na hora|no horario|nao lembrar)/.test(n)&&!/\b(?:marcar|agendar|dentista|reuniao|consulta)\b/.test(n)){
@@ -3956,7 +4077,7 @@ const CATS={
   items:()=>W(C().gastos,x=>(x.desc||'Gasto')+' · '+fd(x.date),x=>(x.desc||'')+' '+(x.cat||'')+' '+(x.date||''),x=>x.date),
   del:L=>byArr(()=>C().gastos,v=>{C().gastos=v},L)},
  fixas:{nome:'conta fixa',plu:'contas fixas',
-  re:/\b(?:contas? fixas?|despesas? fixas?|fixas?)\b/g,pl:/\b(?:fixas|contas fixas)\b/,
+  re:/\b(?:(?:contas?|despesas?|gastos?) fix[oa]s?|fix[oa]s?)\b/g,pl:/\b(?:fix[oa]s|(?:contas|despesas|gastos) fix[oa]s)\b/,
   items:()=>W(C().fixas,x=>(x.desc||'Conta fixa')+' (dia '+x.dia+')',x=>(x.desc||'')+' '+(x.cat||'')),
   del:L=>{const ids=new Set(L.map(x=>x.id));const bk=C().fixas.filter(x=>ids.has(x.id));const pg={};
    Object.keys(C().pagas).forEach(m=>{ids.forEach(id=>{if(C().pagas[m]&&C().pagas[m][id]){(pg[m]=pg[m]||{})[id]=true;delete C().pagas[m][id]}})});
@@ -4180,7 +4301,7 @@ function mesDe(s){const hoje=new Date();let m;
 const PREP=R('^(?:(?:de|do|da|dos|das|no|na|nos|nas|com|em|para|pra|por|um|uma|o|a|os|as|foi|foram|que|so|apenas)\\s+)+');
 const limpaDesc=s=>{let x=s.replace(/[:;,\-]+/g,' ').replace(/\s+/g,' ').trim();x=x.replace(PREP,'').replace(R('\\s+(?:de|do|da|no|na|com|em|para|pra|por)$'),'').trim();return x};
 /* ---------- gasto ---------- */
-const GASTOV=R('^(?:(?:eu\\s+)?(?:gastei|paguei|desembolsei|torrei)|(?:adicionar|adicione|add|registrar|registre|anotar|anote|lancar|lance|criar|crie|cadastrar|cadastre|colocar|coloque|botar|bota|poe|inserir|insira)\\s+(?:um\\s+|uma\\s+)?(?:novo\\s+|nova\\s+)?(?:gasto|despesa)(?:\\s+(?:extra|avulso|avulsa))?|(?:novo\\s+)?(?:gasto|despesa))\\b[\\s:,-]*');
+const GASTOV=R('^(?:(?:eu\\s+)?(?:gastei|paguei|desembolsei|torrei|saiu|sairam|pagamos|gastamos)|(?:adicionar|adicione|add|registrar|registre|anotar|anote|lancar|lance|criar|crie|cadastrar|cadastre|colocar|coloque|botar|bota|poe|inserir|insira)\\s+(?:um\\s+|uma\\s+)?(?:novo\\s+|nova\\s+)?(?:gasto|despesa)(?:\\s+(?:extra|avulso|avulsa))?|(?:novo\\s+)?(?:gasto|despesa))\\b[\\s:,-]*');
 function gastoAdd(t){const m=t.match(GASTOV);if(!m)return false;
  if(/\bfix[oa]s?\b/.test(t))return false;
  let r=t.slice(m[0].length);const dd=dataDe(r);r=dd.rest;const v=valorDe(r);
@@ -4193,10 +4314,10 @@ function gastoAdd(t){const m=t.match(GASTOV);if(!m)return false;
  undoSet(()=>{cart().gastos=cart().gastos.filter(x=>x.id!==g.id)});save();render();
  say('Anotei o gasto: '+(desc||'Sem descrição')+' · '+BRL(g.val)+' ('+kFmtD(g.date)+') em '+catNome(cat)+'. ✓',['Abrir carteira','Desfazer']);return true}
 /* ---------- renda extra ---------- */
-const RENDAV=R('^(?:(?:eu\\s+)?(?:recebi|ganhei)|entrou|entraram|(?:adicionar|adicione|add|registrar|registre|anotar|anote|lancar|lance|criar|crie|cadastrar|cadastre|colocar|coloque|botar|bota|poe)\\s+(?:um\\s+|uma\\s+)?(?:nova\\s+|novo\\s+)?(?:renda|ganho|recebimento)(?:\\s+extra)?|renda extra|recebimento)\\b[\\s:,-]*');
+const RENDAV=R('^(?:(?:eu\\s+)?(?:recebi|ganhei)|entrou|entraram|caiu|cairam|pingou|depositaram|depositou|(?:adicionar|adicione|add|registrar|registre|anotar|anote|lancar|lance|criar|crie|cadastrar|cadastre|colocar|coloque|botar|bota|poe)\\s+(?:um\\s+|uma\\s+)?(?:nova\\s+|novo\\s+)?(?:renda|ganho|recebimento)(?:\\s+extra)?|renda extra|recebimento)\\b[\\s:,-]*');
 function rendaAdd(t){const m=t.match(RENDAV);if(!m)return false;
  let r=t.slice(m[0].length);const ms=mesDe(r);if(ms)r=r.replace(ms.re,' ');const v=valorDe(r);if(!v)return false;
- const desc=cap(limpaDesc(v.rest.replace(R('\\b(?:vendendo|fazendo|trabalhando|extra)\\b','g'),' ')));const mes=ms?ms.k:iso(new Date()).slice(0,7);
+ const desc=cap(limpaDesc(v.rest.replace(R('\\b(?:vendendo|fazendo|trabalhando|extra)\\b','g'),' ')))||'Renda extra';const mes=ms?ms.k:iso(new Date()).slice(0,7);
  const x={id:uid(),m:mes,desc,val:v.v};cart().rendas.push(x);try{cMes=mes}catch(e){}
  undoSet(()=>{cart().rendas=cart().rendas.filter(y=>y.id!==x.id)});save();render();
  say('Renda extra anotada: '+(desc||'Renda')+' · '+BRL(x.val)+' em '+mes.slice(5)+'/'+mes.slice(0,4)+'. ✓',['Abrir carteira','Desfazer']);return true}
@@ -4204,9 +4325,9 @@ function rendaAdd(t){const m=t.match(RENDAV);if(!m)return false;
 const FIXAV=R('^(?:(?:adicionar|adicione|add|registrar|registre|anotar|anote|lancar|lance|criar|crie|cadastrar|cadastre|colocar|coloque|botar|bota|poe|inserir|insira)\\s+(?:uma\\s+|um\\s+)?(?:nova\\s+|novo\\s+)?)?(?:conta|despesa)s?\\s+fix(?:a|o)s?\\b[\\s:,-]*');
 function fixaAdd(t){let r,m=t.match(FIXAV);
  if(m)r=t.slice(m[0].length);
- else if(/\bfix[oa]\b/.test(t)&&/\bdia\s+\d/.test(t)&&!GASTOV.test(t)&&!/^(?:mud|alter|edit|corrig|atualiz|troc|ajust|apag|exclu|remov|delet)/.test(t))r=t.replace(/\bfix[oa]\b/,' ');
+ else if(/\bfix[oa]s?\b/.test(t)&&/\bdia\s+\d/.test(t)&&!GASTOV.test(t)&&!/^(?:mud|alter|edit|corrig|atualiz|troc|ajust|apag|exclu|remov|delet)/.test(t))r=t.replace(/\bfix[oa]s?\b/,' ');
  else return false;
- let dia=null,dm;if((dm=r.match(/\b(?:todo\s+)?(?:dia|vence(?:\s+(?:no|em))?(?:\s+dia)?)\s+(\d{1,2})\b/))){dia=+dm[1];r=r.replace(dm[0],' ')}
+ let dia=null,dm;if((dm=r.match(/\b(?:todo\s+)?(?:no\s+)?(?:dia|venc\w*(?:\s+(?:no|em|para|pro|pra|todo))?(?:\s+dia)?)\s+(\d{1,2})\b/))){dia=+dm[1];r=r.replace(dm[0],' ')}
  const v=valorDe(r);if(!v)return false;if(dia!=null&&(dia<1||dia>31))dia=null;
  const desc=cap(limpaDesc(v.rest.replace(/\btodo\s+m[eê]s\b/g,' ')));if(!desc){say('Qual o nome da conta fixa? Ex.: “conta fixa luz 120 dia 10”.');return true}
  const f={id:uid(),desc,val:v.v,dia:dia||1,cat:catOf(desc),ini:iso(new Date()).slice(0,7)};cart().fixas.push(f);
@@ -4227,7 +4348,7 @@ function baseCmd(t){
  say('Renda mensal fixa definida: '+BRL(v.v)+(old?' (era '+BRL(old)+')':'')+'. ✓',['Abrir carteira','Desfazer']);return true}
 /* ---------- editar: compras e carteira ---------- */
 const EDV=R('^(?:mud\\w+|alter\\w+|edit\\w+|corrig\\w+|atualiz\\w+|troc\\w+|ajust\\w+|renome\\w+)\\s+');
-const ESCOPO_LISTA=/\b(?:lista|compras|feira|item|produto)\b/,ESCOPO_G=/\b(?:gasto|despesa)\b/,ESCOPO_R=/\b(?:renda|ganho|recebimento)\b/,ESCOPO_F=/\b(?:fixa|fixo)\b/;
+const ESCOPO_LISTA=/\b(?:lista|compras|feira|item|produto)\b/,ESCOPO_G=/\b(?:gastos?|despesas?)\b/,ESCOPO_R=/\b(?:rendas?|ganhos?|recebimentos?)\b/,ESCOPO_F=/\bfix[oa]s?\b/;
 function candidatos(nome,esc){const nn=N(nome).trim();if(nn.length<2)return [];const ok=t=>{const d=N(t);return d===nn||(nn.length>=3&&(d.includes(nn)||(d.length>=3&&nn.includes(d))))};const L=[];
  if(!esc||esc.lista)S.shop.forEach(x=>{if(ok(x.title))L.push({k:'s',x,lab:x.title+' (lista, '+BRL(x.price)+')',ex:N(x.title)===nn})});
  if(!esc||esc.f)cart().fixas.forEach(x=>{if(ok(x.desc))L.push({k:'f',x,lab:x.desc+' (conta fixa, '+BRL(x.val)+')',ex:N(x.desc)===nn})});
@@ -4251,9 +4372,9 @@ function editParse(t){let rest,m,left,right;
  if(ESCOPO_LISTA.test(full)){esc.lista=1;tem=true}
  if(ESCOPO_G.test(full)){esc.g=1;tem=true}
  if(ESCOPO_R.test(full)){esc.r=1;tem=true}
- if(ESCOPO_F.test(full)||/\bconta\b/.test(full)){esc.f=1;tem=true}
+ if(ESCOPO_F.test(full)||/\bcontas?\b/.test(full)){esc.f=1;tem=true}
  if(/\bcarteira\b/.test(full)){esc.g=1;esc.r=1;esc.f=1;tem=true}
- const nome=full.replace(R('\\b(?:o|a|os|as|do|da|de|dos|das|no|na|nos|nas|preco|valor|quantidade|qtd|qtde|nome|categoria|dia|gasto|despesa|renda|ganho|recebimento|conta|fixa|fixo|lista|compras|feira|item|produto|carteira|meu|minha)\\b','g'),' ').replace(/\s+/g,' ').trim();
+ const nome=full.replace(R('\\b(?:o|a|os|as|do|da|de|dos|das|no|na|nos|nas|preco|valor|quantidade|qtd|qtde|nome|categoria|dia|gastos?|despesas?|rendas?|ganhos?|recebimentos?|extras?|contas?|fix[oa]s?|lista|compras|feira|item|produto|carteira|meu|minha)\\b','g'),' ').replace(/\s+/g,' ').trim();
  if(!nome)return null;
  return {nome,esc:tem?esc:null,campo,right:right.trim(),explicito:tem}}
 function aplicarEdicao(c,sp){
@@ -4281,6 +4402,94 @@ function editar(t){const sp=editParse(t);if(!sp)return false;
  if(pool.length===1){aplicarEdicao(pool[0],sp);return true}
  const show=pool.slice(0,8);K.pend={t:'editarG',L:show,sp};
  say('Achei '+pool.length+' com “'+sp.nome+'”. Qual mudar?\n'+show.map((c,i)=>(i+1)+'. '+c.lab).join('\n'),show.map((c,i)=>String(i+1)).concat(['Cancelar']));return true}
+/* ---------- frases livres: “adicione 5000 reais a minha renda”, “adicione 75 reais de internet em gastos fixos”, “adicione 45 reais de gasto com feira” ---------- */
+const ADDV2=/^(?:adicion\w+|add|acrescent\w+|some|soma|somar|inclu\w+|coloc\w+|ponh\w+|po[eê]|bot\w+|regist\w+|anot\w+|lan[cç]\w*|cadastr\w+|insir\w+|cri\w+)(?=\s)/;
+const SUBV2=/^(?:remov\w+|tir\w+|diminu\w+|reduz\w+|subtra\w+|desconta\w*|abat\w+)(?=\s)/;
+const TXT_FIXA=/(?:^|\s)(?:(?:em|nos?|nas?|como|para|pra|aos?|de)\s+)?(?:gastos?|despesas?|contas?)\s+fix[oa]s?(?=\s|$)/;
+const TXT_FIXA1=/(?:^|\s)fix[oa]s?(?=\s|$)/;
+const TXT_RENDA=/(?:^|\s)(?:renda|sal[aá]rio|ganhos?|receita)s?(?=\s|$)/;
+const TXT_RENDA_DE=/(?:^|\s)(?:(?:a|à|na|no|para|pra|ao|em|de|da|do)\s+)?(?:(?:minha|meu|nossa)\s+)?(?:renda|sal[aá]rio|ganhos?|receita)s?(?:\s+(?:extra|mensal|fixa|fixo|base))?(?=\s|$)/;
+const TXT_GASTO=/(?:^|\s)(?:gastos?|despesas?)(?=\s|$)/;
+const TXT_GASTO_DE=/(?:^|\s)(?:(?:de|em|nos?|nas?|como|para|pra)\s+)?(?:gastos?|despesas?)(?=\s|$)/;
+function fraseLivre(t){
+ const add=ADDV2.test(t),sub=SUBV2.test(t);if(!add&&!sub)return false;
+ const v=valorDe(t);if(!v)return false;
+ const body=t.replace(ADDV2,'').replace(SUBV2,'').replace(/\s+/g,' ').trim();
+ const fixa=TXT_FIXA.test(body)||TXT_FIXA1.test(body),renda=TXT_RENDA.test(body),gasto=TXT_GASTO.test(body);
+ if(add&&fixa){const r=body.replace(TXT_FIXA,' ').replace(TXT_FIXA1,' ').replace(/\s+/g,' ').trim();return fixaAdd('conta fixa '+r)}
+ if(add&&renda&&!gasto){
+  const mensal=/(?:^|\s)(?:mensal|fixa|fixo|base)(?=\s|$)|sal[aá]rio/.test(body);
+  const r=body.replace(TXT_RENDA_DE,' ').replace(/\s+/g,' ').trim();
+  if(!mensal)return rendaAdd('renda extra '+r);
+  const old=cart().base,nv=cR2(old+v.v);cart().base=nv;undoSet(()=>{cart().base=old});save();render();
+  say('Somei '+BRL(v.v)+' à renda mensal fixa: agora é '+BRL(nv)+(old?' (era '+BRL(old)+')':'')+'. ✓',['Abrir carteira','Desfazer']);return true}
+ if(add&&gasto&&!renda){const r=body.replace(TXT_GASTO_DE,' ').replace(/\s+/g,' ').trim();return gastoAdd('gasto '+r)}
+ if(sub&&renda&&!fixa&&!gasto&&!/(?:^|\s)(?:extras?|todas?|todos?|tudo)(?=\s|$)/.test(body)){
+  const old=cart().base;if(!old){say('Sua renda mensal fixa está zerada, não há o que tirar. Para apagar rendas extras, diga “apagar rendas”.');return true}
+  const nv=Math.max(0,cR2(old-v.v));cart().base=nv;undoSet(()=>{cart().base=old});save();render();
+  say('Tirei '+BRL(Math.min(v.v,old))+' da renda mensal fixa: agora é '+BRL(nv)+' (era '+BRL(old)+'). ✓',['Abrir carteira','Desfazer']);return true}
+ return false}
+/* ---------- vencimento das contas fixas: “mude minha renda para 3000”, “mude o vencimento da internet para dia 15”, “a luz vence dia 10”, “ponha vencimento para dia 5” ---------- */
+const VENC_V=/^(?:mud\w+|alter\w+|troc\w+|troqu\w+|ajust\w+|atualiz\w+|edit\w+|corrig\w+|pass\w+|mov\w+|adiant\w+|atras\w+|defin\w+|marc\w+|colo\w+|pon\w+|poe|bot\w+|fix\w+|deix\w+|quero|queria|preciso)\b/;
+const VENC_K=/\b(?:vencimento|vence|vencem|vencer|vencendo|venc|data de pagamento|dia de pagamento|dia do pagamento)\b/;
+const VENC_STOP=new Set('para pra pro dia dias data vence vencem vencer vencendo vencimento venc que pagamento minha meu minhas meus todo toda todos todas nas nos das dos uma uns umas conta contas fixa fixas fixo fixos gasto gastos despesa despesas agora quero queria preciso mude mudar altere alterar troque trocar ajuste ajustar coloque colocar ponha pone passe passar mova mover defina definir marque marcar bote botar deixe deixar edite editar corrija corrigir atualize atualizar sempre mais'.split(' '));
+function vencCmd(t){
+ if(/\?/.test(t))return false;
+ const n=N(t),kw=VENC_K.test(n),vb=VENC_V.test(n),dia=/\bdia\b/.test(n);
+ if(!kw&&!(vb&&dia))return false;
+ if(/^(?:apag|exclu|remov|delet|tir|zer|limp|adicion|add|acrescent|inclu|regist|anot|cadastr|insir|lanc|cri|some|soma)/.test(n))return false;
+ let d=null,m;
+ if((m=n.match(/\bdia\s+(\d{1,2})\b(?!\s*(?:\/|:|h\b))/)))d=+m[1];
+ else{const a=[...n.matchAll(/\b(\d{1,2})\b(?!\s*(?:\/|:|h\b|reais|real))/g)];if(a.length)d=+a[a.length-1][1]}
+ if(d==null)return false;
+ const F=cart().fixas,todas=/\b(?:todas?|todos)\b/.test(n)&&/\b(?:fix[oa]s?|contas|gastos|despesas)\b/.test(n);
+ const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ let alvo=[];
+ if(todas)alvo=F.slice();
+ else{
+  const c=F.map(f=>({f,d:N(f.desc).trim()})).filter(x=>x.d.length>=2&&new RegExp('\\b'+esc(x.d)+'\\b').test(n));
+  if(c.length){const mx=Math.max.apply(null,c.map(x=>x.d.length));alvo=c.filter(x=>x.d.length===mx).map(x=>x.f)}
+  else if(kw){const tk=n.replace(/[^a-z\s]/g,' ').split(/\s+/).filter(w=>w.length>=3&&!VENC_STOP.has(w));
+   if(tk.length)alvo=F.filter(f=>{const dd=N(f.desc);return tk.some(w=>dd.includes(w))})}}
+ if(!alvo.length){
+  if(/\b(?:fix[oa]s?|contas?|gastos?|despesas?)\b/.test(n)||(kw&&(vb||/^(?:o |a )?(?:data de |dia de )?vencimento\b/.test(n)))){
+   say(F.length?'Não achei essa conta fixa. Suas contas fixas: '+F.map(f=>f.desc+' (dia '+f.dia+')').join(', ')+'.\nEx.: “mudar vencimento da '+N(F[0].desc)+' para dia 15”.':'Você ainda não tem contas fixas. Crie uma assim: “adicione 75 reais de internet em gastos fixos dia 10”.');return true}
+  return false}
+ if(d<1||d>31){say('O dia do vencimento precisa ser de 1 a 31.');return true}
+ if(alvo.length>1&&!todas){say('Achei mais de uma conta fixa:\n'+alvo.slice(0,6).map(f=>'• '+f.desc+' (dia '+f.dia+')').join('\n')+'\nDiga o nome completo, ex.: “vencimento da '+N(alvo[0].desc)+' para dia '+d+'”.');return true}
+ const bk=alvo.map(f=>[f,f.dia]);alvo.forEach(f=>{f.dia=d});
+ undoSet(()=>{bk.forEach(a=>{a[0].dia=a[1]})});save();render();
+ say(alvo.length===1?'Vencimento de “'+alvo[0].desc+'” agora é dia '+d+' (era dia '+bk[0][1]+'). ✓':'Mudei o vencimento de '+alvo.length+' contas fixas para o dia '+d+'. ✓',['Abrir carteira','Desfazer']);return true}
+/* ---------- gasto solto: “45 reais gasto com feira”, “45 reais de feira”, “gastos de 45 com feira” ---------- */
+const KW_GASTO2=/^(?:feira|mercado|supermercado|padaria|acougue|hortifruti|sacolao|lanche|restaurante|pizza|ifood|uber|taxi|onibus|gasolina|combustivel|farmacia|remedio|cinema|estacionamento|pedagio|presente|churrasco|sorvete|viagem|passeio)\b/;
+function gastoSolto(t){
+ if(/\?/.test(t))return false;const n=N(t);
+ if(/^(?:apag|exclu|remov|delet|tir|mud|alter|edit|troc|ajust|atualiz|corrig|zer|limp|adicion|add|acrescent|inclu|coloc|ponh|regist|anot|cadastr|insir|lanc|cri|some|soma|quanto|qual)/.test(n))return false;
+ if(!/\d/.test(t)||GASTOV.test(t)||TXT_FIXA.test(t)||TXT_FIXA1.test(t)||TXT_RENDA.test(t))return false;
+ if(TXT_GASTO.test(t)){const r=t.replace(TXT_GASTO_DE,' ').replace(/\s+/g,' ').trim();return gastoAdd('gasto '+r)}
+ const m=n.match(/^(?:r\$\s*)?\d[\d.,]*\s*(?:reais|real|r\$)?\s+(?:de|do|da|na|no|em|com|pra|para)\s+(.+)$/);
+ if(m&&KW_GASTO2.test(m[1]))return gastoAdd('gasto '+t);
+ return false}
+/* ---------- “mude minha renda para 3000”, “minha renda agora é 3000”: define a renda mensal fixa ---------- */
+function rendaSet(t){
+ if(/\?/.test(t))return false;
+ t=t.replace(/(\d+(?:[.,]\d+)?)\s*mil\b/g,(x,d)=>String(Math.round(parseFloat(d.replace(',','.'))*1000))).replace(/\s+(?:por|ao|todo|todos os|a cada)\s+m[eê]s\b/g,' ');
+ const n=N(t);
+ const kw=/\b(?:renda|salario|ganho mensal)\b/;if(!kw.test(n)||/\b(?:extras?|fix[oa]s?\s+(?:de|da|do)|gastos?|despesas?|contas?)\b/.test(n))return false;
+ const verbo=/^(?:mud\w+|alter\w+|troc\w+|troqu\w+|ajust\w+|atualiz\w+|edit\w+|corrig\w+|defin\w+|pon\w+|poe|bot\w+|colo\w+|fix\w+|deix\w+|quero|queria)\b/.test(n);
+ const ehForma=/^(?:(?:a|o|minha|meu)\s+)*(?:renda|salario)(?:\s+(?:mensal|fixa|base|total))?\s+(?:agora\s+)?(?:e|eh|passou a ser|passa a ser|ficou|fica|sera|vai ser|:|=)\s/.test(n);
+ if(!verbo&&!ehForma)return false;
+ const zero=/\b(?:para|pra|em|e|eh)\s+(?:r\$\s*)?(?:zero|0(?:[.,]0+)?)\s*(?:reais?)?$/.test(n);
+ const sem=t.replace(/renda|sal[aá]rio|ganho mensal/ig,' ');const v=zero?{v:0}:valorDe(sem);if(!v)return false;
+ const resto=N(sem).replace(/[\d.,]+/g,' ').replace(/(?:^|\s)r\$|\b(?:reais?|zero|mud\w+|alter\w+|troc\w+|troqu\w+|ajust\w+|atualiz\w+|edit\w+|corrig\w+|defin\w+|pon\w+|poe|bot\w+|colo\w+|fix\w+|deix\w+|quero|queria|minha|meu|a|o|para|pra|em|como|e|eh|agora|mensal|fixa|fixo|base|total|valor|de|do|da|ser|passou|passa|ficou|fica|sera|vai)\b/g,' ').replace(/[:=]/g,' ').replace(/\s+/g,' ').trim();
+ if(resto)return false;
+ const old=cart().base,ch=cart(),mes=(typeof cMes==='string'&&/^\d{4}-\d{2}$/.test(cMes))?cMes:iso(new Date()).slice(0,7);
+ /* “renda” sem “salário/mensal/fixa” = a renda total do mês: o valor pedido vale para o total, então as rendas extras do mês saem para não somar por cima */
+ const total=!/\b(?:salario|mensal|fixa|fixo|base)\b/.test(n),ext=total?ch.rendas.filter(r=>r.m===mes):[],extTot=cR2(ext.reduce((a,r)=>a+(+r.val||0),0));
+ const ids=new Set(ext.map(r=>r.id));ch.base=v.v;if(ext.length)ch.rendas=ch.rendas.filter(r=>!ids.has(r.id));
+ undoSet(()=>{ch.base=old;ch.rendas=ch.rendas.concat(ext)});save();render();
+ const mm=mes.slice(5)+'/'+mes.slice(0,4);
+ say((v.v?(total?'Renda de '+mm+' definida: '+BRL(v.v):'Renda mensal fixa definida: '+BRL(v.v)):'Renda '+(total?'de '+mm:'mensal')+' zerada')+(old?' (renda fixa era '+BRL(old)+')':'')+'. ✓'+(ext.length?'\nTirei '+(ext.length===1?'1 renda extra':ext.length+' rendas extras')+' do mês ('+BRL(extTot)+') para o total ficar exatamente '+BRL(v.v)+'.':''),['Abrir carteira','Desfazer']);return true}
 /* ---------- roteador ---------- */
 const BASEKW=R('\\b(?:salario|renda\\s+(?:mensal|fixa|base)|ganho\\s+mensal)\\b');
 function tratar(txt){
@@ -4291,6 +4500,8 @@ function tratar(txt){
   if(/^(?:cancelar|cancela|nao|deixa|esquece|melhor nao)\b/.test(n)){K.pend=null;say('Ok, não mudei nada.');return true}
   K.pend=null}
  if(!t||/\?\s*$/.test(String(txt).trim()))return false;
+ if(rendaSet(t))return true;
+ if(/\d/.test(t)&&(vencCmd(t)||gastoSolto(t)||fraseLivre(t)))return true;
  if((BASEKW.test(t)||/\bpor m[eê]s\b/.test(t))&&baseCmd(t))return true;
  const editaDica=/^(?:mud|alter|edit|corrig|atualiz|troc|ajust|renome)/.test(n)||/\b(?:custa|custou|ficou|agora)\b|\s(?:e|eh|ta|esta|foi)\s+(?:r\$\s*)?\d/.test(n);
  if(editaDica&&editar(t))return true;
@@ -4303,7 +4514,7 @@ function tratar(txt){
    if(!c.verbo&&c.its.length===1&&KWGASTO.test(N(c.its[0].name)))return gastoDireto(c.its[0]);
    aplicarItens(c.its,false);return true}}
  return false}
-function fixaProbe(t){return /(?:conta|despesa)s?\s+fix|\bfix[oa]\b/.test(N(t))&&/\d/.test(t)}
+function fixaProbe(t){return /(?:conta|despesa|gasto)s?\s+fix|\bfix[oa]s?\b/.test(N(t))&&/\d/.test(t)}
 function gastoDireto(it){const desc=cap(it.name),g={id:uid(),date:iso(new Date()),cat:catOf(desc),desc,val:it.price};cart().gastos.push(g);try{cMes=g.date.slice(0,7)}catch(e){}
  undoSet(()=>{cart().gastos=cart().gastos.filter(x=>x.id!==g.id)});save();render();
  say('Anotei como gasto: '+desc+' · '+BRL(g.val)+' (hoje) em '+catNome(g.cat)+'. ✓\nSe era para a lista de compras, diga “comprar '+it.name+' '+it.price.toFixed(2).replace('.',',')+'”.',['Abrir carteira','Desfazer']);return true}
@@ -4312,6 +4523,10 @@ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
  try{if(tratar(txt))return}catch(e){try{console.warn('Kayla valores:',e)}catch(x){}}
  _prev(txt)};
 })();
+/* Kayla na Feira: “finalizar” e “trocar para (mercado)” */
+(function(){const _p=kRun;kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
+ try{if(tab==='compras'){const c=feiraCmd(txt,true);if(c){kAdd('u',txt);const un=c.undo;K.undo=null;K.undoG=un?()=>{un()}:null;kAdd('k',String(c.msg+(c.sub?'. '+c.sub:'')).replace(/&#?\w+;/g,' ')+(un?'':''),un?['Desfazer']:null);return}}}catch(e){try{console.warn('Kayla feira:',e)}catch(x){}}
+ _p(txt)}})();
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{kSync()}catch(e){}}})();
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
