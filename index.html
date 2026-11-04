@@ -3254,7 +3254,8 @@ function flTo(i){
  FL.tgt=Math.round((FL.rot+d)/step)*step;flAnim()}
 function flSync(jump){
  const el=document.getElementById('flow');if(!el)return;
- const i=Math.max(0,TABS.findIndex(t=>t[0]===tab)),step=flStep();
+ const i=TABS.findIndex(t=>t[0]===tab),step=flStep();
+ if(i<0)return; /* Configurações não é um ícone do carrossel: não girar de volta ao primeiro (era isso que te levava ao Início) */
  if(FL.drag)return;
  const d=((i*step-FL.rot)%360+540)%360-180;
  if(Math.abs(d)<.5&&Math.abs(FL.tgt-FL.rot)<.5){flLayout();return}
