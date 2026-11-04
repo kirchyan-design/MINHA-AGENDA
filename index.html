@@ -3651,8 +3651,24 @@ const kNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u0
 const kHoje=()=>iso(new Date());
 const kP2=n=>String(n).padStart(2,'0');
 function kFmtD(d){const t=new Date(d+'T12:00:00'),h=kHoje();if(d===h)return 'hoje';const a=new Date();a.setDate(a.getDate()+1);if(d===iso(a))return 'amanhã';return kP2(t.getDate())+'/'+kP2(t.getMonth()+1)}
+/* o reconhecedor de voz escreve “duas da tarde”, “14 horas”, “nove e meia”: troca por “2 da tarde”, “14h”, “9:30” antes de interpretar */
+const K_NUM={um:1,uma:1,dois:2,duas:2,tres:3,'três':3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20};
+function kFalaHora(txt){let t=String(txt||'');
+ const W='um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|catorze|quatorze|quinze|dezesseis|dezessete|dezoito|dezenove|vinte';
+ const num=w=>{w=w.toLowerCase();return K_NUM[w]||K_NUM[w.normalize('NFD').replace(/[\u0300-\u036f]/g,'')]||0};
+ /* “às duas e meia / duas e quinze / duas e quarenta e cinco” */
+ t=t.replace(new RegExp('(?<![\\wÀ-ÿ])(?:([aà]s)\\s+)?('+W+')\\s+e\\s+(meia|quinze|quarenta e cinco|trinta)(?![A-Za-zÀ-ÿ])','gi'),(m,a,h,mi)=>{const n=num(h);if(!n)return m;const q=/meia|trinta/i.test(mi)?30:/quinze/i.test(mi)?15:45;return (a?a+' ':'')+n+':'+String(q).padStart(2,'0')});
+ /* “às duas da tarde”, “às nove horas”, “às dez” */
+ t=t.replace(new RegExp('(?<![\\wÀ-ÿ])([aà]s)\\s+('+W+')(?![A-Za-zÀ-ÿ])','gi'),(m,a,h)=>{const n=num(h);return n?a+' '+n:m});
+ /* “14 horas”, “14 hora”, “às 9 horas” → 14h */
+ t=t.replace(/(?<![\wÀ-ÿ:])(\d{1,2})\s*horas?(?![A-Za-zÀ-ÿ])(?!\s*(?:de|e)\s+(?:dura|viagem))/gi,'$1h');
+ /* “às 14 e 30” → 14:30 */
+ t=t.replace(/(?<![\wÀ-ÿ:])(\d{1,2})\s+e\s+(\d{2})(?![\wÀ-ÿ])/g,(m,h,mi)=>(+h<=23&&+mi<=59)?h+':'+mi:m);
+ /* “9 e meia” → 9:30 */
+ t=t.replace(/(?<![\wÀ-ÿ:])(\d{1,2})\s+e\s+meia(?![A-Za-zÀ-ÿ])/gi,(m,h)=>+h<=23?h+':30':m);
+ return t}
 /* extrai data, hora e título de uma frase */
-function kParse(txt,now){now=now||new Date();const n=kNorm(txt);let date=null,time=null,t=txt;
+function kParse(txt,now){now=now||new Date();txt=kFalaHora(txt);const n=kNorm(txt);let date=null,time=null,t=txt;
  const rm=r=>{t=t.replace(r,' ')};
  let m;
  if(/\bdepois de amanh[aã](?![A-Za-zÀ-ÿ])/i.test(t)){const d=new Date(now);d.setDate(d.getDate()+2);date=iso(d);rm(/\bdepois de amanh[aã](?![A-Za-zÀ-ÿ])/i)}
@@ -3905,7 +3921,17 @@ async function kVoice(){
    if(ps!=='granted'){ps=await micPedirNativo();
     if(ps!=='granted'){t.err='not-allowed';t.fim('');return}}
    try{const a=await N.available();if(a&&a.available===false){t.dead=true;clearTimeout(t.max);K_VOZ=null;kMicUi(false);kAdd('k','O reconhecimento de voz não está disponível neste celular. Confira se o app Google está instalado e atualizado.');return}}catch(e){}
-   const r=await N.start({language:LOC(),maxResults:3,partialResults:false,popup:false});
+   let r=null,ult=null;
+   for(let tent=0;tent<3&&!t.dead;tent++){
+    const ini=Date.now();
+    try{r=await N.start({language:LOC(),maxResults:3,partialResults:false,popup:false});ult=null;break}
+    catch(e){ult=e;const msg=String((e&&(e.message||e.errorMessage))||e||'');
+     if(/permission|denied|not-allowed/i.test(msg))throw e;
+     /* “Ongoing speech recognition”, ocupado ou erro logo ao abrir: solta o reconhecedor e tenta de novo */
+     if(Date.now()-ini>4000)break;
+     try{await Promise.race([N.stop(),new Promise(ok=>setTimeout(ok,800))])}catch(x){}
+     await new Promise(ok=>setTimeout(ok,500))}}
+   if(t.dead)return;
    t.fim(r&&r.matches&&r.matches[0])
   }else{
    const r=new W();t.w=r;r.lang=LOC();r.interimResults=false;r.continuous=false;r.maxAlternatives=1;
@@ -4928,7 +4954,7 @@ function wakeUi(){const f=$('#kay-f');if(f)f.classList.toggle('wake',!!WK.on)}
 async function wakeParar(){
  const N=nat()?plug('SpeechRecognition'):null,had=WK.on;WK.seq++;WK.on=false;clearTimeout(WK.dt);WK.heard=false;WK.txt='';
  try{if(WK.ls)WK.ls.remove()}catch(e){}try{if(WK.ls2)WK.ls2.remove()}catch(e){}WK.ls=WK.ls2=null;
- try{if(N&&had)await N.stop()}catch(e){}
+ try{if(N&&had)await Promise.race([N.stop(),new Promise(ok=>setTimeout(ok,1500))])}catch(e){}
  try{const w=WK.w;WK.w=null;if(w){w.onend=null;w.onerror=null;w.onresult=null;try{w.abort()}catch(x){try{w.stop()}catch(y){}}}}catch(e){}
  wakeUi();if(had)await new Promise(r=>setTimeout(r,200))}
 /* tira da frase tudo o que veio depois do nome (ou, se nada veio depois, o que veio antes) */
@@ -4939,33 +4965,37 @@ function wakeCmd(t){
  const pre=t.slice(0,m.index).replace(/\b(?:oi|ol[aá]|ei|ey|hey|opa|psiu|ok|okay|bom dia|boa tarde|boa noite|e a[ií])\b/gi,' ').replace(/\s+/g,' ').replace(/^[\s,.:;!?\-–]+|[\s,.:;!?\-–]+$/g,'');
  return pre.split(' ').filter(Boolean).length>=3?pre:''}
 async function wakeAgir(){
- if(WK.busy||!WK.heard)return;WK.busy=true;const t=WK.txt;
+ if(WK.busy||!WK.heard)return;WK.busy=true;const t=WK.txt;clearTimeout(WK.dt);
+ const dog=setTimeout(()=>{WK.busy=false},8000);
  try{
   await wakeParar();
   if(!(S.user&&S.user.name)||kCfg().off){WK.busy=false;return}
   const cmd=wakeCmd(t);
   kOpen();setTimeout(()=>{try{const i=$('#kay-i');if(i)i.blur()}catch(e){}},400);
-  if(cmd){WK.busy=false;kRun(cmd);return}
+  if(cmd){clearTimeout(dog);WK.busy=false;kRun(cmd);return}
   kAdd('k','Pode falar, estou ouvindo. 🎙️');
-  setTimeout(()=>{WK.busy=false;kVoice()},300)
- }catch(e){WK.busy=false;try{console.warn('Kayla wake:',e)}catch(x){}}}
-function wakeAlts(arr){
+  setTimeout(()=>{clearTimeout(dog);WK.busy=false;kVoice()},300)
+ }catch(e){clearTimeout(dog);WK.busy=false;try{console.warn('Kayla wake:',e)}catch(x){}}}
+function wakeAlts(arr,fin){
  arr=(arr||[]).filter(Boolean).map(String);if(!arr.length)return;
  WK.alts=arr.join(' | ').slice(0,100);
- const hit=arr.find(x=>WK_RX.test(wakeBase(x)));wakeOuviu(hit||arr[0])}
-function wakeOuviu(txt){
- if(WK.busy||!WK.on)return;txt=String(txt);WK.ult=Date.now();WK.ouvido=txt.slice(0,60);
+ const hit=arr.find(x=>WK_RX.test(wakeBase(x)));wakeOuviu(hit||arr[0],fin)}
+function wakeOuviu(txt,fin){
+ if(WK.busy)return;if(!WK.on&&!(fin&&WK.heard))return;txt=String(txt);WK.ult=Date.now();WK.ouvido=txt.slice(0,60);
  const tem=WK_RX.test(wakeBase(txt));
  if(!WK.heard){if(!tem)return;WK.heard=true;WK.txt=txt}
  else if(tem)WK.txt=txt;
  /* já ouviu o nome e a transcrição nova perdeu o nome: mantém “Kayla” na frente para não perder o comando */
  else if(txt.length>WK.txt.length)WK.txt='Kayla '+txt;
+ /* resultado final: já é a frase inteira, age na hora */
+ if(fin){clearTimeout(WK.dt);wakeAgir();return}
  /* espera uma pausa na fala para pegar o comando inteiro */
  clearTimeout(WK.dt);WK.dt=setTimeout(wakeAgir,1200)}
 /* o reconhecedor do Android/Chrome encerra sozinho depois de um silêncio: se já ouviu o nome, age; senão, o vigia religa */
 function wakeFimSessao(sq){
  if(sq!==WK.seq)return;
- if(WK.heard){clearTimeout(WK.dt);wakeAgir();return}
+ /* a escuta acabou depois de ouvir o nome: espera um instante pelo resultado final (o último parcial costuma vir cortado) */
+ if(WK.heard){clearTimeout(WK.dt);WK.dt=setTimeout(wakeAgir,450);return}
  const dur=Date.now()-WK.ini;
  wakeParar().then(()=>{WK.espera=dur<2500?Date.now()+600:0;if(wakeDeve()&&Date.now()>=WK.espera)wakeIniciar()})}
 async function wakeIniciar(){
@@ -4986,7 +5016,7 @@ async function wakeIniciar(){
    wakeUi();WK.ini=WK.ult=Date.now();
    const r=await N.start({language:LOC(),maxResults:3,partialResults:true,popup:false});
    WK.erro='';
-   if(r&&r.matches&&r.matches.length)wakeAlts(r.matches);
+   if(r&&r.matches&&r.matches.length)wakeAlts(r.matches,true);
    /* em alguns aparelhos o start só volta quando a escuta termina: então a sessão acabou */
    if(Date.now()-WK.ini>1500)wakeFimSessao(sq);
    else WK.falhas=0
