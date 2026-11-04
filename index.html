@@ -796,6 +796,7 @@ nav div#nav button .ni{width:46px}
 /* ---- Kayla ---- */
 #kay-f{position:fixed;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:40;width:66px;height:66px;padding:0;border:3px solid var(--ac);border-radius:50%;background:#0b1620;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.4);overflow:visible}
 #kay-f.hid{display:none!important}
+#kay-f.wake .k-dot{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.35)}
 #kay-f{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}#kay-f.drg{animation:none!important;cursor:grabbing;transform:scale(1.06)}
 #kay-f img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 22%;display:block;pointer-events:none}
 #kay-f .k-dot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#2ee6c8;box-shadow:0 0 0 3px rgba(46,230,200,.3)}
@@ -2852,6 +2853,7 @@ async function vozIni(ev){
  V.seq++;V.hold=true;V.done=false;V.fin=false;V.txt='';V.acc='';V.erro='';V.rs=0;
  clearTimeout(V.max);V.max=setTimeout(()=>{if(V.hold||V.on)vozFim()},20000);
  try{
+  try{await wakeParar()}catch(e){}
   if(N){
    let ps=await micEstado();
    if(ps!=='granted'){
@@ -3178,6 +3180,7 @@ const RECADO_KAYLA=[
  ['🧭','Abrir telas','“abrir carteira”, “abrir notas”, “ir para o calendário”.'],
  ['🎨','Ajustes do app','“tema escuro”, “tema cyberpunk”, “ativar lembretes”.'],
  ['🎙️','Falar com ela','Toque no microfone do chat e diga o comando.'],
+ ['🗣️','Chamar pelo nome','Já vem ligado (Configurações › Assistente Kayla › Chamar pelo nome): com o app aberto, diga “Kayla, marcar dentista amanhã às 14h” e ela executa.'],
  ['🧑‍🏫','Tour e dúvidas','Diga “tour” para aprender o app, ou pergunte como algo funciona.']];
 function recadoKayla(){
  if(!S.user||!S.user.name)return;
@@ -3815,6 +3818,7 @@ async function kVoice(){
   else kAdd('k','Não ouvi nada. Toque no 🎙️ e fale de novo.')};
  K_VOZ=t;kMicUi(true);t.max=setTimeout(()=>{if(!t.dead)kVoiceStop()},15000);
  try{
+  try{await wakeParar()}catch(e){}
   if(N){
    let ps=await micEstado();
    if(ps!=='granted'){ps=await micPedirNativo();
@@ -3910,7 +3914,7 @@ function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!
   p.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.k-c button');if(b)kRun(b.dataset.c)});
   if(!kCfg().seen){const esp=n=>{if(K.open||kCfg().seen||!(S.user&&S.user.name)||n>90)return;if(document.querySelector('.ov')||(typeof permAsking!=='undefined'&&permAsking)||(typeof PIN_LK!=='undefined'&&PIN_LK)){setTimeout(()=>esp(n+1),2000);return}kOpen()};setTimeout(()=>esp(0),6000)}}
  f.style.display=ok&&!K.open?'':'none';if(!ok){const p=$('#kay-p');if(p)p.classList.remove('on');K.open=false}}
-function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div></div>`}
+function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div>${on?`<div class="prm"><span class="ic">🗣️</span><span class="t"><b>Chamar pelo nome</b><small>${wakeLig()?'Ligado: com o app aberto na tela, diga “Kayla” e o comando. Gasta um pouco mais de bateria.':'Desligado: diga “Kayla” e o microfone liga sozinho (com o app aberto na tela).'}</small></span><button class="${wakeLig()?'':'sec'}" onclick="wakeTog()" aria-pressed="${wakeLig()}">${wakeLig()?'Desligar':'Ligar'}</button></div>`:''}</div>`}
 function kayTog(){kCfg().off=kCfg().off?0:1;save();kSync();render()}
 /* ===== KAYLA · VOCABULÁRIO AMPLIADO: gírias, sinônimos, erros de digitação, números por extenso, conversa do dia a dia ===== */
 (function(){
@@ -4764,6 +4768,96 @@ function cyBg(){let el=document.querySelector('.cy-bg');
  if(S.color==='cyber'&&!document.getElementById('cy-font')){const l=document.createElement('link');l.id='cy-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(l)}
  cyBg()}catch(e){}}})();
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{kSync()}catch(e){}}})();
+
+/* ===== KAYLA · CHAMAR PELO NOME (palavra de ativação) =====
+   Com o app aberto na tela e a opção ligada (Configurações › Assistente Kayla › Chamar pelo nome), o microfone fica
+   ouvindo só a palavra “Kayla”. Ao ouvir:
+   • “Kayla, marcar dentista amanhã às 14h” → ela já executa o comando que veio depois do nome;
+   • só “Kayla” → o painel abre e o microfone liga sozinho para você dar a ordem.
+   A opção é guardada só neste aparelho (localStorage ma-kayla-wake), não vai para a nuvem. */
+const WK={on:false,busy:false,seq:0,txt:'',heard:false,dt:null,ls:null,ls2:null,w:null,espera:0,falhas:0};
+const WK_RX=/\b(?:kayla|cayla|kaila|caila|keila|queila|keyla|kaela|caela)\b/;
+const wakeBase=s=>String(s||'').replace(/[\s\S]/g,c=>c.normalize('NFD')[0]).toLowerCase();
+const wakeLig=()=>{try{return localStorage.getItem('ma-kayla-wake')!=='0'}catch(e){return true}};
+function wakeSet(v){try{localStorage.setItem('ma-kayla-wake',v?'1':'0')}catch(e){}}
+function wakeDeve(){return !!(wakeLig()&&!kCfg().off&&S.user&&S.user.name&&!document.hidden&&!WK.busy
+ &&!(typeof PIN_LK!=='undefined'&&PIN_LK)&&!(typeof permAsking!=='undefined'&&permAsking)
+ &&!K_VOZ&&!(typeof V!=='undefined'&&(V.on||V.hold)))}
+function wakeUi(){const f=$('#kay-f');if(f)f.classList.toggle('wake',!!WK.on)}
+async function wakeParar(){
+ const N=nat()?plug('SpeechRecognition'):null,had=WK.on;WK.seq++;WK.on=false;clearTimeout(WK.dt);WK.heard=false;WK.txt='';
+ try{if(WK.ls)WK.ls.remove()}catch(e){}try{if(WK.ls2)WK.ls2.remove()}catch(e){}WK.ls=WK.ls2=null;
+ try{if(N&&had)await N.stop()}catch(e){}
+ try{const w=WK.w;WK.w=null;if(w){w.onend=null;w.onerror=null;w.onresult=null;try{w.abort()}catch(x){try{w.stop()}catch(y){}}}}catch(e){}
+ wakeUi();if(had)await new Promise(r=>setTimeout(r,350))}
+/* tira da frase tudo o que veio depois do nome (ou, se nada veio depois, o que veio antes) */
+function wakeCmd(t){
+ const m=WK_RX.exec(wakeBase(t));if(!m)return '';
+ let rest=t.slice(m.index+m[0].length).replace(/^[\s,.:;!?\-–]+/,'').replace(/^por favor\b[\s,]*/i,'').trim();
+ if(rest.replace(/[^\p{L}\p{N}]/gu,'').length>=3)return rest;
+ const pre=t.slice(0,m.index).replace(/\b(?:oi|ol[aá]|ei|ey|hey|opa|psiu|ok|okay|bom dia|boa tarde|boa noite|e a[ií])\b/gi,' ').replace(/\s+/g,' ').replace(/^[\s,.:;!?\-–]+|[\s,.:;!?\-–]+$/g,'');
+ return pre.split(' ').filter(Boolean).length>=3?pre:''}
+async function wakeAgir(){
+ if(WK.busy||!WK.heard)return;WK.busy=true;const t=WK.txt;
+ try{
+  await wakeParar();
+  if(!(S.user&&S.user.name)||kCfg().off){WK.busy=false;return}
+  const cmd=wakeCmd(t);
+  kOpen();setTimeout(()=>{try{const i=$('#kay-i');if(i)i.blur()}catch(e){}},400);
+  if(cmd){WK.busy=false;kRun(cmd);return}
+  kAdd('k','Pode falar, estou ouvindo. 🎙️');
+  setTimeout(()=>{WK.busy=false;kVoice()},300)
+ }catch(e){WK.busy=false;try{console.warn('Kayla wake:',e)}catch(x){}}}
+function wakeOuviu(txt){
+ if(WK.busy||!WK.on)return;WK.txt=txt;
+ if(!WK.heard){if(!WK_RX.test(wakeBase(txt)))return;WK.heard=true}
+ /* espera uma pausa na fala para pegar o comando inteiro */
+ clearTimeout(WK.dt);WK.dt=setTimeout(wakeAgir,1200)}
+/* o reconhecedor do Android/Chrome encerra sozinho depois de um silêncio: se já ouviu o nome, age; senão, o vigia religa */
+function wakeFimSessao(sq){
+ if(sq!==WK.seq)return;
+ if(WK.heard){clearTimeout(WK.dt);wakeAgir();return}
+ wakeParar();WK.espera=Date.now()+500}
+async function wakeIniciar(){
+ if(WK.on||WK.busy)return;
+ const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!N&&!W)return;
+ const sq=++WK.seq;WK.on=true;WK.txt='';WK.heard=false;
+ try{
+  if(N){
+   if((await micEstado())!=='granted'){
+    if(!WK.pediu){WK.pediu=1;try{await micPedirNativo()}catch(e){}}
+    await wakeParar();WK.espera=Date.now()+15000;return}
+   try{const a=await N.available();if(a&&a.available===false){await wakeParar();WK.espera=Date.now()+60000;return}}catch(e){}
+   if(sq!==WK.seq)return;
+   WK.ls=await N.addListener('partialResults',e=>{if(sq!==WK.seq)return;const m=e&&e.matches&&e.matches[0];if(m)wakeOuviu(m)});
+   try{WK.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped')wakeFimSessao(sq)})}catch(e){}
+   if(sq!==WK.seq){try{WK.ls.remove()}catch(x){}return}
+   wakeUi();
+   await N.start({language:LOC(),maxResults:3,partialResults:true,popup:false});
+   WK.falhas=0
+  }else{
+   const r=new W();WK.w=r;r.lang=LOC();r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+   r.onresult=e=>{if(sq!==WK.seq)return;try{const i=e.results.length-1;wakeOuviu(e.results[i][0].transcript)}catch(x){}};
+   r.onerror=e=>{const er=(e&&e.error)||'';
+    if(er==='not-allowed'||er==='service-not-allowed'){wakeSet(false);try{render()}catch(x){}info('Preciso da permissão do microfone para ouvir o nome “Kayla”. Libere o microfone neste navegador e ligue a opção de novo.')}};
+   r.onend=()=>wakeFimSessao(sq);
+   wakeUi();r.start();WK.falhas=0}
+ }catch(e){
+  /* erro ao abrir o microfone: tenta de novo com espera crescente (evita ficar repetindo sem parar) */
+  WK.falhas++;if(sq===WK.seq){await wakeParar();WK.espera=Date.now()+Math.min(30000,1500*WK.falhas*WK.falhas)}}}
+async function wakeTog(){
+ if(wakeLig()){wakeSet(false);await wakeParar();render();return}
+ const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!N&&!W){info(nat()?'O reconhecimento de voz ainda não está neste app. Instale a versão nova do aplicativo.':'Este navegador não tem reconhecimento de voz. Abra pelo Google Chrome ou use o app instalado.');return}
+ if(N){const ps=await micPedirNativo();if(ps!=='granted'){info('Preciso da permissão do microfone. Libere em: Ajustes do celular › Apps › JC ORGANIZA › Permissões › Microfone.');return}}
+ wakeSet(true);WK.espera=0;WK.falhas=0;render();
+ info('Pronto! Com o app aberto na tela, diga “Kayla” e depois o comando. Ex.: “Kayla, marcar dentista amanhã às 14h”.')}
+setInterval(()=>{try{
+ const d=wakeDeve();
+ if(d&&!WK.on&&Date.now()>=WK.espera)wakeIniciar();
+ else if(!d&&WK.on&&!WK.busy)wakeParar()}catch(e){}},1200);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)wakeParar()});
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}

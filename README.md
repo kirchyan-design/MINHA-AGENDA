@@ -23,6 +23,14 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 3.1.9
+
+- **Chamar a Kayla pelo nome**: já vem **ligado por padrão** (dá para desligar em Configurações › Assistente Kayla › **Chamar pelo nome**). Com o app aberto na tela, diga “Kayla, marcar dentista amanhã às 14h” e ela executa. Se disser só “Kayla”, o painel abre e o microfone liga sozinho para você dar a ordem.
+  - A opção fica só no aparelho (`localStorage`, chave `ma-kayla-wake`), não vai para a nuvem. Ela fica ouvindo só enquanto o app está aberto e desbloqueado; com a tela apagada ou o app em segundo plano, para.
+  - No Android o reconhecedor do Google reinicia de tempos em tempos e pode dar o “plim” de início. Usa um pouco mais de bateria.
+  - Não precisa gerar APK novo (o plugin de voz e a permissão do microfone já existem): basta publicar `index.html` e `sw.js`.
+  - Código: bloco “KAYLA · CHAMAR PELO NOME” no fim do `index.html` (funções `wake*`).
+
 ## Versão 2.9.7
 
 - **Sem login por nome**: a tela de boas-vindas só tem Google e e-mail/senha (entrar ou criar conta); logo depois do login o usuário cai direto no app, com o nome tirado da conta. Quem já usava o app só com o nome continua normalmente.
