@@ -870,7 +870,10 @@ function navHint(n){
  const h=document.createElement('div');h.className='nvhint';h.textContent='👉 '+_t('Deslize o menu para o lado e veja mais opções');document.body.appendChild(h);
  const fim=()=>{h.classList.remove('on');setTimeout(()=>h.remove(),500);n.removeEventListener('scroll',fim)};
  setTimeout(()=>h.classList.add('on'),600);n.addEventListener('scroll',fim,{once:true});setTimeout(fim,6000)}
-function go(t){tab=t;dimgsFor=null;edName=false;cEd=null;nav();render();window.scrollTo(0,0);const v=$('#v');v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter')}
+/* guarda a tela atual: se o app recarregar (sincronização, troca de conta, atualização, permissão do celular), volta para a mesma tela em vez do início */
+function guardaTela(){try{sessionStorage.setItem('ma-ptr',JSON.stringify({tab:tab,sub:sub,calSub:calSub,plSub:plSub,plAno:plAno,cSub:cSub,cMes:cMes,sel:sel,dsel:dsel,mes:+mes}))}catch(x){}}
+function recarregar(){guardaTela();location.reload()}
+function go(t){tab=t;dimgsFor=null;edName=false;cEd=null;nav();render();window.scrollTo(0,0);guardaTela();const v=$('#v');v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter')}
 
 /* ---------- Agenda ---------- */
 function evItem(e){if(e.id===edEv)return evEdit(e);return `<div class="item ${e.done?'done':''}"><input type="checkbox" ${e.done?'checked':''} onchange="togEv('${e.id}')" aria-label="Concluir"><span class="hora">${e.time||'—'}</span><span class="t">${esc(e.title)}</span><button class="ghost" onclick="edEv='${e.id}';render()" aria-label="Editar">✎</button><button class="ghost" onclick="delEv('${e.id}')" aria-label="Excluir">✕</button></div>`}
@@ -1722,7 +1725,7 @@ function trocarDados(de,para,semente,msg){
  }catch(e){
   try{ks.forEach(k=>localStorage.removeItem(k));if(de)ks.forEach(k=>localStorage.removeItem(bkey(de,k)));ks.forEach(k=>{if(old[k]!==null&&old[k]!==undefined)localStorage.setItem(k,old[k])})}catch(e2){}
   TROCANDO=false;return false}
- location.reload();return true}
+ recarregar();return true}
 async function conectar(m){
  const A=FA();
  if(!nat()||!A){info('O login funciona no aplicativo instalado no celular.');return}
@@ -1835,7 +1838,7 @@ function nuvAplicar(uid,txt,at){
   nuvGrava(uid,{at:at,hash:'',pend:1});
   localStorage.setItem('ma-msg','Dados da sua conta carregados da nuvem.');
  }catch(e){TROCANDO=false;throw new Error('Sem espaço no aparelho para carregar os dados da nuvem.')}
- location.reload()}
+ recarregar()}
 /* Sincroniza. Devolve true se reiniciou o app com os dados da nuvem. */
 async function nuvSync(manual,login){
  if(NUV.busy||!nat()||!FA()||!ct())return false;
@@ -1948,7 +1951,7 @@ async function checkUpd(){
  if(nat()){await apkChecar(true);if(APK_ST&&APK_ST.tipo==='novo'&&APK_ST.fase==='pronto')apkBaixar();return}
  if(!SWREG){info('As atualizações automáticas funcionam quando o app é aberto por um endereço da internet (https) e instalado na tela inicial.');return}
  SWREG.update().then(()=>{const n=SWREG.installing||SWREG.waiting;
-  if(n){info('Nova versão encontrada. Atualizando…');const rec=()=>setTimeout(()=>location.reload(),1200);
+  if(n){info('Nova versão encontrada. Atualizando…');const rec=()=>setTimeout(()=>recarregar(),1200);
    if(n.state==='installed'||n.state==='activated')rec();else n.addEventListener('statechange',()=>{if(n.state==='installed'||n.state==='activated')rec()})}
   else info('Você já está na versão mais recente.')}).catch(()=>info('Não foi possível verificar agora. Confira a conexão e tente de novo.'))}
 function initSW(){if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol))return;
@@ -2644,8 +2647,7 @@ function recadoQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelect
   if(!ok){solta();return}
   busy=true;const e=ind();e.style.transition='transform .2s';e.style.opacity='1';e.style.transform='translateY(14px)';e.classList.add('go','spin');
   (async()=>{try{if(SWREG)await Promise.race([SWREG.update(),new Promise(r=>setTimeout(r,2500))])}catch(x){}
-   try{sessionStorage.setItem('ma-ptr',JSON.stringify({tab:tab,sub:sub,calSub:calSub,plSub:plSub,plAno:plAno,cSub:cSub,cMes:cMes,sel:sel,dsel:dsel,mes:+mes}))}catch(x){}
-   location.reload()})()};
+   recarregar()})()};
  document.addEventListener('touchend',fim,{passive:true});
  document.addEventListener('touchcancel',()=>{y0=null;solta()},{passive:true});
 })();
@@ -3038,7 +3040,8 @@ function guiaNovosQuandoLivre(n){n=n||0;
  if(PIN_LK||permAsking||document.querySelector('.ov')){if(n<180)setTimeout(()=>guiaNovosQuandoLivre(n+1),1000);return}
  guiaNovos()}
 
-/* depois de puxar para atualizar, volta para a mesma página onde o usuário estava */
+document.addEventListener('visibilitychange',()=>{if(document.hidden)guardaTela()});window.addEventListener('pagehide',guardaTela);
+/* depois de recarregar (puxar para atualizar, sincronizar, etc.), volta para a mesma página onde o usuário estava */
 try{const r=sessionStorage.getItem('ma-ptr');if(r){sessionStorage.removeItem('ma-ptr');const o=JSON.parse(r)||{};
  if(S.user&&S.user.name&&(o.tab==='config'||TABS.some(t=>t[0]===o.tab))){tab=o.tab;
   if(typeof o.sub==='string')sub=o.sub;if(typeof o.calSub==='string')calSub=o.calSub;if(typeof o.plSub==='string')plSub=o.plSub;if(typeof o.plAno==='string')plAno=o.plAno;
@@ -3346,7 +3349,7 @@ function updPill(){
   else if(f==='erro'){txt='Não foi possível atualizar';fn='apkBaixar()';act='Tentar de novo'}
   else{txt='Nova versão disponível';fn='apkBaixar()';act='Atualizar'}
  }else if(APK_ST&&APK_ST.tipo==='antigo'){txt='Nova versão disponível';fn='apkAntigoAviso()';act='Atualizar'}
- else if(WEB_NEW){txt='Nova versão disponível';fn='location.reload()';act='Atualizar'}
+ else if(WEB_NEW){txt='Nova versão disponível';fn='recarregar()';act='Atualizar'}
  const fixo=a&&a.fase&&a.fase!=='pronto';
  if(!txt||(UPD_HIDE&&!fixo)||!(S.user&&S.user.name)){if(el)el.remove();return}
  if(!el){el=document.createElement('div');el.id='updpill';document.body.appendChild(el)}
