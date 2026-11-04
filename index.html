@@ -329,6 +329,30 @@ html[data-color="viking"] #kay-p{border:1px solid #7a5d27}
 html[data-color="viking"] #kay-f{box-shadow:0 0 0 2px var(--ac),0 0 20px 2px rgba(224,169,59,.55)}
 html[data-color="viking"] ::selection{background:var(--ac);color:#1a1000}
 html[data-color="viking"] [data-c=vermelho]{--nc:#c0392b}html[data-color="viking"] [data-c=laranja]{--nc:#d9822b}html[data-color="viking"] [data-c=amarelo]{--nc:#e0a93b}html[data-color="viking"] [data-c=verde]{--nc:#6a994e}html[data-color="viking"] [data-c=azul]{--nc:#4f7ca8}html[data-color="viking"] [data-c=roxo]{--nc:#7b5ea7}html[data-color="viking"] [data-c=rosa]{--nc:#b5546e}
+
+/* ---- Tema ESCRITÓRIO: mesa de madeira de verdade vista de cima, luz da janela, papel, post-it, caneca, planta; fonte de sistema, sombras suaves ---- */
+:root[data-color="escritorio"][data-eff]{--bg:#c9a779;--sf:#fdfcf8;--ink:#2a2622;--mute:#6f675d;--ac:#2f5d8a;--acs:#dfe9f3;--ln:#e4ded2;--ln2:#cfc6b4;--fld:#ffffff;--ok:#3f8a52;--rd:#b8402f;--onac:#fff;--ac2:#b8402f;--ac3:#2f5d8a;--sh:0 1px 1px rgba(60,40,20,.16),0 6px 16px -6px rgba(60,40,20,.38);color-scheme:light}
+html[data-color="escritorio"]{background:#b98f5d}
+html[data-color="escritorio"] body{background:none;font-family:"Inter","Segoe UI",Roboto,system-ui,sans-serif;color:var(--ink)}
+html[data-color="escritorio"] h1,html[data-color="escritorio"] h2{font-family:"Playfair Display",Georgia,serif;font-weight:700;letter-spacing:.01em;color:#fffaf0;text-shadow:0 1px 2px rgba(40,25,10,.65)}
+html[data-color="escritorio"] header .cfg{background:rgba(253,252,248,.92);border-radius:50%;box-shadow:var(--sh)}
+html[data-color="escritorio"] .card{position:relative;border-radius:3px;border:1px solid #d9d2c3;background:linear-gradient(180deg,#fff,#fbf9f3);box-shadow:var(--sh),inset 0 -1px 0 rgba(0,0,0,.04)}
+html[data-color="escritorio"] .card::before{content:"";position:absolute;left:14px;top:-7px;width:54px;height:15px;background:rgba(236,224,176,.82);box-shadow:0 1px 2px rgba(60,40,20,.25);transform:rotate(-2deg);pointer-events:none}
+html[data-color="escritorio"] .card:nth-of-type(even)::before{left:auto;right:14px;transform:rotate(2deg)}
+html[data-color="escritorio"] h3{font-family:"Playfair Display",Georgia,serif;color:#1f3f60}
+html[data-color="escritorio"] input,html[data-color="escritorio"] textarea,html[data-color="escritorio"] select{border-radius:3px;border:1px solid #cfc6b4;background:#fff;box-shadow:inset 0 1px 2px rgba(60,40,20,.12)}
+html[data-color="escritorio"] input:focus,html[data-color="escritorio"] textarea:focus,html[data-color="escritorio"] select:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(47,93,138,.25)}
+html[data-color="escritorio"] button{border-radius:4px}
+html[data-color="escritorio"] button.pri{background:linear-gradient(180deg,#3f72a3,#2f5d8a);border:1px solid #234a70;box-shadow:0 2px 3px rgba(30,20,10,.35),inset 0 1px 0 rgba(255,255,255,.25)}
+html[data-color="escritorio"] button.sec{background:#fff;border:1px solid #cfc6b4;color:#1f3f60;box-shadow:0 1px 2px rgba(60,40,20,.2)}
+html[data-color="escritorio"] nav{border:0;border-top:1px solid rgba(255,255,255,.35);background:linear-gradient(180deg,#8a6137,#6b4724);box-shadow:0 -4px 14px rgba(40,25,10,.45)}
+html[data-color="escritorio"] nav button{color:#f1e2c8}
+html[data-color="escritorio"] nav button.on{color:#fff;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
+html[data-color="escritorio"] .dlg{border-radius:4px;border:1px solid #d9d2c3;box-shadow:0 18px 40px -10px rgba(30,18,6,.6)}
+html[data-color="escritorio"] #kay-f{box-shadow:0 0 0 3px #fff,0 6px 16px rgba(30,18,6,.5)}
+html[data-color="escritorio"] ::selection{background:#2f5d8a;color:#fff}
+.es-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#b98f5d}
+.es-bg svg{position:absolute;inset:0;width:100%;height:100%}
 .vk-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#070d14}
 .vk-bg svg.vk-scene{position:absolute;inset:0;width:100%;height:100%}
 .vk-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,14,.5),rgba(5,9,14,.12) 38%,rgba(5,9,14,.5))}
@@ -2576,7 +2600,7 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a'],['cyber','Cyberpunk','#ff2bd6'],['viking','Viking','#e0a93b']];
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a'],['cyber','Cyberpunk','#ff2bd6'],['viking','Viking','#e0a93b'],['escritorio','Escritório','#2f5d8a']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();try{nav()}catch(e){}render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
@@ -4235,7 +4259,7 @@ kFaq.push([/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Me
 /* ===== KAYLA · AJUSTA AS CONFIGURAÇÕES DO APP conforme o pedido ===== */
 (function(){
 const N=s=>kNorm(s).replace(/\bvc\b/g,'voce').replace(/\bpra\b/g,'para').replace(/\bmin\b/g,'minutos').replace(/\bq\b/g,'que').replace(/[^a-z0-9: ]/g,' ').replace(/\s+/g,' ').trim();
-const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['cyber',/cyber|ciberpunk|neon/],['viking',/viking|nordic|nordico|drakkar|odin|thor/],['picapau',/pica ?pau/]];
+const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['cyber',/cyber|ciberpunk|neon/],['viking',/viking|nordic|nordico|drakkar|odin|thor/],['escritorio',/escritorio|office|mesa de trabalho/],['picapau',/pica ?pau/]];
 const TABN=[['inicio',/inicio|home/],['agenda',/agenda/],['cal',/calendario/],['notas',/notas?/],['diario',/diario/],['compras',/compras|lista/],['carteira',/carteira|gastos|financas/],['mercado',/promocoes|promocao|mercado|ofertas/]];
 const LG=[['en',/ingles|english/],['es',/espanhol|spanish|espanol/],['de',/alemao|german|deutsch/],['pt',/portugues/]];
 const near=(v,L)=>L.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
@@ -5057,6 +5081,53 @@ setInterval(()=>{try{
  else if(WK.on&&!WK.heard&&!WK.w&&Date.now()-WK.ult>9000){wakeParar();WK.espera=Date.now()+100}
  wakeUi()}catch(e){}},500);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)wakeParar()});
+
+/* ===== Tema ESCRITÓRIO: mesa de madeira (veio de verdade via feTurbulence), luz da janela, caderno, caneca, caneta, planta, clipes ===== */
+function esScene(){return `<svg class="es-scene" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="esw" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".004 .16" numOctaves="4" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .36  0 0 0 0 .22  0 0 0 0 .1  0 0 0 1.5 -.35"/></filter>
+<filter id="esb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="ess" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+<linearGradient id="esg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d2ad7c"/><stop offset=".55" stop-color="#bf9663"/><stop offset="1" stop-color="#a97f4f"/></linearGradient>
+<radialGradient id="esl" cx=".05" cy=".02" r=".95"><stop offset="0" stop-color="#fff6dc" stop-opacity=".75"/><stop offset=".5" stop-color="#fff0c8" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+<radialGradient id="esc" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e9e2d4"/><stop offset="1" stop-color="#cfc6b4"/></radialGradient>
+</defs>
+<rect width="400" height="800" fill="url(#esg)"/>
+<rect width="400" height="800" filter="url(#esw)" opacity=".7"/>
+<path d="M0 190H400M0 392H400M0 594H400" stroke="#6b4724" stroke-opacity=".28" stroke-width="1.2"/>
+<g opacity=".16"><path d="M70 40V120M70 280V400M70 480V640" stroke="#fff" stroke-width="1"/></g>
+<rect width="400" height="800" fill="url(#esl)"/>
+<!-- luz da janela em faixas diagonais -->
+<g opacity=".2" fill="#fffbe8"><path d="M-20 -10L140 -10L330 330L170 330Z"/><path d="M180 -10L260 -10L400 250L400 330L330 330Z"/></g>
+<!-- caderno -->
+<g transform="rotate(-7 300 600)"><rect x="232" y="558" width="132" height="168" rx="3" fill="#000" opacity=".4" filter="url(#ess)" transform="translate(5 8)"/>
+<rect x="232" y="558" width="132" height="168" rx="3" fill="#2f4a6b"/><rect x="238" y="558" width="126" height="168" rx="2" fill="#37597f"/>
+<rect x="232" y="558" width="10" height="168" rx="2" fill="#1f3350"/><rect x="302" y="566" width="48" height="26" rx="2" fill="#f2ead2"/><path d="M308 574h36M308 582h26" stroke="#7a6a48" stroke-width="1.4"/></g>
+<!-- bloco com linhas e caneta -->
+<g transform="rotate(5 90 650)"><rect x="42" y="606" width="104" height="132" fill="#000" opacity=".38" filter="url(#ess)" transform="translate(4 7)"/>
+<rect x="42" y="606" width="104" height="132" fill="#fbf8ee"/><path d="M42 626H146M42 642H146M42 658H146M42 674H146M42 690H146M42 706H146M42 722H146" stroke="#9fb7d4" stroke-width=".8"/><path d="M62 606V738" stroke="#d98c8c" stroke-width=".9"/><path d="M70 636q10-6 18 0t20 0M70 652q14-6 28 0M70 668q8-5 22 0t18 0" stroke="#2a3f9a" stroke-width="1.1" fill="none" stroke-linecap="round"/></g>
+<g transform="rotate(-24 150 700)"><rect x="104" y="696" width="104" height="9" rx="4.5" fill="#000" opacity=".35" filter="url(#ess)" transform="translate(3 6)"/><rect x="104" y="696" width="86" height="9" rx="4.5" fill="#1b2a44"/><rect x="190" y="697" width="18" height="7" fill="#c7a24a"/><path d="M104 700.5l-12 0" stroke="#222" stroke-width="2.5" stroke-linecap="round"/><rect x="118" y="697.5" width="40" height="2" fill="#fff" opacity=".25"/></g>
+<!-- caneca de café vista de cima -->
+<g><ellipse cx="338" cy="168" rx="36" ry="36" fill="#000" opacity=".4" filter="url(#esb)" transform="translate(7 10)"/>
+<path d="M368 160q22 2 22 14t-22 14" fill="none" stroke="#e8e2d6" stroke-width="7" stroke-linecap="round"/>
+<circle cx="338" cy="168" r="34" fill="url(#esc)"/><circle cx="338" cy="168" r="28" fill="#f4efe4" stroke="#cfc6b4" stroke-width="1"/>
+<circle cx="338" cy="168" r="25" fill="#3a2214"/><circle cx="338" cy="168" r="25" fill="none" stroke="#5a3a22" stroke-width="3"/><path d="M322 160q12-9 26-3" stroke="#a9744a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/><ellipse cx="330" cy="160" rx="10" ry="5" fill="#fff" opacity=".12"/></g>
+<!-- planta (folhas vistas de cima, desfocadas na borda) -->
+<g opacity=".95"><ellipse cx="22" cy="430" rx="40" ry="40" fill="#000" opacity=".3" filter="url(#esb)" transform="translate(8 8)"/>
+<g fill="#3d7a3f"><ellipse cx="14" cy="404" rx="12" ry="30" transform="rotate(-26 14 404)"/><ellipse cx="34" cy="410" rx="12" ry="30" transform="rotate(30 34 410)"/><ellipse cx="10" cy="446" rx="12" ry="30" transform="rotate(-110 10 446)"/><ellipse cx="36" cy="448" rx="12" ry="28" transform="rotate(118 36 448)"/></g>
+<g fill="#4f9a50"><ellipse cx="22" cy="398" rx="8" ry="26" transform="rotate(4 22 398)"/><ellipse cx="22" cy="456" rx="8" ry="22" transform="rotate(180 22 456)"/></g>
+<path d="M14 404L22 428M34 410L24 428M10 446L22 430M36 448L24 432" stroke="#2a5a2c" stroke-width="1" opacity=".7"/><circle cx="22" cy="429" r="7" fill="#b86b3c"/></g>
+<!-- clipes e grampeador -->
+<g fill="none" stroke="#9aa3ad" stroke-width="2" stroke-linecap="round"><path d="M196 262v26a7 7 0 0014 0v-30a4.5 4.5 0 00-9 0v26"/><path d="M222 272v24a6 6 0 0012 0v-26a4 4 0 00-8 0v22" transform="rotate(14 228 284)"/></g>
+<g transform="rotate(-18 170 520)"><rect x="124" y="506" width="92" height="22" rx="4" fill="#000" opacity=".35" filter="url(#ess)" transform="translate(4 6)"/><rect x="124" y="506" width="92" height="22" rx="4" fill="#b8402f"/><rect x="124" y="506" width="92" height="9" rx="4" fill="#d9604a"/><circle cx="208" cy="517" r="2.4" fill="#7a2418"/></g>
+<rect width="400" height="800" fill="#2a1808" opacity=".07"/>
+</svg>`}
+function esBg(){let el=document.querySelector('.es-bg');
+ if(S.color!=='escritorio'){if(el)el.remove();return}
+ if(el)return;el=document.createElement('div');el.className='es-bg';el.innerHTML=esScene();document.body.prepend(el)}
+(function(){const _a=applyTheme;applyTheme=function(){_a.apply(this,arguments);try{
+ if(S.color==='escritorio'&&!document.getElementById('es-font')){const l=document.createElement('link');l.id='es-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap';document.head.appendChild(l)}
+ esBg()}catch(e){}}})();
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
