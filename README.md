@@ -23,6 +23,12 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 3.2.0
+
+- **Novo tema Viking** (Configurações › Aparência › Cor do tema › Viking): papel de parede em SVG (aurora, lua, fiorde, montanhas, pinheiros, pedra com runa, neve e um drakkar balançando), fontes Uncial Antiqua / Cinzel / Alegreya Sans (Google Fonts), ícones do menu próprios (`VKICO`), frisos de runas no cabeçalho e no menu, cartões de madeira com rebites. Código: bloco “Tema VIKING” no CSS e “Tema VIKING: papel de parede” no JS. Também dá para pedir à Kayla: “deixa o app viking”.
+- **Escuta pelo nome mais firme**: o vigia religa o microfone quando o Android corta a escuta, e o botão **Testar a escuta** (Configurações › Assistente Kayla) mostra se está ouvindo, o motivo de estar parada e o último texto ouvido.
+- **Novidades desta versão** (Configurações): lista atualizada com as 7 últimas versões (3.1.4 a 3.2.0). Para cada versão nova: aumente `VERSION` no `sw.js` e acrescente a mesma versão em `NOVIDADES` no `index.html`.
+
 ## Versão 3.1.9
 
 - **Chamar a Kayla pelo nome**: já vem **ligado por padrão** (dá para desligar em Configurações › Assistente Kayla › **Chamar pelo nome**). Com o app aberto na tela, diga “Kayla, marcar dentista amanhã às 14h” e ela executa. Se disser só “Kayla”, o painel abre e o microfone liga sozinho para você dar a ordem.

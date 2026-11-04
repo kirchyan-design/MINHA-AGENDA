@@ -296,6 +296,51 @@ html[data-color="cyber"]::after{content:"";position:fixed;inset:0;z-index:214748
 @keyframes cycar{from{transform:translateX(-60px)}to{transform:translateX(470px)}}
 @keyframes cyglitch{0%,92%,100%{transform:none}93%{transform:translateX(-2px) skewX(-6deg)}94%{transform:translateX(3px)}95%{transform:none}97%{transform:translateX(2px) skewX(5deg)}}
 @media(prefers-reduced-motion:reduce){html[data-color="cyber"] h1,.cy-r,.cy-car{animation:none}}
+/* ---- Tema VIKING: noite nórdica com aurora, fiorde e drakkar, madeira e ferro, frisos de runas, fonte rúnica (o rosto da Kayla não é alterado) ---- */
+:root[data-color="viking"][data-eff]{--bg:#070d14;--sf:#121b25;--ink:#f1e8d2;--mute:#b0a389;--ac:#e0a93b;--acs:#2b2312;--ln:#2d3b49;--ln2:#5a4524;--fld:#0b121a;--ok:#7bbf5a;--rd:#d64b33;--onac:#1a1000;--ac2:#c0392b;--ac3:#f2c14e;--sh:0 0 0 1px rgba(224,169,59,.22),0 6px 18px -8px #000;color-scheme:dark;--vkrune:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='10' viewBox='0 0 96 10' fill='none' stroke='%23c9962f' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0 9.6H96' stroke-width='.8' opacity='.7'/%3E%3Cpath d='M3 1v7M3 3l4-2M3 5l4-2'/%3E%3Cpath d='M14 8V1l5 3v4'/%3E%3Cpath d='M27 1v7M27 3l4 2-4 2'/%3E%3Cpath d='M39 1v7M39 1l4 2M39 4l4 2'/%3E%3Cpath d='M51 1v7M51 1l4 2-4 2 4 4'/%3E%3Cpath d='M67 2l-4 3 4 3'/%3E%3Cpath d='M74 1l6 7M80 1l-6 7'/%3E%3Cpath d='M87 1v7M87 1l4 2-4 2'/%3E%3C/svg%3E")}
+html[data-color="viking"]{background:#070d14}
+html[data-color="viking"] body{background:none;font-family:"Alegreya Sans","Cormorant Garamond",Georgia,serif;font-size:18px;font-weight:500;letter-spacing:.01em}
+html[data-color="viking"] h1,html[data-color="viking"] h2{font-family:"Uncial Antiqua","Cinzel",Georgia,serif;text-transform:uppercase;letter-spacing:.06em;font-weight:400;color:var(--ac3);text-shadow:0 2px 0 #000,0 0 14px rgba(224,169,59,.45)}
+html[data-color="viking"] header{position:relative;gap:10px;padding-bottom:6px}
+html[data-color="viking"] header::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:10px;background:var(--vkrune) repeat-x left bottom/96px 10px;pointer-events:none}
+html[data-color="viking"] header .brand{flex:1 1 0;min-width:0}
+html[data-color="viking"] header h1{font-size:clamp(13px,4.3vw,20px);min-width:0;overflow:hidden;text-overflow:ellipsis}
+html[data-color="viking"] header .cfg{flex:none;position:relative;z-index:1}
+html[data-color="viking"] h3,html[data-color="viking"] label.fl,html[data-color="viking"] nav button .nl{font-family:"Cinzel","Uncial Antiqua",Georgia,serif;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+html[data-color="viking"] h3{color:var(--ac);display:flex;align-items:center;gap:8px}
+html[data-color="viking"] h3::before{content:"";flex:none;width:16px;height:16px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 14 14 2M14 14 2 2' stroke='%23e0a93b' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='8' r='2.3' fill='%23e0a93b'/%3E%3C/svg%3E") center/contain no-repeat}
+html[data-color="viking"] input,html[data-color="viking"] textarea,html[data-color="viking"] select,html[data-color="viking"] button{font-family:inherit}
+html[data-color="viking"] .card{position:relative;border-radius:6px;border:2px solid #3b2f1b;border-top-color:#6a5222;background:radial-gradient(circle at 9px 9px,#e3bd62 0 1.6px,#6a5222 2.3px,transparent 3px),radial-gradient(circle at calc(100% - 9px) 9px,#e3bd62 0 1.6px,#6a5222 2.3px,transparent 3px),radial-gradient(circle at 9px calc(100% - 9px),#e3bd62 0 1.6px,#6a5222 2.3px,transparent 3px),radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),#e3bd62 0 1.6px,#6a5222 2.3px,transparent 3px),repeating-linear-gradient(90deg,rgba(255,255,255,.028) 0 2px,transparent 2px 46px),linear-gradient(180deg,rgba(255,255,255,.04),transparent 32%),var(--sf);box-shadow:var(--sh),inset 0 0 0 1px rgba(0,0,0,.55)}
+html[data-color="viking"] input,html[data-color="viking"] textarea,html[data-color="viking"] select{border-radius:4px;border:2px solid #4a3a1e;background:rgba(7,12,18,.92)}
+html[data-color="viking"] input:focus,html[data-color="viking"] textarea:focus,html[data-color="viking"] select:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(224,169,59,.3);outline:0}
+html[data-color="viking"] button{border-radius:5px}
+html[data-color="viking"] button.pri{background:linear-gradient(180deg,#f2c14e,#c98f24 55%,#a7731a);color:#1a1000;border:1px solid #6b4a10;font-family:"Cinzel",Georgia,serif;text-transform:uppercase;letter-spacing:.08em;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 0 #4a3208}
+html[data-color="viking"] button.sec{background:transparent;color:var(--ac3);border:2px solid #7a5d27;font-family:"Cinzel",Georgia,serif;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+html[data-color="viking"] .seg button.on{background:var(--ac);color:#1a1000;box-shadow:0 0 12px -2px var(--ac)}
+html[data-color="viking"] nav{border-radius:0;border:0;border-top:2px solid #6a5222;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,transparent 2px 38px),linear-gradient(180deg,#1b1409,#0b0805);box-shadow:0 -8px 24px -8px rgba(0,0,0,.9)}
+html[data-color="viking"] nav::before{content:"";position:absolute;left:0;right:0;top:-12px;height:10px;background:var(--vkrune) repeat-x left bottom/96px 10px;pointer-events:none}
+html[data-color="viking"] nav button{color:var(--mute);border-radius:6px}
+html[data-color="viking"] nav button.on{color:var(--ac3);background:none;text-shadow:0 0 10px rgba(224,169,59,.7)}
+html[data-color="viking"] nav button.on .ni{background:radial-gradient(circle,rgba(224,169,59,.3),rgba(224,169,59,.07) 72%);border-radius:50%;box-shadow:inset 0 0 0 2px var(--ac)}
+html[data-color="viking"] nav button.on .ni svg{filter:drop-shadow(0 0 4px var(--ac))}
+html[data-color="viking"] .prm .ic{filter:sepia(.85) saturate(1.7) hue-rotate(-8deg) drop-shadow(0 0 3px rgba(224,169,59,.5))}
+html[data-color="viking"] .dlg{border-radius:6px;border:2px solid #7a5d27;box-shadow:0 0 0 1px #000,0 14px 40px -8px #000}
+html[data-color="viking"] #kay-p{border:1px solid #7a5d27}
+html[data-color="viking"] #kay-f{box-shadow:0 0 0 2px var(--ac),0 0 20px 2px rgba(224,169,59,.55)}
+html[data-color="viking"] ::selection{background:var(--ac);color:#1a1000}
+html[data-color="viking"] [data-c=vermelho]{--nc:#c0392b}html[data-color="viking"] [data-c=laranja]{--nc:#d9822b}html[data-color="viking"] [data-c=amarelo]{--nc:#e0a93b}html[data-color="viking"] [data-c=verde]{--nc:#6a994e}html[data-color="viking"] [data-c=azul]{--nc:#4f7ca8}html[data-color="viking"] [data-c=roxo]{--nc:#7b5ea7}html[data-color="viking"] [data-c=rosa]{--nc:#b5546e}
+.vk-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#070d14}
+.vk-bg svg.vk-scene{position:absolute;inset:0;width:100%;height:100%}
+.vk-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,14,.5),rgba(5,9,14,.12) 38%,rgba(5,9,14,.5))}
+.vk-sn{position:absolute;top:-12px;border-radius:50%;background:#fff;animation:vksnow linear infinite}
+.vk-au{animation:vkau 16s ease-in-out infinite alternate}
+.vk-ship{animation:vkbob 7s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 90%}
+.vk-tw{animation:vktw 3.4s ease-in-out infinite}
+@keyframes vksnow{to{transform:translate3d(34px,108vh,0)}}
+@keyframes vkau{from{transform:translateX(-18px);opacity:.55}to{transform:translateX(18px);opacity:1}}
+@keyframes vkbob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-3px) rotate(1.2deg)}}
+@keyframes vktw{50%{opacity:.2}}
+@media(prefers-reduced-motion:reduce){.vk-sn,.vk-au,.vk-ship,.vk-tw{animation:none}}
 
 
 /* ---- Tema Pica-pau (personagem original: pássaro verde-oliva de topete amarelo) ---- */
@@ -946,7 +991,19 @@ const CYICO={
  plantao:'<path d="M12 4v5M12 15v5M4 12h5M15 12h5"/><path d="M10 10h4v4h-4z"/>',
  relogio:'<path d="M12 3l7 4v10l-7 4-7-4V7z"/><path d="M12 8v4l3 2"/>'
 };
-const svg=k=>{const c=document.documentElement.dataset.color==='cyber'&&CYICO[k];return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${c?1.7:1.9}" stroke-linecap="${c?'square':'round'}" stroke-linejoin="${c?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
+const VKICO={
+ inicio:'<path d="M2.5 12 12 5l9.5 7"/><path d="M5 11v9h14v-9"/><path d="M10 20v-5h4v5"/><path d="M12 5 10 2.5M12 5l2-2.5"/>',
+ agenda:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.6"/><path d="M12 3v6.4M12 14.6V21M3 12h6.4M14.6 12H21"/>',
+ cal:'<path d="M12 2.5v19"/><path d="M12 6l4-2M12 10l4-2M12 14l4-2M12 18l4-2"/><path d="M12 8 8 6M12 12 8 10M12 16 8 14"/>',
+ notas:'<path d="M7 21V9.5L12 4l5 5.5V21z"/><path d="M12 9v8"/><path d="M12 11l3-2M12 14.5l3-2"/>',
+ diario:'<path d="M5 4h13a1 1 0 0 1 1 1v15H6.5A1.5 1.5 0 0 1 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20"/><path d="M12 8v6M12 9l3 2M12 12l3 2"/>',
+ compras:'<path d="M3.5 10.5a8.5 6 0 0 1 17 0V20h-17z"/><path d="M3.5 12.5h17"/><path d="M10 12.5h4v4h-4z"/>',
+ carteira:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6.2"/><path d="M10.2 8v8M10.2 10.5l3.8-2.5M10.2 13.5l3.8-2.5"/>',
+ mercado:'<path d="M2.5 14.5c1.2 4 4.7 6 9.5 6s8.3-2 9.5-6z"/><path d="M12 14V3.5"/><path d="M12 4.5 18 9.5h-6"/><path d="M2.5 14.5 1.5 11M21.5 14.5l1-3.5"/>',
+ plantao:'<path d="M5 20 17 8M19 20 7 8"/><path d="M14 4.5l5 .5.5 5-3-1.5z"/><path d="M10 4.5 5 5l-.5 5 3-1.5z"/>',
+ relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
+};
+const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],c=cy||vk;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
 const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
@@ -2519,7 +2576,7 @@ function permIntro(){
  o.querySelector('#pi-ok').onclick=async()=>{fim();await permTudo()};o.querySelector('#pi-no').onclick=fim}
 
 /* ---------- v1.7: Temas de cor ---------- */
-const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a'],['cyber','Cyberpunk','#ff2bd6']];
+const COR=[['teal','Turquesa','#0f7b8a'],['azul','Azul','#2563eb'],['roxo','Roxo','#7c3aed'],['rosa','Rosa','#d6336c'],['verde','Verde','#26804a'],['laranja','Laranja','#b8520a'],['ambar','Âmbar','#a16207'],['grafite','Grafite','#475569'],['magia','Escola de Magia','#7a1f2b'],['doom','Doomsday','#1fd15c'],['picapau','Pica-pau','#b4541a'],['cyber','Cyberpunk','#ff2bd6'],['viking','Viking','#e0a93b']];
 function setColor(c){if(!COR.some(x=>x[0]===c))c='teal';S.color=c;save();applyTheme();try{nav()}catch(e){}render()}
 function cfgAparencia(){const tema=S.theme||'auto',cor=COR.some(x=>x[0]===S.color)?S.color:'teal',
  tm=[['auto','🌓 '+_t('Auto')],['light','☀️ '+_t('Claro')],['dark','🌙 '+_t('Escuro')]];
@@ -3041,6 +3098,30 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.2.0':[
+  '⚔️ Novo tema “Viking”: papel de parede com aurora boreal, lua, fiorde, montanhas nevadas, pinheiros e um drakkar navegando; fonte rúnica, ícones de casa longa, escudo, baú, moeda com runa, navio e machados, cartões de madeira e ferro com frisos de runas.',
+  '⚙️ Para usar: Configurações › Aparência › Cor do tema › Viking.',
+  '🗣️ Kayla: a escuta pelo nome ficou mais firme (religa sozinha quando o Android corta o microfone) e ganhou o botão “Testar a escuta” em Configurações › Assistente Kayla.',
+  '🆕 A lista “Novidades desta versão” foi atualizada com as 7 últimas atualizações.'
+ ],
+ '3.1.9':[
+  '🗣️ Chamar a Kayla pelo nome já vem ligado: com o app aberto na tela, diga “Kayla” e o comando, sem tocar no microfone. Dá para desligar em Configurações › Assistente Kayla.'
+ ],
+ '3.1.8':[
+  '🎙️ Novo: diga “Kayla, marcar dentista amanhã às 14h” e ela executa. Se disser só “Kayla”, o painel abre e o microfone liga sozinho para você dar a ordem.'
+ ],
+ '3.1.7':[
+  '🗓️ Kayla: “novo compromisso …” e “nova nota …” salvam só a ordem dada, sem a expressão de comando. Ela apaga direto, e dá para tocar em Desfazer.'
+ ],
+ '3.1.6':[
+  '💰 Kayla na Carteira: “limpar valores” ou “zerar valores” coloca todos os valores em R$ 0,00, mantendo lançamentos, nomes e datas. Dá para desfazer.'
+ ],
+ '3.1.5':[
+  '🎙️ Kayla por voz: toque no microfone do painel e fale o comando. Ela só obedece: não lê as respostas em voz alta.'
+ ],
+ '3.1.4':[
+  '🌃 Novo tema “Cyberpunk”: cidade neon, chuva, carros voadores, fonte futurista e ícones angulares.'
+ ],
  '3.0.4':[
   '🎡 Novo menu Flow giratório: um carrossel 3D no lugar do menu de baixo. Arraste para os lados para girar e a tela muda sozinha; toque num ícone para ir até ele.',
   '⚙️ Para ligar ou desligar: Configurações › Menu. Vem desligado, e o menu comum continua disponível.'
@@ -3914,7 +3995,7 @@ function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!
   p.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.k-c button');if(b)kRun(b.dataset.c)});
   if(!kCfg().seen){const esp=n=>{if(K.open||kCfg().seen||!(S.user&&S.user.name)||n>90)return;if(document.querySelector('.ov')||(typeof permAsking!=='undefined'&&permAsking)||(typeof PIN_LK!=='undefined'&&PIN_LK)){setTimeout(()=>esp(n+1),2000);return}kOpen()};setTimeout(()=>esp(0),6000)}}
  f.style.display=ok&&!K.open?'':'none';if(!ok){const p=$('#kay-p');if(p)p.classList.remove('on');K.open=false}}
-function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div>${on?`<div class="prm"><span class="ic">🗣️</span><span class="t"><b>Chamar pelo nome</b><small>${wakeLig()?'Ligado: com o app aberto na tela, diga “Kayla” e o comando. Gasta um pouco mais de bateria.':'Desligado: diga “Kayla” e o microfone liga sozinho (com o app aberto na tela).'}</small></span><button class="${wakeLig()?'':'sec'}" onclick="wakeTog()" aria-pressed="${wakeLig()}">${wakeLig()?'Desligar':'Ligar'}</button></div>`:''}</div>`}
+function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div>${on?`<div class="prm"><span class="ic">🗣️</span><span class="t"><b>Chamar pelo nome</b><small>${wakeLig()?'Ligado: com o app aberto na tela, diga “Kayla” e o comando. Gasta um pouco mais de bateria.':'Desligado: diga “Kayla” e o microfone liga sozinho (com o app aberto na tela).'}</small></span><button class="${wakeLig()?'':'sec'}" onclick="wakeTog()" aria-pressed="${wakeLig()}">${wakeLig()?'Desligar':'Ligar'}</button></div><div class="prm"><span class="ic">🧪</span><span class="t"><b>Testar a escuta</b><small>Mostra se o celular está ouvindo e o que ouviu.</small></span><button class="sec" onclick="wakeDiag()">Testar</button></div>`:''}</div>`}
 function kayTog(){kCfg().off=kCfg().off?0:1;save();kSync();render()}
 /* ===== KAYLA · VOCABULÁRIO AMPLIADO: gírias, sinônimos, erros de digitação, números por extenso, conversa do dia a dia ===== */
 (function(){
@@ -4128,7 +4209,7 @@ kFaq.push([/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Me
 /* ===== KAYLA · AJUSTA AS CONFIGURAÇÕES DO APP conforme o pedido ===== */
 (function(){
 const N=s=>kNorm(s).replace(/\bvc\b/g,'voce').replace(/\bpra\b/g,'para').replace(/\bmin\b/g,'minutos').replace(/\bq\b/g,'que').replace(/[^a-z0-9: ]/g,' ').replace(/\s+/g,' ').trim();
-const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['cyber',/cyber|ciberpunk|neon/],['picapau',/pica ?pau/]];
+const CORES=[['teal',/turquesa|azul petroleo|padrao/],['azul',/\bazul\b/],['roxo',/roxo|lilas|violeta/],['rosa',/\brosa\b|pink/],['verde',/\bverde\b/],['laranja',/laranja/],['ambar',/ambar|amarel/],['grafite',/grafite|cinza|preto/],['magia',/magia|harry|hogwarts|bruxo/],['doom',/doom/],['cyber',/cyber|ciberpunk|neon/],['viking',/viking|nordic|nordico|drakkar|odin|thor/],['picapau',/pica ?pau/]];
 const TABN=[['inicio',/inicio|home/],['agenda',/agenda/],['cal',/calendario/],['notas',/notas?/],['diario',/diario/],['compras',/compras|lista/],['carteira',/carteira|gastos|financas/],['mercado',/promocoes|promocao|mercado|ofertas/]];
 const LG=[['en',/ingles|english/],['es',/espanhol|spanish|espanol/],['de',/alemao|german|deutsch/],['pt',/portugues/]];
 const near=(v,L)=>L.reduce((a,b)=>Math.abs(b-v)<Math.abs(a-v)?b:a);
@@ -4767,6 +4848,56 @@ function cyBg(){let el=document.querySelector('.cy-bg');
 (function(){const _a=applyTheme;applyTheme=function(){_a.apply(this,arguments);try{
  if(S.color==='cyber'&&!document.getElementById('cy-font')){const l=document.createElement('link');l.id='cy-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(l)}
  cyBg()}catch(e){}}})();
+/* ===== Tema VIKING: papel de parede (aurora, lua, fiorde, drakkar, pinheiros, pedra com runa, neve) + fontes rúnicas ===== */
+function vkScene(){
+ let st='';for(let i=0;i<70;i++){const x=(i*53+17)%400,y=(i*97+11)%430,r=i%5===0?1.5:i%3===0?1:.7;
+  st+=`<circle class="${i%4===0?'vk-tw':''}" cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity="${(.35+(i%5)*.12).toFixed(2)}" style="animation-delay:-${(i%7)*.5}s"/>`}
+ let sh='',op='';for(let i=0;i<9;i++){const x=-44+i*11;
+  sh+=`<circle cx="${x}" cy="-3" r="4.4" fill="${i%2?'#a8321f':'#d9a93c'}" stroke="#1a0e06" stroke-width="1"/><circle cx="${x}" cy="-3" r="1.2" fill="#1a0e06"/>`;
+  op+=`<path d="M${x} 6 L${x-7} 24" stroke="#2a1608" stroke-width="1.4"/>`}
+ const pine=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})" fill="#04090d"><path d="M0 -46 L9 -26 L4 -26 L12 -10 L5 -10 L14 6 L-14 6 L-5 -10 L-12 -10 L-4 -26 L-9 -26Z"/><rect x="-1.6" y="6" width="3.2" height="7"/></g>`;
+ return `<svg class="vk-scene" viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+<linearGradient id="vkS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#03070d"/><stop offset=".45" stop-color="#0b1827"/><stop offset=".78" stop-color="#1b2f42"/><stop offset="1" stop-color="#2b4254"/></linearGradient>
+<linearGradient id="vkW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23415a"/><stop offset="1" stop-color="#050c13"/></linearGradient>
+<radialGradient id="vkM"><stop offset="0" stop-color="#f4f0dc" stop-opacity=".9"/><stop offset=".5" stop-color="#cfe0ee" stop-opacity=".22"/><stop offset="1" stop-color="#cfe0ee" stop-opacity="0"/></radialGradient>
+<linearGradient id="vkA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4dffb0" stop-opacity="0"/><stop offset=".5" stop-color="#3be8c0" stop-opacity=".5"/><stop offset="1" stop-color="#7a5cff" stop-opacity="0"/></linearGradient>
+<linearGradient id="vkA2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5cff" stop-opacity="0"/><stop offset=".5" stop-color="#5ad7ff" stop-opacity=".38"/><stop offset="1" stop-color="#4dffb0" stop-opacity="0"/></linearGradient>
+<filter id="vkB" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+<clipPath id="vkC"><path d="M-30 -60 L30 -60 L26 -19 Q0 -11 -26 -19Z"/></clipPath></defs>
+<rect width="400" height="800" fill="url(#vkS)"/>${st}
+<g filter="url(#vkB)"><path class="vk-au" d="M-30 190 C60 120 120 220 200 150 S340 90 430 160 L430 250 C340 190 260 280 180 220 S40 280 -30 240Z" fill="url(#vkA)"/><path class="vk-au" style="animation-delay:-6s" d="M-30 270 C70 220 140 300 220 240 S350 200 430 250 L430 320 C350 270 270 350 190 300 S50 350 -30 310Z" fill="url(#vkA2)"/><path class="vk-au" style="animation-delay:-11s" d="M-30 120 C90 70 170 130 250 85 S360 50 430 90 L430 140 C350 110 280 170 200 135 S60 170 -30 150Z" fill="url(#vkA)" opacity=".7"/></g>
+<circle cx="310" cy="128" r="78" fill="url(#vkM)"/><circle cx="310" cy="128" r="26" fill="#f3eed6"/><circle cx="302" cy="121" r="4.5" fill="#d8d2b4" opacity=".6"/><circle cx="318" cy="136" r="3.2" fill="#d8d2b4" opacity=".6"/><circle cx="313" cy="117" r="2.2" fill="#d8d2b4" opacity=".5"/>
+<path d="M0 575 L0 468 L40 428 L70 455 L120 378 L165 440 L200 408 L250 470 L300 398 L350 450 L400 418 L400 575Z" fill="#12202f"/>
+<path d="M120 378 L104 406 L117 400 L127 411 L141 402Z M300 398 L286 424 L298 419 L307 428 L318 420Z M40 428 L28 448 L38 444 L46 451Z" fill="#cfd9e6" opacity=".5"/>
+<path d="M0 610 L0 505 L30 474 L70 522 L110 562 L150 588 L150 610Z M400 615 L400 492 L360 482 L320 532 L280 576 L250 604 L250 615Z" fill="#0a1420"/>
+<rect y="585" width="400" height="215" fill="url(#vkW)"/>
+<ellipse cx="310" cy="640" rx="46" ry="3" fill="#f3eed6" opacity=".28"/><ellipse cx="310" cy="658" rx="30" ry="2.2" fill="#f3eed6" opacity=".2"/><ellipse cx="310" cy="676" rx="18" ry="1.8" fill="#f3eed6" opacity=".14"/>
+<g stroke="#8fb4cf" stroke-width="1" opacity=".22"><path d="M30 620h40M90 640h56M220 600h50M60 672h70M250 700h60M130 700h50M20 720h44"/></g>
+<g transform="translate(168 650) scale(1.05)"><g class="vk-ship">
+<path d="M-48 20 Q0 30 48 20" stroke="#8fb4cf" stroke-width="1" fill="none" opacity=".35"/>
+${op}
+<path d="M-60 -26 C-67 -31 -67 -42 -58 -44 C-62 -37 -58 -33 -54 -31 C-40 -12 -20 -8 0 -8 C20 -8 40 -12 54 -31 C58 -33 62 -37 58 -44 C67 -42 67 -31 60 -26 C56 4 30 16 0 16 C-30 16 -56 4 -60 -26Z" fill="#1d1109" stroke="#3a2412" stroke-width="1.2"/>
+<path d="M-57 -31 C-40 -13 -20 -9 0 -9 C20 -9 40 -13 57 -31" fill="none" stroke="#d9a93c" stroke-width="1.6"/>
+<path d="M-58 -44 L-65 -52 L-59 -50 L-60 -58 L-54 -50 L-50 -52 L-55 -44Z" fill="#1d1109" stroke="#3a2412" stroke-width="1"/><circle cx="-60" cy="-50" r=".9" fill="#e0a93b"/>
+<path d="M58 -44 L63 -50 L56 -48Z" fill="#1d1109"/>
+${sh}
+<rect x="-2" y="-64" width="4" height="58" fill="#2a1608"/><rect x="-32" y="-64" width="64" height="3.2" fill="#3a2412"/>
+<g clip-path="url(#vkC)"><rect x="-32" y="-62" width="64" height="46" fill="#9c2e1c"/><g fill="#efe3c5" opacity=".92"><rect x="-26" y="-62" width="6" height="46"/><rect x="-14" y="-62" width="6" height="46"/><rect x="-2" y="-62" width="6" height="46"/><rect x="10" y="-62" width="6" height="46"/><rect x="22" y="-62" width="6" height="46"/></g></g>
+<path d="M-30 -60 L30 -60 L26 -19 Q0 -11 -26 -19Z" fill="none" stroke="#3a2412" stroke-width="1.2"/>
+<path d="M0 -64 L12 -61 L0 -58Z" fill="#e0a93b"/>
+</g></g>
+<path d="M0 800 L0 738 Q60 716 130 742 T262 746 T400 726 L400 800Z" fill="#04080c"/>
+${pine(22,742,1.1)}${pine(48,748,.8)}${pine(70,746,.6)}${pine(372,732,1.2)}${pine(350,742,.8)}${pine(388,748,.7)}
+<path d="M318 748 L322 716 Q333 708 343 716 L347 748Z" fill="#17212b" stroke="#0a1118" stroke-width="1"/><path d="M333 721v20M333 725l7-4M333 731l7-4" stroke="#e0a93b" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".9"/>
+</svg>`}
+function vkBg(){let el=document.querySelector('.vk-bg');
+ if(S.color!=='viking'){if(el)el.remove();return}
+ if(el)return;el=document.createElement('div');el.className='vk-bg';
+ let sn='';for(let i=0;i<30;i++){const z=2+(i%3);sn+=`<i class="vk-sn" style="left:${(i*37+9)%100}%;width:${z}px;height:${z}px;opacity:${(.35+(i%4)*.12).toFixed(2)};animation-duration:${9+(i%7)*2.2}s;animation-delay:-${(i%11)*1.7}s"></i>`}
+ el.innerHTML=vkScene()+sn;document.body.prepend(el)}
+(function(){const _a=applyTheme;applyTheme=function(){_a.apply(this,arguments);try{
+ if(S.color==='viking'&&!document.getElementById('vk-font')){const l=document.createElement('link');l.id='vk-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cinzel:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap';document.head.appendChild(l)}
+ vkBg()}catch(e){}}})();
 (function(){const _r=render;render=function(){_r.apply(this,arguments);try{kSync()}catch(e){}}})();
 
 /* ===== KAYLA · CHAMAR PELO NOME (palavra de ativação) =====
@@ -4774,15 +4905,25 @@ function cyBg(){let el=document.querySelector('.cy-bg');
    ouvindo só a palavra “Kayla”. Ao ouvir:
    • “Kayla, marcar dentista amanhã às 14h” → ela já executa o comando que veio depois do nome;
    • só “Kayla” → o painel abre e o microfone liga sozinho para você dar a ordem.
-   A opção é guardada só neste aparelho (localStorage ma-kayla-wake), não vai para a nuvem. */
-const WK={on:false,busy:false,seq:0,txt:'',heard:false,dt:null,ls:null,ls2:null,w:null,espera:0,falhas:0};
+   A opção é guardada só neste aparelho (localStorage ma-kayla-wake: 0 = desligado), não vai para a nuvem.
+   O Android corta a escuta depois de alguns segundos de silêncio: um vigia religa sozinho (e o botão “Testar” mostra o estado). */
+const WK={on:false,busy:false,seq:0,txt:'',heard:false,dt:null,ls:null,ls2:null,w:null,espera:0,falhas:0,ini:0,ult:0,ouvido:'',sess:0,erro:'',pediu:0};
 const WK_RX=/\b(?:kayla|cayla|kaila|caila|keila|queila|keyla|kaela|caela)\b/;
 const wakeBase=s=>String(s||'').replace(/[\s\S]/g,c=>c.normalize('NFD')[0]).toLowerCase();
 const wakeLig=()=>{try{return localStorage.getItem('ma-kayla-wake')!=='0'}catch(e){return true}};
 function wakeSet(v){try{localStorage.setItem('ma-kayla-wake',v?'1':'0')}catch(e){}}
-function wakeDeve(){return !!(wakeLig()&&!kCfg().off&&S.user&&S.user.name&&!document.hidden&&!WK.busy
- &&!(typeof PIN_LK!=='undefined'&&PIN_LK)&&!(typeof permAsking!=='undefined'&&permAsking)
- &&!K_VOZ&&!(typeof V!=='undefined'&&(V.on||V.hold)))}
+function wakeMotivo(){
+ if(!wakeLig())return 'desligado nas configurações';
+ if(kCfg().off)return 'a Kayla está desativada';
+ if(!(S.user&&S.user.name))return 'ainda não entrou no app';
+ if(document.hidden)return 'app em segundo plano';
+ if(typeof PIN_LK!=='undefined'&&PIN_LK)return 'app bloqueado com senha';
+ if(typeof permAsking!=='undefined'&&permAsking)return 'pedindo uma permissão';
+ if(K_VOZ)return 'microfone em uso pelo painel da Kayla';
+ if(typeof V!=='undefined'&&(V.on||V.hold))return 'microfone em uso pela lista de compras';
+ if(WK.busy)return 'executando um comando';
+ return ''}
+function wakeDeve(){return !wakeMotivo()}
 function wakeUi(){const f=$('#kay-f');if(f)f.classList.toggle('wake',!!WK.on)}
 async function wakeParar(){
  const N=nat()?plug('SpeechRecognition'):null,had=WK.on;WK.seq++;WK.on=false;clearTimeout(WK.dt);WK.heard=false;WK.txt='';
@@ -4809,7 +4950,7 @@ async function wakeAgir(){
   setTimeout(()=>{WK.busy=false;kVoice()},300)
  }catch(e){WK.busy=false;try{console.warn('Kayla wake:',e)}catch(x){}}}
 function wakeOuviu(txt){
- if(WK.busy||!WK.on)return;WK.txt=txt;
+ if(WK.busy||!WK.on)return;WK.txt=txt;WK.ult=Date.now();WK.ouvido=String(txt).slice(0,60);
  if(!WK.heard){if(!WK_RX.test(wakeBase(txt)))return;WK.heard=true}
  /* espera uma pausa na fala para pegar o comando inteiro */
  clearTimeout(WK.dt);WK.dt=setTimeout(wakeAgir,1200)}
@@ -4817,35 +4958,44 @@ function wakeOuviu(txt){
 function wakeFimSessao(sq){
  if(sq!==WK.seq)return;
  if(WK.heard){clearTimeout(WK.dt);wakeAgir();return}
- wakeParar();WK.espera=Date.now()+500}
+ wakeParar();WK.espera=Date.now()+400}
 async function wakeIniciar(){
  if(WK.on||WK.busy)return;
  const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!N&&!W)return;
- const sq=++WK.seq;WK.on=true;WK.txt='';WK.heard=false;
+ const sq=++WK.seq;WK.on=true;WK.txt='';WK.heard=false;WK.ini=WK.ult=Date.now();WK.sess++;
  try{
   if(N){
    if((await micEstado())!=='granted'){
     if(!WK.pediu){WK.pediu=1;try{await micPedirNativo()}catch(e){}}
-    await wakeParar();WK.espera=Date.now()+15000;return}
-   try{const a=await N.available();if(a&&a.available===false){await wakeParar();WK.espera=Date.now()+60000;return}}catch(e){}
+    WK.erro='microfone sem permissão';await wakeParar();WK.espera=Date.now()+15000;return}
+   try{const a=await N.available();if(a&&a.available===false){WK.erro='reconhecimento de voz indisponível (app Google)';await wakeParar();WK.espera=Date.now()+60000;return}}catch(e){}
    if(sq!==WK.seq)return;
    WK.ls=await N.addListener('partialResults',e=>{if(sq!==WK.seq)return;const m=e&&e.matches&&e.matches[0];if(m)wakeOuviu(m)});
-   try{WK.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped')wakeFimSessao(sq)})}catch(e){}
+   try{WK.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped'&&Date.now()-WK.ini>900)wakeFimSessao(sq)})}catch(e){}
    if(sq!==WK.seq){try{WK.ls.remove()}catch(x){}return}
-   wakeUi();
-   await N.start({language:LOC(),maxResults:3,partialResults:true,popup:false});
-   WK.falhas=0
+   wakeUi();WK.ini=WK.ult=Date.now();
+   const r=await N.start({language:LOC(),maxResults:3,partialResults:true,popup:false});
+   WK.erro='';
+   if(r&&r.matches&&r.matches[0])wakeOuviu(r.matches[0]);
+   /* em alguns aparelhos o start só volta quando a escuta termina: então a sessão acabou */
+   if(Date.now()-WK.ini>1500)wakeFimSessao(sq);
+   else WK.falhas=0
   }else{
    const r=new W();WK.w=r;r.lang=LOC();r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
    r.onresult=e=>{if(sq!==WK.seq)return;try{const i=e.results.length-1;wakeOuviu(e.results[i][0].transcript)}catch(x){}};
-   r.onerror=e=>{const er=(e&&e.error)||'';
+   r.onerror=e=>{const er=(e&&e.error)||'';WK.erro=er;
     if(er==='not-allowed'||er==='service-not-allowed'){wakeSet(false);try{render()}catch(x){}info('Preciso da permissão do microfone para ouvir o nome “Kayla”. Libere o microfone neste navegador e ligue a opção de novo.')}};
    r.onend=()=>wakeFimSessao(sq);
    wakeUi();r.start();WK.falhas=0}
  }catch(e){
-  /* erro ao abrir o microfone: tenta de novo com espera crescente (evita ficar repetindo sem parar) */
-  WK.falhas++;if(sq===WK.seq){await wakeParar();WK.espera=Date.now()+Math.min(30000,1500*WK.falhas*WK.falhas)}}}
+  WK.erro=String((e&&(e.message||e.errorMessage))||e||'').slice(0,80);
+  if(sq!==WK.seq)return;
+  if(WK.heard){clearTimeout(WK.dt);wakeAgir();return}
+  const dur=Date.now()-WK.ini;await wakeParar();
+  /* erro depois de ouvir um tempo (silêncio, “nenhuma fala”) é normal: religa logo. Erro logo ao abrir: espera um pouco mais */
+  if(dur>1500){WK.falhas=0;WK.espera=Date.now()+400}
+  else{WK.falhas++;WK.espera=Date.now()+Math.min(8000,800*WK.falhas)}}}
 async function wakeTog(){
  if(wakeLig()){wakeSet(false);await wakeParar();render();return}
  const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -4853,10 +5003,20 @@ async function wakeTog(){
  if(N){const ps=await micPedirNativo();if(ps!=='granted'){info('Preciso da permissão do microfone. Libere em: Ajustes do celular › Apps › JC ORGANIZA › Permissões › Microfone.');return}}
  wakeSet(true);WK.espera=0;WK.falhas=0;render();
  info('Pronto! Com o app aberto na tela, diga “Kayla” e depois o comando. Ex.: “Kayla, marcar dentista amanhã às 14h”.')}
+/* botão “Testar” em Configurações › Assistente Kayla: mostra o que está acontecendo com a escuta */
+async function wakeDiag(){
+ let mic='?',disp='?';const N=nat()?plug('SpeechRecognition'):null;
+ try{mic=await micEstado()}catch(e){}
+ try{if(N){const a=await N.available();disp=a&&a.available?'sim':'não'}else disp=(window.SpeechRecognition||window.webkitSpeechRecognition)?'sim':'não'}catch(e){}
+ const m=wakeMotivo();
+ info((WK.on?'👂 OUVINDO agora':'⏸️ Parada')+(m?' ('+m+')':'')+' · '+(nat()?'app instalado':'navegador')+' · plugin de voz: '+(N?'sim':'não')+' · reconhecimento disponível: '+disp+' · microfone: '+mic+' · sessões: '+WK.sess+' · último texto ouvido: '+(WK.ouvido||'(nada ainda)')+(WK.erro?' · último erro: '+WK.erro:'')+'. Diga “Kayla” e toque em Testar de novo para ver se ela ouviu.')}
 setInterval(()=>{try{
  const d=wakeDeve();
  if(d&&!WK.on&&Date.now()>=WK.espera)wakeIniciar();
- else if(!d&&WK.on&&!WK.busy)wakeParar()}catch(e){}},1200);
+ else if(!d&&WK.on&&!WK.busy)wakeParar();
+ /* vigia: se o Android parou de escutar sem avisar, religa (a cada ~7 s de silêncio) */
+ else if(WK.on&&!WK.heard&&!WK.w&&Date.now()-WK.ult>7000){wakeParar();WK.espera=Date.now()+300}
+ wakeUi()}catch(e){}},1200);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)wakeParar()});
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
