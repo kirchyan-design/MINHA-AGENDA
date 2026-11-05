@@ -1209,6 +1209,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ mulher:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>',
  concursos:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/>',
  inicio:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
  agenda:'<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4V3h6v1"/><path d="m9 13 2 2 4-4.5"/>',
@@ -1246,7 +1247,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['mulher','🌸','Espaço Mulher']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -2680,8 +2681,146 @@ function cnGuia(){
  return seg+b}
 function cnMat(k){const G=cnIni().guia;if(G[k])delete G[k];else G[k]=1;save();const y=window.scrollY;render();window.scrollTo(0,y)}
 
+/* ===== ESPAÇO MULHER =====
+   Ciclo, sintomas, autocuidado, contatos e conquistas ficam só neste aparelho (localStorage 'ma-mulher'), fora da sincronização em nuvem.
+   Só os lembretes de saúde entram na Agenda (S.ev), para tocarem o alarme normal do app. */
+var MU=(function(){try{return JSON.parse(localStorage.getItem('ma-mulher'))||{}}catch(e){return{}}})();
+['cy','ct','win','rem'].forEach(function(k){if(!Array.isArray(MU[k]))MU[k]=[]});MU.sym=MU.sym||{};MU.care=MU.care||{};
+var muTab='ciclo';
+(function(){const s=document.createElement('style');s.textContent=
+'.mu-big{font:700 22px "Bricolage Grotesque",sans-serif;margin:2px 0 4px}'+
+'.mu-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}'+
+'.mu-chips button{width:auto;flex:none;background:var(--bg);color:var(--mute);border:1px solid var(--ln);padding:7px 11px;border-radius:999px;font-size:13px}'+
+'.mu-chips button.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}'+
+'.mu-a{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:12px;background:var(--ac);color:var(--onac);font-weight:700;text-decoration:none;margin-bottom:8px;text-align:center}'+
+'.mu-a.sec{background:var(--sf);color:var(--ac);border:1px solid var(--ln)}'+
+'.mu-bar{height:8px;border-radius:999px;background:var(--bg);overflow:hidden;margin:8px 0}.mu-bar i{display:block;height:100%;background:var(--ac)}'+
+'.mu-wk{display:flex;gap:6px}.mu-wk div{flex:1;text-align:center;font-size:11px;color:var(--mute)}'+
+'.mu-wk b{display:block;height:30px;border-radius:8px;background:var(--bg);margin-bottom:3px;position:relative;overflow:hidden}.mu-wk b i{position:absolute;left:0;right:0;bottom:0;background:var(--ac);opacity:.75}'+
+'.mu-tel{color:var(--ac);font-weight:700;text-decoration:underline}'+
+'.mu-d summary{cursor:pointer;font-weight:700;padding:6px 0}.mu-d p{margin:4px 0 10px;font-size:14px;line-height:1.45}';
+document.head.appendChild(s)})();
+document.addEventListener('click',function(e){const a=e.target&&e.target.closest?e.target.closest('a[href^="tel:"]'):null;if(a){e.preventDefault();window.location.href=a.getAttribute('href')}});
+
+function muSave(){try{localStorage.setItem('ma-mulher',JSON.stringify(MU))}catch(e){info('Não foi possível salvar neste aparelho.')}}
+function muGo(t){muTab=t;render();window.scrollTo(0,0)}
+function muAdd(s,n){const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return iso(d)}
+function muAddM(s,n){const d=new Date(s+'T12:00'),dia=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);const u=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(dia,u));return iso(d)}
+function muDif(a,b){return Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5)}
+function muTel(p){return String(p||'').replace(/\D/g,'')}
+
+/* ---------- Ciclo ---------- */
+function muCic(){return MU.cy.slice().sort(function(a,b){return a.s<b.s?-1:a.s>b.s?1:0})}
+function muMedia(){const c=muCic(),d=[];for(let i=1;i<c.length;i++){const x=muDif(c[i-1].s,c[i].s);if(x>=18&&x<=45)d.push(x)}const u=d.slice(-6);return u.length?Math.round(u.reduce(function(a,b){return a+b},0)/u.length):28}
+function muProx(){const c=muCic();if(!c.length)return null;const L=muMedia(),ult=c[c.length-1].s,prox=muAdd(ult,L),ov=muAdd(prox,-14);return{L:L,ult:ult,prox:prox,f1:muAdd(ov,-5),f2:muAdd(ov,1),n:c.length}}
+function muIni(d){d=d||HOJE;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){info('Escolha uma data válida.');return}if(MU.cy.some(function(c){return c.s===d})){info('Esse início já está registrado.');return}MU.cy.push({s:d,e:''});muSave();render()}
+function muIniData(){const e=$('#mu-di');muIni(e?e.value:'')}
+function muFim(){const c=muCic().filter(function(x){return x.s<=HOJE&&!x.e}).pop();if(!c){info('Não há menstruação em andamento para encerrar.');return}c.e=HOJE;muSave();render()}
+function muDelCy(s){ask('Excluir este registro do ciclo?',function(){MU.cy=MU.cy.filter(function(c){return c.s!==s});muSave();render()})}
+var MU_S=['Cólica','Dor de cabeça','Inchaço','Cansaço','TPM','Enjoo','Acne','Seios sensíveis','Fluxo intenso'],MU_H=['😄','🙂','😐','😔','😢','😡'];
+function muSymD(){return MU.sym[HOJE]=MU.sym[HOJE]||{m:'',s:[]}}
+function muHum(i){const x=muSymD();x.m=x.m===MU_H[i]?'':MU_H[i];muSave();render()}
+function muSint(i){const x=muSymD(),k=MU_S[i],p=x.s.indexOf(k);if(p<0)x.s.push(k);else x.s.splice(p,1);muSave();render()}
+function muLembraProx(){const p=muProx();if(!p)return;const t='🌸 Previsão: início do ciclo';if(S.ev.some(function(e){return e.title===t&&e.date===p.prox})){info('Esse lembrete já está na Agenda.');return}S.ev.push({id:uid(),title:t,date:p.prox,time:'',done:false});save();info('Lembrete criado na Agenda para '+fmt(p.prox)+'.')}
+function muCiclo(){
+ const p=muProx(),x=MU.sym[HOJE]||{m:'',s:[]},c=muCic(),ult=c[c.length-1];
+ const emAnd=!!(ult&&!ult.e&&muDif(ult.s,HOJE)>=0&&muDif(ult.s,HOJE)<10);
+ let st;
+ if(!p)st='<p class="hint" style="margin:0">Registre o primeiro dia da sua menstruação para o app calcular a previsão.</p>';
+ else{const dia=muDif(p.ult,HOJE)+1,falta=muDif(HOJE,p.prox),fert=HOJE>=p.f1&&HOJE<=p.f2;
+  st='<small style="color:var(--mute)">'+(emAnd?'Menstruação em andamento':fert?'Período fértil estimado':'Hoje')+'</small><div class="mu-big">Dia '+dia+' do ciclo</div><div>'+
+   (falta>0?'Próxima menstruação em <b>'+falta+(falta===1?' dia':' dias')+'</b> ('+esc(fmt(p.prox))+')':falta===0?'Próxima menstruação <b>prevista para hoje</b>':'Previsão passada há <b>'+(-falta)+(falta===-1?' dia':' dias')+'</b> ('+esc(fmt(p.prox))+')')+'</div>'+
+   '<p class="hint">Ciclo médio: '+p.L+' dias'+(p.n<3?' (padrão até você registrar 3 ciclos)':'')+' · Período fértil estimado: '+esc(fmt(p.f1))+' a '+esc(fmt(p.f2))+'</p>'}
+ const botoes='<div class="row"><button onclick="muIni()">🩸 Comecei hoje</button><button class="sec" onclick="muFim()">Terminou hoje</button></div>'+
+  '<div class="row" style="margin-top:8px"><input type="date" id="mu-di" value="'+HOJE+'" max="'+HOJE+'" aria-label="Data de início"><button class="sec" style="flex:none" onclick="muIniData()">Adicionar início</button></div>'+
+  (p?'<button class="sec" style="width:100%;margin-top:8px" onclick="muLembraProx()">🔔 Avisar na Agenda quando a próxima chegar</button>':'');
+ const hum='<div class="mu-chips">'+MU_H.map(function(e,i){return '<button class="'+(x.m===e?'on':'')+'" onclick="muHum('+i+')" aria-label="Humor">'+e+'</button>'}).join('')+'</div>';
+ const sint='<div class="mu-chips">'+MU_S.map(function(e,i){return '<button class="'+(x.s.indexOf(e)>=0?'on':'')+'" onclick="muSint('+i+')">'+e+'</button>'}).join('')+'</div>';
+ const hist=c.length?c.slice(-6).reverse().map(function(k){return '<div class="item"><span class="t"><b>'+esc(fmt(k.s))+'</b><br><small style="color:var(--mute)">'+(k.e?'até '+esc(fmt(k.e))+' · '+(muDif(k.s,k.e)+1)+' dias':'em andamento')+'</small></span><button class="sec" style="flex:none" onclick="muDelCy(\''+k.s+'\')" aria-label="Excluir">🗑️</button></div>'}).join(''):'<div class="vazio" style="padding:10px">Nenhum ciclo registrado ainda.</div>';
+ return '<div class="card">'+st+'</div><div class="card">'+botoes+'</div>'+
+  '<h3>Como você está hoje?</h3><div class="card"><strong>Humor</strong>'+hum+'<strong>Sintomas</strong>'+sint+'</div>'+
+  '<h3>Últimos ciclos</h3><div class="card">'+hist+'</div>'+
+  '<p class="hint">As datas são estimativas feitas com os seus registros. Não use como método para evitar gravidez, e converse com sua ginecologista se o ciclo mudar muito. Os dados do ciclo ficam só neste aparelho.</p>'}
+
+/* ---------- Saúde e lembretes ---------- */
+var MU_CH=['🩺 Consulta ginecologista','🔬 Papanicolau','🎀 Mamografia','💊 Anticoncepcional','💊 Vitaminas','📋 Exames de rotina','💉 Vacina','🩻 Ultrassom'],MU_R={u:'uma vez',d:'todo dia (30 dias)',s:'toda semana (12 semanas)',m:'todo mês (12 meses)'};
+function muMk(t,d,h,r){const gid=uid(),n=r==='d'?30:r==='s'||r==='m'?12:1;let c=0;for(let i=0;i<n;i++){const dt=r==='d'?muAdd(d,i):r==='s'?muAdd(d,7*i):r==='m'?muAddM(d,i):d;S.ev.push({id:uid(),title:t,date:dt,time:h||'',done:false,mg:gid});c++}MU.rem.push({id:gid,t:t,d:d,h:h||'',r:r||'u',n:c});muSave();save();return c}
+function muLembrar(){const t=($('#mu-t').value||'').trim(),d=$('#mu-d').value,h=$('#mu-h').value,r=$('#mu-r').value;if(!t){info('Escreva o nome do lembrete.');return}if(!d){info('Escolha a data.');return}const n=muMk(t,d,h,r);render();info(n+(n===1?' lembrete criado':' lembretes criados')+' na Agenda.')}
+function muDelRem(id){ask('Excluir este lembrete e todas as repetições da Agenda?',function(){S.ev=S.ev.filter(function(e){return e.mg!==id});MU.rem=MU.rem.filter(function(g){return g.id!==id});muSave();save();render()})}
+function muSaude(){
+ const chips='<div class="mu-chips">'+MU_CH.map(function(t,i){return '<button onclick="$(\'#mu-t\').value=MU_CH['+i+']">'+t+'</button>'}).join('')+'</div>';
+ const lista=MU.rem.length?MU.rem.slice().reverse().map(function(g){return '<div class="item"><span class="t"><b>'+esc(g.t)+'</b><br><small style="color:var(--mute)">'+esc(fmt(g.d))+(g.h?' · '+esc(g.h):'')+' · '+MU_R[g.r||'u']+'</small></span><button class="sec" style="flex:none" onclick="muDelRem(\''+g.id+'\')" aria-label="Excluir">🗑️</button></div>'}).join(''):'<div class="vazio" style="padding:10px">Nenhum lembrete de saúde criado ainda.</div>';
+ return '<div class="card"><h3 style="margin-top:0">Novo lembrete de saúde</h3>'+chips+
+  '<input id="mu-t" placeholder="Ex.: Consulta com a ginecologista" maxlength="60" aria-label="Lembrete">'+
+  '<div class="row" style="margin-top:8px"><input type="date" id="mu-d" value="'+HOJE+'" aria-label="Data"><input type="time" id="mu-h" value="08:00" aria-label="Hora"></div>'+
+  '<select id="mu-r" style="margin-top:8px;width:100%" aria-label="Repetir"><option value="u">Só uma vez</option><option value="d">Todo dia (30 dias)</option><option value="s">Toda semana (12 semanas)</option><option value="m">Todo mês (12 meses)</option></select>'+
+  '<button style="width:100%;margin-top:8px" onclick="muLembrar()">🔔 Criar lembrete na Agenda</button>'+
+  '<p class="hint">Os lembretes aparecem na sua Agenda e tocam o alarme do app, como qualquer compromisso.</p></div>'+
+  '<h3>Meus lembretes de saúde</h3><div class="card">'+lista+'</div>'}
+
+/* ---------- Autocuidado ---------- */
+var MU_C=['🧴 Skincare','🏃‍♀️ Treino ou caminhada','💊 Vitaminas / remédios','🥗 Comi bem hoje','🧘‍♀️ Tempo para mim','🌙 Dormir cedo'];
+function muCD(d){return MU.care[d]=MU.care[d]||{w:0,ck:[],sl:0}}
+function muPct(d){const x=MU.care[d];if(!x)return 0;return Math.round(100*(x.ck.length+Math.min(x.w,8)/8)/(MU_C.length+1))}
+function muAgua(n){const x=muCD(HOJE);x.w=Math.max(0,Math.min(20,x.w+n));muSave();render()}
+function muCk(i){const x=muCD(HOJE),p=x.ck.indexOf(i);if(p<0)x.ck.push(i);else x.ck.splice(p,1);muSave();render()}
+function muSono(h){const x=muCD(HOJE);x.sl=x.sl===h?0:h;muSave();render()}
+function muCare(){
+ const x=MU.care[HOJE]||{w:0,ck:[],sl:0},pc=muPct(HOJE);
+ const ck='<div class="mu-chips">'+MU_C.map(function(t,i){return '<button class="'+(x.ck.indexOf(i)>=0?'on':'')+'" onclick="muCk('+i+')">'+t+'</button>'}).join('')+'</div>';
+ const sono='<div class="mu-chips">'+[5,6,7,8,9].map(function(h){return '<button class="'+(x.sl===h?'on':'')+'" onclick="muSono('+h+')">'+h+' h</button>'}).join('')+'</div>';
+ let wk='';for(let i=6;i>=0;i--){const d=muAdd(HOJE,-i),p=muPct(d);wk+='<div><b><i style="height:'+p+'%"></i></b>'+esc(new Date(d+'T12:00').toLocaleDateString(LOC(),{weekday:'narrow'}))+'</div>'}
+ return '<div class="card"><strong>Seu dia de autocuidado: '+pc+'%</strong><div class="mu-bar"><i style="width:'+pc+'%"></i></div>'+
+  '<div class="row" style="align-items:center"><div style="flex:1"><strong>💧 Água</strong><br><small style="color:var(--mute)">'+x.w+' de 8 copos</small></div><button class="sec" style="flex:none;width:48px" onclick="muAgua(-1)" aria-label="Menos um copo">−</button><button style="flex:none;width:48px" onclick="muAgua(1)" aria-label="Mais um copo">+</button></div></div>'+
+  '<div class="card"><strong>Hoje eu cuidei de mim</strong>'+ck+'<strong>Horas de sono</strong>'+sono+'</div>'+
+  '<h3>Últimos 7 dias</h3><div class="card"><div class="mu-wk">'+wk+'</div></div>'}
+
+/* ---------- Segurança ---------- */
+function muAddCt(){const n=($('#mu-cn').value||'').trim(),p=muTel($('#mu-cp').value);if(!n||p.length<8){info('Informe o nome e um telefone válido.');return}MU.ct.push({n:n,p:p});muSave();render()}
+function muDelCt(i){ask('Remover este contato?',function(){MU.ct.splice(i,1);muSave();render()},'Remover')}
+function muLoc(){
+ if(!navigator.geolocation){info('Este aparelho não permite pegar a localização.');return}
+ navigator.geolocation.getCurrentPosition(function(pos){
+  const m='Preciso de ajuda. Estou aqui: https://maps.google.com/?q='+pos.coords.latitude.toFixed(6)+','+pos.coords.longitude.toFixed(6);
+  if(navigator.share){navigator.share({text:m}).catch(function(){})}
+  else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(m).then(function(){info('Localização copiada. Cole em uma conversa para enviar.')},function(){info(m)})}
+  else info(m)},function(){info('Não consegui pegar a localização. Confira a permissão de localização do celular.')},{enableHighAccuracy:true,timeout:15000,maximumAge:30000})}
+function muSeg(){
+ const cts=MU.ct.length?MU.ct.map(function(c,i){const w=c.p.length<=11?'55'+c.p:c.p;return '<div class="card"><div class="row" style="align-items:center"><div style="flex:1"><b>'+esc(c.n)+'</b><br><a class="mu-tel" href="tel:'+c.p+'">'+esc(c.p)+'</a></div><button class="sec" style="flex:none" onclick="muDelCt('+i+')" aria-label="Remover">🗑️</button></div>'+
+  '<div class="row" style="margin-top:8px"><a class="mu-a" style="flex:1;margin:0" href="tel:'+c.p+'">📞 Ligar</a><a class="mu-a sec" style="flex:1;margin:0" href="https://wa.me/'+w+'">💬 WhatsApp</a></div></div>'}).join(''):'<div class="vazio" style="padding:10px">Adicione pessoas de confiança para ligar com um toque.</div>';
+ return '<div class="card"><strong>Em perigo agora, ligue <a class="mu-tel" href="tel:190">190</a>.</strong><p class="hint" style="margin:6px 0 10px">Os números abaixo são gratuitos.</p>'+
+  '<a class="mu-a" href="tel:180">📞 180 · Central de Atendimento à Mulher</a><a class="mu-a sec" href="tel:190">🚓 190 · Polícia</a><a class="mu-a sec" href="tel:192">🚑 192 · SAMU</a><a class="mu-a sec" href="tel:188" style="margin-bottom:0">💛 188 · CVV (apoio emocional)</a></div>'+
+  '<button class="sec" style="width:100%;margin-bottom:12px" onclick="muLoc()">📍 Enviar minha localização</button>'+
+  '<h3>Minha rede de apoio</h3>'+cts+
+  '<div class="card"><input id="mu-cn" placeholder="Nome (ex.: Mãe, Amiga Ana)" maxlength="40" aria-label="Nome"><input id="mu-cp" type="tel" inputmode="tel" placeholder="Telefone com DDD" maxlength="20" style="margin-top:8px" aria-label="Telefone"><button style="width:100%;margin-top:8px" onclick="muAddCt()">Adicionar contato</button></div>'+
+  '<p class="hint">Os contatos ficam só neste aparelho.</p>'}
+
+/* ---------- Mais: conquistas, tempo para mim, direitos ---------- */
+function muAddWin(){const t=($('#mu-w').value||'').trim();if(!t){info('Escreva a sua conquista.');return}MU.win.unshift({d:HOJE,t:t});if(MU.win.length>100)MU.win.length=100;muSave();render()}
+function muDelWin(i){ask('Excluir esta conquista?',function(){MU.win.splice(i,1);muSave();render()})}
+function muTempo(){const d=$('#mu-td').value,h=$('#mu-th').value;if(!d){info('Escolha a data.');return}const n=muMk('🧘‍♀️ Tempo para mim',d,h,'m');render();info(n+' lembretes mensais criados na Agenda.')}
+var MU_DIR=[
+['Lei Maria da Penha (Lei 11.340/2006)','Protege a mulher contra violência física, psicológica, sexual, patrimonial e moral. Você pode pedir medida protetiva de urgência (como afastamento do agressor e proibição de contato) em qualquer delegacia, e a Justiça tem 48 horas para decidir.'],
+['Violência psicológica é crime','Humilhar, ameaçar, controlar ou isolar a mulher causando dano emocional é crime (Lei 14.188/2021).'],
+['Importunação sexual é crime','Praticar ato sexual contra alguém sem consentimento, em local público ou não, é crime (Lei 13.718/2018).'],
+['Feminicídio (Lei 13.104/2015)','Matar uma mulher por razões da condição de mulher é crime hediondo.'],
+['Gravidez e trabalho','Licença-maternidade de 120 dias (180 dias nas empresas do Programa Empresa Cidadã) e estabilidade no emprego desde a confirmação da gravidez até 5 meses após o parto.'],
+['Acompanhante no parto','Toda gestante tem direito a um acompanhante de sua escolha durante o trabalho de parto, parto e pós-parto imediato (Lei 11.108/2005).'],
+['Igualdade salarial (Lei 14.611/2023)','Mulheres e homens que exercem a mesma função devem receber a mesma remuneração.'],
+['Onde buscar ajuda','Ligue 180 (Central de Atendimento à Mulher, 24 horas), 190 em caso de perigo, Delegacia da Mulher (DEAM), Casa da Mulher Brasileira, Defensoria Pública e CRAS/CREAS da sua cidade.']];
+function muMais(){
+ const win=MU.win.length?MU.win.slice(0,15).map(function(w,i){return '<div class="item"><span class="t"><b>'+esc(w.t)+'</b><br><small style="color:var(--mute)">'+esc(fmt(w.d))+'</small></span><button class="sec" style="flex:none" onclick="muDelWin('+i+')" aria-label="Excluir">🗑️</button></div>'}).join(''):'<div class="vazio" style="padding:10px">Registre as suas vitórias, pequenas ou grandes.</div>';
+ const dir=MU_DIR.map(function(d){return '<details class="mu-d"><summary>'+esc(d[0])+'</summary><p>'+(d[0]==='Onde buscar ajuda'?esc(d[1]).replace(/\b(180|190)\b/g,'<a class="mu-tel" href="tel:$1">$1</a>'):esc(d[1]))+'</p></details>'}).join('');
+ return '<h3>🏆 Minhas conquistas</h3><div class="card"><div class="row"><input id="mu-w" placeholder="Hoje eu consegui…" maxlength="100" aria-label="Conquista" onkeydown="if(event.key===\'Enter\')muAddWin()"><button style="flex:none" onclick="muAddWin()">Salvar</button></div><div style="margin-top:8px">'+win+'</div></div>'+
+  '<h3>🧘‍♀️ Tempo para mim</h3><div class="card"><p class="hint" style="margin:0 0 8px">Reserve um momento só seu: o app cria um lembrete por mês, durante 12 meses.</p><div class="row"><input type="date" id="mu-td" value="'+HOJE+'" aria-label="Data"><input type="time" id="mu-th" value="15:00" aria-label="Hora"></div><button style="width:100%;margin-top:8px" onclick="muTempo()">Agendar todo mês</button></div>'+
+  '<h3>⚖️ Direitos da mulher</h3><div class="card">'+dir+'<p class="hint">Resumo informativo. Não substitui a orientação de uma advogada, advogado ou da Defensoria Pública.</p></div>'}
+
+function vMulher(){
+ const seg='<div class="seg">'+[['ciclo','🌸 Ciclo'],['saude','🩺 Saúde'],['care','💧 Autocuidado'],['seg','🛡️ Segurança'],['mais','✨ Mais']].map(function(a){return '<button class="'+(muTab===a[0]?'on':'')+'" onclick="muGo(\''+a[0]+'\')">'+a[1]+'</button>'}).join('')+'</div>';
+ return '<h2>Espaço Mulher</h2>'+seg+({ciclo:muCiclo,saude:muSaude,care:muCare,seg:muSeg,mais:muMais}[muTab]||muCiclo)()}
+
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,mulher:vMulher,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -5852,7 +5991,8 @@ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
   for(let i=ant;i<K.msgs.length;i++){if(K.msgs[i].who==='u'){K.msgs[i].txt=txt;break}}
  }catch(e){try{console.warn('Kayla vocab:',e)}catch(x){}_run(txt)}};
 /* ---- 8. mais respostas de ajuda ---- */
-kFaq.push([/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Mercado) você acompanha as ofertas dos mercados. Posso abrir: digite “abrir promoções”.'],
+kFaq.push([/mulher|ciclo|menstrua|tpm/,'Em Espaço Mulher você acompanha o ciclo, lembretes de saúde, autocuidado e contatos de segurança. Toque em “Espaço Mulher” no menu.'],
+ [/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Mercado) você acompanha as ofertas dos mercados. Posso abrir: digite “abrir promoções”.'],
  [/diari|desabaf/,'No Diário você escreve como foi o dia e marca seu humor. Quer abrir? Digite “abrir diário”.'],
  [/nota|anotac/,'Em Notas você guarda anotações com cores. Para salvar rápido, escreva: “anotar: sua ideia”.'],
  [/calend|escala/,'No Calendário você vê o mês inteiro e registra seus plantões.'],
