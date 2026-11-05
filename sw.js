@@ -1,6 +1,6 @@
 /* JC ORGANIZA - service worker
    Para lançar uma atualização: altere VERSION abaixo (ex.: 1.0.1) e publique os arquivos de novo. */
-const VERSION='3.4.4';
+const VERSION='3.4.5';
 const CACHE='jc-organiza-'+VERSION;
 const OCR_CACHE='jc-ocr-1'; /* leitor de texto offline (pasta ocr/): cache próprio, não é apagado a cada versão */
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
@@ -21,3 +21,5 @@ self.addEventListener('fetch',e=>{
  e.respondWith(fetch(r,mine?{cache:'no-cache'}:undefined).then(res=>{
   if(res&&(res.ok||res.type==='opaque')){const cp=res.clone();caches.open(CACHE).then(c=>c.put(r,cp))}
   return res}).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||(r.mode==='navigate'?caches.match('index.html'):Response.error()))))});
+/* v3.4.5: tocar na notificação (navegador/PWA) abre ou volta para o app */
+self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{for(const c of cs){if('focus' in c)return c.focus()}return self.clients.openWindow('./')}))});
