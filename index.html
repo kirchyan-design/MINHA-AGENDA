@@ -189,6 +189,25 @@ header h1{font-size:25px}
 .cw-tg{width:100%;text-align:left}
 .cw-m{text-transform:none!important}.cw-m::first-letter{text-transform:uppercase}
 .seg.s4{overflow-x:visible}.seg.s4 button{flex:1 1 0;min-width:0;font-size:13px;padding:9px 2px}
+.seg.s5 button{font-size:11.5px;padding:7px 1px;line-height:1.2}.sl-ei{display:block;font-size:17px;line-height:1.1}
+.sl-pg{margin-top:10px}.sl-pt{font-weight:600;margin-bottom:6px;font-size:14px}
+.sl-ln{display:flex;gap:6px;align-items:center;margin:6px 0}.sl-ln input{min-width:0}.sl-ln .sl-n{flex:1 1 auto;width:auto}.sl-ln .sl-v{flex:0 0 96px;width:96px;text-align:right}
+.sl-ln .sl-t{flex:0 0 46px;width:46px;padding:9px 0}.sl-ln .sl-t0{flex:0 0 0}.sl-ln .sl-x{flex:0 0 34px;width:34px;padding:9px 0}
+.sl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}.sl-chip{width:auto;flex:none;padding:6px 10px;font-size:12px;border-radius:999px;font-weight:500}
+.sl-est{border-top:1px dashed var(--ln);margin-top:14px;padding-top:12px}
+.sl-star{background:var(--acs);border:1px solid var(--ac);border-radius:14px;padding:12px;font-size:15px;line-height:1.45}.sl-star small{font-size:13px;color:var(--ink);opacity:.85}.sl-star.sl-bad{background:color-mix(in srgb,var(--rd) 12%,var(--sf));border-color:var(--rd)}
+.sl-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.sl-wd{text-align:center;font-size:11px;color:var(--mute);font-weight:700;padding:2px 0}
+.sl-d{aspect-ratio:1/1;border-radius:10px;border:1px solid var(--ln);background:var(--sf);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:13px;color:var(--ink);min-width:0;cursor:pointer;user-select:none}
+.sl-d i{font-style:normal;font-size:10px;line-height:1;min-height:11px;display:flex;gap:1px;align-items:center}.sl-d.vz{visibility:hidden;border:0}
+.sl-d.g{background:color-mix(in srgb,#3fa66b 24%,var(--sf))}.sl-d.y{background:color-mix(in srgb,#e8b923 30%,var(--sf))}.sl-d.r{background:color-mix(in srgb,var(--rd) 26%,var(--sf))}
+.sl-d.pay{border:2px solid #3fa66b}.sl-d.hoje b{text-decoration:underline}.sl-d.sel{outline:2px solid var(--ac);outline-offset:1px}
+.sl-pt2{color:var(--rd);font-size:9px}
+.sl-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--mute);margin-top:8px;align-items:center}.sl-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.sl-leg i.g{background:color-mix(in srgb,#3fa66b 55%,var(--sf))}.sl-leg i.y{background:color-mix(in srgb,#e8b923 65%,var(--sf))}.sl-leg i.r{background:color-mix(in srgb,var(--rd) 60%,var(--sf))}
+.sl-det{background:var(--bg);border-radius:12px;padding:10px;margin-top:10px;font-size:14px}
+.sl-cy{border-left:4px solid var(--ac)}.sl-bl{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--ln);font-size:15px}.sl-bl b{white-space:nowrap}.sl-bl.done{opacity:.6}
+.sl-op{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--ln)}.sl-op .t{min-width:0}.sl-op button{flex:none;width:auto;padding:8px 14px}
+.sl-res{border:1px solid var(--ac)}
 @media(max-width:430px){nav button{font-size:10px;letter-spacing:-.01em}nav button b{font-size:19px}}
 
 /* ---- Tema Escola de Magia ---- */
@@ -2263,7 +2282,7 @@ function gatilhos(){const N=S.notif,out=[];if(!N.on)return out;
   out.push({key:'e'+e.id,at:t-(tem?ld*60000:0),title:(tem?'⏰ ':'📋 ')+e.title,body:tem?(ld?'Começa às '+e.time+' (em '+ld+' min)':'Agora: '+e.time):'Compromisso de hoje'})});
  if(N.plOn)S.pl.forEach(p=>{const t=new Date(p.date+'T'+p.ent).getTime();if(isNaN(t))return;
   out.push({key:'p'+p.id,at:t-N.plLead*60000,title:'🩺 Plantão '+p.ent+' → '+p.sai,body:'Começa às '+p.ent+(hospBy(p.hosp)?' · '+hospBy(p.hosp).name:'')+(p.obs?' · '+p.obs:'')})});
- if(N.cwOn!==false)cwGatilhos(N).forEach(x=>out.push(x));
+ if(N.cwOn!==false){cwGatilhos(N).forEach(x=>out.push(x));salGatilhos(N).forEach(x=>out.push(x))}
   return out.sort((a,b)=>a.at-b.at)}
 function schedSoon(){clearTimeout(_st);_st=setTimeout(()=>{agendarNotifs().catch(()=>{})},700)}
 async function agendarNotifs(force){const L=LNp();if(!nat()||!L)return;
@@ -2342,6 +2361,7 @@ function normCart(){
  c.gastos.forEach(g=>{g.val=cR2(g.val);g.date=g.date||HOJE;g.cat=g.cat||'outros';g.desc=String(g.desc||'')});
  c.rendas.forEach(r=>{r.val=cR2(r.val);r.m=r.m||HOJE.slice(0,7);r.desc=String(r.desc||'')});
  c.pagas=(c.pagas&&typeof c.pagas==='object'&&!Array.isArray(c.pagas))?c.pagas:{};
+ if(c.sal&&typeof c.sal==='object'&&!Array.isArray(c.sal))salNorm(c.sal);else if(c.sal)delete c.sal;
  const N=S.notif=S.notif||{};if(N.cwOn===undefined)N.cwOn=true;if(N.cwLead===undefined||isNaN(+N.cwLead))N.cwLead=2;if(!/^\d{2}:\d{2}$/.test(N.cwHora||''))N.cwHora='09:00'}
 let cSub='res',cMes=HOJE.slice(0,7),cEd=null;
 /* aceita 1500 | 1500,50 | 1.500,50 | 1.500 | 15.5 */
@@ -2372,9 +2392,9 @@ const cFoco=id=>{const e=$('#'+id);if(e)e.focus()};
 
 function vCarteira(){
  const k=cCalc(cMes);
- const seg=`<div class="seg s4">${[['res','📊 Resumo'],['gas','💸 Gastos'],['fix','📌 Fixas'],['ren','💵 Renda']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()">${a[1]}</button>`).join('')}</div>`;
+ const seg=`<div class="seg s4 s5">${[['res','📊','Resumo'],['gas','💸','Gastos'],['fix','📌','Fixas'],['ren','💵','Renda'],['sal','🧾','Salário']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
  const nv=`<div class="cal-h"><button class="sec" onclick="cMove(-1)" aria-label="Mês anterior">‹</button><strong class="cw-m">${esc(cMesTxt())}</strong><button class="sec" onclick="cMove(1)" aria-label="Próximo mês">›</button></div>`;
- return `<h2>${_t('Carteira')}</h2>`+seg+nv+(cSub==='res'?cResumo(k):cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cRenda(k))}
+ return `<h2>${_t('Carteira')}</h2>`+seg+((cSub==='sal'&&salV==='cfg')?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cRenda(k))}
 
 /* --- Resumo --- */
 function cResumo(k){
@@ -2479,21 +2499,267 @@ function cDelF(id){
 
 /* --- Renda --- */
 function cRenda(k){
+ const salAv=(S.cart.sal&&S.cart.sal.auto&&salLiq(S.cart.sal)>0)?`<div class="card" onclick="cSub='sal';salV='cfg';render()" style="cursor:pointer"><b>🧾 Sua renda fixa vem do Salário</b><p class="hint" style="margin:4px 0 0">Hoje ela é o seu <b>líquido</b> (${BRL(salLiq(S.cart.sal))}). Toque para ver o holerite. Se você mudar o valor abaixo, deixo de usar o líquido.</p></div>`:'';
  const base=`<div class="card"><label class="fl" for="cw-base" style="margin-top:0">Quanto você ganha por mês (renda fixa)</label><div class="row"><input id="cw-base" inputmode="decimal" placeholder="Ex.: 2500,00" value="${cTxt(S.cart.base)}" onkeydown="if(event.key==='Enter')cSaveBase()"><button onclick="cSaveBase()">Salvar</button>${S.cart.base?'<button class="ghost" onclick="cDelBase()">Remover</button>':''}</div><p class="hint">Esse valor vale para todos os meses. O que varia (extras, bicos, 13º) você lança mais abaixo, no mês certo.</p></div>`;
  const ex=`<h3>Rendas extras de ${esc(cMesTxt())}</h3><div class="card"><div class="row"><input id="cw-rd" placeholder="De onde veio? (ex.: Bico, 13º)" maxlength="60" onkeydown="if(event.key==='Enter')cFoco('cw-rv')"><input id="cw-rv" inputmode="decimal" placeholder="Valor (R$)" style="width:110px" onkeydown="if(event.key==='Enter')cAddR()"><button onclick="cAddR()">＋</button></div>`
   +(k.re.length?k.re.map(cRItem).join(''):'<div class="vazio" style="padding:14px 8px">Nenhuma renda extra neste mês.</div>')+`</div>`+(k.re.length?'<p class="hint">Toque em uma renda para editar.</p>':'');
  const resumo=`<div class="card tot"><div class="cw-row"><span>Renda fixa</span><b>${BRL(S.cart.base)}</b></div>${k.rExtra?`<div class="cw-row"><span>Extras</span><b>${BRL(k.rExtra)}</b></div>`:''}<div class="cw-sobra"><span>Renda total do mês</span><strong>${BRL(k.renda)}</strong></div></div>`;
- return base+ex+resumo}
+ return salAv+base+ex+resumo}
 function cRItem(r){
  if(cEd&&cEd.k==='r'&&cEd.id===r.id)return `<div class="item" style="flex-wrap:wrap"><input id="cw-e-d" value="${esc(r.desc)}" placeholder="De onde veio?" aria-label="Descrição"><div class="row" style="width:100%"><input id="cw-e-v" inputmode="decimal" value="${cTxt(r.val)}" placeholder="Valor" aria-label="Valor"></div><div class="row" style="width:100%"><button onclick="cSaveEd()">Salvar</button><button class="ghost" onclick="cEd=null;render()">Cancelar</button></div></div>`;
  return `<div class="item"><span class="cw-ic" aria-hidden="true">💵</span><div class="t" onclick="cEdit('r','${r.id}')" style="cursor:pointer"><b>${esc(r.desc||'Renda extra')}</b></div><b class="cw-v cw-in">${BRL(r.val)}</b><button class="ghost" onclick="cDelR('${r.id}')" aria-label="Excluir renda extra">✕</button></div>`}
-function cDelBase(){ask('Remover a renda mensal fixa?',()=>{S.cart.base=0;save();render()},'Remover')}
-function cSaveBase(){S.cart.base=cNum($('#cw-base').value);save();render();info(S.cart.base?'Renda mensal salva: '+BRL(S.cart.base)+'.':'Renda mensal zerada.')}
+function cDelBase(){ask('Remover a renda mensal fixa?',()=>{S.cart.base=0;if(S.cart.sal)S.cart.sal.auto=false;save();render()},'Remover')}
+function cSaveBase(){S.cart.base=cNum($('#cw-base').value);if(S.cart.sal&&cR2(S.cart.base)!==salLiq(S.cart.sal))S.cart.sal.auto=false;save();render();info(S.cart.base?'Renda mensal salva: '+BRL(S.cart.base)+'.':'Renda mensal zerada.')}
 function cAddR(){
  const d=$('#cw-rd').value.trim(),v=cNum($('#cw-rv').value);
  if(!v){info('Informe o valor da renda extra.');return}
  S.cart.rendas.push({id:uid(),m:cMes,desc:d,val:v});save();render();cClear(['cw-rd','cw-rv']);cFoco('cw-rd')}
 function cDelR(id){ask('Excluir esta renda extra?',()=>{S.cart.rendas=S.cart.rendas.filter(x=>x.id!==id);save();render()})}
+/* ---------- v3.4.0: Carteira · Salário, holerite e melhores dias para pagar ---------- */
+const SAL_DESC0=['INSS','IRRF (Imposto de Renda)','Vale-transporte','Plano de saúde'];
+const SAL_SUG=['Vale-refeição / alimentação','Contribuição sindical','Previdência privada','Empréstimo consignado','Pensão alimentícia','Adiantamento salarial','Faltas / atrasos','Plano odontológico','Coparticipação'];
+const SAL_PSUG=['Horas extras','Comissão','Adicional noturno','Insalubridade / periculosidade','Gratificação','Bônus / PLR'];
+let salV='cfg',salDia=null,salSug=null;
+const salPad=n=>String(n).padStart(2,'0');
+const salYM=(y,m0)=>iso(new Date(y,m0,1)).slice(0,7);
+const salSemana=['D','S','T','Q','Q','S','S'];
+function salNorm(s){
+ s.tipo=s.tipo==='quinzenal'?'quinzenal':'mensal';
+ s.bruto=cR2(s.bruto);s.deps=Math.min(20,Math.max(0,parseInt(s.deps)||0));
+ s.fds=['antes','depois','nada'].indexOf(s.fds)>=0?s.fds:'antes';s.auto=s.auto!==false;
+ ['prov','desc'].forEach(k=>{s[k]=(Array.isArray(s[k])?s[k]:[]).filter(x=>x&&typeof x==='object').slice(0,40).map(x=>({id:x.id||uid(),nome:String(x.nome||'').slice(0,60),val:cR2(x.val),pct:k==='desc'&&!!x.pct}))});
+ s.pags=(Array.isArray(s.pags)?s.pags:[]).filter(x=>x&&typeof x==='object').map(x=>{const u=x.modo==='util';return {id:x.id||uid(),modo:u?'util':'dia',dia:Math.min(u?23:31,Math.max(1,parseInt(x.dia)||1)),val:cR2(x.val)}});
+ const q=s.tipo==='quinzenal'?2:1;
+ while(s.pags.length<q)s.pags.push({id:uid(),modo:'dia',dia:q===2?(s.pags.length?30:15):5,val:0});
+ s.pags.length=q;return s}
+function salGet(){const c=S.cart;
+ if(!c.sal||typeof c.sal!=='object'||Array.isArray(c.sal))c.sal={tipo:'mensal',bruto:0,deps:0,fds:'antes',auto:true,prov:[],desc:SAL_DESC0.map(n=>({id:uid(),nome:n,val:0,pct:false})),pags:[]};
+ return salNorm(c.sal)}
+const salBase=s=>cR2(s.bruto+cSum(s.prov));
+const salDescVal=(s,d)=>d.pct?cR2(salBase(s)*d.val/100):cR2(d.val);
+const salDescTot=s=>cR2(s.desc.reduce((a,d)=>a+salDescVal(s,d),0));
+function salLiq(s){s=s||(S.cart&&S.cart.sal);if(!s)return 0;const g=salBase(s);
+ if(g>0)return cR2(Math.max(0,g-salDescTot(s)));
+ return cR2((s.pags||[]).reduce((a,p)=>a+(+p.val||0),0))}
+function salPagVal(s,p){if(+p.val>0)return cR2(p.val);if(salBase(s)<=0)return 0;
+ const man=cR2(s.pags.reduce((a,x)=>a+(+x.val||0),0)),z=s.pags.filter(x=>!(+x.val>0)).length;
+ return z?cR2(Math.max(0,salLiq(s)-man)/z):0}
+function salSync(){const s=S.cart.sal;if(!s||!s.auto)return;const l=salLiq(s);if(l>0)S.cart.base=l}
+/* estimativa CLT 2026 (INSS: Portaria MPS/MF 13/2026; IRRF: Lei 15.270/2025). É só uma estimativa: vale o holerite. */
+function salInss(b){const F=[[1621,.075],[2902.84,.09],[4354.27,.12],[8475.55,.14]];let r=0,ant=0;
+ F.forEach(f=>{if(b>ant)r+=(Math.min(b,f[0])-ant)*f[1];ant=f[0]});return cR2(r+1e-6)}
+function salIrrf(b,inss,deps){
+ if(b<=5000)return 0;
+ const base=Math.max(0,Math.min(b-inss-deps*189.59,b-607.20)),T=[[2428.80,0,0],[2826.65,.075,182.16],[3751.05,.15,394.16],[4664.68,.225,675.49],[Infinity,.275,908.73]],f=T.find(t=>base<=t[0]);
+ let imp=Math.max(0,base*f[1]-f[2]);
+ if(b<=7350)imp=Math.max(0,imp-Math.max(0,978.62-0.133145*b));
+ return cR2(imp)}
+/* data do pagamento de um mês (dia fixo com regra de fim de semana, ou N-º dia útil) */
+function salPayDate(ym,p,fds){
+ const y=+ym.slice(0,4),m=+ym.slice(5,7),ult=new Date(y,m,0).getDate();let d;
+ if(p.modo==='util'){let n=Math.max(1,Math.min(23,parseInt(p.dia)||5)),c=0,dia=0;
+  while(c<n&&dia<ult){dia++;const w=new Date(y,m-1,dia).getDay();if(w!==0&&w!==6)c++}
+  d=new Date(y,m-1,dia)}
+ else{d=new Date(y,m-1,Math.min(ult,Math.max(1,parseInt(p.dia)||1)));const w=d.getDay();
+  if(w===0||w===6){if(fds==='antes')d.setDate(d.getDate()-(w===0?2:1));else if(fds==='depois')d.setDate(d.getDate()+(w===6?2:1))}}
+ return iso(d)}
+function salEventos(ym,de,ate){
+ const s=S.cart.sal,y=+ym.slice(0,4),m=+ym.slice(5,7)-1,out=[];
+ for(let k=de;k<=ate;k++){const mm=salYM(y,m+k);s.pags.forEach((p,i)=>out.push({date:salPayDate(mm,p,s.fds),val:salPagVal(s,p),i:i,ym:mm}))}
+ return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.i-b.i)}
+const salDue=(mm,dia)=>{const ult=new Date(+mm.slice(0,4),+mm.slice(5,7),0).getDate();return mm+'-'+salPad(Math.min(dia,ult))};
+function salBills(from,to){
+ const out=[],y=+from.slice(0,4),m=+from.slice(5,7)-1,fim=to.slice(0,7);
+ for(let n=0;n<8;n++){const mm=salYM(y,m+n);if(mm>fim)break;
+  cFix(mm).forEach(f=>{const d=salDue(mm,f.dia);if(d>=from&&d<to)out.push({id:f.id,desc:f.desc,val:f.val,dia:f.dia,date:d,pago:cPago(mm,f.id),mm:mm})})}
+ return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0)}
+/* ciclos: cada pagamento financia as contas e gastos até o próximo pagamento */
+function salCiclos(ym){
+ const s=S.cart.sal;if(!s)return {ciclos:[],pre:null,ev:[]};
+ const ev=salEventos(ym,-1,2),ciclos=[];
+ for(let i=0;i<ev.length-1;i++){const a=ev[i],b=ev[i+1];if(a.date.slice(0,7)!==ym)continue;
+  const bills=salBills(a.date,b.date),av=S.cart.gastos.filter(g=>g.date>=a.date&&g.date<b.date),gast=cSum(av),cont=cSum(bills);
+  ciclos.push({ini:a.date,fim:b.date,val:a.val,idx:a.i,bills:bills,av:av,gast:gast,cont:cont,sobra:cR2(a.val-cont-gast)})}
+ let pre=null;
+ if(ciclos.length){const ini=ym+'-01';if(ciclos[0].ini>ini){const bills=salBills(ini,ciclos[0].ini);if(bills.length)pre={fim:ciclos[0].ini,bills:bills,cont:cSum(bills)}}}
+ return {ciclos:ciclos,pre:pre,ev:ev}}
+const salDiasAte=d=>Math.round((new Date(d+'T12:00')-new Date(HOJE+'T12:00'))/86400000);
+const salFmtD=d=>fmt(d,{weekday:'short',day:'2-digit',month:'short'});
+function salProximo(){const s=S.cart.sal;if(!s)return null;return salEventos(HOJE.slice(0,7),0,2).find(e=>e.date>=HOJE&&e.val>0)||null}
+function salSugerir(desc,val,venc){
+ const s=S.cart.sal,ym=HOJE.slice(0,7),y=+ym.slice(0,4),m0=+ym.slice(5,7)-1,vistos={},ops=[];
+ for(let k=0;k<3;k++){salCiclos(salYM(y,m0+k)).ciclos.forEach(c=>{if(vistos[c.ini]||c.fim<=HOJE)return;vistos[c.ini]=1;
+  const quando=c.ini>=HOJE?c.ini:HOJE;if(salDiasAte(quando)>75)return;
+  const apos=cR2(c.sobra-val);ops.push({date:quando,ini:c.ini,fim:c.fim,val:c.val,sobra:c.sobra,apos:apos,nivel:apos<0?'no':apos<c.val*.15?'mid':'ok'})})}
+ ops.sort((a,b)=>a.date<b.date?-1:1);
+ let lista=venc?ops.filter(o=>o.date<=venc):ops,aviso='';
+ if(venc&&!lista.length){lista=ops.slice(0,1);aviso='Nenhum pagamento de salário cai até o vencimento ('+salFmtD(venc)+'). O mais perto é este:'}
+ lista=lista.slice(0,4);
+ const best=lista.find(o=>o.nivel==='ok')||lista.find(o=>o.nivel==='mid')||null;
+ let split=null;
+ if(!best&&lista.length){let rest=val;const parts=[];
+  lista.forEach(o=>{const room=Math.max(0,cR2(o.sobra*.8)),take=Math.min(room,rest);if(take>=1){parts.push({date:o.date,val:cR2(take)});rest=cR2(rest-take)}});
+  split={parts:parts,falta:rest>0.5?cR2(rest):0}}
+ return {desc:desc,val:val,venc:venc,ops:lista,best:best,split:split,aviso:aviso}}
+function salAgenda(w){
+ const g=salSug;if(!g)return;let itens=[];
+ if(w==='split'&&g.split)itens=g.split.parts.map(p=>({date:p.date,val:p.val,desc:g.desc+(g.split.parts.length>1?' (parte)':'')}));
+ else{const o=w==='best'?g.best:g.ops[+w];if(o)itens=[{date:o.date,val:g.val,desc:g.desc}]}
+ if(!itens.length)return;
+ itens.forEach(i=>S.cart.gastos.push({id:uid(),date:i.date,cat:'extra',desc:i.desc,val:i.val}));
+ cMes=itens[0].date.slice(0,7);salSug=null;save();render();
+ info(itens.length===1?'Lancei “'+itens[0].desc+'” em Gastos no dia '+salFmtD(itens[0].date)+'.':'Lancei '+itens.length+' parcelas em Gastos, uma em cada pagamento.')}
+function salSugerirClick(){
+ const d=($('#sl-xd').value||'').trim(),v=cNum($('#sl-xv').value),vc=$('#sl-xt').value||'';
+ if(!v){info('Informe o valor da dívida ou pagamento.');return}
+ salSug=salSugerir(d||'Dívida extra',v,vc);const e=$('#sl-xr');if(e)e.innerHTML=salSugHtml();
+ const b=e&&e.firstElementChild;if(b&&b.scrollIntoView)b.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function salSugHtml(){
+ const g=salSug;if(!g)return '';
+ if(!g.ops.length)return `<div class="card"><p class="hint">Não encontrei pagamentos de salário nos próximos dois meses. Confira os dias na aba <b>Meu salário</b>.</p></div>`;
+ const rot={ok:'✅ cabe folgado',mid:'⚠️ cabe, mas aperta',no:'❌ não cabe'};
+ let h=`<div class="card sl-res">`;
+ if(g.aviso)h+=`<p class="hint" style="margin:0 0 8px">${esc(g.aviso)}</p>`;
+ if(g.best)h+=`<div class="sl-star">⭐ Melhor dia: <b>${esc(salFmtD(g.best.date))}</b><br><small>${g.best.date===g.best.ini?'É o dia em que o salário cai: pague logo, antes de gastar.':'Ainda dentro do período do salário que já caiu.'} Depois de pagar ${BRL(g.val)}, sobram <b>${BRL(g.best.apos)}</b> até o próximo salário.</small></div><div class="row" style="margin-top:8px"><button style="flex:1" onclick="salAgenda('best')">📌 Lançar em Gastos nesse dia</button></div>`;
+ else if(g.split){h+=`<div class="sl-star sl-bad">⚠️ <b>${BRL(g.val)}</b> de uma vez não cabe em nenhum período sem faltar para as contas.</div>`;
+  if(g.split.parts.length){h+=`<p style="margin:10px 0 4px"><b>Sugestão: dividir assim</b> (deixando 20% de folga em cada período):</p>`+g.split.parts.map(p=>`<div class="cw-row"><span>${esc(salFmtD(p.date))}</span><b>${BRL(p.val)}</b></div>`).join('');
+   h+=g.split.falta?`<p class="cw-warn">Mesmo dividindo, ainda faltam ${BRL(g.split.falta)}. Vale negociar prazo ou desconto.</p>`:`<div class="row" style="margin-top:8px"><button style="flex:1" onclick="salAgenda('split')">📌 Lançar as parcelas em Gastos</button></div>`}
+  else h+=`<p class="cw-warn">Não sobra folga em nenhum período. Vale negociar prazo ou parcelar com o credor.</p>`}
+ if(g.ops.length>1||!g.best){h+=`<h3 style="margin:14px 0 4px;font-size:15px">Comparando os períodos</h3>`+g.ops.map((o,i)=>`<div class="sl-op"><div class="t"><b>${esc(salFmtD(o.date))}</b><br><small style="color:var(--mute)">${rot[o.nivel]} · sobra ${BRL(o.apos)}</small></div>${o.nivel!=='no'?`<button class="sec" onclick="salAgenda(${i})">Lançar</button>`:''}</div>`).join('')}
+ return h+`</div>`}
+/* ---- telas ---- */
+function salNav(){return `<div class="seg s3" style="margin-bottom:10px">${[['cfg','🧾 Meu salário'],['dias','⭐ Melhores dias']].map(a=>`<button class="${salV===a[0]?'on':''}" onclick="salV='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`}
+function cSalario(k){const s=salGet();return salNav()+(salV==='dias'?salDias(k):salCfg(s))}
+function salLinha(kind,x,s){
+ const pct=kind==='desc'&&x.pct,ph=kind==='desc'?'Nome do desconto':'Nome do adicional';
+ return `<div class="sl-ln"><input class="sl-n" value="${esc(x.nome)}" placeholder="${ph}" maxlength="60" aria-label="Nome" onchange="salRow('${kind}','${x.id}','nome',this.value)"><input class="sl-v" inputmode="decimal" value="${cTxt(x.val)}" placeholder="0,00" aria-label="Valor" onchange="salRow('${kind}','${x.id}','val',this.value)">`
+  +(kind==='desc'?`<button class="sec sl-t" onclick="salRow('desc','${x.id}','pct',1)" aria-label="Alternar entre reais e porcentagem">${pct?'%':'R$'}</button>`:'<span class="sl-t0"></span>')
+  +`<button class="ghost sl-x" onclick="salDelRow('${kind}','${x.id}')" aria-label="Remover">✕</button></div>`
+  +(pct?`<small class="hint sl-hp" id="sl-h-${x.id}" style="margin:-2px 0 6px">= ${BRL(salDescVal(s,x))}</small>`:'')}
+function salChips(kind,s){
+ const usados=(kind==='desc'?s.desc:s.prov).map(x=>x.nome.toLowerCase()),L=(kind==='desc'?SAL_SUG:SAL_PSUG).filter(n=>usados.indexOf(n.toLowerCase())<0);
+ return L.length?`<div class="sl-chips">${L.map(n=>`<button class="sec sl-chip" onclick="salAddRow('${kind}',${JSON.stringify(n).replace(/"/g,'&quot;')})">＋ ${esc(n)}</button>`).join('')}</div>`:''}
+function salResHtml(){
+ const s=S.cart.sal,g=salBase(s),dt=salDescTot(s),liq=salLiq(s),pv=cSum(s.prov);
+ let h='';
+ if(g>0){h+=`<div class="cw-row"><span>Salário bruto</span><b>${BRL(s.bruto)}</b></div>`+(pv?`<div class="cw-row"><span>+ Adicionais</span><b class="cw-in">${BRL(pv)}</b></div>`:'')
+  +`<div class="cw-row"><span>− Descontos${g>0&&dt>0?' <small style="color:var(--mute);font-weight:500">('+Math.round(dt/g*100)+'%)</small>':''}</span><b class="cw-out">${BRL(dt)}</b></div>`}
+ h+=`<div class="cw-sobra"><span>💵 Salário líquido</span><strong>${BRL(liq)}</strong></div>`;
+ if(g<=0)h+=`<p class="hint">Sem salário bruto, uso a soma dos valores dos pagamentos acima.</p>`;
+ if(liq>0){
+  h+=s.pags.map((p,i)=>`<div class="cw-row" style="margin-top:6px"><span style="color:var(--mute)">${s.tipo==='quinzenal'?(i+1)+'º pagamento':'Cai na conta'} · ${p.modo==='util'?p.dia+'º dia útil':'dia '+p.dia}</span><b>${BRL(salPagVal(s,p))}</b></div>`).join('');
+  const soma=cR2(s.pags.reduce((a,p)=>a+salPagVal(s,p),0));
+  if(Math.abs(soma-liq)>1)h+=`<p class="cw-warn" style="font-size:13px">A soma dos pagamentos (${BRL(soma)}) é diferente do líquido (${BRL(liq)}). Ajuste os valores ou toque em “Dividir”.</p>`;
+  h+=s.auto?`<p class="hint">✓ O <b>Resumo</b> da Carteira usa este líquido como a sua renda do mês.</p><button class="ghost" style="margin-top:4px" onclick="salAuto()">Não usar como renda do mês</button>`
+   :(cR2(S.cart.base)!==liq?`<p class="hint">Sua renda fixa hoje é ${BRL(S.cart.base)}.</p><button class="sec" style="margin-top:4px;width:100%" onclick="salAuto()">Usar ${BRL(liq)} como minha renda do mês</button>`:`<p class="hint">✓ Sua renda do mês é igual ao líquido.</p>`)}
+ return h}
+function salProxTxt(i){const s=S.cart.sal,e=salEventos(HOJE.slice(0,7),0,2).find(x=>x.i===i&&x.date>=HOJE);return e?`Próximo: ${salFmtD(e.date)}${salDiasAte(e.date)===0?' (hoje!)':' · em '+salDiasAte(e.date)+' dia'+(salDiasAte(e.date)===1?'':'s')}`:''}
+function salCfg(s){
+ const q=s.tipo==='quinzenal',tipo=`<div class="card"><label class="fl" style="margin-top:0">Como você recebe?</label><div class="seg s3" style="margin:6px 0 0">${[['mensal','📅 Uma vez por mês'],['quinzenal','🗓️ Por quinzena']].map(a=>`<button class="${s.tipo===a[0]?'on':''}" onclick="salTipo('${a[0]}')">${a[1]}</button>`).join('')}</div></div>`;
+ const pags=`<div class="card"><b>📆 Dia que o salário cai</b>`+s.pags.map((p,i)=>`<div class="sl-pg"><div class="sl-pt">${q?(i+1)+'º pagamento':'Pagamento do mês'} <small class="hint" style="margin:0 0 0 6px">${esc(salProxTxt(i))}</small></div><div class="row"><select aria-label="Tipo de dia" onchange="salPag('${p.id}','modo',this.value)"><option value="dia" ${p.modo==='dia'?'selected':''}>Dia do mês</option><option value="util" ${p.modo==='util'?'selected':''}>Dia útil</option></select><input type="number" min="1" max="${p.modo==='util'?23:31}" inputmode="numeric" value="${p.dia}" style="width:78px" aria-label="Dia" onchange="salPag('${p.id}','dia',this.value)"><input data-pg="${p.id}" inputmode="decimal" value="${p.val?cTxt(p.val):''}" placeholder="${salPagVal(s,p)?cTxt(salPagVal(s,p))+' (auto)':'Valor (R$)'}" aria-label="Valor líquido deste pagamento" onchange="salPag('${p.id}','val',this.value)"></div></div>`).join('')
+  +(q?`<div class="row" style="margin-top:8px"><button class="sec" style="flex:1" onclick="salRateio(50)">Dividir 50/50</button><button class="sec" style="flex:1" onclick="salRateio(40)">Adiantamento 40/60</button></div>`:'')
+  +`<label class="fl" for="sl-fds">Se o dia cair no fim de semana</label><select id="sl-fds" style="width:100%" onchange="salSet('fds',this.value)">${[['antes','Cai na sexta (antecipa)'],['depois','Cai na segunda (adia)'],['nada','Não mudar o dia']].map(o=>`<option value="${o[0]}" ${s.fds===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>`
+  +`<p class="hint">Use “Dia útil” se o seu salário cai, por exemplo, no 5º dia útil. Deixe o valor vazio para o app dividir o líquido sozinho.</p></div>`;
+ const hol=`<div class="card"><b>🧾 Holerite</b><label class="fl" for="sl-br">Salário bruto (R$)</label><input id="sl-br" inputmode="decimal" value="${cTxt(s.bruto)}" placeholder="Ex.: 3500,00" onchange="salBruto(this.value)">`
+  +`<label class="fl">Adicionais <small style="color:var(--mute);font-weight:400">(horas extras, comissão… somam ao bruto)</small></label><div id="sl-prov">${s.prov.map(x=>salLinha('prov',x,s)).join('')}</div>${salChips('prov',s)}<div class="sl-ln" style="margin-top:6px"><input class="sl-n" id="sl-pn" placeholder="Outro adicional" maxlength="60" onkeydown="if(event.key==='Enter')salAddCustom('prov')"><button class="sec" style="flex:0 0 auto" onclick="salAddCustom('prov')">＋ Adicionar</button></div>`
+  +`<label class="fl">Descontos do holerite <small style="color:var(--mute);font-weight:400">(R$ ou % do bruto)</small></label><div id="sl-desc">${s.desc.map(x=>salLinha('desc',x,s)).join('')}</div>${salChips('desc',s)}<div class="sl-ln" style="margin-top:6px"><input class="sl-n" id="sl-dn" placeholder="Outro desconto (ex.: Seguro de vida)" maxlength="60" onkeydown="if(event.key==='Enter')salAddCustom('desc')"><button class="sec" style="flex:0 0 auto" onclick="salAddCustom('desc')">＋ Adicionar</button></div>`
+  +`<div class="sl-est"><div class="row" style="align-items:center"><span style="flex:1;font-size:14px">Dependentes para o IR</span><input type="number" min="0" max="20" inputmode="numeric" value="${s.deps}" style="width:76px" aria-label="Quantidade de dependentes" onchange="salSet('deps',this.value)"></div><button class="sec" style="width:100%;margin-top:8px" onclick="salEstimar()">✨ Estimar INSS e IR do meu bruto</button><p class="hint">Estimativa pela tabela de 2026 para quem tem carteira assinada. Confira sempre no seu holerite e ajuste o que for diferente.</p></div></div>`;
+ return tipo+pags+hol+`<div class="card tot" id="sl-res">${salResHtml()}</div>`}
+function salMapa(ym,C){
+ const y=+ym.slice(0,4),m=+ym.slice(5,7),ult=new Date(y,m,0).getDate(),prim=new Date(y,m-1,1).getDay(),pay={},due={},bal={};
+ C.ev.forEach(e=>{if(e.date.slice(0,7)===ym)pay[+e.date.slice(8)]=e});
+ salBills(ym+'-01',salYM(y,m)+'-01').forEach(b=>{const d=+b.date.slice(8);due[d]=(due[d]||0)+1});
+ C.ciclos.forEach(c=>{for(let d=1;d<=ult;d++){const ds=ym+'-'+salPad(d);if(ds<c.ini||ds>=c.fim)continue;
+  const gasto=cR2(c.bills.filter(b=>b.date<=ds).reduce((a,b)=>a+b.val,0)+c.av.filter(g=>g.date<=ds).reduce((a,g)=>a+g.val,0));
+  bal[d]=c.val>0?(c.val-gasto)/c.val:0}});
+ let h=`<div class="sl-grid">${salSemana.map(w=>`<div class="sl-wd">${w}</div>`).join('')}`+'<div class="sl-d vz"></div>'.repeat(prim);
+ for(let d=1;d<=ult;d++){const ds=ym+'-'+salPad(d),b=bal[d],cls=b===undefined?'':b>=.3?'g':b>=0?'y':'r';
+  h+=`<div class="sl-d ${cls} ${pay[d]?'pay':''} ${ds===HOJE?'hoje':''} ${ds===salDia?'sel':''}" role="button" tabindex="0" data-d="${ds}" onclick="salPick('${ds}')"><b>${d}</b><i>${pay[d]?'💰':''}${due[d]?'<span class="sl-pt2">●</span>':''}</i></div>`}
+ return h+`</div><div class="sl-leg"><span><i class="g"></i>folgado</span><span><i class="y"></i>apertado</span><span><i class="r"></i>no vermelho</span><span>💰 salário</span><span class="sl-pt2">●</span><span>vencimento</span></div>`}
+function salDetalhe(ds){
+ if(!ds)return '<p class="hint" style="margin:8px 0 0">Toque em um dia para ver o que acontece nele.</p>';
+ const ym=ds.slice(0,7),C=salCiclos(ym),pay=C.ev.filter(e=>e.date===ds),dev=salBills(ds,iso(new Date(+ds.slice(0,4),+ds.slice(5,7)-1,+ds.slice(8)+1))),cy=C.ciclos.find(c=>ds>=c.ini&&ds<c.fim);
+ let h=`<div class="sl-det"><b>${esc(salFmtD(ds))}</b>`;
+ pay.forEach(e=>{h+=`<div class="cw-row"><span>💰 Salário cai</span><b class="cw-in">${BRL(e.val)}</b></div>`});
+ dev.forEach(b=>{h+=`<div class="cw-row"><span>● ${esc(b.desc)} vence${b.pago?' · paga ✓':''}</span><b class="cw-out">${BRL(b.val)}</b></div>`});
+ if(cy){const gasto=cR2(cy.bills.filter(b=>b.date<=ds).reduce((a,b)=>a+b.val,0)+cy.av.filter(g=>g.date<=ds).reduce((a,g)=>a+g.val,0)),sb=cR2(cy.val-gasto);
+  h+=`<p class="hint" style="margin:6px 0 0">Saldo previsto do período no fim do dia: <b style="color:${sb<0?'var(--rd)':'var(--ink)'}">${BRL(sb)}</b>. `+(pay.length?'⭐ Ótimo dia para pagar contas: o dinheiro acabou de cair.':sb<0?'⚠️ Evite pagar algo extra aqui.':sb>=cy.val*.3?'👍 Dia tranquilo para um pagamento extra.':'Atenção: já está apertado.')+`</p>`}
+ else if(!pay.length&&!dev.length)h+=`<p class="hint" style="margin:6px 0 0">Nada marcado neste dia.</p>`;
+ return h+`</div>`}
+function salPick(ds){salDia=ds;document.querySelectorAll('.sl-d[data-d]').forEach(b=>b.classList.toggle('sel',b.dataset.d===ds));const e=$('#sl-det');if(e)e.innerHTML=salDetalhe(ds)}
+function salDias(k){
+ const s=S.cart.sal,liq=salLiq(s);
+ if(liq<=0)return `<div class="card"><p style="margin:0 0 8px">Para eu sugerir os melhores dias de pagar, preciso saber <b>quando</b> e <b>quanto</b> você recebe.</p><button style="width:100%" onclick="salV='cfg';render()">🧾 Preencher meu salário</button></div>`;
+ const ym=cMes,C=salCiclos(ym),prox=salProximo();
+ const dias=C.ciclos.map(c=>c.ini),star=dias.length?`<div class="card sl-res"><div class="sl-star">⭐ Melhores dias para pagar em ${esc(cMesTxt())}: <b>${dias.map(d=>'dia '+d.slice(8)).join(' e ')}</b><br><small>É quando o salário acabou de cair: pague primeiro as contas, antes que o dinheiro escape. ${prox?'Próximo salário: <b>'+esc(salFmtD(prox.date))+'</b>'+(salDiasAte(prox.date)===0?' (hoje!)':' (em '+salDiasAte(prox.date)+' dia'+(salDiasAte(prox.date)===1?'':'s')+')')+' · '+BRL(prox.val)+'.':''}</small></div></div>`:'';
+ const mapa=`<div class="card"><b>🗓️ Mapa do mês</b><p class="hint" style="margin:2px 0 8px">A cor mostra quanto do salário ainda sobra em cada dia, depois das contas e gastos até ali.</p>${salMapa(ym,C)}<div id="sl-det">${salDetalhe(salDia&&salDia.slice(0,7)===ym?salDia:null)}</div></div>`;
+ const ciclos=C.ciclos.map(c=>{
+  const pct=c.val>0?Math.min(100,Math.round((c.cont+c.gast)/c.val*100)):100,cls=c.sobra<0?'over':pct>=80?'warn':'',maior=c.bills.slice().sort((a,b)=>b.val-a.val)[0];
+  const rec=c.ini<HOJE?HOJE:c.ini,L=c.bills.map(b=>{const atr=!b.pago&&b.date<HOJE;return `<div class="sl-bl ${b.pago?'done':''}"><span>${b.pago?'✓ ':''}${esc(b.desc)}<small class="${atr?'cw-late':''}" style="display:block;color:${atr?'':'var(--mute)'}">vence ${esc(salFmtD(b.date))}${b.pago?' · paga':atr?' · atrasada':' · pagar no dia '+rec.slice(8)}</small></span><b>${BRL(b.val)}</b></div>`}).join('');
+  return `<div class="card sl-cy"><div class="cw-row"><span>💰 Salário de <b>${esc(salFmtD(c.ini))}</b></span><b>${BRL(c.val)}</b></div><small style="color:var(--mute)">vale até ${esc(salFmtD(iso(new Date(+c.fim.slice(0,4),+c.fim.slice(5,7)-1,+c.fim.slice(8)-1))))}</small>`
+   +`<div class="cw-bar ${cls}" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>`
+   +(L?`<div style="margin-top:6px">${L}</div>`:'<p class="hint">Nenhuma conta fixa vence neste período.</p>')
+   +(c.gast?`<div class="cw-row"><span style="color:var(--mute)">Gastos lançados</span><b>${BRL(c.gast)}</b></div>`:'')
+   +`<div class="cw-sobra"><span>${c.sobra<0?'Falta':'Sobra'}</span><strong class="${c.sobra<0?'neg':''}" style="${c.sobra<0?'':'color:var(--ok)'}">${BRL(Math.abs(c.sobra))}</strong></div>`
+   +(c.sobra<0&&maior?`<p class="cw-warn" style="font-size:13px">⚠️ Este período não fecha. Dica: peça para mudar o vencimento de <b>${esc(maior.desc)}</b> para depois do próximo salário.</p>`:'')+`</div>`}).join('');
+ const pre=C.pre?`<div class="card"><b>⏮️ Antes do 1º salário do mês</b><p class="hint" style="margin:2px 0 6px">Estas contas vencem antes do salário cair, então saem do dinheiro do mês passado.</p>${C.pre.bills.map(b=>`<div class="sl-bl ${b.pago?'done':''}"><span>${b.pago?'✓ ':''}${esc(b.desc)}<small style="display:block;color:var(--mute)">vence ${esc(salFmtD(b.date))}</small></span><b>${BRL(b.val)}</b></div>`).join('')}<p class="hint">Se vive apertado por isso, peça para mudar o vencimento para depois do salário.</p></div>`:'';
+ const ext=`<h3>🎯 Dívida ou pagamento extra</h3><div class="card"><p class="hint" style="margin:0 0 8px">Quer quitar uma dívida, parcela ou compra? Diga o valor e eu digo o melhor dia.</p><input id="sl-xd" placeholder="O que é? (ex.: Cartão, Dentista)" maxlength="60"><div class="row" style="margin-top:8px"><input id="sl-xv" inputmode="decimal" placeholder="Valor (R$)"><input type="date" id="sl-xt" aria-label="Vence em (opcional)" title="Vence em (opcional)"></div><p class="hint" style="margin:4px 0 8px">A data de vencimento é opcional.</p><button style="width:100%" onclick="salSugerirClick()">🔎 Qual o melhor dia?</button></div><div id="sl-xr">${salSug?salSugHtml():''}</div>`;
+ return star+mapa+'<h3>Seus períodos de salário</h3>'+ciclos+pre+ext}
+function salMini(){
+ const s=S.cart.sal;if(!s||salLiq(s)<=0)return '';
+ const p=salProximo();if(!p)return '';
+ const d=salDiasAte(p.date);
+ return `<div class="card sl-mini" onclick="cSub='sal';salV='dias';render()" style="cursor:pointer"><div class="cw-row"><span>💰 Próximo salário</span><b class="cw-in">${BRL(p.val)}</b></div><small style="color:var(--mute)">${esc(salFmtD(p.date))}${d===0?' · hoje!':' · em '+d+' dia'+(d===1?'':'s')} · melhor dia para pagar as contas</small><div style="color:var(--ac);font-weight:600;font-size:14px;margin-top:6px">Ver melhores dias →</div></div>`}
+/* ---- ações ---- */
+function salUpd(){
+ const s=S.cart.sal;if(!s)return;
+ const r=$('#sl-res');if(r)r.innerHTML=salResHtml();
+ s.desc.forEach(d=>{const e=$('#sl-h-'+d.id);if(e)e.textContent='= '+BRL(salDescVal(s,d))});
+ s.pags.forEach(p=>{const e=document.querySelector('[data-pg="'+p.id+'"]');if(e)e.placeholder=salPagVal(s,p)?cTxt(salPagVal(s,p))+' (auto)':'Valor (R$)'})}
+function salCommit(redraw){salSync();save();if(redraw)render();else salUpd()}
+function salTipo(t){const s=salGet();if(s.tipo===t)return;s.tipo=t;
+ s.pags=t==='quinzenal'?[{id:uid(),modo:'dia',dia:15,val:0},{id:uid(),modo:'dia',dia:30,val:0}]:[{id:uid(),modo:'dia',dia:5,val:0}];
+ salCommit(true)}
+function salPag(id,f,v){const s=salGet(),p=s.pags.find(x=>x.id===id);if(!p)return;
+ if(f==='modo'){p.modo=v==='util'?'util':'dia';p.dia=Math.min(p.modo==='util'?23:31,p.dia)}
+ else if(f==='dia')p.dia=Math.min(p.modo==='util'?23:31,Math.max(1,parseInt(v)||1));
+ else p.val=cNum(v);
+ salCommit(f!=='val')}
+function salRateio(pc){const s=salGet(),l=salLiq(s);
+ if(salBase(s)<=0){info('Preencha o salário bruto (e os descontos) para eu dividir o líquido. Ou digite o valor de cada pagamento.');return}
+ const a=cR2(l*pc/100);s.pags[0].val=a;s.pags[1].val=cR2(l-a);salCommit(true)}
+function salSet(k,v){const s=salGet();if(k==='deps')s.deps=Math.min(20,Math.max(0,parseInt(v)||0));else if(k==='fds')s.fds=v;salCommit(false)}
+function salBruto(v){const s=salGet();s.bruto=cNum(v);salCommit(false)}
+function salRow(kind,id,f,v){const s=salGet(),x=s[kind].find(i=>i.id===id);if(!x)return;
+ if(f==='nome'){x.nome=String(v||'').trim().slice(0,60);salCommit(false);return}
+ if(f==='pct'){x.pct=!x.pct;if(x.pct&&x.val>100)x.val=0;salCommit(true);return}
+ x.val=cNum(v);if(x.pct&&x.val>100)x.val=100;salCommit(false)}
+function salAddRow(kind,nome){const s=salGet();s[kind].push({id:uid(),nome:String(nome||'').trim().slice(0,60),val:0,pct:false});salCommit(true)}
+function salAddCustom(kind){const e=$(kind==='desc'?'#sl-dn':'#sl-pn'),n=e?e.value.trim():'';if(!n){if(e)e.focus();return}salAddRow(kind,n)}
+function salDelRow(kind,id){const s=salGet();s[kind]=s[kind].filter(x=>x.id!==id);salCommit(true)}
+function salAuto(){const s=salGet();
+ if(s.auto&&cR2(S.cart.base)===salLiq(s)){s.auto=false;save();render();return}
+ s.auto=true;salSync();save();render()}
+function salEstimar(){const s=salGet(),b=salBase(s);
+ if(b<=0){info('Preencha primeiro o salário bruto.');return}
+ const inss=salInss(Math.min(b,8475.55)),ir=salIrrf(b,inss,s.deps),
+  ach=re=>s.desc.find(d=>re.test(d.nome.toLowerCase()));
+ let a=ach(/inss/),r=ach(/irrf|imposto de renda|^ir\b/);
+ if(!a){a={id:uid(),nome:'INSS',val:0,pct:false};s.desc.unshift(a)}
+ if(!r){r={id:uid(),nome:'IRRF (Imposto de Renda)',val:0,pct:false};s.desc.splice(s.desc.indexOf(a)+1,0,r)}
+ a.val=inss;a.pct=false;r.val=ir;r.pct=false;salCommit(true);
+ info('Estimei INSS '+BRL(inss)+' e IRRF '+BRL(ir)+'. Se o seu holerite mostrar outro valor, é só corrigir o campo.')}
+function salGatilhos(N){
+ const out=[];
+ try{const s=S.cart&&S.cart.sal;if(!s||salLiq(s)<=0)return out;
+  const hh=String(N.cwHora||'09:00').split(':').map(Number),H=isNaN(hh[0])?9:hh[0],M=isNaN(hh[1])?0:hh[1],y=+HOJE.slice(0,4),m0=+HOJE.slice(5,7)-1;
+  for(let k=0;k<2;k++)salCiclos(salYM(y,m0+k)).ciclos.forEach(c=>{
+   const t=new Date(c.ini+'T'+salPad(H)+':'+salPad(M)).getTime();if(isNaN(t)||c.val<=0)return;
+   const pend=c.bills.filter(b=>!b.pago);
+   out.push({key:'sal'+c.ini+c.idx,at:t,title:'💰 Hoje cai seu salário',body:BRL(c.val)+(pend.length?' · '+pend.length+' conta'+(pend.length>1?'s':'')+' ('+BRL(cSum(pend))+') até o próximo salário. Bom dia para pagar!':'')})})
+ }catch(e){}
+ return out}
+
 normCart();
 
 
@@ -3197,6 +3463,12 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.4.0':[
+  '🧾 Nova aba “Salário” na Carteira: diga se recebe por mês ou por quinzena, o dia que o salário cai (dia do mês ou N-º dia útil) e o valor de cada pagamento.',
+  '💼 Holerite: preencha o salário bruto, os adicionais e os descontos (INSS, IRRF, vale-transporte… e quantos outros quiser, em R$ ou %). O app calcula o líquido e pode estimar INSS e IR pela tabela de 2026.',
+  '⭐ Melhores dias: mapa colorido do mês com salário e vencimentos, quanto sobra a cada período e o melhor dia para pagar contas fixas ou uma dívida extra (com opção de dividir em parcelas).',
+  '🔔 Aviso no dia em que o salário cai, lembrando das contas até o próximo pagamento.'
+ ],
  '3.3.0':[
   '🧠 A Kayla agora aprende com você: guarda seus gostos, rotina e o jeito como você conversa para moldar as respostas.',
   '💬 Diga “aprenda que eu gosto de café sem açúcar”, “o que você aprendeu sobre mim?” ou “esqueça que ...”. Controle em Configurações › Assistente Kayla.'
@@ -3403,7 +3675,7 @@ const GUIA_APP=[
  ['📝','Notas','Anotações rápidas para guardar o que importa.'],
  ['📖','Diário','Escreva sobre o seu dia, com humor e fotos.'],
  ['🛒','Compras','Lista de compras que você pode montar falando o produto e o preço. Também escaneia etiquetas com a câmera, compara preços entre mercados, guarda os seus mercados e o histórico das compras.'],
- ['💰','Carteira','Resumo, gastos, contas fixas e renda.'],
+ ['💰','Carteira','Resumo, gastos, contas fixas, renda e salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas).'],
  ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
  ['⚙️','Configurações','Perfil, conta (Google ou e-mail), backup, idioma, cores do tema, menu e senha do app.']];
@@ -3803,12 +4075,12 @@ const kFaq=[
  [/backup|restaurar|exportar/,'Em Configurações › Backup no celular você salva, compartilha e restaura seus dados. Se conectar uma conta, também há sincronização na nuvem.'],
  [/senha|pin|bloque/,'A senha do app fica em Configurações › Segurança. Ela fica só neste aparelho.'],
  [/plant[aã]o|plantoes|hospital/,'Os plantões ficam no Calendário. Toque no dia para registrar entrada, saída e local; os lembretes de plantão são configurados em Lembretes e alarme.'],
- [/carteira|gasto|renda|conta fixa/,'A Carteira tem Resumo, Gastos, Fixas e Renda do mês. Posso abri-la: digite “abrir carteira”.'],
+ [/carteira|gasto|renda|conta fixa/,'A Carteira tem Resumo, Gastos, Fixas, Renda e Salário (dia que cai, holerite, líquido e os melhores dias para pagar). Posso abri-la: digite “abrir carteira”.'],
  [/compra|lista|mercado|escane/,'Em Compras você monta a lista, marca o que pegou e vê o total. Eu também adiciono itens: “comprar arroz, feijão e café”.'],
  [/flow|menu giratorio|carrossel/,'O menu Flow é um carrossel 3D opcional. Ative em Configurações › Menu.'],
  [/nuvem|conta|google|sincroni/,'Conecte uma conta em Configurações › Conta para sincronizar seus dados entre aparelhos e recuperar a senha.'],
  [/tema|cor|escuro/,'Em Configurações › Aparência você troca tema e cores. Ou peça: “tema escuro”, “tema preto”, “tema claro”.']];
-const KTOUR=[['inicio','Este é o Início: o resumo do seu dia e atalhos para criar compromisso, nota, diário e compra.'],['agenda','Na Agenda você cria compromissos com data e hora. Com os lembretes ativados, o app avisa antes.'],['cal','No Calendário você vê o mês inteiro e registra seus plantões.'],['notas','Em Notas você guarda anotações rápidas, com cores.'],['diario','No Diário você escreve como foi o dia e marca seu humor.'],['compras','Em Compras você monta a lista, vê o total e compara preços.'],['carteira','Na Carteira você controla gastos, contas fixas e renda do mês.'],['mercado','Em Promoções você acompanha ofertas dos mercados.'],['config','Por fim, as Configurações: perfil, conta, backup, lembretes, aparência e segurança. Pronto, tour concluído! Pode me pedir qualquer coisa.']];
+const KTOUR=[['inicio','Este é o Início: o resumo do seu dia e atalhos para criar compromisso, nota, diário e compra.'],['agenda','Na Agenda você cria compromissos com data e hora. Com os lembretes ativados, o app avisa antes.'],['cal','No Calendário você vê o mês inteiro e registra seus plantões.'],['notas','Em Notas você guarda anotações rápidas, com cores.'],['diario','No Diário você escreve como foi o dia e marca seu humor.'],['compras','Em Compras você monta a lista, vê o total e compara preços.'],['carteira','Na Carteira você controla gastos, contas fixas e renda do mês. Na aba Salário você informa o dia que o salário cai e o holerite, e eu mostro os melhores dias para pagar as contas.'],['mercado','Em Promoções você acompanha ofertas dos mercados.'],['config','Por fim, as Configurações: perfil, conta, backup, lembretes, aparência e segurança. Pronto, tour concluído! Pode me pedir qualquer coisa.']];
 let K={open:false,tour:-1,pend:null,msgs:[]};
 const kEsc=s=>esc(String(s)).replace(/\n/g,'<br>');
 function kCfg(){if(!S.kayla||typeof S.kayla!=='object')S.kayla={};return S.kayla}
@@ -3850,6 +4122,7 @@ const K_CART_TOOLS=[{functionDeclarations:[
 function kCartSnap(){
  try{normCart();const c=S.cart,hoje=kHoje(),mes=hoje.slice(0,7),ant=cPrev(mes),L=[];
   L.push('Renda mensal fixa: '+BRL(c.base));
+  try{const sl=c.sal;if(sl&&salLiq(sl)>0){L.push('Salário: '+(sl.tipo==='quinzenal'?'quinzenal':'mensal')+', líquido '+BRL(salLiq(sl))+(salBase(sl)>0?' (bruto '+BRL(sl.bruto)+', descontos '+BRL(salDescTot(sl))+')':'')+'; cai em: '+sl.pags.map(p=>(p.modo==='util'?p.dia+'º dia útil':'dia '+p.dia)+' ('+BRL(salPagVal(sl,p))+')').join(' e ')+'. Melhores dias para pagar contas: o dia em que o salário cai (aba Carteira › Salário › Melhores dias).')}}catch(e){}
   const fx=c.fixas.filter(f=>f.ini<=mes&&(!f.fim||mes<=f.fim));
   L.push('Contas fixas:');fx.slice(0,30).forEach(f=>L.push('- id='+f.id+' | '+f.desc+' | '+f.val+' | dia '+f.dia+' | '+f.cat));if(!fx.length)L.push('(nenhuma)');
   const re=c.rendas.filter(r=>r.m===mes||r.m===ant);L.push('Rendas extras (este mês e o anterior):');re.slice(0,20).forEach(r=>L.push('- id='+r.id+' | '+r.desc+' | '+r.val+' | '+r.m));if(!re.length)L.push('(nenhuma)');

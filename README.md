@@ -23,6 +23,16 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Versão 3.4.0
+
+- **Carteira › Salário** (nova aba, 5ª da Carteira). Duas telas: **Meu salário** e **Melhores dias**.
+  - **Meu salário**: escolher *uma vez por mês* ou *por quinzena*; o dia que o salário cai (**dia do mês** ou **N-º dia útil**); regra de fim de semana (cai na sexta, cai na segunda ou não mudar); valor de cada pagamento (vazio = o app divide o líquido; botões *50/50* e *Adiantamento 40/60*). **Holerite**: salário bruto, adicionais (horas extras, comissão…), descontos livres (INSS, IRRF, vale-transporte, plano de saúde… + botões para adicionar outros e campo para criar o que quiser, cada um em R$ ou %) e o **salário líquido** calculado na hora. O botão **Estimar INSS e IR** usa a tabela 2026 (INSS: Portaria MPS/MF 13/2026; IRRF: Lei 15.270/2025, isenção até R$ 5.000 e redutor até R$ 7.350); é só uma estimativa e o usuário pode corrigir qualquer campo.
+  - O líquido vira a **renda fixa** da Carteira (`cart.base`) enquanto “usar como renda do mês” estiver ligado (padrão). Se o usuário editar a renda à mão na aba Renda, o vínculo desliga sozinho.
+  - **Melhores dias**: cada pagamento de salário vira um *período* que financia as contas fixas e gastos até o próximo pagamento. O app mostra o mapa do mês (cor = quanto ainda sobra no dia, 💰 salário, ● vencimento), quanto sobra em cada período, avisa quando um período não fecha e sugere o melhor dia para pagar. A caixa **Dívida ou pagamento extra** compara os períodos, indica o melhor dia e, se não couber de uma vez, sugere dividir em parcelas (20% de folga); “Lançar em Gastos” cria o gasto (categoria Gastos extras) no dia escolhido.
+  - Também: cartão **Próximo salário** no Resumo, aviso de notificação no dia em que o salário cai (usa o mesmo liga/desliga e horário dos avisos de contas) e a Kayla (IA) agora conhece o salário.
+  - Dados: `S.cart.sal` = `{tipo, bruto, deps, fds, auto, prov[], desc[], pags[]}`. Código: bloco “v3.4.0: Carteira · Salário…” no `index.html` (funções `sal*`).
+  - Para lançar: `VERSION` do `sw.js` já está em 3.4.0; `NOVIDADES` ganhou a 3.4.0. Não precisa gerar APK novo.
+
 ## Versão 3.2.0
 
 - **Novo tema Viking** (Configurações › Aparência › Cor do tema › Viking): papel de parede em SVG (aurora, lua, fiorde, montanhas, pinheiros, pedra com runa, neve e um drakkar balançando), fontes Uncial Antiqua / Cinzel / Alegreya Sans (Google Fonts), ícones do menu próprios (`VKICO`), frisos de runas no cabeçalho e no menu, cartões de madeira com rebites. Código: bloco “Tema VIKING” no CSS e “Tema VIKING: papel de parede” no JS. Também dá para pedir à Kayla: “deixa o app viking”.
