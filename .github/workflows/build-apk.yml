@@ -206,6 +206,7 @@ jobs:
               public void onCreate(Bundle savedInstanceState) {
                   registerPlugin(MediaPermissionsPlugin.class);
                   registerPlugin(ApkUpdatePlugin.class);
+                  registerPlugin(RadioPlugin.class);
                   super.onCreate(savedInstanceState);
               }
           }
@@ -372,6 +373,562 @@ jobs:
           }
           EOF
           test -s "$D/ApkUpdatePlugin.java" && echo "Plugin ApkUpdate criado."
+
+      - name: Rádio em segundo plano - serviço nativo e plugin Radio (Android)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          # serviço em primeiro plano (tipo mediaPlayback) mantém a rádio tocando com a tela desligada
+          for P in FOREGROUND_SERVICE FOREGROUND_SERVICE_MEDIA_PLAYBACK WAKE_LOCK; do
+            grep -q "android.permission.$P\"" "$M" || sed -i "/android.permission.INTERNET/a\    <uses-permission android:name=\"android.permission.$P\" />" "$M"
+          done
+          grep -q "RadioService" "$M" || sed -i 's#</application>#    <service android:name=".RadioService" android:exported="false" android:foregroundServiceType="mediaPlayback" />\n    </application>#' "$M"
+          grep -q "RadioService" "$M" || { echo "::error::Nao consegui declarar o servico da radio no AndroidManifest.xml"; cat "$M"; exit 1; }
+          D=android/app/src/main/java/com/minhaagenda/app
+          mkdir -p "$D"
+          cat > "$D/RadioService.java" <<'EOF'
+          package com.minhaagenda.app;
+
+          import android.app.Notification;
+          import android.app.NotificationChannel;
+          import android.app.NotificationManager;
+          import android.app.PendingIntent;
+          import android.app.Service;
+          import android.content.BroadcastReceiver;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.content.IntentFilter;
+          import android.content.pm.ServiceInfo;
+          import android.media.AudioAttributes;
+          import android.media.AudioManager;
+          import android.media.MediaPlayer;
+          import android.net.wifi.WifiManager;
+          import android.os.Build;
+          import android.os.Handler;
+          import android.os.IBinder;
+          import android.os.Looper;
+          import android.os.PowerManager;
+
+          /**
+           * Rádio em segundo plano: serviço em primeiro plano (com notificação e botões PAUSE/PLAY/STOP).
+           * Continua tocando com a tela desligada e com o app fechado ou em segundo plano.
+           */
+          public class RadioService extends Service implements
+                  MediaPlayer.OnPreparedListener,
+                  MediaPlayer.OnErrorListener,
+                  MediaPlayer.OnCompletionListener,
+                  MediaPlayer.OnInfoListener,
+                  AudioManager.OnAudioFocusChangeListener {
+
+              public static final String ACTION_PLAY = "com.minhaagenda.app.radio.PLAY";
+              public static final String ACTION_PAUSE = "com.minhaagenda.app.radio.PAUSE";
+              public static final String ACTION_STOP = "com.minhaagenda.app.radio.STOP";
+
+              public interface Listener {
+                  void onState(String state);
+              }
+
+              public static volatile String state = "stopped";
+              public static volatile boolean vivo = false;
+              public static Listener listener;
+
+              private static final int NOTIF_ID = 4711;
+              private static final String CHANNEL_ID = "radio";
+              private static final String URL_PADRAO = "https://live.hunter.fm/pop2k_stream?ag=mp3";
+
+              private final Handler handler = new Handler(Looper.getMainLooper());
+              private MediaPlayer player;
+              private AudioManager audio;
+              private PowerManager.WakeLock wakeLock;
+              private WifiManager.WifiLock wifiLock;
+              private String url = URL_PADRAO;
+              private String titulo = "Rádio Pop 2K";
+              private boolean querTocar = false;
+              private boolean pausadoPeloFoco = false;
+              private boolean noisyAtivo = false;
+              private int tentativas = 0;
+
+              private final Runnable reconectar = new Runnable() {
+                  @Override
+                  public void run() {
+                      if (querTocar) preparar();
+                  }
+              };
+
+              private final Runnable tempoEsgotado = new Runnable() {
+                  @Override
+                  public void run() {
+                      if (querTocar && "loading".equals(state)) falha();
+                  }
+              };
+
+              private final BroadcastReceiver noisy = new BroadcastReceiver() {
+                  @Override
+                  public void onReceive(Context context, Intent intent) {
+                      if (intent != null && AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                          pausar();
+                      }
+                  }
+              };
+
+              @Override
+              public void onCreate() {
+                  super.onCreate();
+                  vivo = true;
+                  audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                  criarCanal();
+              }
+
+              @Override
+              public IBinder onBind(Intent intent) {
+                  return null;
+              }
+
+              @Override
+              public int onStartCommand(Intent intent, int flags, int startId) {
+                  String acao = intent != null ? intent.getAction() : null;
+                  if (ACTION_PLAY.equals(acao)) {
+                      String u = intent.getStringExtra("url");
+                      String t = intent.getStringExtra("title");
+                      if (u != null && u.length() > 0) url = u;
+                      if (t != null && t.length() > 0) titulo = t;
+                      iniciar();
+                  } else if (ACTION_PAUSE.equals(acao)) {
+                      pausar();
+                  } else if (ACTION_STOP.equals(acao)) {
+                      encerrar("stopped");
+                  } else {
+                      stopSelf();
+                  }
+                  return START_NOT_STICKY;
+              }
+
+              /* ---------- controle ---------- */
+
+              private void iniciar() {
+                  querTocar = true;
+                  pausadoPeloFoco = false;
+                  tentativas = 0;
+                  mostrarNotificacao("loading");
+                  setEstado("loading");
+                  pedirFoco();
+                  adquirirLocks();
+                  registrarNoisy();
+                  preparar();
+              }
+
+              private void preparar() {
+                  liberarPlayer();
+                  handler.removeCallbacks(tempoEsgotado);
+                  try {
+                      player = new MediaPlayer();
+                      player.setAudioAttributes(new AudioAttributes.Builder()
+                              .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                              .setUsage(AudioAttributes.USAGE_MEDIA)
+                              .build());
+                      player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+                      player.setOnPreparedListener(this);
+                      player.setOnErrorListener(this);
+                      player.setOnCompletionListener(this);
+                      player.setOnInfoListener(this);
+                      player.setDataSource(url);
+                      player.prepareAsync();
+                      handler.postDelayed(tempoEsgotado, 25000);
+                  } catch (Exception e) {
+                      falha();
+                  }
+              }
+
+              private void pausar() {
+                  if (!querTocar && !"playing".equals(state) && !"loading".equals(state)) return;
+                  querTocar = false;
+                  handler.removeCallbacks(reconectar);
+                  handler.removeCallbacks(tempoEsgotado);
+                  liberarPlayer();
+                  soltarLocks();
+                  setEstado("paused");
+                  mostrarNotificacao("paused");
+              }
+
+              private void falha() {
+                  liberarPlayer();
+                  handler.removeCallbacks(tempoEsgotado);
+                  if (!querTocar) return;
+                  if (tentativas < 5) {
+                      tentativas++;
+                      setEstado("loading");
+                      mostrarNotificacao("loading");
+                      handler.postDelayed(reconectar, 3000L * tentativas);
+                  } else {
+                      encerrar("error");
+                  }
+              }
+
+              private void encerrar(String novoEstado) {
+                  querTocar = false;
+                  handler.removeCallbacksAndMessages(null);
+                  liberarPlayer();
+                  soltarLocks();
+                  soltarFoco();
+                  desregistrarNoisy();
+                  setEstado(novoEstado);
+                  try {
+                      stopForeground(true);
+                  } catch (Exception e) {
+                      // ignora
+                  }
+                  stopSelf();
+              }
+
+              private void liberarPlayer() {
+                  if (player != null) {
+                      try {
+                          player.setOnPreparedListener(null);
+                          player.setOnErrorListener(null);
+                          player.setOnCompletionListener(null);
+                          player.setOnInfoListener(null);
+                          player.reset();
+                          player.release();
+                      } catch (Exception e) {
+                          // ignora
+                      }
+                      player = null;
+                  }
+              }
+
+              private void setEstado(String s) {
+                  state = s;
+                  Listener l = listener;
+                  if (l != null) {
+                      try {
+                          l.onState(s);
+                      } catch (Exception e) {
+                          // ignora
+                      }
+                  }
+              }
+
+              /* ---------- callbacks do MediaPlayer ---------- */
+
+              @Override
+              public void onPrepared(MediaPlayer mp) {
+                  handler.removeCallbacks(tempoEsgotado);
+                  if (!querTocar) return;
+                  tentativas = 0;
+                  try {
+                      mp.start();
+                      setEstado("playing");
+                      mostrarNotificacao("playing");
+                  } catch (Exception e) {
+                      falha();
+                  }
+              }
+
+              @Override
+              public boolean onError(MediaPlayer mp, int what, int extra) {
+                  falha();
+                  return true;
+              }
+
+              @Override
+              public void onCompletion(MediaPlayer mp) {
+                  // uma rádio ao vivo não termina: se acabou, a conexão caiu
+                  falha();
+              }
+
+              @Override
+              public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                  if (!querTocar) return false;
+                  if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                      setEstado("loading");
+                  } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                      setEstado("playing");
+                  }
+                  return false;
+              }
+
+              /* ---------- foco de áudio (ligações, outros apps de música) ---------- */
+
+              private void pedirFoco() {
+                  try {
+                      if (audio != null) {
+                          audio.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                      }
+                  } catch (Exception e) {
+                      // ignora
+                  }
+              }
+
+              private void soltarFoco() {
+                  try {
+                      if (audio != null) audio.abandonAudioFocus(this);
+                  } catch (Exception e) {
+                      // ignora
+                  }
+              }
+
+              @Override
+              public void onAudioFocusChange(int change) {
+                  if (change == AudioManager.AUDIOFOCUS_LOSS) {
+                      pausar();
+                      soltarFoco();
+                  } else if (change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                      if (querTocar) {
+                          pausadoPeloFoco = true;
+                          pausar();
+                      }
+                  } else if (change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                      if (player != null) {
+                          try {
+                              player.setVolume(0.2f, 0.2f);
+                          } catch (Exception e) {
+                              // ignora
+                          }
+                      }
+                  } else if (change == AudioManager.AUDIOFOCUS_GAIN) {
+                      if (player != null) {
+                          try {
+                              player.setVolume(1f, 1f);
+                          } catch (Exception e) {
+                              // ignora
+                          }
+                      }
+                      if (pausadoPeloFoco) {
+                          pausadoPeloFoco = false;
+                          iniciar();
+                      }
+                  }
+              }
+
+              /* ---------- fone desconectado ---------- */
+
+              private void registrarNoisy() {
+                  if (noisyAtivo) return;
+                  try {
+                      IntentFilter f = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+                      if (Build.VERSION.SDK_INT >= 33) {
+                          registerReceiver(noisy, f, Context.RECEIVER_NOT_EXPORTED);
+                      } else {
+                          registerReceiver(noisy, f);
+                      }
+                      noisyAtivo = true;
+                  } catch (Exception e) {
+                      // ignora
+                  }
+              }
+
+              private void desregistrarNoisy() {
+                  if (!noisyAtivo) return;
+                  try {
+                      unregisterReceiver(noisy);
+                  } catch (Exception e) {
+                      // ignora
+                  }
+                  noisyAtivo = false;
+              }
+
+              /* ---------- tela desligada: mantém CPU e Wi-Fi acordados enquanto toca ---------- */
+
+              private void adquirirLocks() {
+                  try {
+                      if (wakeLock == null) {
+                          PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                          wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "jcorganiza:radio");
+                          wakeLock.setReferenceCounted(false);
+                      }
+                      if (!wakeLock.isHeld()) wakeLock.acquire();
+                  } catch (Exception e) {
+                      // ignora
+                  }
+                  try {
+                      if (wifiLock == null) {
+                          WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                          wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL, "jcorganiza:radio");
+                          wifiLock.setReferenceCounted(false);
+                      }
+                      if (!wifiLock.isHeld()) wifiLock.acquire();
+                  } catch (Exception e) {
+                      // ignora
+                  }
+              }
+
+              private void soltarLocks() {
+                  try {
+                      if (wakeLock != null && wakeLock.isHeld()) wakeLock.release();
+                  } catch (Exception e) {
+                      // ignora
+                  }
+                  try {
+                      if (wifiLock != null && wifiLock.isHeld()) wifiLock.release();
+                  } catch (Exception e) {
+                      // ignora
+                  }
+              }
+
+              /* ---------- notificação com PAUSE / PLAY / STOP ---------- */
+
+              private void criarCanal() {
+                  if (Build.VERSION.SDK_INT >= 26) {
+                      NotificationChannel ch = new NotificationChannel(CHANNEL_ID, "Rádio", NotificationManager.IMPORTANCE_LOW);
+                      ch.setDescription("Controles da rádio");
+                      ch.setShowBadge(false);
+                      NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                      if (nm != null) nm.createNotificationChannel(ch);
+                  }
+              }
+
+              private int flagsPi() {
+                  if (Build.VERSION.SDK_INT >= 23) {
+                      return PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+                  }
+                  return PendingIntent.FLAG_UPDATE_CURRENT;
+              }
+
+              private PendingIntent acaoPi(String acao, int codigo) {
+                  Intent i = new Intent(this, RadioService.class);
+                  i.setAction(acao);
+                  return PendingIntent.getService(this, codigo, i, flagsPi());
+              }
+
+              private Notification construir(String st) {
+                  Notification.Builder b;
+                  if (Build.VERSION.SDK_INT >= 26) {
+                      b = new Notification.Builder(this, CHANNEL_ID);
+                  } else {
+                      b = new Notification.Builder(this);
+                  }
+                  int icone = getResources().getIdentifier("ic_stat_agenda", "drawable", getPackageName());
+                  if (icone == 0) icone = android.R.drawable.ic_media_play;
+                  String texto = "playing".equals(st) ? "Tocando ao vivo" : ("paused".equals(st) ? "Pausada" : "Conectando…");
+                  b.setSmallIcon(icone);
+                  b.setContentTitle(titulo);
+                  b.setContentText(texto);
+                  b.setOnlyAlertOnce(true);
+                  b.setShowWhen(false);
+                  b.setOngoing(true);
+                  b.setCategory(Notification.CATEGORY_TRANSPORT);
+                  b.setVisibility(Notification.VISIBILITY_PUBLIC);
+                  Intent abrir = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                  if (abrir != null) {
+                      b.setContentIntent(PendingIntent.getActivity(this, 0, abrir, flagsPi()));
+                  }
+                  if ("paused".equals(st)) {
+                      b.addAction(android.R.drawable.ic_media_play, "PLAY", acaoPi(ACTION_PLAY, 2));
+                  } else {
+                      b.addAction(android.R.drawable.ic_media_pause, "PAUSE", acaoPi(ACTION_PAUSE, 1));
+                  }
+                  b.addAction(android.R.drawable.ic_menu_close_clear_cancel, "STOP", acaoPi(ACTION_STOP, 3));
+                  b.setStyle(new Notification.MediaStyle().setShowActionsInCompactView(0, 1));
+                  return b.build();
+              }
+
+              private void mostrarNotificacao(String st) {
+                  Notification n = construir(st);
+                  try {
+                      if (Build.VERSION.SDK_INT >= 29) {
+                          startForeground(NOTIF_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+                      } else {
+                          startForeground(NOTIF_ID, n);
+                      }
+                  } catch (Exception e) {
+                      try {
+                          NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                          if (nm != null) nm.notify(NOTIF_ID, n);
+                      } catch (Exception e2) {
+                          // ignora
+                      }
+                  }
+              }
+
+              @Override
+              public void onDestroy() {
+                  querTocar = false;
+                  handler.removeCallbacksAndMessages(null);
+                  liberarPlayer();
+                  soltarLocks();
+                  soltarFoco();
+                  desregistrarNoisy();
+                  if (!"error".equals(state)) setEstado("stopped");
+                  vivo = false;
+                  super.onDestroy();
+              }
+          }
+          EOF
+          cat > "$D/RadioPlugin.java" <<'EOF'
+          package com.minhaagenda.app;
+
+          import android.content.Intent;
+
+          import androidx.core.content.ContextCompat;
+
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+
+          /** Ponte entre a página (JS) e o serviço da rádio: play, pause, stop, status e o evento "state". */
+          @CapacitorPlugin(name = "Radio")
+          public class RadioPlugin extends Plugin {
+
+              @Override
+              public void load() {
+                  RadioService.listener = new RadioService.Listener() {
+                      @Override
+                      public void onState(String s) {
+                          JSObject o = new JSObject();
+                          o.put("state", s);
+                          RadioPlugin.this.notifyListeners("state", o);
+                      }
+                  };
+              }
+
+              @PluginMethod
+              public void play(PluginCall call) {
+                  try {
+                      Intent i = new Intent(getContext(), RadioService.class);
+                      i.setAction(RadioService.ACTION_PLAY);
+                      i.putExtra("url", call.getString("url", "https://live.hunter.fm/pop2k_stream?ag=mp3"));
+                      i.putExtra("title", call.getString("title", "Rádio Pop 2K"));
+                      ContextCompat.startForegroundService(getContext(), i);
+                      call.resolve();
+                  } catch (Exception e) {
+                      call.reject(String.valueOf(e.getMessage()));
+                  }
+              }
+
+              @PluginMethod
+              public void pause(PluginCall call) {
+                  enviar(RadioService.ACTION_PAUSE, call);
+              }
+
+              @PluginMethod
+              public void stop(PluginCall call) {
+                  enviar(RadioService.ACTION_STOP, call);
+              }
+
+              @PluginMethod
+              public void status(PluginCall call) {
+                  JSObject o = new JSObject();
+                  o.put("state", RadioService.vivo ? RadioService.state : "stopped");
+                  call.resolve(o);
+              }
+
+              private void enviar(String acao, PluginCall call) {
+                  try {
+                      if (RadioService.vivo) {
+                          Intent i = new Intent(getContext(), RadioService.class);
+                          i.setAction(acao);
+                          getContext().startService(i);
+                      }
+                      call.resolve();
+                  } catch (Exception e) {
+                      call.reject(String.valueOf(e.getMessage()));
+                  }
+              }
+          }
+          EOF
+          test -s "$D/RadioService.java" && test -s "$D/RadioPlugin.java" && echo "Plugin Radio criado."
+          grep -n "RadioService\|FOREGROUND_SERVICE" "$M" || true
 
       - name: Permissão da câmera (Android)
         run: |
