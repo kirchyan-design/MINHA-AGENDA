@@ -60,6 +60,19 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 - **App**: `atCarregar()` no `index.html` lê `promocoes/atacadao.json` ao abrir, ao voltar para o app e a cada 30 min, guarda a última cópia no aparelho (`ma-at-json`) e mostra as listas como “Folheto · setor” na aba Atacadão e no comparador de preços. As listas digitadas (`AT_TXT`, `AT_LISTAS`) continuam valendo até vencerem.
 - **Caminho garantido**: se o robô não achar o PDF no site, coloque o PDF do folheto na pasta `folhetos/atacadao/` pelo GitHub (Add file › Upload files). O robô roda sozinho em seguida e o app atualiza. Não precisa mudar `VERSION` nem gerar APK.
 
+## Versão 3.4.5
+
+- **Rádio Pop 2K** (stream `https://live.hunter.fm/pop2k_stream?ag=mp3`): ícone de rádio no topo, ao lado da engrenagem. Ao tocar nele abre o painel com **PAUSE**, **STOP** e **PLAY**. Em **Configurações › Rádio** dá para **desativar** (o ícone some e a música para). A escolha fica em `S.radio.off`.
+  - **Tela desligada / app em segundo plano**: no APK novo a rádio toca por um **serviço nativo em primeiro plano** (`RadioService.java` + `RadioPlugin.java`, criados pelo passo “Rádio em segundo plano” do workflow *Gerar APK*). Aparece uma notificação com PAUSE/PLAY e STOP, o serviço segura CPU e Wi-Fi acordados, reconecta sozinho se a internet cair e pausa em ligações ou ao desconectar o fone. **É preciso gerar um APK novo** (Actions › Gerar APK) e instalar por cima; sem isso o app usa o player da página, que pode parar quando a tela apaga.
+  - No navegador/APK antigo a rádio usa um player da página (com Media Session). Código no `index.html`: bloco “Rádio (Pop 2K · Hunter.FM)” (`radio*`).
+- **Lista de compras**: removido o botão flutuante do microfone (`vozFabSync` agora nunca mostra o botão).
+- **Notificações corrigidas**: os lembretes vinham **desligados por padrão** e nada os ligava, mesmo com a permissão do Android concedida. Agora:
+  - ligam sozinhos uma vez (`S.notif.auto2`), pedem a permissão de notificações, criam os canais (`agenda`, `atualizacoes`) e agendam no sistema (LocalNotifications, `allowWhileIdle`) para avisar **com o app aberto ou fechado**; se o usuário desligar à mão, não religam;
+  - o agendamento passou a ser em fila, confere a permissão antes, e se uma notificação falhar as outras ainda são agendadas (`agendarNotifs`);
+  - novo botão **Testar notificação** em Configurações › Lembretes e alarme (chega em 5 s) e aviso do último erro de agendamento;
+  - no navegador/PWA o alarme em segundo plano usa o service worker (`sw.js` ganhou `notificationclick`). Com a página **fechada** só o APK avisa; navegador não agenda sem servidor de push.
+- Para lançar: `VERSION` do `sw.js` já está em 3.4.5 e `NOVIDADES` ganhou a 3.4.5. A parte da rádio em segundo plano exige APK novo; o resto chega pelo botão “Atualizar”.
+
 ## Versão 3.4.0
 
 - **Carteira › Salário** (nova aba, 5ª da Carteira). Duas telas: **Meu salário** e **Melhores dias**.
