@@ -1517,14 +1517,35 @@ function asLista(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).ma
 const dm=iso=>iso.slice(8,10)+'/'+iso.slice(5,7);
 /* situação da validade: encerrada, último dia ou vigente (compara com a data de hoje) */
 function mmVal(fim){const h=new Date(),t=h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');
- if(t>fim)return{k:'off',txt:'Encerrada em '+dm(fim)};if(t===fim)return{k:'last',txt:'Último dia · até '+dm(fim)};return{k:'on',txt:'Válido até '+dm(fim)}}
+ /* a oferta sai do app às 23:59 do último dia (fim): a partir daí conta como encerrada */
+ const corte=new Date(+fim.slice(0,4),+fim.slice(5,7)-1,+fim.slice(8,10),23,59,0);
+ if(t>fim||h>=corte)return{k:'off',txt:'Encerrada em '+dm(fim)};if(t===fim)return{k:'last',txt:'Último dia · até '+dm(fim)+' às 23:59'};return{k:'on',txt:'Válido até '+dm(fim)}}
 const mmChip=v=>`<span style="display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:${v.k==='off'?'color-mix(in srgb,var(--mute) 18%,transparent)':v.k==='last'?'color-mix(in srgb,#d97706 20%,transparent)':'var(--acs)'};color:${v.k==='off'?'var(--mute)':v.k==='last'?'#b45309':'var(--ac)'}">${v.txt}</span>`;
+/* ---------- limpeza automática: oferta vencida some do app ----------
+   Cada oferta vale até as 23:59 do dia "fim". Às 23:59:00 o encarte inteiro, com todos os
+   seus produtos, é removido de Assaí, Atacadão, Novo Atacarejo e do Comparar preços. Roda ao abrir a tela, ao voltar para o
+   app e à meia-noite com o app aberto. Para o produto aparecer só enquanto vale, basta informar o "fim" certo de cada encarte. */
+function promoLimpar(){
+ for(let i=AS_ENC.length-1;i>=0;i--)if(mmVal(AS_ENC[i].fim).k==='off')AS_ENC.splice(i,1);
+ for(let i=AT_LISTAS.length-1;i>=0;i--)if(mmVal(AT_LISTAS[i].fim).k==='off')AT_LISTAS.splice(i,1);
+ Object.keys(NV_ENC).forEach(k=>{if(mmVal(NV_ENC[k].fim).k==='off')delete NV_ENC[k]})}
+const nvVivas=()=>nvParse(NV_TXT).filter(q=>NV_ENC[q.e]);
+const mmVazio=m=>`<div class="card"><p style="margin:0">Nenhuma oferta vigente de ${m} no momento. As ofertas que terminam saem sozinhas da lista às 23:59 do último dia; novos encartes aparecem aqui quando forem publicados.</p></div>`;
+(function(){
+ const sig=()=>AS_ENC.length+'/'+Object.keys(NV_ENC).length+'/'+mmVal(AT_FIM).k+'/'+atTodas().length;
+ let ult=null;setTimeout(()=>{try{ult=sig()}catch(e){}},0); /* base de comparação: calculada depois que o script todo carregou */
+ const virou=()=>{try{promoLimpar()}catch(e){}const n=sig();if(ult===null){ult=n;return}if(n===ult)return;ult=n;
+  if(typeof tab!=='undefined'&&tab==='mercado'){try{render()}catch(e){}}};
+ /* dispara exatamente às 23:59:00 (e de novo à meia-noite, por segurança) */
+ const agenda=()=>{const n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate(),23,59,0,300),b=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,3);
+  const q=a>n?a:b;setTimeout(()=>{virou();agenda()},q-n)};
+ agenda();document.addEventListener('visibilitychange',()=>{if(!document.hidden)virou()});setInterval(virou,15000)})();
 function vMeuMercadoAssai(){
- let tot=0;
+ promoLimpar();let tot=0;
  const blocos=AS_ENC.map(e=>{const L=asLista(e.txt),v=mmVal(e.fim);tot+=L.length;
   return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${e.app?'<p class="hint" style="margin:0 0 4px">Preços somente para compras pelo app Meu Assaí, com limite de unidades por produto.</p>':''}${L.map(i=>{const pc=Math.floor((i.de-i.por)/i.de*100+1e-9);
    return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.por)}</strong>${e.app?'<small style="color:var(--ac)"> app</small>':''}<br><small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`}).join('')}</div>`}).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='assai'),40)}<div><strong>Promoções do Assaí Atacadista</strong><br><small style="color:var(--mute)">Encartes oficiais · lojas de Pernambuco (exceto Petrolina) · ${tot} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da promoção. Riscado: preço normal. As validades são diferentes: o Especial App vale até 04/11 e o Leva o Assaí até 05/11, ou enquanto durarem os estoques. Confirme os valores na loja.</p></div>`+blocos}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='assai'),40)}<div><strong>Promoções do Assaí Atacadista</strong><br><small style="color:var(--mute)">Encartes oficiais · lojas de Pernambuco (exceto Petrolina) · ${tot} produtos</small></div></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da promoção. Riscado: preço normal. Cada encarte tem a sua validade, indicada em cada lista, ou enquanto durarem os estoques. Ofertas vencidas saem sozinhas. Confirme os valores na loja.</p></div>`+(AS_ENC.length?blocos:mmVazio('Assaí'))}
 /* ---------- Promoções: Atacadão (ofertas de Pernambuco) ---------- */
 const AT_INI='2026-11-03',AT_FIM='2026-11-09';
 const AT_TXT=`
@@ -1685,7 +1706,7 @@ Mistura para Bolo Apti (vários sabores)|Pouch 400g|3.79
 /* Atualização automática (robô do GitHub): promocoes/atacadao.json é gerado por scripts/atacadao.py a partir dos folhetos.
    Aqui o app lê o arquivo, guarda a última cópia no aparelho (funciona sem internet) e junta com as listas fixas acima. */
 let AT_AUTO=[],AT_ATU='',atUlt=0;
-function atTodas(){return AT_LISTAS.concat(AT_AUTO)}
+function atTodas(){return AT_LISTAS.concat(AT_AUTO).filter(e=>mmVal(e.fim).k!=='off')}
 function atAplicar(d){if(!d||!Array.isArray(d.listas))return false;
  const novo=d.listas.filter(l=>l&&l.fim&&Array.isArray(l.itens)&&mmVal(l.fim).k!=='off').map(l=>({t:'Folheto · '+l.t,ini:l.ini||l.fim,fim:l.fim,
   txt:l.itens.filter(a=>a&&a[0]&&+a[2]>0).map(a=>[String(a[0]).replace(/\|/g,'/'),String(a[1]||'').replace(/\|/g,'/'),+a[2]].join('|')).join('\n')})).filter(e=>e.txt);
@@ -1700,10 +1721,10 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)atCarregar
 function atListas(){return atTodas().map(e=>{const L=e.txt.trim().split('\n').map(l=>l.split('|')),v=mmVal(e.fim);
  return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${L.map(a=>`<div class="item mm-i" data-t="${esc(nrm(a[0]+' '+a[1]))}"><span class="t">${esc(a[0])}<br><small style="color:var(--mute)">${esc(a[1])}</small></span><span style="text-align:right;flex:none"><strong>${brl(+a[2])}</strong><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('')}
 function vMercadoAtac(){
- const sec=atParse(AT_TXT),v=mmVal(AT_FIM);let tot=0;sec.forEach(s=>tot+=s.it.length);
+ promoLimpar();const vivoAt=mmVal(AT_FIM).k!=='off',sec=vivoAt?atParse(AT_TXT):[],v=mmVal(AT_FIM);let tot=0;sec.forEach(s=>tot+=s.it.length);
  const blocos=sec.map(s=>`<h3>${esc(s.t)}</h3><div class="card mm-c">${s.it.map(i=>{const pc=i.de?Math.floor((i.de-i.at)/i.de*100+1e-9):0;
   return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.at)}</strong><br><small style="color:var(--ac)">App <b>${brl(i.app)}</b></small> · <small style="color:var(--ac)">Cartão <b>${brl(i.car)}</b></small><br>${i.de?`<small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small> `:''}<small style="color:var(--mute)">até ${dm(AT_FIM)}</small></span></div>`}).join('')}</div>`).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot+atTodas().reduce((a,e)=>a+e.txt.trim().split('\n').length,0)} produtos${AT_ATU?' · folhetos atualizados em '+new Date(AT_ATU).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}</small></div></div><div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div><input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Confirme os valores na loja.</p></div>`+blocos+atListas()}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot+atTodas().reduce((a,e)=>a+e.txt.trim().split('\n').length,0)} produtos${AT_ATU?' · folhetos atualizados em '+new Date(AT_ATU).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}</small></div></div>${vivoAt?`<div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div>`:''}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Confirme os valores na loja.</p></div>`+((vivoAt||atTodas().length)?blocos+atListas():mmVazio('Atacadão'))}
 /* ---------- Promoções: Novo Atacarejo (encartes de Pernambuco) ---------- */
 const NV_ENC={sup:{t:'Super Ofertas',ini:'2026-11-03',fim:'2026-11-06'},lat:{t:'Semana dos Laticínios',ini:'2026-11-03',fim:'2026-11-07'},fei:{t:'Dia de Feira',ini:'2026-11-04',fim:'2026-11-05'}};
 const NV_TXT=`
@@ -1819,11 +1840,11 @@ Lasanha Sadia|Diversos sabores, congelada, 600g|15.98|un||
 function nvParse(txt){const out=[];let c=null;txt.split('\n').map(l=>l.trim()).filter(Boolean).forEach(l=>{if(l[0]==='#'){const a=l.slice(1).split('|');c={e:a[0],t:a[1],it:[]};out.push(c);return}
  const a=l.split('|');c.it.push({n:a[0],d:a[1],p:+a[2],u:a[3],s:a[4]==='1',x:a[5]||''})});return out}
 function vMercadoNovo(){
- const sec=nvParse(NV_TXT);let tot=0;sec.forEach(s=>tot+=s.it.length);
+ promoLimpar();const sec=nvVivas();let tot=0;sec.forEach(s=>tot+=s.it.length);
  const chips=Object.keys(NV_ENC).map(k=>{const e=NV_ENC[k];return `<div style="margin-top:8px"><strong style="font-size:14px">${esc(e.t)}</strong><br>${mmChip(mmVal(e.fim))} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>`}).join('');
  const blocos=sec.map(s=>{const e=NV_ENC[s.e];return `<h3>${esc(e.t)} · ${esc(s.t)}</h3><div class="card mm-c">${s.it.map(i=>
   `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.x?(i.d?' · ':'')+'limite '+esc(i.x)+' por cliente':''}</small>${i.s?'<br><small style="color:var(--ac);font-weight:700">★ Super oferta</small>':''}</span><span style="text-align:right;flex:none"><strong>${brl(i.p)}</strong><small style="color:var(--mute)"> ${i.u==='kg'?'/kg':'cada'}</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. No Dia de Feira, em Olinda, a oferta não vale na loja da Casa Caiada. Confirme os valores na loja.</p></div>`+blocos}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. No Dia de Feira, em Olinda, a oferta não vale na loja da Casa Caiada. Confirme os valores na loja.</p></div>`+(sec.length?blocos:mmVazio('Novo Atacarejo'))}
 let mmMk='assai';
 function mmSet(k){mmMk=k;render();window.scrollTo(0,0)}
 /* ---------- Promoções: comparador de preços entre mercados ---------- */
@@ -1899,14 +1920,14 @@ function mmVw(v){mmView=v;render();window.scrollTo(0,0)}
 function cmpTog(v){cmpApp=!!v;try{localStorage.setItem('ma-cmp-app',v?'1':'0')}catch(e){}render()}
 /* preços de cada mercado: nome do produto → {p: preço da loja, x: preço exclusivo do app/cartão (ou 0), tx: nome do tipo, fim}. Encartes encerrados ficam de fora. */
 function cmpPrecos(){
- const vivo=fim=>mmVal(fim).k!=='off',R={assai:{},atacadao:{},novo:{}};
+ promoLimpar();const vivo=fim=>mmVal(fim).k!=='off',R={assai:{},atacadao:{},novo:{}};
  AS_ENC.forEach(e=>{if(!vivo(e.fim))return;asLista(e.txt).forEach(i=>{if(!(i.por>0))return;R.assai[i.n]=e.app?{p:0,x:i.por,tx:'app Meu Assaí',fim:e.fim}:{p:i.por,x:0,tx:'',fim:e.fim}})});
  if(vivo(AT_FIM))atParse(AT_TXT).forEach(s=>s.it.forEach(i=>{if(!(i.at>0))return;const ex=[[i.app,'app Meu Atacadão'],[i.car,'cartão']].filter(a=>a[0]>0&&a[0]<i.at).sort((a,b)=>a[0]-b[0])[0];
   R.atacadao[i.n]={p:i.at,x:ex?ex[0]:0,tx:ex?ex[1]:'',fim:AT_FIM}}));
  /* listas de produtos e preços (PDF): preço único; nomes repetidos com embalagens diferentes levam a embalagem no nome */
  atTodas().forEach(e=>{if(!vivo(e.fim))return;const L=e.txt.trim().split('\n').map(l=>l.split('|'));
   L.forEach(a=>{if(!(+a[2]>0))return;const dup=L.filter(b=>b[0]===a[0]).length>1;R.atacadao[dup?a[0]+' · '+a[1]:a[0]]={p:+a[2],x:0,tx:'',fim:e.fim}})});
- const nvS=nvParse(NV_TXT),nvC={};nvS.forEach(q=>q.it.forEach(i=>{nvC[i.n]=(nvC[i.n]||0)+1}));
+ const nvS=nvVivas(),nvC={};nvS.forEach(q=>q.it.forEach(i=>{nvC[i.n]=(nvC[i.n]||0)+1}));
  nvS.forEach(q=>{const fim=NV_ENC[q.e].fim;if(!vivo(fim))return;q.it.forEach(i=>{if(i.p>0)R.novo[nvC[i.n]>1?i.n+' · '+i.d:i.n]={p:i.p,x:0,tx:'',fim:fim}})});
  return R}
 /* preço usado na comparação: com a opção ligada vale o menor (loja, app ou cartão); desligada, só o preço da loja */
@@ -2274,6 +2295,7 @@ async function conectar(m){
   if(era)setTimeout(permIntro,500);else info('Conta conectada: '+ctRot(S.user.conta));
   setTimeout(guiaNovosQuandoLivre,700);
   setTimeout(recadoConfigQuandoLivre,900);
+  setTimeout(recadoNovidQuandoLivre,1100);
   setTimeout(avisoFlowQuandoLivre,1300);
  }catch(e){if(cancelado(e))return;info(erroAuth(e))}}
 async function contaSair(quiet){
@@ -4796,26 +4818,36 @@ function recadoKaylaQuandoLivre(n){n=n||0;
  if(!S.user||!S.user.name||PIN_LK||permAsking||document.querySelector('.ov')){setTimeout(()=>recadoKaylaQuandoLivre(n+1),1000);return}
  recadoKayla()}
 
-/* ---------- quadro de avisos: atualizações recentes (uma única vez por aparelho) ----------
-   Aparece na próxima vez que o usuário abrir o app (já com nome/conta), depois da senha e das outras caixas.
-   Usuário novo não vê: ele já recebe a caixa de boas-vindas. Para mostrar de novo a todos, troque a chave (-v1 → -v2) e atualize a lista. */
-const RECADO_NOVID_KEY='ma-recado-novid-v1';
-const RECADO_NOVID=[
- ['🧾','Carteira › Salário','Diga se recebe por mês ou por quinzena, o dia que o salário cai e preencha o holerite: bruto, descontos (INSS, IRRF…) e salário líquido. Você pode adicionar quantos descontos quiser.'],
- ['⭐','Melhores dias para pagar','Mapa colorido do mês mostrando quando o salário cai e as contas vencem, quanto sobra em cada período e o melhor dia para pagar contas fixas ou uma dívida extra.'],
- ['🔔','Aviso no dia do salário','Quando o salário cai, o app avisa e lembra das contas até o próximo pagamento.'],
- ['🧠','Kayla aprende com você','Diga “aprenda que eu gosto de café sem açúcar” ou “o que você aprendeu sobre mim?”. Controle em Configurações › Assistente Kayla.'],
- ['⚫','Modo Preto','Fundo totalmente preto, ótimo para telas OLED. Configurações › Aparência › Modo › Preto.'],
- ['⚔️','Tema Viking','Novo tema com aurora, fiorde e drakkar. Configurações › Aparência › Cor do tema › Viking.'],
- ['🗣️','Chamar a Kayla pelo nome','Com o app aberto, diga “Kayla, marcar dentista amanhã às 14h” e ela executa.']];
+/* ---------- quadro de avisos: as 7 últimas atualizações (uma única vez para cada usuário) ----------
+   A lista sai sozinha de NOVIDADES (as 7 versões mais recentes), a mesma de Configurações › Novidades desta versão.
+   "Uma vez por usuário": a marca fica guardada por conta (e-mail, celular ou id) no aparelho e também dentro dos dados do
+   próprio usuário (S.user.avisos), que vão para a nuvem; assim quem entra com a mesma conta em outro aparelho não vê de novo,
+   e outra pessoa que use o mesmo aparelho com outra conta vê a sua vez.
+   Usuário novo não vê: ele já recebe a caixa de boas-vindas. Para mostrar de novo a todos, troque -v2 por -v3. */
+const RECADO_NOVID_TAG='novid7-v2',RECADO_NOVID_KEY='ma-recado-'+RECADO_NOVID_TAG;
+const novidUsuario=()=>{const c=S.user&&S.user.conta;return String((c&&(c.email||c.phone||c.uid))||ownerId()||(S.user&&S.user.name)||'local').trim().toLowerCase()};
+function novidVisto(){
+ try{if(localStorage.getItem(RECADO_NOVID_KEY+':'+novidUsuario()))return true}catch(e){}
+ return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_NOVID_TAG])}
+function novidMarca(){
+ try{localStorage.setItem(RECADO_NOVID_KEY+':'+novidUsuario(),'1')}catch(e){}
+ try{S.user.avisos=S.user.avisos||{};S.user.avisos[RECADO_NOVID_TAG]=1;save()}catch(e){}}
+function novid7(){
+ const vk=v=>v.split('.').map(n=>+n||0),cmp=(a,b)=>{const x=vk(a),y=vk(b);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (y[i]||0)-(x[i]||0)}return 0};
+ return Object.keys(NOVIDADES).sort(cmp).slice(0,7)}
 function recadoNovid(){
  if(!S.user||!S.user.name)return;
  if(document.querySelector('.rc-ov'))return;
- try{if(localStorage.getItem(RECADO_NOVID_KEY))return;localStorage.setItem(RECADO_NOVID_KEY,'1');if(localStorage.getItem('ma-guia-novos-pend'))return}catch(e){return}
+ if(novidVisto())return;
+ let novo=false;try{novo=!!localStorage.getItem('ma-guia-novos-pend')}catch(e){}
+ novidMarca(); /* marca antes de mostrar: nunca aparece duas vezes */
+ if(novo)return;
+ const ks=novid7();if(!ks.length)return;
+ const it=ks.map((v,i)=>'<div class="nv-it'+(i===0?' nv-new':'')+'"><div class="nv-h"><b>Versão '+esc(v)+'</b>'+(i===0?'<span class="nv-tag">mais recente</span>':'')+'</div>'+NOVIDADES[v].map(t=>'<div class="nv-t">'+esc(t)+'</div>').join('')+'</div>').join('');
  const o=document.createElement('div');o.className='ov rc-ov';
- o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Quadro de avisos"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
-  +'<div class="rc-h"><p>📢 Quadro de avisos: o que há de novo</p><small>As atualizações mais recentes do app. Esta mensagem aparece só uma vez; depois você revê tudo em Configurações › Novidades desta versão.</small></div>'
-  +'<div class="rc-b">'+RECADO_NOVID.map(r=>'<div class="prm"><span class="ic">'+r[0]+'</span><span class="t"><b>'+esc(r[1])+'</b><small>'+esc(r[2])+'</small></span></div>').join('')+'</div>'
+ o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Aviso das últimas atualizações"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
+  +'<div class="rc-h"><p>📢 As '+ks.length+' últimas atualizações</p><small>Veja o que mudou no app. Este aviso aparece só uma vez para você; depois dá para rever em Configurações › Novidades desta versão.</small></div>'
+  +'<div class="rc-b">'+it+'</div>'
   +'<div class="rc-f"><button type="button" id="rc-ok">Entendi</button></div></div>';
  document.body.appendChild(o);
  const fim=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
@@ -4823,9 +4855,10 @@ function recadoNovid(){
  document.addEventListener('keydown',kd,true);
  o.querySelector('.dev-x').onclick=fim;o.querySelector('#rc-ok').onclick=fim;
  setTimeout(()=>{try{o.querySelector('#rc-ok').focus()}catch(e){}},50)}
+/* espera a senha e as outras caixas saírem da frente, para não empilhar */
 function recadoNovidQuandoLivre(n){n=n||0;
- try{if(localStorage.getItem(RECADO_NOVID_KEY))return}catch(e){return}
  if(n>600)return;
+ if(S.user&&S.user.name&&novidVisto())return;
  if(!S.user||!S.user.name||PIN_LK||permAsking||document.querySelector('.ov')){setTimeout(()=>recadoNovidQuandoLivre(n+1),1000);return}
  recadoNovid()}
 

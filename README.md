@@ -23,10 +23,20 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
-## Aviso: quadro de avisos das atualizações recentes (não é uma atualização)
+## Aviso: as 7 últimas atualizações (não é uma atualização)
 
-- **Caixa “📢 Quadro de avisos”** com as novidades recentes (Salário na Carteira, melhores dias, Kayla que aprende, modo Preto, tema Viking, chamar a Kayla pelo nome). Aparece **uma única vez por aparelho** (chave `ma-recado-novid-v1` no `localStorage`), na próxima abertura do app, depois da senha e das outras caixas. Usuário novo não vê (já recebe a de boas-vindas). Não precisa mudar o `VERSION` do `sw.js`.
-- O texto fica em `RECADO_NOVID` no `index.html`. Para mostrar de novo a todos com uma lista nova, troque `-v1` por `-v2` na chave e atualize a lista.
+- **Caixa “📢 As 7 últimas atualizações”**: lista as 7 versões mais recentes (hoje 3.4.4, 3.4.3, 3.4.1, 3.4.0, 3.3.0, 3.2.9 e 3.2.0) com o texto de cada uma. A lista sai sozinha de `NOVIDADES` no `index.html` (a mesma de Configurações › Novidades desta versão), então não precisa editar nada à parte: ao acrescentar uma versão nova em `NOVIDADES`, o aviso já passa a mostrar as 7 mais recentes.
+- **Aparece uma única vez para cada usuário.** A marca é guardada por conta (e-mail, celular ou id) no `localStorage` (`ma-recado-novid7-v2:<usuário>`) e também dentro dos dados do usuário (`S.user.avisos['novid7-v2']`), que vão para a nuvem. Resultado: quem entra com a mesma conta em outro aparelho não vê de novo, e outra pessoa que use o mesmo aparelho com outra conta vê a sua vez. A marca é gravada antes de mostrar a caixa, então ela nunca repete.
+- Quando aparece: na próxima abertura do app (já com nome/conta) e logo depois de entrar com uma conta, sempre depois da senha e das outras caixas (não empilha). Usuário novo não vê (já recebe a de boas-vindas). Não precisa mudar o `VERSION` do `sw.js`.
+- Para mostrar de novo a todos (com a lista atualizada), troque `novid7-v2` por `novid7-v3` em `RECADO_NOVID_TAG`.
+
+## Promoções: ofertas vencidas saem sozinhas
+
+- **Regra:** a oferta que termina no dia `fim` **sai do app às 23:59 desse mesmo dia** (não espera a meia-noite). Até 23:58 ela aparece com a etiqueta “Último dia · até 05/11 às 23:59”; às 23:59:00 o encarte inteiro, com todos os produtos, é removido de Assaí, Atacadão, Novo Atacarejo e do **Comparar preços**.
+- **Hoje (05/11), às 23:59:** saem *Dia de Feira* (Novo Atacarejo), *Leva o Assaí · Economia Arretada* e *4ª e 5ª Feirassaí*. O *Especial App Meu Assaí* (fim 04/11) já sai de uma vez. Depois: Super Ofertas (06/11 às 23:59) e Semana dos Laticínios (07/11 às 23:59), com a mesma regra.
+- **Como funciona:** `mmVal()` considera a oferta encerrada a partir das 23:59:00 do `fim`, e `promoLimpar()` (antes de `vMeuMercadoAssai`) apaga de `AS_ENC`, `AT_LISTAS` e `NV_ENC` o que venceu. Com o app aberto, um agendador dispara exatamente às 23:59:00 e atualiza a tela na hora; há ainda uma conferência a cada 15 s e ao voltar para o app. Folhetos do Atacadão (`promocoes/atacadao.json`) vencidos também ficam de fora.
+- **Lista vazia:** se um mercado ficar sem nenhuma oferta vigente, a tela mostra “Nenhuma oferta vigente de … no momento”.
+- **Para cada encarte novo:** informe o `fim` certo (último dia de validade) em `AS_ENC`, `NV_ENC` ou `AT_LISTAS`; o resto é automático. Não precisa mudar o `VERSION` do `sw.js`.
 
 ## Carteira › Baixar PDF com todos os dados
 
