@@ -984,36 +984,74 @@ nav div#nav button .ni{width:46px}
 :root[data-theme="black"]{--bg:#000;--sf:#0b0b0c;--ink:#f1f3f4;--mute:#9aa0a6;--ac:#4fc3d1;--acs:#12262b;--ln:#222427;--ok:#4cc58d;--rd:#e8776b;--onac:#06232a;color-scheme:dark}
 :root[data-theme="black"][data-eff="dark"]{--bg:#000;--sf:#0b0b0c;--ln:#222427}
 html[data-theme="black"][data-eff="dark"] body{background:#000}
-/* Concursos */
-.cn-card{background:var(--sf);border:1px solid var(--ln);border-left:4px solid var(--cc,var(--ac));border-radius:14px;padding:12px 14px;margin-bottom:10px}
-.cn-top{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.cn-b{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px}
-.cn-uf{font-size:11.5px;font-weight:700;color:var(--mute);border:1px solid var(--ln);padding:2px 8px;border-radius:99px}
-.cn-fv{margin-left:auto;background:transparent;border:0;font-size:20px;padding:2px 6px;color:var(--ink);width:auto}
-.cn-card h4{margin:0 0 6px;font-size:15.5px;line-height:1.25}
-.cn-pz{font-size:13px;color:var(--mute);margin-bottom:8px}
-.cn-g,.cn-r{font-size:13px}
-.cn-r{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dashed var(--ln)}
-.cn-r span{color:var(--mute);flex:0 0 auto}.cn-r b{text-align:right;font-weight:600}
-.cn-card details{margin-top:8px;font-size:13px}.cn-card summary{cursor:pointer;color:var(--ac);font-weight:600}
-.cn-card details p{margin:6px 0 0;color:var(--ink)}.cn-nv{color:var(--mute)!important;font-size:12px}
-.cn-act{display:flex;gap:8px;margin-top:10px;align-items:center}
-.cn-lk{display:inline-block;background:var(--acs);color:var(--ac);font-weight:700;font-size:13px;padding:8px 12px;border-radius:10px;text-decoration:none}
-.cn-h{display:flex;align-items:center;gap:8px;margin:18px 0 8px}.cn-h small{background:var(--acs);color:var(--ac);border-radius:99px;padding:1px 9px;font-size:12px}
-.cn-fl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.cn-fl .seg{flex:1 1 180px}
-.cn-sel,.cn-q{width:100%;padding:10px;border-radius:10px;border:1px solid var(--ln);background:var(--sf);color:var(--ink);font:inherit;box-sizing:border-box}
-.cn-fl .cn-sel{flex:1 1 150px;width:auto}
-.cn-st{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}.cn-st:last-child{border:0}
-.cn-st>span{flex:0 0 28px;height:28px;border-radius:50%;background:var(--ac);color:var(--onac);display:grid;place-items:center;font-weight:800;font-size:14px}
-.cn-st p,.cn-ge p{margin:2px 0 0;font-size:13.5px;color:var(--mute)}
-.cn-ge{display:flex;gap:12px;align-items:flex-start}.cn-ge>span{font-size:24px}
-.cn-pb{height:10px;border-radius:99px;background:var(--acs);margin-top:8px;overflow:hidden}.cn-pb i{display:block;height:100%;background:var(--ac);border-radius:99px;transition:width .3s}
-.cn-mt{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--ln);cursor:pointer}.cn-mt:last-child{border:0}
-.cn-mt input{width:20px;height:20px;margin-top:2px;flex:0 0 20px}.cn-mt small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px;font-weight:400}
-.cn-mt.on b{text-decoration:line-through;opacity:.6}
-.row>.cn-sel{flex:1;min-width:0}
-.cn-act{flex-wrap:wrap}.cn-dl{background:var(--ac);color:var(--onac)}
-.cn-chips{display:flex;flex-wrap:wrap;gap:6px}.cn-chips span{background:var(--acs);color:var(--ac);font-size:12px;font-weight:600;padding:4px 9px;border-radius:99px}
+
+/* ---- Carteira · Investimentos ---- */
+.seg.s6 button{font-size:11px;padding:7px 0}
+.iv-title{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:2px 0 10px}.iv-title small{color:var(--mute);font-size:11px}
+.iv-seg button{font-size:12px!important;padding:8px 2px!important}
+.iv-tick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;cursor:pointer}
+.iv-tick>div{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:8px 4px;text-align:center}
+.iv-tick small{display:block;font-size:10.5px;color:var(--mute);font-weight:600}
+.iv-tick b{font:800 15px "Bricolage Grotesque",system-ui,sans-serif;color:var(--ac)}
+.iv-chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.iv-chips::-webkit-scrollbar{display:none}
+.iv-chip{flex:none;width:auto;background:var(--acs);color:var(--ac);border:1px solid transparent;padding:7px 11px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.iv-chip small{opacity:.7;font-weight:500}
+.iv-chip.on{background:var(--ac);color:var(--onac)}
+.iv-card{border-left:4px solid var(--ivc,var(--ac))!important;padding:12px 14px}
+.iv-h{display:flex;align-items:center;gap:10px;cursor:pointer}
+.iv-emo{font-size:25px;line-height:1;flex:none;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:color-mix(in srgb,var(--ivc,var(--ac)) 15%,var(--sf))}
+.iv-nm{flex:1;min-width:0}.iv-nm b{display:block;font:700 16px/1.2 "Bricolage Grotesque",system-ui,sans-serif;overflow-wrap:anywhere}.iv-nm small{color:var(--mute);font-size:12px}
+.iv-star{font-size:15px}.iv-car{color:var(--mute);font-size:14px}
+.iv-badges{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.iv-risk{display:inline-flex;gap:2px;align-items:flex-end}.iv-risk i{display:inline-block;width:5px;height:13px;border-radius:2px;background:var(--ln)}
+.iv-tag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--ln);color:var(--mute);font-weight:600;white-space:nowrap}
+.iv-tag.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,var(--ln))}.iv-tag.bad{color:var(--rd);border-color:color-mix(in srgb,var(--rd) 40%,var(--ln))}.iv-tag.warn{color:#b8860b;border-color:#e8b923}
+.iv-rates{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px;margin-top:10px}
+.iv-r{background:var(--bg);border-radius:12px;padding:8px 10px;min-width:0}
+.iv-r small{display:block;font-size:10.5px;color:var(--mute);font-weight:600;line-height:1.2}
+.iv-r b{display:block;font:800 17px "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink);margin-top:2px}
+.iv-r em{font-style:normal;font-size:11px;color:var(--mute)}
+.iv-rng{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mute);margin-top:8px}
+.iv-rng i{flex:1;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--rd),#e8b923,var(--ok));position:relative}
+.iv-rng i b{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;background:var(--sf);border:2px solid var(--ink);transform:translateX(-50%)}
+.iv-desc{margin:12px 0 0;font-size:14.5px}
+.iv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.iv-grid>div{background:var(--bg);border-radius:12px;padding:8px 10px;min-width:0}
+.iv-grid small{display:block;font-size:11px;color:var(--mute);font-weight:600}.iv-grid b{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.iv-pc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.iv-pc p{margin:5px 0 0;font-size:13px}.iv-pc b.ok{color:var(--ok)}.iv-pc b.bad{color:var(--rd)}
+.iv-hero,.iv-res{background:linear-gradient(140deg,var(--acs),color-mix(in srgb,var(--acs) 35%,var(--sf)))!important;border-color:color-mix(in srgb,var(--ac) 30%,transparent)!important}
+.iv-hero>small,.iv-res>small{display:block;color:var(--mute);font-size:12.5px}
+.iv-hero strong,.iv-res strong{display:block;font:800 34px/1.1 "Bricolage Grotesque",system-ui,sans-serif;color:var(--ac);margin:4px 0;overflow-wrap:anywhere}
+.iv-hg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;border-top:1px solid color-mix(in srgb,var(--ac) 30%,transparent);padding-top:10px}
+.iv-hg small{display:block;font-size:11px;color:var(--mute)}.iv-hg b{font:700 15px "Bricolage Grotesque",system-ui,sans-serif;overflow-wrap:anywhere}
+.iv-dn{display:flex;gap:14px;align-items:center;margin-top:10px}.iv-donut{width:124px;height:124px;flex:none}
+.iv-lg{flex:1;min-width:0}.iv-lg>div{display:flex;align-items:center;gap:7px;font-size:13px;margin:5px 0}.iv-lg i{width:10px;height:10px;border-radius:50%;flex:none}.iv-lg span{flex:1;min-width:0}
+.iv-it:hover{background:transparent}.iv-det{padding:2px 0 12px;border-bottom:1px solid var(--ln)}
+.iv-chart{width:100%;height:auto;display:block}
+.iv-leg{display:flex;gap:14px;font-size:12px;color:var(--mute);margin-top:4px}.iv-leg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.iv-modos{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px;scrollbar-width:none}.iv-modos::-webkit-scrollbar{display:none}
+.iv-modos button{flex:1 0 auto;background:var(--sf);color:var(--mute);border:1px solid var(--ln);border-radius:14px;padding:8px 10px;font-size:12px;line-height:1.25;white-space:nowrap}
+.iv-modos button span{display:block;font-size:19px}.iv-modos button.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}
+.iv-adv{margin-top:12px;border-top:1px dashed var(--ln);padding-top:8px}.iv-adv summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ac);padding:6px 0}
+.iv-ck{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer}.iv-ck input{width:20px;height:20px;flex:none}
+.iv-tb{margin-bottom:12px}.iv-tb summary{cursor:pointer;font-weight:600;color:var(--ac);padding:8px 2px}
+.iv-tw{overflow-x:auto;background:var(--sf);border:1px solid var(--ln);border-radius:14px}
+.iv-tw table{width:100%;border-collapse:collapse;font-size:12.5px}.iv-tw th{text-align:right;color:var(--mute);font-weight:600;padding:8px 8px}.iv-tw td{text-align:right;padding:7px 8px;border-top:1px solid var(--ln);white-space:nowrap}.iv-tw th:first-child,.iv-tw td:first-child{text-align:left}
+.iv-cp{padding:9px 0;border-bottom:1px solid var(--ln)}.iv-cp:last-child{border-bottom:0}.iv-cp .top{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.iv-cp .bar{height:7px;border-radius:999px;background:var(--bg);margin:6px 0 4px;overflow:hidden}.iv-cp .bar i{display:block;height:100%;border-radius:999px}
+.iv-cen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;text-align:center}.iv-cen>div{background:var(--bg);border-radius:12px;padding:8px 4px}
+.iv-cen small{display:block;font-size:11px;color:var(--mute)}.iv-cen b{display:block;font:700 14px "Bricolage Grotesque",system-ui,sans-serif;overflow-wrap:anywhere}.iv-cen em{font-style:normal;font-size:11px;color:var(--mute)}
+.iv-emos{display:flex;flex-wrap:wrap;gap:6px}.iv-emos button{width:40px;height:40px;padding:0;font-size:20px;background:var(--bg);border:1px solid var(--ln)}.iv-emos button.on{border-color:var(--ac);background:var(--acs)}
+.iv-tx{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.iv-q p{margin:14px 0 4px;font-weight:600;font-size:14px}
+.iv-opt{display:flex;gap:9px;align-items:center;padding:9px 11px;border:1px solid var(--ln);border-radius:12px;margin:5px 0;font-size:14px;cursor:pointer;background:var(--bg)}.iv-opt input{width:18px;height:18px;flex:none;accent-color:var(--ac)}.iv-opt.on{border-color:var(--ac);background:var(--acs)}
+.iv-pf{background:var(--acs);border:1px solid var(--ac);border-radius:14px;padding:12px;margin-top:14px}
+.iv-gl p{margin:2px 0 12px;font-size:13px;color:var(--mute)}
+.iv-gd summary{cursor:pointer;font-weight:600;padding:9px 0;border-bottom:1px solid var(--ln);font-size:14px}.iv-gd p{font-size:13px;color:var(--mute);margin:8px 0 4px}
+.iv-sim select,.iv-form select,.iv-adv select,.iv-filt select{max-width:100%;min-width:0;width:100%}.iv-form .row>select,.iv-filt .row>select,.iv-adv .row>select{flex:1 1 0;width:auto}
+@media(max-width:380px){.iv-pc{grid-template-columns:1fr}.iv-hero strong,.iv-res strong{font-size:29px}.iv-dn{flex-direction:column;align-items:stretch}.iv-donut{align-self:center}}
 </style>
 
 </head>
@@ -1116,7 +1154,6 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
- concursos:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/>',
  inicio:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
  agenda:'<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4V3h6v1"/><path d="m9 13 2 2 4-4.5"/>',
  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
@@ -1153,7 +1190,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -2339,233 +2376,8 @@ function restaurar(txt){let d;try{d=JSON.parse(String(txt).trim());if(d&&d.app==
  ask('Substituir todos os dados atuais por este backup?',()=>{const cc=ct();S=Object.assign({ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',menu:'side',tabsOff:[],pl:[]},d.S);S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.tabsOff=Array.isArray(S.tabsOff)?S.tabsOff:[];S.pl=Array.isArray(S.pl)?S.pl:[];S.hosp=Array.isArray(S.hosp)?S.hosp:[];S.mercados=Array.isArray(S.mercados)?S.mercados:[];S.scans=Array.isArray(S.scans)?S.scans:[];S.user=S.user||{name:''};if(cc)S.user.conta=cc;else delete S.user.conta;S.notif=Object.assign({on:false,lead:10,plOn:true,plLead:60},S.notif||{});normCart();LOGOS=d.LOGOS||{};FOTOS=d.FOTOS||{};try{localStorage.setItem('minha-agenda-logos',JSON.stringify(LOGOS))}catch(e){}saveFotos();const ok=save();render();info(ok?'Backup restaurado com sucesso.':'Backup restaurado, mas faltou espaço para guardar tudo neste aparelho.')},'Substituir')}
 function importar(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restaurar(r.result);r.onerror=()=>info('Não foi possível ler o arquivo.');r.readAsText(f);inp.value=''}
 function colarBk(){const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="dlg"><p>Cole aqui o texto do backup</p><textarea id="bkt" style="min-height:120px;margin-bottom:10px"></textarea><div class="row"><button id="bkok">Restaurar</button><button class="sec" id="bkno">Cancelar</button></div></div>';document.body.appendChild(o);o.querySelector('#bkno').onclick=()=>o.remove();o.querySelector('#bkok').onclick=()=>{const t=o.querySelector('#bkt').value;if(!t.trim())return;o.remove();restaurar(t)};o.querySelector('#bkt').focus()}
-/* ===== CONCURSOS (menu + Guia do Concurseiro) ===== */
-const CN_UF=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-const CN_ST={edital:['📝','Edital publicado','#2f9e6b'],andamento:['🔄','Em andamento','#e08a1e'],final:['🏁','Finalizado','#6b7c88'],prev:['🔮','Previsto','#7c5cd6']};
-const CN_GR=[['M','📘','Nível médio'],['S','🎓','Nível superior'],['MS','📚','Médio e superior']];
-const CN_ATUAL='05/11/2026';
-/* st: edital (inscrição aberta ou futura; se o prazo passou vira "Em andamento" sozinho) | andamento | final | prev. n: M, S ou MS. Dados de referência: sempre confirme no edital oficial. */
-const CN_DATA=[
-{id:'cd',o:'Câmara dos Deputados',uf:'BR',st:'edital',n:'S',v:'66 + CR',s:'R$ 32.070,88',tx:'R$ 130',fim:'2026-11-17',c:'Analista Legislativo (comunicação, arquivologia, biblioteconomia, engenharias, museólogo, registro e redação)',l:'fivenews.cbnet.net.br/concursos/cd_26_analista'},
-{id:'mar',o:'Marinha do Brasil – Serviço Militar Voluntário (RM2)',uf:'BR',st:'edital',n:'S',v:'375 temporárias',s:'Acima de R$ 9 mil',tx:'R$ 150',fim:'2026-11-10',c:'Oficiais temporários (medicina, saúde, técnica, magistério, engenharia)',l:'marinha.mil.br'},
-{id:'abdi',o:'ABDI – Agência Bras. de Desenv. Industrial',uf:'BR',st:'edital',n:'S',v:'20 + CR',s:'R$ 16.034,70',b:'FGV',tx:'R$ 100',fim:'2026-11-10',c:'Analista de Produtividade e Inovação (contabilidade, dados, TI, jurídico, RH, comunicação…)',l:'conhecimento.fgv.br/concursos/psabdi'},
-{id:'trt8',o:'TRT 8ª Região (PA/AP)',uf:'PA',st:'edital',n:'MS',v:'Cadastro reserva',s:'R$ 9.776,71 a R$ 16.040,88',b:'FCC',tx:'R$ 90 a R$ 110',fim:'2026-11-05',c:'Analista e Técnico Judiciário (várias áreas)',l:'concursosfcc.com.br'},
-{id:'trt4',o:'TRT 4ª Região (RS)',uf:'RS',st:'edital',n:'MS',v:'Cadastro reserva',s:'R$ 9.776,71 a R$ 16.040,88',b:'FCC',tx:'R$ 90 a R$ 110',fim:'2026-11-25',c:'Analista e Técnico Judiciário (várias áreas)',l:'concursosfcc.com.br'},
-{id:'trt3',o:'TRT 3ª Região (MG)',uf:'MG',st:'edital',n:'MS',v:'Cadastro reserva',s:'R$ 9.776,73 a R$ 20.013,11',b:'Vunesp',tx:'R$ 100 a R$ 160',fim:'2026-11-23',c:'Analista Judiciário (sistemas, TI, oficial de justiça, judiciária) e Técnico Judiciário (contabilidade, sistemas, suporte, TI)',l:'vunesp.com.br'},
-{id:'tjpb',o:'TJ-PB – Tribunal de Justiça da Paraíba',uf:'PB',st:'edital',n:'S',v:'50 + CR',s:'R$ 7.526,14 (+ auxílios)',b:'FGV',tx:'R$ 120',fim:'2026-11-18',c:'Analista Judiciário (judiciária, TI, contabilidade)',l:'conhecimento.fgv.br/concursos/tjpb26'},
-{id:'dppb',o:'Defensoria Pública da Paraíba',uf:'PB',st:'edital',n:'MS',v:'13 a 20 + CR (2 editais)',s:'R$ 4.042,50 a R$ 5.197,50',b:'FCC',tx:'R$ 103 (médio) / R$ 123 (superior)',fim:'2026-11-13',c:'Técnico e Analista da Defensoria (jurídico, TI, psicologia, serviço social…)',l:'concursosfcc.com.br'},
-{id:'dpsp',o:'Defensoria Pública de São Paulo',uf:'SP',st:'edital',n:'S',v:'70',s:'R$ 29.716 a R$ 34.156,32',b:'FCC',tx:'R$ 250',fim:'2026-11-11',c:'Defensor(a) Público(a)',l:'concursosfcc.com.br'},
-{id:'sead',o:'Secretaria da Administração (BA)',uf:'BA',st:'edital',n:'S',v:'50',s:'R$ 10.860,62',b:'Cesgranrio',tx:'R$ 220',fim:'2026-11-11',c:'Especialista em Políticas Públicas e Gestão Governamental',l:'cesgranrio.org.br'},
-{id:'cbmpe',o:'Corpo de Bombeiros Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'570 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-05',c:'Soldado (510) – médio; 2º Tenente (60) – superior',l:'institutoaocp.org.br'},
-{id:'pmpe',ed:'arquivos.qconcursos.com/regulamento/arquivo/102167/pm-pe-2026-edital-n-1-edital.pdf',o:'Polícia Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'1.320 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-05',c:'Soldado (1.250) – médio; 2º Tenente (70) – superior',l:'institutoaocp.org.br'},
-{id:'pmsc',o:'Polícia Militar de Santa Catarina',uf:'SC',st:'edital',n:'M',v:'500 + suplentes',s:'R$ 8.505 (+ aux. alimentação R$ 550)',b:'IAOCP',tx:'R$ 200',fim:'2026-11-16',c:'Soldado (QPPM)',l:'institutoaocp.org.br'},
-{id:'pmmg',o:'PM de Minas Gerais – Curso de Formação de Oficiais',uf:'MG',st:'edital',n:'S',v:'90 (18 p/ pessoas negras)',s:'R$ 7.912,17 a R$ 12.170,61',tx:'R$ 243',fim:'2026-12-10',c:'Cadete CFO (exige graduação em Direito)',l:'policiamilitar.mg.gov.br/site/crs'},
-{id:'tcego',o:'TCE-GO – Tribunal de Contas de Goiás',uf:'GO',st:'edital',n:'M',v:'16',s:'R$ 11.862,19',b:'FCC',tx:'R$ 100',fim:'2026-11-06',c:'Técnico de Controle Externo (administrativo – 6; TI – 10)',l:'concursosfcc.com.br'},
-{id:'cauap',o:'CAU-AP – Conselho de Arquitetura e Urbanismo',uf:'AP',st:'edital',n:'MS',v:'15 + CR',s:'R$ 2.341,23 a R$ 8.250',b:'Quadrix',tx:'R$ 60 / R$ 65',fim:'2026-11-09',c:'Assistente administrativo, auxiliar e agente de fiscalização',l:'quadrix.org.br/informacoes/3072/'},
-{id:'crecies',o:'Creci-ES (13ª Região)',uf:'ES',st:'edital',n:'MS',v:'15 + CR',s:'R$ 2.341,23 a R$ 8.250',b:'Quadrix',tx:'R$ 66 / R$ 68',fim:'2026-11-10',c:'Assistente, analista de TI, agente fiscal, especialistas (jurídico, contábil, RH)',l:'quadrix.org.br/informacoes/3049/'},
-{id:'pgoias',o:'Prefeitura de Petrolina de Goiás',uf:'GO',st:'edital',n:'MS',v:'2.956 + 14.780 CR',s:'R$ 3.070,76 a R$ 4.508,28',b:'Instituto Verbena',tx:'R$ 130 a R$ 150',fim:'2026-12-09',c:'Agente executivo, auxiliar de secretaria, profissional da educação',l:'institutoverbena.ufg.br'},
-{id:'cpires',o:'Câmara Municipal de Pires do Rio',uf:'GO',st:'edital',n:'MS',v:'42 (12 imediatas)',s:'R$ 2.000 a R$ 6.523,44',b:'Instituto Verbena',tx:'R$ 115 a R$ 145',fim:'2026-11-18',c:'Assistente administrativo, analistas, auxiliar de serviços gerais',l:'institutoverbena.ufg.br'},
-{id:'curitiba',o:'Prefeitura de Curitiba',uf:'PR',st:'edital',n:'S',v:'63 + CR',s:'R$ 4.333,71 a R$ 14.117,18 (+30% gratif.)',b:'Fafipa',tx:'R$ 150',fim:'2026-11-05',c:'Analista administrativo/finanças, assistente social, auditor fiscal, contador, engenheiro civil',l:'fundacaofafipa.org.br'},
-{id:'mossoro',o:'Câmara Municipal de Mossoró',uf:'RN',st:'edital',n:'S',v:'24 + 33 CR',s:'R$ 6.624,55 a R$ 8.810,69',b:'Comperve',tx:'R$ 150',fim:'2026-11-12',c:'Consultor legislativo, analista (TI, comunicação, documental), jornalista, revisor',l:'comperve.ufrn.br'},
-{id:'contagem',o:'Prefeitura de Contagem',uf:'MG',st:'edital',n:'MS',v:'272 + CR',s:'R$ 2.698,73 a R$ 13.305,57',b:'IBGP',tx:'R$ 70 a R$ 100',fim:'2026-11-17',c:'Cargos de nível médio/técnico e superior',l:'ibgpconcursos.com.br'},
-{id:'sjdr',o:'Prefeitura de São João del-Rei',uf:'MG',st:'edital',n:'MS',v:'256 + CR',s:'R$ 1.603,82 a R$ 15.164,56',b:'IBGP',tx:'R$ 60 a R$ 100',fim:'2026-11-12',c:'Níveis fundamental, médio, técnico e superior',l:'novo.ibgpconcursos.com.br'},
-{id:'vgrande',o:'Prefeitura de Várzea Grande',uf:'MT',st:'edital',n:'MS',v:'5.156 + CR',s:'R$ 1.903,63 a R$ 4.670,03',b:'Selecon',tx:'R$ 75 a R$ 85',fim:'2026-11-09',c:'Processo seletivo da educação: professor, agente administrativo, técnicos escolares, motorista',l:'selecon-mt.selecao.net.br'},
-{id:'cuiaba',o:'Câmara Municipal de Cuiabá',uf:'MT',st:'edital',n:'MS',v:'26 + CR',s:'R$ 5.518,91 a R$ 11.629,67',b:'Selecon',tx:'R$ 90 (médio) / R$ 120 (superior)',fim:'2026-11-30',c:'Técnico legislativo, analista legislativo (TI, segurança, psicologia…), controlador interno',l:'selecon.org.br'},
-{id:'buriti',o:'Prefeitura de Canto do Buriti',uf:'PI',st:'edital',n:'MS',v:'209 + CR',s:'R$ 1.621 a R$ 16.210',b:'Inst. Vicente Nelson',tx:'R$ 76 a R$ 99',fim:'2026-11-26',c:'Vários cargos (inclui nível fundamental)',l:'institutovicentenelson.com.br'},
-{id:'sgon',o:'Prefeitura de São Gonçalo – Guarda Municipal',uf:'RJ',st:'edital',n:'MS',v:'101 + 505 CR',s:'R$ 3.172,96 a R$ 4.535,54',b:'Selecon',tx:'R$ 95,18 a R$ 136,06',fim:'2026-11-18',c:'Guarda Municipal II (100) e Guarda III – Psicólogo (1)',l:'selecon.selecao.net.br'},
-{id:'saroque',o:'Prefeitura de São Roque – Guarda Civil',uf:'SP',st:'edital',n:'M',v:'30 + CR',s:'R$ 2.220,94',b:'ABCP',tx:'R$ 120',fim:'2026-11-23',c:'Guarda Civil Municipal 3ª classe (24 masc. / 6 fem.)',l:'abcp.selecao.net.br'},
-{id:'santana',o:'Prefeitura de Santana – Guarda Civil',uf:'AP',st:'edital',n:'M',v:'50 + 50 CR',s:'R$ 2.100',b:'IDCAP',tx:'R$ 110',fim:'2026-11-09',c:'Guarda Civil Municipal 3ª classe',l:'idcap.selecao.net.br'},
-{id:'jucurutu',o:'Prefeitura de Jucurutu',uf:'RN',st:'edital',n:'MS',v:'144',s:'R$ 1.713,23 a R$ 4.867,69',b:'Igeduc',tx:'R$ 125 a R$ 150',fim:'2026-11-09',c:'Cargos de nível médio, técnico e superior',l:'igeduc.selecao.net.br'},
-{id:'itaporoca',o:'Prefeitura de Itaporoca',uf:'PB',st:'edital',n:'MS',v:'175',s:'R$ 1.621 a R$ 10 mil',b:'Facet',tx:'R$ 80 a R$ 115',fim:'2026-11-20',c:'Níveis fundamental, médio e superior',l:'concursos.facetconcursos.com.br'},
-{id:'groairas',o:'Prefeitura de Groaíras',uf:'CE',st:'edital',n:'MS',v:'33 + 11 CR',s:'R$ 1.621 a R$ 11 mil',b:'Consulpam',tx:'R$ 80 a R$ 150',fim:'2026-11-15',c:'Assistente social, enfermeiro, médico, motorista, técnico de enfermagem e outros',l:'consulpam.com.br'},
-{id:'horizonte',o:'Prefeitura de Horizonte',uf:'CE',st:'edital',n:'MS',v:'15 + 45 CR',s:'R$ 1.636,24 a R$ 5.620,27',b:'Consulpam',tx:'R$ 70 a R$ 140',fim:'2026-11-08',c:'Eletricista, engenheiro de seg. do trabalho, fiscal, veterinário, motorista, técnico',l:'consulpam.com.br'},
-{id:'aracati',o:'Prefeitura de Aracati',uf:'CE',st:'edital',n:'MS',v:'127 + CR',s:'R$ 1.518 a R$ 5.431',b:'FCPC/UFC',tx:'R$ 120 / R$ 150',fim:'2026-11-06',c:'Auditor fiscal, arquiteto, psicólogo, nutricionista, vigilante sanitário, auxiliar de serviço…',l:'centraldeconcursos.fcpc.ufc.br'},
-{id:'ifsp',o:'IFSP – Instituto Federal de São Paulo',uf:'SP',st:'edital',n:'S',v:'35',s:'R$ 6.397,19 a R$ 13.753,96',tx:'R$ 200',fim:'2026-11-17',c:'Professor EBTT (informática, eletrônica, pedagogia, design e outras)',l:'concursopublico.ifsp.edu.br'},
-{id:'ifmg',o:'IFMG – Instituto Federal de Minas Gerais',uf:'MG',st:'edital',n:'S',v:'33',s:'R$ 7.589,19 a R$ 14.945,96',tx:'R$ 250',fim:'2026-11-13',c:'Professor EBTT (enfermagem, física, informática, engenharias…)',l:'portal.concursos.ifmg.edu.br'},
-{id:'ipa',o:'IPA-SP – Instituto de Pesquisas Ambientais',uf:'SP',st:'edital',n:'S',v:'98',s:'R$ 9.052,47',b:'Vunesp',tx:'R$ 150',ini:'2026-11-18',fim:'2026-12-22',c:'Pesquisador Científico I-A (dezenas de áreas)',l:'vunesp.com.br'},
-{id:'bocaiuva',o:'Hospital Municipal Dr. Gil Alves – Bocaiúva',uf:'MG',st:'edital',n:'MS',v:'183',s:'R$ 1.621 a R$ 7.950',b:'Fadenor',tx:'R$ 65 a R$ 95',ini:'2026-11-27',fim:'2026-12-28',c:'Técnico de enfermagem, enfermeiro, médico e outros',l:'cotec.fadenor.com.br'},
-{id:'lagoasanta',o:'Prefeitura de Lagoa Santa',uf:'MG',st:'edital',n:'MS',v:'79 + CR',s:'R$ 2.220,57 a R$ 8.860,79',b:'IBGP',tx:'R$ 50 a R$ 100',ini:'2026-12-16',fim:'2027-01-18',c:'Níveis fundamental, médio, técnico e superior',l:'novo.ibgpconcursos.com.br'},
-{id:'sluzia',o:'Prefeitura de Santa Luzia',uf:'MG',st:'edital',n:'MS',v:'454 + CR',s:'Até R$ 8.628,87',b:'Fadenor',tx:'R$ 70 a R$ 175',ini:'2026-12-17',fim:'2027-01-15',c:'Analista, assistente administrativo, enfermeiro, professor, psicólogo, procurador',l:'cotec.fadenor.com.br'},
-{id:'paraguacu',o:'Prefeitura de Paraguaçu',uf:'MG',st:'edital',n:'MS',v:'100 + CR',s:'R$ 1.638,83 a R$ 20.128,27',b:'IBDO',tx:'R$ 80 a R$ 150',ini:'2026-12-21',fim:'2027-01-19',c:'Guarda civil, motorista, técnico em enfermagem, enfermeiro, médico, educador…',l:'concursos.ibdoprojetos.org.br'},
-{id:'bhedu',o:'Secretaria Municipal de Educação de Belo Horizonte',uf:'MG',st:'edital',n:'S',v:'112',s:'R$ 3.660,96',tx:'Gratuita',ini:'2026-12-21',fim:'2027-01-19',c:'Professor municipal (1º/2º ciclos, ed. física, geografia, inglês, matemática). Exige a Prova Nacional Docente 2026.',l:'prefeitura.pbh.gov.br'},
-/* em andamento */
-{id:'cgu',o:'CGU – Controladoria-Geral da União',uf:'BR',st:'edital',n:'S',v:'54 + CR',s:'R$ 20.000',b:'Cebraspe',tx:'R$ 170',fim:'2026-11-04',c:'Auditor Federal de Finanças e Controle (auditoria e TI)',l:'bit.ly/cgu26-cebraspe'},
-{id:'sefazsp',o:'Secretaria da Fazenda e Planejamento (SP)',uf:'SP',st:'edital',n:'S',v:'60 + CR',s:'R$ 11.359,50',b:'FCC',tx:'R$ 150',fim:'2026-11-03',c:'Analista em Planejamento, Orçamento e Finanças Públicas',l:'concursosfcc.com.br'},
-{id:'ufpe',o:'UFPE – Universidade Federal de Pernambuco',uf:'PE',st:'edital',n:'S',v:'2 + CR',s:'R$ 4.165,25',b:'UPENET',tx:'R$ 280',fim:'2026-11-02',c:'Advogado (Petrolina e Região Metropolitana do Recife)',l:'upenet.com.br'},
-{id:'belovale',o:'Prefeitura de Belo Vale',uf:'MG',st:'edital',n:'MS',v:'179',s:'R$ 1.745 a R$ 8.000',b:'Consulplan',tx:'R$ 50 a R$ 120',fim:'2026-11-03',c:'Cargos de nível fundamental, médio, técnico e superior',l:'institutoconsulplan.org.br'},
-{id:'nav',o:'NAV Brasil – Navegação Aérea',uf:'BR',st:'andamento',n:'MS',v:'—',s:'—',c:'Edital nº 01/2026: cargos efetivos de nível médio, médio-técnico e superior',ob:'Resultado final da 1ª fase divulgado; 16 cargos já homologados (edital nº 10, de 23/10/2026). Acompanhe as demais etapas.',l:'atlaspublico.com.br/noticias/nav-brasil-homologa-resultado-final-de-16-cargos-do-94574'},
-/* finalizados */
-{id:'cnu',o:'CNU – Concurso Público Nacional Unificado',uf:'BR',st:'final',n:'S',v:'—',s:'—',c:'Especialista em Políticas Públicas',ob:'Resultado final homologado em 09/06/2026 (Edital nº 92 do MGI).',l:'atlaspublico.com.br/noticias/ministra-homologou-resultado-final-do-concurso-nacional-55387'},
-{id:'tjrj',o:'TJ-RJ – 62º Concurso (Analista Judiciário)',uf:'RJ',st:'final',n:'S',v:'—',s:'—',b:'FGV',c:'Analista Judiciário (sem e com especialidade)',ob:'Resultado final e homologação publicados em 09/06/2026.',l:'conhecimento.fgv.br'},
-{id:'tjpe',o:'TJPE – Concurso de Servidores 2025',uf:'PE',st:'final',n:'MS',v:'—',s:'—',c:'Cargos de servidor do Tribunal de Justiça de Pernambuco',ob:'Homologado em 14/07/2026; validade de 2 anos, prorrogável por igual período.',l:'portal.tjpe.jus.br/web/concursos-e-selecoes'},
-{id:'caruaru',o:'Prefeitura de Caruaru (editais 03 e 04/2025)',uf:'PE',st:'final',n:'S',v:'—',s:'—',c:'Assistente Social, Psicólogo e outros cargos dos dois editais',ob:'Resultado final homologado em 2026 (decretos 045 e 046/2026).',l:'portaldeprefeitura.com.br'},
-{id:'riacho',o:'Prefeitura de Riacho das Almas – Guarda Municipal',uf:'PE',st:'final',n:'M',v:'—',s:'—',c:'Guarda Municipal',ob:'Resultado final homologado em 2026; validade conta da homologação (prorrogável).',l:'portaldeprefeitura.com.br'},
-{id:'upe',o:'UPE – Universidade de Pernambuco',uf:'PE',st:'final',n:'S',v:'—',s:'—',c:'Professor Universitário (Assistente e Adjunto)',ob:'Resultado final homologado (notícia de jan/2026).',l:'portaldeprefeitura.com.br'},
-/* previstos */
-{id:'ibge',o:'IBGE – Concursos para 2027',uf:'BR',st:'prev',n:'MS',v:'≈ 27.330',s:'—',c:'Recenseador e Analista Censitário (1.020 vagas de nível superior, entrada prevista jan/2027)',ob:'Edital era esperado para outubro/2026 e convocação até março/2027. Confirme no site do IBGE se já foi publicado.',l:'ibge.gov.br'},
-{id:'rf',o:'Receita Federal',uf:'BR',st:'prev',n:'S',v:'146 (autorizadas)',s:'Até ≈ R$ 29,9 mil',c:'Auditor Fiscal e Analista',ob:'Vagas autorizadas pelo Governo Federal; prazo citado: dezembro/2026.',l:'gov.br/receitafederal'},
-{id:'bcb',o:'Banco Central',uf:'BR',st:'prev',n:'MS',v:'170',s:'Técnico R$ 6.402,76 / Analista R$ 9.219,11',c:'Técnico e Analista',ob:'Autorizado; prazo citado: até 03/01/2027.',l:'bcb.gov.br'},
-{id:'anpd',o:'ANPD – Autoridade Nacional de Proteção de Dados',uf:'BR',st:'prev',n:'S',v:'50',s:'—',c:'Cargos de nível superior',ob:'Autorizado; prazo citado: até 24/12/2026.',l:'gov.br/anpd'},
-{id:'inss',o:'INSS',uf:'BR',st:'prev',n:'MS',v:'2 mil (emergencial) a 10 mil (pedido)',s:'—',c:'Técnico e Analista do Seguro Social',ob:'Pedido de autorização em análise no MGI; não há edital publicado.',l:'gov.br/inss'},
-{id:'prf',o:'PRF – Policial',uf:'BR',st:'prev',n:'S',v:'Proposta: 4.902 cargos',s:'R$ 12.862,33',c:'Policial Rodoviário Federal',ob:'Aguardando autorização do MGI; sem banca definida.',l:'gov.br/prf'},
-{id:'prfadm',o:'PRF – Administrativo',uf:'BR',st:'prev',n:'M',v:'248 a 264 (fontes divergem)',s:'Até ≈ R$ 5 mil a R$ 7,2 mil (fontes divergem)',c:'Agente Administrativo',ob:'Pedido de autorização enviado; sem banca definida.',l:'gov.br/prf'},
-{id:'pf',o:'Polícia Federal – Administrativo (PEC/PF)',uf:'BR',st:'prev',n:'MS',v:'—',s:'—',c:'Cargos administrativos da PF',ob:'Novo edital pode sair em 2027; a PF ainda convoca excedentes do concurso anterior.',l:'gov.br/pf'},
-{id:'saude_min',o:'Ministério da Saúde',uf:'BR',st:'prev',n:'MS',v:'7.027 (solicitadas)',s:'—',c:'Cargos de nível médio e superior',ob:'Vagas solicitadas; dependem de autorização.',l:'gov.br/saude'},
-{id:'pmam',o:'Polícia Militar do Amazonas',uf:'AM',st:'prev',n:'M',v:'—',s:'—',c:'Soldado',ob:'Anunciado; edital pode sair em 2027.',l:''}
-];
-
-/* Matérias previstas: estimativa pelo tipo de cargo e padrão das bancas. O conteúdo oficial está no anexo do edital. */
-const CN_TPL={
-leg:['Língua Portuguesa','Raciocínio Lógico','Informática','Direito Constitucional','Direito Administrativo','Processo Legislativo / Regimento Interno','Administração Pública','Conhecimentos específicos do cargo'],
-jud:['Língua Portuguesa','Raciocínio Lógico','Informática','Direito Constitucional','Direito Administrativo','Direito Processual (civil/penal, conforme a área)','Legislação institucional do órgão','Conhecimentos específicos do cargo'],
-def:['Direito Constitucional','Direito Administrativo','Direito Civil','Direito Processual Civil','Direito Penal','Direito Processual Penal','Direitos Humanos','Princípios e legislação da Defensoria (LC 80/94)'],
-fisc:['Língua Portuguesa','Raciocínio Lógico','Direito Constitucional','Direito Administrativo','Contabilidade Geral e Pública','Administração Financeira e Orçamentária','Direito Tributário','Auditoria','Economia e Estatística','Informática / TI (conforme a área)'],
-ctrl:['Língua Portuguesa','Raciocínio Lógico','Informática / TI (conforme a área)','Direito Constitucional','Direito Administrativo','Administração Pública','Contabilidade Pública e Orçamento','Controle externo e legislação do órgão'],
-gest:['Língua Portuguesa','Raciocínio Lógico','Gestão e Políticas Públicas','Direito Constitucional','Direito Administrativo','Economia','Estatística','Atualidades'],
-pol:['Língua Portuguesa','Matemática / Raciocínio Lógico','Atualidades','Noções de Direito Constitucional','Noções de Direito Penal / Penal Militar','Direitos Humanos','Legislação institucional da corporação'],
-polpe:['Língua Portuguesa','Matemática / Raciocínio Lógico','Atualidades','Noções de Direito Constitucional','Noções de Direito Penal / Penal Militar','Direitos Humanos','Legislação institucional da corporação','Redação (prova discursiva)'],
-pmof:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','Direito Penal','Direito Processual Penal','Direito Penal Militar','Direitos Humanos','Legislação institucional da PM'],
-prf:['Língua Portuguesa','Raciocínio Lógico','Informática','Ética no serviço público','Direito Constitucional','Direito Administrativo','Direito Penal e Processual Penal','Legislação de trânsito','Física'],
-mun:['Língua Portuguesa','Matemática / Raciocínio Lógico','Conhecimentos Gerais e Atualidades','Informática','Noções de Direito Constitucional e Administrativo','Legislação municipal','Conhecimentos específicos do cargo'],
-gcm:['Língua Portuguesa','Matemática','Atualidades','Informática','Noções de Direito Constitucional','Noções de Direito Penal e Processual Penal','Direitos Humanos','Estatuto Geral das Guardas Municipais (Lei 13.022/2014)'],
-prof:['Língua Portuguesa','Legislação educacional (LDB, ECA, BNCC)','Didática e Pedagogia','Conhecimentos específicos da disciplina / cargo','Legislação municipal ou estadual da educação'],
-doc:['Conhecimentos específicos da área','Prova didática (aula)','Prova de títulos','Legislação do serviço público / institucional'],
-con:['Língua Portuguesa','Raciocínio Lógico','Informática','Noções de Direito Constitucional e Administrativo','Legislação do conselho','Conhecimentos específicos do cargo'],
-adm:['Língua Portuguesa','Raciocínio Lógico','Direito Administrativo','Administração Pública','Conhecimentos específicos do perfil'],
-mil:['Língua Portuguesa','Matemática','Conhecimentos gerais','Conhecimentos específicos da área do cargo'],
-pesq:['Conhecimentos específicos da área','Língua Portuguesa','Legislação ambiental e do órgão','Prova de títulos'],
-saude:['Língua Portuguesa','Matemática','SUS (Leis 8.080/90 e 8.142/90)','Conhecimentos específicos da profissão'],
-adv:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','Direito Civil e Processual Civil','Direito do Trabalho','Direito Previdenciário','Legislação universitária'],
-gen:['Língua Portuguesa','Raciocínio Lógico','Informática','Noções de Direito Constitucional','Noções de Direito Administrativo','Ética no serviço público','Conhecimentos específicos do cargo'],
-nav:['Língua Portuguesa','Raciocínio Lógico / Matemática','Informática','Conhecimentos específicos do cargo'],
-ibge:['Língua Portuguesa','Matemática / Raciocínio Lógico','Noções de Informática','Conhecimentos específicos do cargo (estatística, geografia, conforme a função)'],
-anpd:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','LGPD (Lei 13.709/2018) e proteção de dados','Informática / TI (conforme a área)','Conhecimentos específicos do cargo'],
-inss:['Língua Portuguesa','Raciocínio Lógico','Informática','Ética no serviço público','Direito Constitucional','Direito Administrativo','Direito Previdenciário e Seguridade Social']};
-const CN_MP={leg:'cd mossoro cuiaba cpires',jud:'trt8 trt4 trt3 tjpb dppb tjrj tjpe',def:'dpsp',fisc:'cgu sefazsp rf bcb',ctrl:'tcego',gest:'sead cnu',pol:'pmsc pmam',polpe:'pmpe cbmpe',pmof:'pmmg',prf:'prf',mun:'pgoias curitiba contagem sjdr buriti jucurutu itaporoca groairas horizonte aracati belovale lagoasanta sluzia paraguacu caruaru',gcm:'sgon saroque santana riacho',prof:'bhedu vgrande',doc:'ifsp ifmg upe',con:'cauap crecies',adm:'abdi',mil:'mar',pesq:'ipa',saude:'bocaiuva',adv:'ufpe',gen:'prfadm pf saude_min',nav:'nav',ibge:'ibge',anpd:'anpd',inss:'inss'};
-const cnMatPrev=c=>{if(Array.isArray(c.mt)&&c.mt.length)return c.mt;for(const k in CN_MP)if((' '+CN_MP[k]+' ').includes(' '+c.id+' '))return CN_TPL[k];return null};
-let cnTab='lista',cnUF='',cnSt='all',cnNv='all',cnQ='',cnFav=false,cnForm=false,cnGs='ini',cnGn='M';
-const cnIni=()=>{S.conc=S.conc||{};S.conc.fav=S.conc.fav||[];S.conc.mine=S.conc.mine||[];S.conc.guia=S.conc.guia||{};return S.conc};
-const cnD=i=>i?i.split('-').reverse().join('/'):'';
-const cnDias=i=>Math.round((new Date(i+'T12:00:00')-new Date(HOJE+'T12:00:00'))/864e5);
-const cnStatus=c=>(c.st==='edital'&&c.fim&&c.fim<HOJE)?'andamento':c.st;
-const cnAll=()=>CN_DATA.concat(cnIni().mine.map(x=>Object.assign({mine:1},x)));
-const cnUrl=l=>l?(/^https?:/.test(l)?l:'https://'+l):'';
-function cnPrazo(c,s){
- if(s==='edital'){if(c.ini&&c.ini>HOJE)return `📅 Inscrições de ${cnD(c.ini)} a ${cnD(c.fim)}`;
-  if(!c.fim)return '';const d=cnDias(c.fim);return `⏳ Inscrições até ${cnD(c.fim)} · <b>${d===0?'termina hoje':d===1?'termina amanhã':'faltam '+d+' dias'}</b>`}
- if(s==='andamento')return c.ob?'🔄 '+esc(c.ob):`🔄 Inscrições encerradas em ${cnD(c.fim)}. Acompanhe prova e resultado no site da banca.`;
- return c.ob?'ℹ️ '+esc(c.ob):''}
-function cnMatHtml(c){const m=cnMatPrev(c);if(!m)return '';return `<p class="cn-nv" style="margin-bottom:4px">Matérias previstas</p><div class="cn-chips">${m.map(x=>`<span>${esc(x)}</span>`).join('')}</div><p class="cn-nv">Estimativa pelo tipo de cargo e padrão das bancas. O conteúdo oficial está no anexo do edital: confira lá antes de montar seu plano.</p>`}
-function cnBusca(c,s){return 'https://www.google.com/search?q='+encodeURIComponent('edital '+c.o+(s==='prev'?' último edital':s==='final'?' edital de abertura':' 2026')+' filetype:pdf')}
-function cnCard(c){
- const s=cnStatus(c),m=CN_ST[s]||CN_ST.edital,fav=cnIni().fav.includes(c.id),l=cnUrl(c.l);
- const row=(k,v)=>v&&v!=='—'?`<div class="cn-r"><span>${k}</span><b>${esc(v)}</b></div>`:'';
- return `<div class="cn-card" style="--cc:${m[2]}"><div class="cn-top"><span class="cn-b" style="background:${m[2]}22;color:${m[2]}">${m[0]} ${m[1]}</span><span class="cn-uf">${c.uf==='BR'?'Nacional':esc(c.uf)}</span><button class="cn-fv" onclick="cnFavT('${c.id}')" aria-label="Favoritar" aria-pressed="${fav}">${fav?'⭐':'☆'}</button></div>
- <h4>${esc(c.o)}</h4><div class="cn-pz">${cnPrazo(c,s)}</div>
- <div class="cn-g">${row('Vagas',c.v)}${row('Salário',c.s)}${row('Banca',c.b)}${row('Taxa',c.tx)}</div>
- <details><summary>📚 Matérias previstas e cargos</summary>${cnMatHtml(c)}<p><b>Cargos:</b> ${esc(c.c||'—')}</p>${c.ob&&s==='edital'?`<p>${esc(c.ob)}</p>`:''}<p class="cn-nv">${esc((CN_GR.find(g=>g[0]===c.n)||[])[2]||'')}</p></details>
- <div class="cn-act">${c.ed?`<a class="cn-lk cn-dl" href="${esc(cnUrl(c.ed))}" target="_blank" rel="noopener" download>⬇️ Baixar edital (PDF)</a>`:`<a class="cn-lk cn-dl" href="${esc(cnBusca(c,s))}" target="_blank" rel="noopener">🔎 ${s==='prev'||s==='final'?'Buscar último edital':'Buscar edital (PDF)'}</a>`}${l?`<a class="cn-lk" href="${esc(l)}" target="_blank" rel="noopener">Abrir site ↗</a>`:''}${c.mine?`<button class="sec" onclick="cnDel('${c.id}')">Remover</button>`:''}</div></div>`}
-function cnFiltrar(ignoraSt){
- const q=cnQ.trim().toLowerCase();
- return cnAll().filter(c=>{const s=cnStatus(c);
-  if(cnUF&&c.uf!==cnUF)return false;
-  if(!ignoraSt&&cnSt!=='all'&&s!==cnSt)return false;
-  if(cnNv!=='all'&&!(c.n===cnNv||c.n==='MS'))return false;
-  if(cnFav&&!cnIni().fav.includes(c.id))return false;
-  if(q&&!((c.o+' '+(c.c||'')+' '+(c.b||'')+' '+c.uf).toLowerCase().includes(q)))return false;
-  return true}).sort((a,b)=>(cnStatus(a)==='edital'&&cnStatus(b)==='edital')?(a.fim||'9').localeCompare(b.fim||'9'):0)}
-function cnRes(){
- const l=cnFiltrar(false);
- if(!l.length)return `<div class="vazio">Nenhum concurso encontrado com esses filtros.<br>Tente outro estado, status ou nível — ou use <b>+ Meu concurso</b>.</div>`;
- const ord={edital:0,andamento:1,prev:2,final:3},srt=a=>a.slice().sort((x,y)=>ord[cnStatus(x)]-ord[cnStatus(y)]);
- let h='';
- if(cnNv==='all'){CN_GR.forEach(g=>{const x=srt(l.filter(c=>c.n===g[0]));if(x.length)h+=`<h3 class="cn-h">${g[1]} ${g[2]} <small>${x.length}</small></h3>${x.map(cnCard).join('')}`})}
- else{const nm=cnNv==='M'?['📘','Nível médio']:['🎓','Nível superior'];h+=`<h3 class="cn-h">${nm[0]} ${nm[1]} <small>${l.length}</small></h3>`+srt(l).map(cnCard).join('')}
- return h}
-function cnRefresh(){const e=$('#cres');if(e)e.innerHTML=cnRes();const k=$('#cchips');if(k)k.innerHTML=cnChips()}
-function cnChips(){
- const base=cnFiltrar(true),n=k=>base.filter(c=>cnStatus(c)===k).length;
- return [['all','📋','Todos',base.length]].concat(Object.keys(CN_ST).map(k=>[k,CN_ST[k][0],{edital:'Edital',andamento:'Andamento',final:'Finalizado',prev:'Previstos'}[k],n(k)])).map(a=>`<button class="${cnSt===a[0]?'on':''}" onclick="cnSt='${a[0]}';cnRefresh()"><span class="sl-ei">${a[1]}</span>${a[2]}<br><b>${a[3]}</b></button>`).join('')}
-function cnLista(){
- const f=cnForm?cnFormHtml():'';
- return `<p class="hint" style="margin:0 0 10px">Dados de referência (atualizado em ${CN_ATUAL}). Datas, vagas e taxas mudam: confirme sempre no edital oficial e no site da banca.</p>
- <div class="seg s5" id="cchips">${cnChips()}</div>
- <div class="card"><div class="cn-fl"><select id="cuf" class="cn-sel" onchange="cnUF=this.value;cnRefresh()" aria-label="Estado"><option value="">🗺️ Todos os estados</option><option value="BR"${cnUF==='BR'?' selected':''}>🇧🇷 Nacional / federal</option>${CN_UF.map(u=>`<option value="${u}"${cnUF===u?' selected':''}>${u}</option>`).join('')}</select>
- <div class="seg s3" style="margin:0">${[['all','Todos'],['M','📘 Médio'],['S','🎓 Superior']].map(a=>`<button class="${cnNv===a[0]?'on':''}" onclick="cnNv='${a[0]}';render()">${a[1]}</button>`).join('')}</div></div>
- <input id="cq" class="cn-q" placeholder="Buscar órgão, cargo ou banca…" value="${esc(cnQ)}" oninput="cnQ=this.value;cnRefresh()">
- <div class="row" style="margin-top:8px"><button class="${cnFav?'':'sec'}" onclick="cnFav=!cnFav;render()" aria-pressed="${cnFav}">${cnFav?'⭐ Só favoritos':'☆ Favoritos'}</button><button onclick="cnForm=!cnForm;render()">${cnForm?'Fechar':'+ Meu concurso'}</button></div></div>${f}<div id="cres">${cnRes()}</div>`}
-function cnFormHtml(){return `<div class="card"><h3 style="margin-top:0">Adicionar concurso</h3>
- <input id="cf-o" placeholder="Órgão / concurso (ex.: Prefeitura de Olinda)"><div class="row" style="margin-top:8px"><select id="cf-uf" class="cn-sel">${['BR'].concat(CN_UF).map(u=>`<option value="${u}"${u==='PE'?' selected':''}>${u==='BR'?'Nacional':u}</option>`).join('')}</select><select id="cf-n" class="cn-sel"><option value="M">Nível médio</option><option value="S">Nível superior</option><option value="MS">Médio e superior</option></select></div>
- <div class="row" style="margin-top:8px"><select id="cf-st" class="cn-sel"><option value="edital">📝 Edital publicado</option><option value="andamento">🔄 Em andamento</option><option value="final">🏁 Finalizado</option><option value="prev">🔮 Previsto</option></select><input id="cf-fim" type="date" aria-label="Fim das inscrições"></div>
- <div class="row" style="margin-top:8px"><input id="cf-v" placeholder="Vagas"><input id="cf-s" placeholder="Salário"></div>
- <input id="cf-b" placeholder="Banca (opcional)" style="margin-top:8px"><input id="cf-l" placeholder="Link do site / inscrição (opcional)" style="margin-top:8px"><input id="cf-ed" placeholder="Link do edital em PDF para baixar (opcional)" style="margin-top:8px"><input id="cf-mt" placeholder="Matérias, separadas por vírgula (opcional)" style="margin-top:8px"><input id="cf-ob" placeholder="Observações (opcional)" style="margin-top:8px">
- <button onclick="cnSalvar()" style="margin-top:10px">Salvar concurso</button></div>`}
-function cnSalvar(){const g=i=>($('#'+i)||{}).value||'',o=g('cf-o').trim();if(!o){$('#cf-o').focus();return}
- cnIni().mine.push({id:'m'+uid(),o,uf:g('cf-uf'),n:g('cf-n'),st:g('cf-st'),fim:g('cf-fim'),v:g('cf-v').trim(),s:g('cf-s').trim(),b:g('cf-b').trim(),l:g('cf-l').trim(),ed:g('cf-ed').trim(),mt:g('cf-mt').split(',').map(x=>x.trim()).filter(Boolean),ob:g('cf-ob').trim(),c:g('cf-ob').trim()});
- cnForm=false;save();render()}
-function cnDel(id){if(!confirm('Remover este concurso da sua lista?'))return;const c=cnIni();c.mine=c.mine.filter(x=>x.id!==id);c.fav=c.fav.filter(x=>x!==id);save();render()}
-function cnFavT(id){const c=cnIni(),i=c.fav.indexOf(id);if(i<0)c.fav.push(id);else c.fav.splice(i,1);save();const y=window.scrollY;render();window.scrollTo(0,y)}
-function vConcursos(){cnIni();
- const seg=`<div class="seg">${[['lista','🎯 Concursos'],['guia','📚 Guia do Concurseiro']].map(a=>`<button class="${cnTab===a[0]?'on':''}" onclick="cnTab='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`;
- return `<h2>${_t('Concursos')}</h2>`+seg+(cnTab==='guia'?cnGuia():cnLista())}
-/* ===== GUIA DO CONCURSEIRO ===== */
-const GM={M:[
-{g:'🥇 Base comum — comece por aqui',it:[
-['pt','Língua Portuguesa','Interpretação de texto, ortografia, concordância, regência, crase, pontuação e reescrita. Vale muitas questões em quase toda prova.'],
-['rl','Raciocínio Lógico e Matemática','Proposições, porcentagem, regra de três, razão e proporção, conjuntos, sequências e problemas do dia a dia.'],
-['inf','Informática','Windows, Word, Excel, internet, e-mail, segurança da informação e noções de nuvem.'],
-['cf','Noções de Direito Constitucional','Direitos e garantias fundamentais, organização do Estado e administração pública (art. 37).'],
-['ad','Noções de Direito Administrativo','Princípios, atos administrativos, agentes públicos, poderes e licitações (Lei 14.133/2021).'],
-['at','Atualidades','Fatos dos últimos 12 meses: política, economia, meio ambiente, tecnologia e a sua região.']]},
-{g:'🧩 Complementares (conforme o edital)',it:[
-['et','Ética no serviço público','Código de ética, deveres e proibições do servidor.'],
-['rd','Redação oficial e noções de arquivo','Ofício, memorando, requerimento; arquivo e protocolo.'],
-['lei','Legislação local','Estatuto do servidor e lei orgânica do estado/município do edital.']]},
-{g:'🎯 Específicas do cargo (depois da base)',it:[['esp','Conhecimentos específicos','Pegue o conteúdo programático do edital: Agente Administrativo, Técnico de Enfermagem, Guarda Municipal, Soldado etc.']]}],
-S:[
-{g:'🥇 Base comum — comece por aqui',it:[
-['pt','Língua Portuguesa','Interpretação, sintaxe, concordância, regência, crase, pontuação e reescrita, com nível de banca superior.'],
-['rl','Raciocínio Lógico e Matemática','Lógica proposicional, porcentagem, probabilidade, análise combinatória e conjuntos.'],
-['cf','Direito Constitucional','Direitos fundamentais, poderes, organização do Estado, controle de constitucionalidade.'],
-['ad','Direito Administrativo','Princípios, atos, poderes, serviços públicos, improbidade, licitações (Lei 14.133/2021).'],
-['inf','Informática','Pacote Office, redes, segurança da informação e noções de nuvem.']]},
-{g:'🏛️ Área administrativa e tribunais',it:[['adm','Administração Geral e Pública','Teorias, gestão de pessoas, processos, planejamento.'],['afo','Administração Financeira e Orçamentária','Ciclo orçamentário, receitas e despesas públicas.'],['proc','Direito Processual Civil','Atos processuais, prazos, recursos.'],['8112','Lei 8.112/90 e regime jurídico','Provimento, direitos, deveres e responsabilidades do servidor.']]},
-{g:'🛡️ Área policial e jurídica',it:[['pen','Direito Penal','Teoria do crime, penas, crimes em espécie.'],['pp','Direito Processual Penal','Inquérito, ação penal, provas, prisões.'],['dh','Legislação especial e Direitos Humanos','Leis penais extravagantes e tratados.']]},
-{g:'💰 Área fiscal e controle',it:[['cont','Contabilidade Geral e Pública','Demonstrações, patrimônio, MCASP.'],['trib','Direito Tributário','Sistema tributário, tributos, obrigação e crédito.'],['aud','Auditoria, Economia e Estatística','Normas de auditoria, micro/macro e estatística básica.']]},
-{g:'🩺 Saúde',it:[['sus','SUS','Leis 8.080/90 e 8.142/90, princípios e diretrizes.'],['esps','Conhecimentos da profissão','Conteúdo específico do seu cargo no edital.']]},
-{g:'📖 Educação',it:[['ldb','LDB e BNCC','Lei 9.394/96, BNCC, ECA e legislação educacional.'],['did','Didática e Pedagogia','Avaliação, currículo, planejamento e inclusão.']]},
-{g:'💻 Tecnologia da Informação',it:[['bd','Banco de dados e redes','SQL, modelagem, redes e protocolos.'],['seg','Segurança e engenharia de software','Criptografia, normas, ciclo de vida, programação.']]}]};
-const GF=[
-['🔁','Ciclo de estudos','Em vez de dias fixos, faça um rodízio entre as matérias: termine uma, passe para a próxima. Dá mais peso às que você tem mais dificuldade.'],
-['⏱️','Pomodoro','25 min de foco + 5 min de pausa (ou 50/10). A cada 4 blocos, pausa longa. Celular longe.'],
-['✅','Questões logo após a teoria','Estude um tópico curto e resolva 10–20 questões da banca do seu concurso. Questão é onde você realmente aprende.'],
-['🧠','Revisão espaçada','Revise em 24 horas, em 7 dias e em 30 dias. Revisar pouco e várias vezes vale mais do que reler tudo de uma vez.'],
-['📝','Resumos e mapas mentais','Faça resumos curtos, com as suas palavras. Mapas mentais ajudam em matérias de muita decoreba.'],
-['🗂️','Flashcards','Perfeitos para artigos de lei, prazos, conceitos e fórmulas. Use no ônibus ou na fila.'],
-['📖','Lei seca','Leia o artigo, grife o essencial, faça questões sobre ele. Para Direito, vá sempre do texto da lei para as questões.'],
-['🧪','Simulados','A cada 2–3 semanas, faça um simulado cronometrado, no formato da prova. Treina tempo e emocional.'],
-['📕','Caderno de erros','Anote cada questão errada: o motivo (falta de atenção, não sabia, pegadinha) e a regra certa. Releia toda semana.'],
-['🗣️','Ensinar em voz alta','Explicar o assunto como se desse uma aula mostra o que você ainda não entendeu.']];
-const GR=[['Seg','Língua Portuguesa'],['Ter','Raciocínio Lógico / Matemática'],['Qua','Informática'],['Qui','Direito Constitucional'],['Sex','Direito Administrativo'],['Sáb','Questões + revisão + simulado'],['Dom','Descanso ou revisão leve']];
-function cnGuia(){
- const tabs=[['ini','🧭','Começar'],['est','🧠','Como estudar'],['mat','🥇','Matérias'],['rot','🗓️','Rotina'],['edi','📝','Saiu o edital']];
- const seg=`<div class="seg s5">${tabs.map(a=>`<button class="${cnGs===a[0]?'on':''}" onclick="cnGs='${a[0]}';render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
- let b='';
- if(cnGs==='ini'){const st=[['Escolha a carreira e o nível','Administrativa, policial, tribunais, fiscal, saúde ou educação. Nível médio ou superior define o que você estuda.'],['Defina um concurso-alvo','Escolha um órgão e uma banca. Use a aba Concursos e favorite os que combinam com você.'],['Baixe o edital anterior','Ele mostra as matérias, o peso de cada uma e o estilo da banca, mesmo antes do novo edital sair.'],['Estude primeiro a base comum','Português, Raciocínio Lógico, Informática e noções de Direito aparecem em quase todo concurso. Veja a aba Matérias.'],['Monte sua rotina','Mesmo 2 horas por dia, com constância, rendem mais do que maratonas de fim de semana.'],['Meça seu progresso','Questões todo dia, simulado a cada 2–3 semanas e caderno de erros.']];
-  b=`<div class="card"><h3 style="margin-top:0">Por onde começar</h3>${st.map((s,i)=>`<div class="cn-st"><span>${i+1}</span><div><b>${s[0]}</b><p>${s[1]}</p></div></div>`).join('')}</div>`}
- if(cnGs==='est')b=`<h3>Formas de estudo que funcionam</h3>${GF.map(f=>`<div class="card cn-ge"><span>${f[0]}</span><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('')}`;
- if(cnGs==='mat'){const G=cnIni().guia,gr=GM[cnGn],all=[].concat(...gr.map(x=>x.it)),ok=all.filter(i=>G[cnGn+':'+i[0]]).length,pc=Math.round(ok/all.length*100);
-  b=`<div class="seg">${[['M','📘 Nível médio'],['S','🎓 Nível superior']].map(a=>`<button class="${cnGn===a[0]?'on':''}" onclick="cnGn='${a[0]}';render()">${a[1]}</button>`).join('')}</div>
-  <div class="card"><b>Seu progresso: ${ok} de ${all.length} matérias (${pc}%)</b><div class="cn-pb"><i style="width:${pc}%"></i></div><p class="hint" style="margin:8px 0 0">Comece de cima para baixo: primeiro a base comum, depois as complementares e, por último, as específicas do cargo. Toque para marcar o que você já domina.</p></div>
-  ${gr.map(x=>`<h3>${x.g}</h3><div class="card">${x.it.map((i,n)=>{const k=cnGn+':'+i[0],on=!!G[k];return `<label class="cn-mt${on?' on':''}"><input type="checkbox" ${on?'checked':''} onchange="cnMat('${k}')"><span><b>${esc(i[1])}</b><small>${esc(i[2])}</small></span></label>`}).join('')}</div>`).join('')}`}
- if(cnGs==='rot')b=`<h3>Exemplo de rotina semanal</h3><div class="card">${GR.map(r=>`<div class="cn-r"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}<p class="hint" style="margin:10px 0 0">Sugestão: 2 a 4 horas por dia, em blocos de 25–50 minutos. Ajuste ao seu horário e às matérias do seu edital. Em plantões ou dias cheios, faça só questões e revisão.</p></div>`;
- if(cnGs==='edi'){const st=[['Leia o edital inteiro','Datas, requisitos do cargo, taxa, vagas, conteúdo programático, etapas e critérios de eliminação.'],['Inscreva-se e pague a taxa','Confira o prazo de pagamento da taxa, que pode ser diferente do prazo de inscrição. Guarde o comprovante.'],['Veja se tem isenção','Alguns editais isentam a taxa em casos como CadÚnico ou doação de sangue. Confira as regras e os prazos.'],['Monte o cronograma de trás para frente','Parta da data da prova e distribua as matérias do edital até lá, com revisão e simulados no final.'],['Prepare a documentação','Separe documentos para inscrição, títulos (se houver) e comprovação de requisitos.'],['No dia da prova','Confira local e horário no cartão de confirmação; leve documento original com foto e caneta conforme o edital.'],['Depois da prova','Confira o gabarito, avalie recursos e acompanhe resultado, convocação e homologação.']];
-  b=`<div class="card"><h3 style="margin-top:0">Saiu o edital: o que fazer</h3>${st.map((s,i)=>`<div class="cn-st"><span>${i+1}</span><div><b>${s[0]}</b><p>${s[1]}</p></div></div>`).join('')}</div>`}
- return seg+b}
-function cnMat(k){const G=cnIni().guia;if(G[k])delete G[k];else G[k]=1;save();const y=window.scrollY;render();window.scrollTo(0,y)}
-
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -2726,6 +2538,7 @@ function normCart(){
  c.rendas.forEach(r=>{r.val=cR2(r.val);r.m=r.m||HOJE.slice(0,7);r.desc=String(r.desc||'')});
  c.pagas=(c.pagas&&typeof c.pagas==='object'&&!Array.isArray(c.pagas))?c.pagas:{};
  if(c.sal&&typeof c.sal==='object'&&!Array.isArray(c.sal))salNorm(c.sal);else if(c.sal)delete c.sal;
+ try{invNorm()}catch(e){}
  const N=S.notif=S.notif||{};if(N.cwOn===undefined)N.cwOn=true;if(N.cwLead===undefined||isNaN(+N.cwLead))N.cwLead=2;if(!/^\d{2}:\d{2}$/.test(N.cwHora||''))N.cwHora='09:00'}
 let cSub='res',cMes=HOJE.slice(0,7),cEd=null;
 /* aceita 1500 | 1500,50 | 1.500,50 | 1.500 | 15.5 */
@@ -2895,8 +2708,9 @@ function cPdfBuild(){
    gs.forEach(g=>rows.push([pf(g.date),g.desc||'(sem descrição)',ccat(g.cat)[2],money(g.val)]))});
   d.table([{h:'Data',w:70},{h:'Descrição',w:240,wrap:1},{h:'Categoria',w:110,wrap:1},{h:'Valor',w:95,a:'r'}],rows)}
  else d.p('Nenhum gasto avulso lançado.');
+ try{invPdf(d,money,pf)}catch(e){}
  return d.finish('JC ORGANIZA · Carteira · gerado em '+pf(HOJE))}
-const cPdfBtn=()=>`<div class="row" style="margin-top:14px"><button class="sec" style="flex:1" onclick="cPdf()">📄 Baixar PDF com os dados de todas as abas</button></div><p class="hint">O PDF reúne Resumo, Gastos, Fixas, Renda e Salário (com os melhores dias para pagar).</p>`;
+const cPdfBtn=()=>`<div class="row" style="margin-top:14px"><button class="sec" style="flex:1" onclick="cPdf()">📄 Baixar PDF com os dados de todas as abas</button></div><p class="hint">O PDF reúne Resumo, Gastos, Fixas, Renda, Salário (com os melhores dias para pagar) e Investimentos.</p>`;
 async function cPdf(){
  let txt;try{txt=cPdfBuild()}catch(e){info('Não foi possível montar o PDF da Carteira.');return}
  const nome='jc-organiza-carteira-'+HOJE+'.pdf',FS=plug('Filesystem'),SH=plug('Share');
@@ -2913,9 +2727,9 @@ async function cPdf(){
 
 function vCarteira(){
  const k=cCalc(cMes);
- const seg=`<div class="seg s4 s5">${[['res','📊','Resumo'],['gas','💸','Gastos'],['fix','📌','Fixas'],['ren','💵','Renda'],['sal','🧾','Salário']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
+ const seg=`<div class="seg s4 s5 s6">${[['res','📊','Resumo'],['gas','💸','Gastos'],['fix','📌','Fixas'],['ren','💵','Renda'],['sal','🧾','Salário'],['inv','📈','Invest.']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
  const nv=`<div class="cal-h"><button class="sec" onclick="cMove(-1)" aria-label="Mês anterior">‹</button><strong class="cw-m">${esc(cMesTxt())}</strong><button class="sec" onclick="cMove(1)" aria-label="Próximo mês">›</button></div>`;
- return `<h2>${_t('Carteira')}</h2>`+seg+((cSub==='sal'&&salV==='cfg')?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cRenda(k))+cPdfBtn()}
+ return `<h2>${_t('Carteira')}</h2>`+seg+((cSub==='sal'&&salV==='cfg')||cSub==='inv'?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cSub==='inv'?vInv():cRenda(k))+cPdfBtn()}
 
 /* --- Resumo --- */
 function cResumo(k){
@@ -3036,6 +2850,475 @@ function cAddR(){
  if(!v){info('Informe o valor da renda extra.');return}
  S.cart.rendas.push({id:uid(),m:cMes,desc:d,val:v});save();render();cClear(['cw-rd','cw-rv']);cFoco('cw-rd')}
 function cDelR(id){ask('Excluir esta renda extra?',()=>{S.cart.rendas=S.cart.rendas.filter(x=>x.id!==id);save();render()})}
+/* ---------- Carteira · INVESTIMENTOS: catálogo, carteira do usuário, simulador e guia ----------
+   Aba "Invest." da Carteira. Dados do usuário em S.cart.inv (entram no backup e na nuvem junto com o resto).
+   · INV_DATA: catálogo com todas as opções de investimento (uma por linha, campos separados por |, listas por §).
+     Campos: id|classe|emoji|nome|risco 1-5|liquidez|prazo|mínimo|IR|FGC 1/0|indexador|parâmetro|taxa adm a.a.|mais usada 1/0|cenário ruim|cenário bom|descrição|vantagens|cuidados|onde investir
+     Indexadores: cdi (% do CDI) · selic (Selic + p.p.) · pre (taxa prefixada de referência + p.p.) · ipca (IPCA+ de referência + p.p.) · poup · var (renda variável: parâmetro = retorno esperado a.a., ilustrativo) · zero
+   · As taxas de referência (Selic, CDI, IPCA…) ficam em S.cart.inv.tx e podem ser editadas ou atualizadas online (Banco Central). */
+const INV_CLS=[
+ ['mais','⭐','Mais usadas','#e8b923'],['todos','🧭','Todas','#8a97a3'],['res','🛟','Reserva e liquidez','#2f9e6b'],['tes','🇧🇷','Tesouro Direto','#2563eb'],['ban','🏦','Bancários (FGC)','#0f7b8a'],
+ ['cre','🧾','Crédito privado','#7c3aed'],['rv','📈','Renda variável','#d6336c'],['fun','🧺','Fundos','#b8520a'],['pre','👴','Previdência','#8a6d3b'],
+ ['ext','🌎','Internacional','#0ea5e9'],['cri','₿','Criptomoedas','#f59e0b'],['alt','🏘️','Alternativos e reais','#64748b'],['meu','✨','Criados por mim','#a67cff']];
+const INV_TX0={selic:13.75,cdi:13.65,ipca:4.8,tr:1.5,pre:13.7,ntnb:7.4,upd:''};
+const INV_DATA=`poup|res|🐷|Poupança|1|Imediata (no aniversário do depósito)|Sem prazo|Qualquer valor|isento|1|poup|0|0|1|||A aplicação mais conhecida do Brasil. Com a Selic acima de 8,5% ao ano, rende 0,5% ao mês + TR, sempre no aniversário de cada depósito.|Simples e sem imposto§Protegida pelo FGC até R$ 250 mil§Começa com qualquer valor|Costuma render menos que CDB e Tesouro Selic§Só rende por inteiro no aniversário do depósito|Qualquer banco
+conta|res|💳|Conta remunerada / Cofrinho|1|Imediata|Sem prazo|Qualquer valor|reg|1|cdi|100|0|1|||Conta digital ou cofrinho que rende um percentual do CDI todos os dias, com o dinheiro disponível na hora.|Resgate na hora§Rende todo dia útil§Ótima para reserva de emergência|Alguns bancos pagam menos de 100% do CDI§IR regressivo (22,5% a 15%)|Bancos digitais e fintechs
+cdbld|res|⚡|CDB de liquidez diária|1|Imediata (D+0)|Sem carência|R$ 1 a R$ 100|reg|1|cdi|100|0|1|||CDB que paga em torno de 100% do CDI e permite resgatar quando quiser. Muito usado na reserva de emergência.|Liquidez imediata§FGC até R$ 250 mil§Rende mais que a poupança|Taxa menor que a dos CDBs com prazo§IR retido na fonte|Bancos e corretoras
+tesselic|tes|🏛️|Tesouro Selic (LFT)|1|D+1 útil|Vencimentos até 2031 (pode vender antes)|A partir de ~R$ 30|reg|0|selic|0.07|0.2|1|||Título público pós-fixado que acompanha a taxa Selic. É o investimento de menor risco do país e o preferido para a reserva de emergência.|Risco soberano (Governo Federal)§Baixa oscilação§Vende quando quiser|Taxa de custódia da B3 de 0,20% a.a. (isenta no Selic até R$ 10 mil)§IOF nos primeiros 30 dias|Tesouro Direto (corretoras e bancos)
+tespre|tes|🎯|Tesouro Prefixado (LTN)|2|D+1 útil (com marcação a mercado)|Até o vencimento (ex.: 2029)|A partir de ~R$ 30|reg|0|pre|0|0.2|0|||Rentabilidade definida na compra. Se segurar até o vencimento, você sabe exatamente quanto vai receber.|Taxa travada na compra§Pode render muito se os juros caírem|Vender antes pode dar prejuízo se os juros subirem§Não protege da inflação|Tesouro Direto
+tesntnf|tes|🪙|Tesouro Prefixado com juros semestrais (NTN-F)|2|D+1 útil (com marcação a mercado)|Até o vencimento (ex.: 2033)|A partir de ~R$ 30|reg|0|pre|0.1|0.2|0|||Igual ao prefixado, mas paga juros a cada 6 meses. Dá uma renda periódica sem vender o título.|Renda a cada 6 meses§Taxa travada|Oscila antes do vencimento§Juros recebidos pagam IR|Tesouro Direto
+tesipca|tes|🛡️|Tesouro IPCA+ (NTN-B Principal)|2|D+1 útil (com marcação a mercado)|Longo prazo (2030, 2035, 2045…)|A partir de ~R$ 30|reg|0|ipca|0|0.2|1|||Rende uma taxa fixa + a inflação (IPCA). Garante ganho acima da inflação se mantido até o vencimento. Ideal para metas de longo prazo.|Protege o poder de compra§Taxa real travada na compra|Oscila bastante antes do vencimento§Exige paciência|Tesouro Direto
+tesipcaj|tes|💸|Tesouro IPCA+ com juros semestrais (NTN-B)|2|D+1 útil (com marcação a mercado)|Longo prazo (2032, 2040, 2055…)|A partir de ~R$ 30|reg|0|ipca|0|0.2|0|||Rende IPCA + taxa fixa e paga juros a cada 6 meses, complementando a renda sem vender o título.|Renda semestral corrigida pela inflação§Protege da inflação|Oscila antes do vencimento§Cupons pagam IR na hora|Tesouro Direto
+tesrenda|tes|🌅|Tesouro RendA+|2|Resgate antecipado com marcação a mercado|Longo prazo (aposentadoria)|A partir de ~R$ 30|reg|0|ipca|0|0.2|0|||Você escolhe o ano em que quer começar a receber e o título paga uma renda mensal por 20 anos, corrigida pelo IPCA. Pensado para a aposentadoria.|Renda mensal corrigida pela inflação§Disciplina de longo prazo|Pode oscilar se resgatar antes§Não é para metas de curto prazo|Tesouro Direto
+teseduca|tes|🎓|Tesouro Educa+|2|Resgate antecipado com marcação a mercado|Longo prazo (estudos dos filhos)|A partir de ~R$ 30|reg|0|ipca|0|0.2|0|||Você guarda hoje e recebe uma renda mensal por 5 anos para pagar os estudos, corrigida pelo IPCA.|Planejamento da educação§Protegido da inflação|Oscila antes do vencimento§Objetivo específico|Tesouro Direto
+cdbpos|ban|🏦|CDB pós-fixado|2|No vencimento (alguns com D+1)|3 meses a 5 anos|R$ 1 a R$ 1.000|reg|1|cdi|110|0|1|||Você empresta ao banco e recebe um percentual do CDI. Bancos médios costumam pagar mais, de 100% a 125% do CDI.|FGC até R$ 250 mil por CPF e instituição§Fácil de entender|Resgate só no vencimento (na maioria)§Banco pequeno = risco de crédito maior|Bancos e corretoras
+cdbpre|ban|📌|CDB prefixado|2|No vencimento|6 meses a 5 anos|R$ 100 a R$ 1.000|reg|1|pre|0.3|0|0|||CDB com taxa fixa combinada na compra. Você sabe quanto vai receber no vencimento.|Taxa travada§FGC até R$ 250 mil|Se os juros subirem, você fica com taxa menor§Não protege da inflação|Bancos e corretoras
+cdbipca|ban|📊|CDB IPCA+|2|No vencimento|2 a 10 anos|R$ 1.000 a R$ 5.000|reg|1|ipca|0.1|0|0|||CDB que paga uma taxa fixa + inflação. Protege o poder de compra do dinheiro.|Protege da inflação§FGC até R$ 250 mil|Prazo mais longo§Pouca liquidez antes do vencimento|Bancos e corretoras
+lci|ban|🏠|LCI|2|No vencimento|Carência de 90 dias a 3 anos|R$ 1.000 a R$ 5.000|isento|1|cdi|92|0|1|||Letra de Crédito Imobiliário: você empresta ao banco, que financia imóveis. O lucro é isento de IR para pessoa física (hoje).|Sem Imposto de Renda§FGC até R$ 250 mil|Carência alta§A lei pode mudar a isenção|Bancos e corretoras
+lca|ban|🌾|LCA|2|No vencimento|Carência de 90 dias a 3 anos|R$ 1.000 a R$ 5.000|isento|1|cdi|93|0|1|||Letra de Crédito do Agronegócio: empresta ao banco, que financia o agro. Lucro isento de IR para pessoa física (hoje).|Sem Imposto de Renda§FGC até R$ 250 mil|Carência alta§A lei pode mudar a isenção|Bancos e corretoras
+lc|ban|✉️|Letra de Câmbio (LC)|2|No vencimento|6 meses a 3 anos|R$ 1.000 a R$ 5.000|reg|1|cdi|108|0|0|||Título de dívida de financeiras e bancos. Costuma pagar mais que o CDB do mesmo emissor.|Taxas atrativas§FGC até R$ 250 mil|Prazo mínimo de 6 meses§Liquidez baixa|Corretoras
+lig|ban|🧱|LIG (Letra Imobiliária Garantida)|2|No vencimento|2 a 5 anos|R$ 1.000 a R$ 5.000|isento|0|cdi|95|0|0|||Título de banco com garantia em uma carteira de créditos imobiliários. Isento de IR para pessoa física.|Sem Imposto de Renda§Garantia em carteira de créditos|Sem FGC§Prazo longo|Corretoras
+rdb|ban|🧾|RDB|2|No vencimento|3 meses a 3 anos|R$ 100 a R$ 1.000|reg|1|cdi|100|0|0|||Recibo de Depósito Bancário: parecido com o CDB, mas não pode ser negociado antes do vencimento.|FGC até R$ 250 mil§Simples|Sem liquidez antes do prazo|Bancos
+lf|ban|🏢|Letra Financeira (LF)|3|Mercado secundário (baixa)|2 anos ou mais|Em geral R$ 50 mil|reg|0|cdi|118|0|0|||Dívida de longo prazo emitida por bancos, muitas vezes subordinada. Paga mais, mas com risco maior que o CDB.|Taxas maiores§Prazo longo|Sem FGC§Pode ser difícil de vender|Corretoras (investidor qualificado ou valores altos)
+coe|ban|🎢|COE|3|Mercado secundário (baixa)|1 a 5 anos|A partir de R$ 1.000|reg|0|var|11|0|0|0|25|Certificado de Operações Estruturadas: mistura renda fixa e bolsa. Pode ter capital protegido ou não, conforme o contrato.|Potencial de ganho atrelado a índices§Algumas estruturas protegem o capital|Difícil de entender§Sem FGC, depende do banco emissor§Liquidez baixa|Bancos e corretoras
+deb|cre|🏭|Debêntures|3|Mercado secundário (baixa)|2 a 10 anos|R$ 1.000 a R$ 10.000|reg|0|cdi|115|0|0|||Dívida emitida por empresas. Você empresta à companhia e recebe juros (CDI+, IPCA+ ou prefixado).|Taxas maiores que as do CDB§Diversidade de empresas|Sem FGC, risco da empresa§Liquidez baixa|Corretoras
+debinc|cre|🏗️|Debêntures incentivadas (infraestrutura)|3|Mercado secundário|4 a 15 anos|R$ 1.000 a R$ 5.000|isento|0|ipca|0.8|0|0|||Debêntures que financiam obras de infraestrutura (energia, rodovias, saneamento). Isentas de IR para pessoa física (hoje).|Sem Imposto de Renda§Costuma pagar IPCA + taxa alta|Sem FGC§Prazo longo|Corretoras
+cri|cre|🏢|CRI|3|Mercado secundário|2 a 10 anos|R$ 1.000 a R$ 10.000|isento|0|cdi|108|0|0|||Certificado de Recebíveis Imobiliários: lastreado em créditos do setor imobiliário. Isento de IR para pessoa física.|Sem IR§Taxas atrativas|Sem FGC§Exige analisar o risco da operação|Corretoras
+cra|cre|🚜|CRA|3|Mercado secundário|2 a 10 anos|R$ 1.000 a R$ 10.000|isento|0|cdi|107|0|0|||Certificado de Recebíveis do Agronegócio: lastreado em créditos do agro. Isento de IR para pessoa física.|Sem IR§Taxas atrativas|Sem FGC§Risco do setor agrícola|Corretoras
+notacom|cre|📃|Nota Comercial|4|Mercado secundário (baixa)|1 a 3 anos|A partir de R$ 1.000|reg|0|cdi|112|0|0|||Dívida de curto prazo de empresas, geralmente de médio porte. Paga bem, com risco de crédito maior.|Prazo curto§Taxas maiores|Sem FGC§Risco da empresa|Corretoras e plataformas
+p2p|cre|🤝|Crédito colaborativo (P2P) / Crowdfunding de dívida|4|Baixa (só no vencimento)|6 meses a 3 anos|R$ 100 a R$ 1.000|reg|0|pre|3|0|0|||Você empresta para pessoas ou pequenas empresas por meio de plataformas e recebe juros pelo empréstimo.|Taxas altas§Dá para diversificar em vários empréstimos|Risco de calote§Sem FGC|Plataformas de crédito colaborativo
+acoes|rv|📈|Ações|4|D+2 (liquidação da venda)|Longo prazo (5 anos ou mais)|Preço de 1 ação (fracionário a partir de ~R$ 10)|g15|0|var|12|0|1|-25|35|Você vira sócio de empresas na bolsa (B3). Ganha com a valorização e com dividendos.|Maior potencial de retorno no longo prazo§Dividendos§Começa com valores baixos|Oscila bastante e pode dar prejuízo§Exige estudo e disciplina§Regras de tributação de dividendos mudaram em 2026 para valores altos|Corretoras
+fiis|rv|🏘️|Fundos Imobiliários (FIIs)|4|D+2 (liquidação da venda)|Longo prazo (3 anos ou mais)|Preço de 1 cota (~R$ 10 a R$ 100)|fii|0|var|11|0|1|-12|25|Você compra cotas de fundos que possuem imóveis, shoppings e papéis imobiliários e recebe rendimentos todo mês.|Renda mensal§Rendimentos isentos de IR para pessoa física (na maioria)§Começa com pouco|Cotas oscilam§Vacância e inadimplência§Ganho de capital paga 20%|Corretoras
+etf|rv|🧺|ETFs de ações (ex.: Ibovespa, S&P 500)|4|D+2 (liquidação da venda)|Longo prazo|Preço de 1 cota|g15|0|var|11|0.3|1|-25|30|Fundo negociado em bolsa que replica um índice. Diversifica com uma única compra e tem custo baixo.|Diversificação§Taxa de administração baixa§Sem come-cotas|Acompanha o mercado, também nas quedas§IR 15% sem isenção dos R$ 20 mil|Corretoras
+bdr|rv|🌐|BDRs (ações do exterior na B3)|4|D+2|Longo prazo|Preço de 1 BDR|g15|0|var|13|0|0|-30|40|Recibos negociados na B3 que representam ações de empresas estrangeiras, como Apple e Microsoft.|Investe em empresas globais em reais§Sem conta no exterior|Variação do dólar e da bolsa§Algumas têm pouca liquidez|Corretoras
+fiagro|rv|🌱|Fiagro|4|D+2|Longo prazo|Preço de 1 cota|fii|0|var|12|0|0|-10|24|Fundos que investem em terras, CRAs e na cadeia do agronegócio e pagam rendimentos mensais.|Renda mensal§Exposição ao agro|Oscilação de cotas§Risco climático e de crédito|Corretoras
+fiinfra|rv|⚡|FI-Infra|3|D+2|Longo prazo|Preço de 1 cota|isento|0|var|11|0|0|-5|20|Fundos que investem em debêntures de infraestrutura. Rendimentos isentos para pessoa física (hoje).|Isento de IR§Renda mensal|Cotas oscilam§Risco de crédito das empresas|Corretoras
+etfrf|rv|📦|ETFs de renda fixa (IMA-B, IRF-M)|3|D+2|Médio e longo prazo|Preço de 1 cota|g15|0|ipca|0|0.25|0|||Cesta de títulos públicos negociada em bolsa. Compra de vários vencimentos de uma vez, com marcação a mercado.|Diversificação de títulos públicos§Liquidez na bolsa|Oscila com os juros§IR de 15% sobre o ganho (sem tabela regressiva)|Corretoras
+opc|rv|🎲|Opções (calls e puts)|5|D+1|Curto prazo (vencimento mensal)|Prêmio da opção|g15|0|var|0|0|0|-100|100|Contratos que dão o direito de comprar ou vender um ativo por um preço fixo. Servem para proteção (hedge) ou aposta.|Proteção da carteira§Alavancagem|Você pode perder todo o prêmio§Muito complexo|Corretoras
+aluguel|rv|🔁|Aluguel de ações (doador)|2|Depende do contrato|De dias a meses|Ter ações em carteira|g15|0|var|1.5|0|0|0|4|Você empresta ações que já tem e recebe uma taxa, mantendo a exposição à valorização.|Renda extra sobre ações paradas§Mantém o ativo|Ações ficam travadas durante o contrato§Rendimento pequeno|Corretoras
+fut|rv|⏱️|Mini-índice e mini-dólar (futuros / day trade)|5|Imediata (day trade)|Minutos a dias|Margem de garantia|g20|0|var|0|0|0|-100|100|Contratos futuros com alta alavancagem, usados em operações de curtíssimo prazo.|Pode lucrar em alta e em baixa|Estudos mostram que a grande maioria dos day traders perde dinheiro§Alavancagem pode gerar perdas maiores que o capital|Corretoras
+fundi|fun|🧺|Fundo DI|1|D+0 a D+1|Sem prazo|R$ 100 a R$ 1.000|reg|0|cdi|100|0.5|1|||Fundo que investe em títulos públicos e CDBs atrelados ao CDI. Cobra taxa de administração.|Gestão profissional§Boa liquidez para reserva|Taxa de administração reduz o ganho§Come-cotas em maio e novembro|Bancos e corretoras
+fundrf|fun|🗂️|Fundo de renda fixa|2|D+1 a D+30|1 ano ou mais|R$ 100 a R$ 5.000|reg|0|cdi|103|0.8|0|||Fundo que investe em títulos públicos e privados de renda fixa, com estratégia ativa do gestor.|Gestão profissional§Diversificação|Taxas de administração§Pode oscilar|Bancos e corretoras
+fundcp|fun|💼|Fundo de crédito privado|3|D+30 a D+90|2 anos ou mais|R$ 500 a R$ 5.000|reg|0|cdi|108|0.9|0|||Fundo que compra debêntures, CRIs e outros títulos de empresas. Busca ganhar mais que o CDI.|Retorno maior que o do CDI§Diversifica entre empresas|Sem FGC§Risco de calote dos emissores|Bancos e corretoras
+fundmm|fun|🎛️|Fundo multimercado|3|D+1 a D+30|2 anos ou mais|R$ 500 a R$ 5.000|reg|0|var|13.5|1.8|1|2|22|O gestor pode investir em juros, bolsa, câmbio e derivativos para tentar render acima do CDI.|Gestão profissional§Diversificação|Taxas altas (adm. + performance)§Pode render menos que o CDI|Bancos e corretoras
+fundacoes|fun|📊|Fundo de ações|4|D+3 a D+30|5 anos ou mais|R$ 100 a R$ 1.000|g15|0|var|12|2|0|-30|40|O gestor escolhe ações para tentar superar o Ibovespa. Sem come-cotas.|Gestão profissional§Sem come-cotas|Taxa de administração alta§Muitos fundos perdem do índice|Bancos e corretoras
+fundcamb|fun|💱|Fundo cambial|4|D+1 a D+3|Médio prazo|R$ 500 a R$ 5.000|reg|0|var|6|1.5|0|-20|30|Fundo atrelado à variação do dólar ou de outras moedas.|Proteção contra alta do dólar|Pode render pouco ou perder§Taxas altas|Bancos e corretoras
+fidc|fun|🧩|FIDC|4|Mercado secundário / carência|2 anos ou mais|Em geral R$ 1.000 a R$ 25.000|reg|0|cdi|115|1.2|0|||Fundo de direitos creditórios: compra recebíveis (cartão, duplicatas, crédito consignado) e repassa o ganho aos cotistas.|Retorno acima do CDI§Diversificação de recebíveis|Risco de inadimplência§Baixa liquidez|Corretoras
+longshort|fun|⚖️|Long & Short / Hedge funds|3|D+1 a D+30|2 anos ou mais|R$ 1.000 a R$ 5.000|reg|0|var|13|1.5|0|3|22|Fundos que compram ações que acham baratas (long) e vendem as que acham caras (short), buscando ganho em qualquer cenário.|Menor correlação com a bolsa§Gestão ativa|Taxas altas§Resultado depende da habilidade do gestor|Corretoras
+clube|fun|👥|Clube de investimento|4|D+3 a D+30|Longo prazo|Depende do clube|g15|0|var|10|1|0|-25|30|Grupo de 3 a 50 pessoas que investe junto em renda variável, com decisões coletivas.|Aprendizado em grupo§Custos baixos|Decisões coletivas§Risco de bolsa|Corretoras
+exclus|fun|👑|Fundos exclusivos / reservados|3|Conforme regulamento|Longo prazo|Em geral milhões de reais|reg|0|var|13|0.6|0|4|20|Fundos com um ou poucos cotistas, feitos sob medida para grandes patrimônios.|Estratégia personalizada§Custos negociáveis|Exige patrimônio alto§Gestão e fiscalização próprias|Bancos privados e family offices
+pgbl|pre|👴|PGBL|2|D+1 a D+60 (varia por plano)|Longo prazo (aposentadoria)|A partir de R$ 50 a R$ 100|prev|0|cdi|100|1|1|||Previdência privada indicada a quem faz a declaração completa do IR: permite deduzir até 12% da renda bruta anual. Aqui simulado com um plano conservador (CDI).|Dedução de até 12% da renda no IR§Tabela regressiva favorece o longo prazo§Facilita a disciplina|Taxas de administração e carregamento§IR sobre o total resgatado|Bancos, seguradoras e corretoras
+vgbl|pre|🌅|VGBL|2|D+1 a D+60 (varia por plano)|Longo prazo|A partir de R$ 50 a R$ 100|prev|0|cdi|100|1|1|||Previdência para quem usa o modelo simplificado do IR ou já deduz 12% em outro PGBL. O IR incide só sobre o lucro.|IR só sobre o lucro§Boa para sucessão (não entra em inventário na maioria dos casos)|Sem dedução no IR§Taxas de administração e carregamento|Bancos, seguradoras e corretoras
+fapi|pre|🧓|FAPI|2|Conforme regulamento|Longo prazo|Varia|prev|0|cdi|100|0.8|0|||Fundo de Aposentadoria Programada Individual. Também deduz até 12% da renda no IR (como o PGBL).|Dedução no IR§Taxas costumam ser menores|Poucas opções no mercado§Regras específicas|Bancos e corretoras
+prevfech|pre|🏛️|Previdência fechada (fundos de pensão)|2|Conforme regulamento|Longo prazo|Contribuição mensal|prev|0|var|10|0.5|0|0|15|Oferecida por empresas, sindicatos e associações. Costuma ter contrapartida do empregador.|Contribuição do empregador§Custos baixos|Só para quem faz parte do grupo§Regras de resgate específicas|Empresa ou entidade
+stocks|ext|🇺🇸|Ações americanas (Stocks)|4|D+1 a D+2|Longo prazo|Preço de 1 ação (fracionário)|g15|0|var|11|0|0|-30|40|Compra de ações de empresas dos EUA por meio de corretora com conta internacional. Ganhos pagam 15% anualmente.|Acesso às maiores empresas do mundo§Exposição ao dólar|Variação cambial§IR de 15% e declaração anual (Lei 14.754/2023)|Corretoras internacionais ou contas globais
+etfus|ext|🌍|ETFs globais (S&P 500, MSCI World)|3|D+1 a D+2|Longo prazo|Preço de 1 cota|g15|0|var|10|0.1|0|-25|30|Cestas de centenas de empresas globais com custo muito baixo. Muito usado para aposentadoria.|Diversificação máxima§Custo muito baixo|Oscila com o mercado e o câmbio§IR de 15% sobre ganhos|Corretoras internacionais
+reits|ext|🏙️|REITs (fundos imobiliários dos EUA)|4|D+1 a D+2|Longo prazo|Preço de 1 cota|g15|0|var|8|0|0|-25|25|Equivalente americano dos FIIs: empresas que possuem imóveis e distribuem renda.|Renda em dólar§Diversificação geográfica|Variação cambial§Imposto retido no exterior|Corretoras internacionais
+treasury|ext|💵|Treasuries (títulos do governo dos EUA)|2|D+1 a D+2|De 1 mês a 30 anos|A partir de US$ 100|g15|0|var|5|0|0|-15|25|Títulos do governo americano, referência de segurança em dólar.|Muito segura em dólar§Proteção contra o dólar|Variação cambial§Rendimento em dólar|Corretoras internacionais
+contaglobal|ext|🧳|Conta global / dólar|3|Imediata|Sem prazo|Qualquer valor|g15|0|var|4|0|0|-20|25|Conta em dólar para guardar dinheiro e investir fora do Brasil, ideal para viagens e diversificação.|Proteção cambial§Facilidade para viajar|Pode perder se o real valorizar§Custos de câmbio|Fintechs de conta global
+fundext|ext|🌐|Fundos de investimento no exterior|4|D+3 a D+30|Longo prazo|R$ 100 a R$ 1.000|g15|0|var|10|1|0|-28|35|Fundos de bancos e gestoras que investem em ativos globais, sem precisar de conta no exterior.|Acesso fácil§Diversificação global|Taxas maiores§Variação cambial|Bancos e corretoras
+cambio|ext|💶|Moedas (dólar, euro)|3|Imediata|Curto e médio prazo|Qualquer valor|g15|0|var|3|0|0|-20|25|Comprar moeda estrangeira para viagens ou proteção cambial. Não gera renda, só varia com o câmbio.|Proteção cambial§Viagens|Não rende juros§Pode desvalorizar|Casas de câmbio e bancos
+btc|cri|₿|Bitcoin|5|Imediata (24h)|Longo prazo|Frações a partir de ~R$ 1 a R$ 30|cripto|0|var|25|0|1|-60|120|A criptomoeda mais conhecida do mundo, vista como reserva de valor digital. Extremamente volátil.|Alta liquidez e mercado 24h§Escassez programada|Oscilação extrema§Risco de golpes e custódia|Corretoras de cripto
+eth|cri|⟠|Ethereum|5|Imediata (24h)|Longo prazo|Frações a partir de ~R$ 1 a R$ 30|cripto|0|var|25|0|0|-70|150|Plataforma de contratos inteligentes e a segunda maior criptomoeda. Pode render por staking.|Ecossistema grande§Possibilidade de staking|Oscilação extrema§Risco tecnológico e regulatório|Corretoras de cripto
+stable|cri|🪙|Stablecoins (USDT, USDC)|3|Imediata (24h)|Curto e médio prazo|Frações a partir de ~R$ 1|cripto|0|var|4|0|0|-2|8|Moedas digitais atreladas ao dólar. Servem para guardar valor em dólar e para fazer transferências.|Estabilidade em dólar§Rápidas|Risco de perder a paridade (depeg)§Dependem da empresa emissora|Corretoras de cripto
+alts|cri|🧬|Altcoins (outras criptomoedas)|5|Imediata (24h)|Muito longo prazo|Frações a partir de ~R$ 1|cripto|0|var|20|0|0|-90|250|Milhares de criptomoedas além do Bitcoin e do Ethereum. Muito arriscadas.|Potencial de ganhos altos|Podem ir a zero§Pouca liquidez e risco de golpe|Corretoras de cripto
+staking|cri|🔒|Staking / DeFi|5|Depende do protocolo|Curto e médio prazo|Varia|cripto|0|var|8|0|0|-50|40|Trava criptomoedas em redes para receber recompensas ou empresta em protocolos descentralizados.|Rendimento sobre cripto parada|Risco de hack do contrato§Pode haver bloqueio de resgate|Corretoras e protocolos
+etfcri|cri|🧊|ETFs de cripto (HASH11, QBTC11…)|5|D+2|Longo prazo|Preço de 1 cota|g15|0|var|25|0.7|0|-60|120|Cripto na bolsa, sem precisar de carteira digital ou chave privada.|Compra pela corretora de ações§Sem carteira digital|Taxa de administração§Volatilidade altíssima|Corretoras
+token|cri|🪪|Tokenização de recebíveis e imóveis|4|Depende da plataforma|1 a 5 anos|R$ 100 a R$ 1.000|reg|0|pre|2|0|0|||Ativos reais (imóveis, recebíveis) representados por tokens digitais, que permitem investir com pouco dinheiro.|Entrada com pouco dinheiro§Acesso a ativos reais|Mercado novo e pouco regulado§Liquidez baixa|Plataformas de tokenização
+imov|alt|🏠|Imóveis para aluguel|3|Baixa (meses para vender)|Longo prazo (10 anos ou mais)|Dezenas ou centenas de milhares|g15|0|var|9|0|1|0|15|Comprar imóvel para alugar ou revender. Renda mensal do aluguel + valorização do imóvel.|Renda mensal do aluguel§Proteção contra inflação|Alto valor de entrada§Vacância, IPTU, condomínio e manutenção|Imobiliárias e construtoras
+terreno|alt|🗺️|Terrenos e loteamentos|3|Muito baixa|Longo prazo|Dezenas de milhares|g15|0|var|8|0|0|-5|20|Compra de terrenos para valorização ou revenda. Não gera renda enquanto estiver parado.|Valorização a longo prazo§Sem custos de manutenção como no imóvel construído|Sem renda§Venda demorada|Imobiliárias e loteadoras
+ouro|alt|🥇|Ouro (físico ou GOLD11)|3|D+2 (ETF) / Variável (físico)|Longo prazo|Preço de 1 cota|g15|0|var|8|0.3|0|-20|35|Tradicional reserva de valor, protege em crises e contra inflação. Não paga juros.|Proteção em crises§Diversificação|Não paga rendimentos§Pode ficar anos sem valorizar|Corretoras e joalherias
+cpr|alt|🌽|CPR e agronegócio|4|No vencimento|6 meses a 2 anos|R$ 5.000 ou mais|isento|0|cdi|118|0|0|||Cédula de Produto Rural financeira: você financia produtores e recebe juros. Costuma ser isenta de IR para pessoa física (confirme).|Taxas altas§Isenção para pessoa física (confirmar)|Risco do produtor§Sem FGC|Corretoras e plataformas de agro
+colec|alt|🎨|Colecionáveis (arte, vinhos, relógios, carros)|4|Baixa|Longo prazo|Varia muito|g15|0|var|6|0|0|-30|30|Ativos raros que podem se valorizar com o tempo. Exigem conhecimento e custos de guarda.|Valorização de itens raros§Diversificação|Venda difícil§Custos de seguro, armazenamento e autenticação|Leilões e galerias
+negocio|alt|🏪|Negócio próprio / franquia|5|Baixa|Longo prazo|Varia muito|nenhum|0|var|20|0|0|-100|100|Investir em um negócio que você mesmo opera ou comanda. Alto risco e alto retorno.|Controle total§Potencial de retorno alto|Pode perder todo o capital§Exige dedicação e gestão|Você mesmo
+anjo|alt|🚀|Investimento-anjo e startups|5|Muito baixa (anos)|5 a 10 anos|A partir de R$ 1.000 (equity crowdfunding)|g15|0|var|20|0|0|-100|300|Aportar em startups em troca de participação. A maioria não dá certo, mas poucas podem render muitas vezes o investido.|Potencial de retornos muito altos§Apoia inovação|Risco de perda total§Dinheiro preso por anos|Plataformas de equity crowdfunding
+fip|alt|🏗️|Private equity / FIP|5|Muito baixa|5 a 10 anos|Em geral R$ 100 mil ou mais|g15|0|var|15|0|0|-30|40|Fundos que compram participação em empresas fechadas. Voltado a investidores qualificados.|Acesso a empresas não listadas§Potencial de retorno alto|Dinheiro preso por anos§Valor mínimo alto|Gestoras de private equity
+capit|alt|🎟️|Título de capitalização|2|Após carência|1 a 5 anos|R$ 50 a R$ 500|reg|0|var|1.5|0|0|0|3|Mistura poupança e sorteios. Devolve o valor corrigido pela TR, geralmente abaixo da inflação, depois de uma carência.|Concorre a prêmios§Disciplina para guardar|Rende menos que a poupança§Carência alta e perda do dinheiro se sacar antes|Bancos e seguradoras
+educ|alt|📚|Investir em você (cursos, saúde, ferramentas)|2|—|Longo prazo|Varia|nenhum|0|zero|0|0|0|||Capacitação, saúde e equipamentos que aumentam sua renda e qualidade de vida. Em muitos casos rende mais que qualquer aplicação.|Aumenta seu potencial de renda§Retorno duradouro|Retorno difícil de medir§Exige tempo|Cursos e profissionais de confiança`;
+const INV=INV_DATA.trim().split('\n').map(l=>{const f=l.split('|');return {id:f[0],cls:f[1],emo:f[2],nome:f[3],risco:+f[4],liq:f[5],prazo:f[6],min:f[7],ir:f[8],fgc:f[9]==='1',idx:f[10],a:+f[11]||0,adm:+f[12]||0,pop:f[13]==='1',lo:f[14]===''?null:+f[14],hi:f[15]===''?null:+f[15],desc:f[16],pros:f[17]?f[17].split('§'):[],cons:f[18]?f[18].split('§'):[],onde:f[19]||''}});
+
+/* --- motor de cálculo --- */
+const INV_IR={
+ reg:['Tabela regressiva','22,5% até 180 dias · 20% de 181 a 360 · 17,5% de 361 a 720 · 15% acima de 720 dias. Só sobre o lucro, retido na fonte.'],
+ isento:['Isento de IR','Para pessoa física o lucro não paga Imposto de Renda (hoje; a lei pode mudar).'],
+ g15:['15% sobre o lucro','Imposto de 15% sobre o ganho na venda. Em ações comuns, vendas de até R$ 20 mil por mês são isentas.'],
+ g20:['20% sobre o lucro','Imposto de 20% sobre o ganho (day trade e ganho de capital de FIIs).'],
+ fii:['Isento nos rendimentos + 20% no ganho','Os rendimentos mensais costumam ser isentos para pessoa física; a venda com lucro paga 20%. Na simulação usamos uma média de ~10%.'],
+ cripto:['15% sobre o lucro (acima de R$ 35 mil vendidos/mês)','Até R$ 35 mil vendidos no mês não há imposto; acima disso, de 15% a 22,5% sobre o lucro. Na simulação usamos 15%.'],
+ prev:['Tabela regressiva da previdência','35% (até 2 anos), caindo 5 pontos a cada 2 anos até 10% (acima de 10 anos). No VGBL só sobre o lucro; no PGBL sobre o total resgatado.'],
+ nenhum:['Sem desconto de IR','Não considera Imposto de Renda no cálculo.']};
+const INV_IRSEL=[['auto','Automático (do investimento)'],['reg','Tabela regressiva'],['isento','Isento'],['g15','15% sobre o lucro'],['g20','20% sobre o lucro'],['prev','Previdência (35% a 10%)'],['nenhum','Sem desconto']];
+const INV_RISCO=['','Muito baixo','Baixo','Moderado','Alto','Muito alto'],INV_RCOR=['','#2f9e6b','#8cbf3f','#e8b923','#ee8a2b','#d9453a'];
+const INV_IDX=[['cdi','% do CDI','Ex.: 110 = 110% do CDI'],['aa','Taxa fixa (% ao ano)','Ex.: 12 = 12% ao ano'],['ipcam','IPCA + (% ao ano)','Ex.: 6 = inflação + 6% ao ano'],['selic','Selic + (pontos % ao ano)','Ex.: 0,1 = Selic + 0,1'],['poup','Poupança',''],['var','Renda variável (retorno esperado % a.a.)','Estimativa sua, sem garantia'],['zero','Sem rendimento financeiro','']];
+const INV_ICLS=['res','tes','ban','cre','rv','fun','pre','ext','cri','alt'];
+const invCls=id=>INV_CLS.find(c=>c[0]===id)||INV_CLS[1];
+const invF=(n,d)=>(Number(n)||0).toLocaleString(LOC(),{minimumFractionDigits:d==null?2:d,maximumFractionDigits:d==null?2:d});
+const invP=(n,d)=>invF(n,d)+'%';
+const invSg=(n,d)=>(n>0?'+':n<0?'−':'')+invF(Math.abs(n),d==null?2:d)+'%';
+const invDias=(a,b)=>Math.max(0,Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5));
+const invNum=v=>{const s=String(v==null?'':v).trim().replace(/[^\d.,-]/g,'');if(!s)return 0;const neg=s[0]==='-';let t=s.replace(/-/g,'');
+ if(t.indexOf(',')>=0)t=t.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(t))t=t.replace(/\./g,'');
+ const n=parseFloat(t);return isNaN(n)?0:(neg?-n:n)};
+const invSem=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const invTx=()=>{invNorm();return S.cart.inv.tx};
+function invPoup(tx){const trm=Math.pow(1+tx.tr/100,1/12)-1,m=tx.selic>8.5?0.005+trm:0.7*(Math.pow(1+tx.selic/100,1/12)-1)+trm;return(Math.pow(1+m,12)-1)*100}
+/* rendimento bruto anual (%) de um investimento do catálogo, com as taxas de referência */
+function invGross(p,tx){
+ switch(p.idx){
+  case 'cdi':return tx.cdi*p.a/100;
+  case 'selic':return tx.selic+p.a;
+  case 'pre':return tx.pre+p.a;
+  case 'ipca':return((1+tx.ipca/100)*(1+(tx.ntnb+p.a)/100)-1)*100;
+  case 'ipcam':return((1+tx.ipca/100)*(1+p.a/100)-1)*100;
+  case 'poup':return invPoup(tx);
+  case 'zero':return 0;
+  default:return p.a}}
+function invIRRate(ir,dias){
+ if(ir==='isento'||ir==='nenhum')return 0;
+ if(ir==='reg')return dias<=180?.225:dias<=360?.2:dias<=720?.175:.15;
+ if(ir==='g15'||ir==='cripto')return .15;
+ if(ir==='g20')return .2;
+ if(ir==='fii')return .10;
+ if(ir==='prev'){const y=dias/365;return y<=2?.35:y<=4?.30:y<=6?.25:y<=8?.20:y<=10?.15:.10}
+ return 0}
+const invMes=(g,fee)=>Math.pow((1+g/100)/(1+(fee||0)/100),1/12)-1;
+/* saldo após n meses: valor inicial + aportes no fim de cada mês; o IR é calculado por aporte (cada um com a sua idade) */
+function invNet(o,n){
+ const gm=Math.pow(1+o.m,n),D=30.4375;let inv=o.v0,gross=o.v0*gm,tax=o.v0*(gm-1)*invIRRate(o.ir,n*D);
+ for(let k=1;k<=n;k++){const a=o.pmt*(o.pinf?Math.pow(1+(o.infl||0)/100,Math.floor((k-1)/12)):1),f=Math.pow(1+o.m,n-k);inv+=a;gross+=a*f;tax+=a*(f-1)*invIRRate(o.ir,(n-k)*D)}
+ tax=Math.max(0,tax);return{inv:inv,gross:gross,tax:tax,net:gross-tax,juros:gross-inv}}
+/* aporte mensal que leva ao valor líquido "meta" em n meses (o saldo líquido é linear no aporte) */
+function invAporteNec(o,n,meta){const a=invNet(Object.assign({},o,{pmt:0}),n).net,b=invNet(Object.assign({},o,{pmt:1}),n).net-a;return b>0?(meta-a)/b:0}
+function invMesesMeta(o,meta,max){
+ if(o.m>0){if(invNet(o,max).net<meta)return null;let lo=1,hi=max;while(lo<hi){const mid=(lo+hi)>>1;if(invNet(o,mid).net>=meta)hi=mid;else lo=mid+1}return lo}
+ for(let n=1;n<=max;n++){if(invNet(o,n).net>=meta)return n}return null}
+/* taxa média mensal efetiva (TIR) dos fluxos */
+function invTIR(o,n,net){
+ const f=r=>{let s=o.v0*Math.pow(1+r,n);for(let k=1;k<=n;k++)s+=o.pmt*(o.pinf?Math.pow(1+(o.infl||0)/100,Math.floor((k-1)/12)):1)*Math.pow(1+r,n-k);return s-net};
+ let lo=-0.5,hi=1;for(let i=0;i<50;i++){const mid=(lo+hi)/2;if(f(mid)>0)hi=mid;else lo=mid}return(lo+hi)/2}
+function invLiqAnual(p,tx,meses){const g=invGross(p,tx),m=invMes(g,p.adm),r=invNet({v0:1000,pmt:0,m:m,ir:p.ir},meses||36);return(Math.pow(r.net/1000,12/(meses||36))-1)*100}
+function invRend1(p,tx){const g=invGross(p,tx),m=invMes(g,p.adm);return invNet({v0:1000,pmt:0,m:m,ir:p.ir},12).net}
+const invAnos=n=>{const a=Math.floor(n/12),m=n%12;return(a?a+(a===1?' ano':' anos'):'')+(a&&m?' e ':'')+(m?m+(m===1?' mês':' meses'):'')||'0 mês'};
+/* --- dados do usuário --- */
+function invNorm(){
+ const c=S.cart;if(!c)return;
+ const v=c.inv=(c.inv&&typeof c.inv==='object'&&!Array.isArray(c.inv))?c.inv:{};
+ v.tx=Object.assign({},INV_TX0,(v.tx&&typeof v.tx==='object')?v.tx:{});
+ ['selic','cdi','ipca','tr','pre','ntnb'].forEach(k=>{const n=parseFloat(v.tx[k]);v.tx[k]=isNaN(n)?INV_TX0[k]:n});
+ v.meus=Array.isArray(v.meus)?v.meus.filter(x=>x&&typeof x==='object'):[];
+ v.prods=Array.isArray(v.prods)?v.prods.filter(x=>x&&typeof x==='object'&&x.id):[];
+ v.meta=cR2(v.meta);v.perfil=v.perfil||null;v.q=(v.q&&typeof v.q==='object')?v.q:{};
+ v.prods.forEach(p=>{p.nome=String(p.nome||'Meu investimento');p.emo=p.emo||'✨';p.cls=INV_ICLS.indexOf(p.cls)>=0?p.cls:'alt';p.risco=Math.min(5,Math.max(1,parseInt(p.risco)||3));p.a=+p.a||0;p.adm=+p.adm||0;p.fgc=!!p.fgc;p.pros=Array.isArray(p.pros)?p.pros:[];p.cons=Array.isArray(p.cons)?p.cons:[];p.idx=p.idx||'aa';p.ir=p.ir||'reg';p.custom=true;p.pop=false});
+ v.meus.forEach(it=>{it.id=it.id||uid();it.nome=String(it.nome||'Investimento');it.cls=INV_ICLS.indexOf(it.cls)>=0?it.cls:'alt';it.aps=Array.isArray(it.aps)?it.aps.filter(a=>a&&+a.v>0).map(a=>({id:a.id||uid(),d:a.d||HOJE,v:cR2(a.v)})):[];
+  it.idx=it.idx||'man';it.taxa=+it.taxa||0;it.adm=+it.adm||0;it.ir=it.ir||'reg';if(it.atual===''||it.atual===undefined)it.atual=null;if(it.atual!=null)it.atual=cR2(it.atual);
+  if(it.fim&&typeof it.fim==='object'){it.fim={d:it.fim.d||HOJE,v:cR2(it.fim.v)}}else it.fim=null})}
+const invAll=()=>{invNorm();return INV.concat(S.cart.inv.prods)};
+const invProd=id=>invAll().find(p=>p.id===id);
+function invGrossIt(it,tx){switch(it.idx){case 'cdi':return tx.cdi*it.taxa/100;case 'aa':return it.taxa;case 'ipcam':return((1+tx.ipca/100)*(1+it.taxa/100)-1)*100;case 'selic':return tx.selic+it.taxa;case 'poup':return invPoup(tx);default:return null}}
+/* posição de um investimento registrado: aplicado, valor atual estimado, ganho */
+function invPos(it){
+ const tx=invTx(),apl=cR2(it.aps.reduce((s,a)=>s+a.v,0)),ini=it.aps.reduce((m,a)=>(!m||a.d<m)?a.d:m,'')||HOJE;
+ const R=(o)=>Object.assign({apl:apl,ini:ini,dias:invDias(ini,it.fim?it.fim.d:HOJE),bruto:o.atual,ir:0,mes:0},o,{ganho:cR2(o.atual-apl),pct:apl?(o.atual-apl)/apl*100:0});
+ if(it.fim)return R({atual:it.fim.v,fechado:true});
+ const g=invGrossIt(it,tx);
+ if(it.atual!=null)return R({atual:it.atual,manual:true,mes:g!=null?it.atual*invMes(g,it.adm):0});
+ if(g==null)return R({atual:apl,semTaxa:true});
+ const fim=(it.venc&&it.venc<HOJE)?it.venc:HOJE;let br=0,imp=0;
+ it.aps.forEach(a=>{const d=invDias(a.d,fim),f=Math.pow((1+g/100)/(1+it.adm/100),d/365),gn=a.v*(f-1);br+=a.v*f;imp+=Math.max(0,gn)*invIRRate(it.ir,d)});
+ const liq=br-imp;return R({atual:liq,bruto:br,ir:imp,mes:liq*invMes(g,it.adm),g:g,vencido:!!(it.venc&&it.venc<HOJE)})}
+/* ---------- telas ---------- */
+let iSub='exp',iCls='mais',iBusca='',iOrd='pad',iFgc=false,iIso=false,iAberto=null,iPos=null,iForm=null,iNovo=null,iAp=null,iFech=null,iSimOpen=false;
+let iSim={modo:'fut',pid:'tesselic',rt:'prod',rv:'',fee:'',irm:'auto',v0:'1000',pmt:'300',prazo:'10',un:'a',meta:'100000',renda:'5000',infl:'',pinf:false};
+const INV_SUBS=[['exp','📚','Explorar'],['car','💼','Minha carteira'],['sim','🧮','Simulador'],['gui','🎓','Guia']];
+function vInv(){
+ invNorm();
+ const nav=`<div class="seg s4 iv-seg">${INV_SUBS.map(a=>`<button class="${iSub===a[0]?'on':''}" onclick="iSub='${a[0]}';render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
+ return `<div class="iv-title"><h3 style="margin:0">📈 Investimentos</h3><small>Referência, não é recomendação</small></div>`+nav+(iSub==='exp'?invExplorar():iSub==='car'?invCarteira():iSub==='sim'?invSimulador():invGuia())}
+const invRisco=n=>`<span class="iv-risk" title="Risco: ${INV_RISCO[n]}" aria-label="Risco ${INV_RISCO[n]}">${[1,2,3,4,5].map(i=>`<i style="${i<=n?'background:'+INV_RCOR[n]:''}"></i>`).join('')}</span>`;
+function invTicker(){const t=invTx();
+ return `<div class="iv-tick" onclick="iSub='gui';render()" role="button" aria-label="Editar taxas de referência"><div><small>Selic</small><b>${invP(t.selic)}</b></div><div><small>CDI</small><b>${invP(t.cdi)}</b></div><div><small>IPCA 12m</small><b>${invP(t.ipca)}</b></div><div><small>Poupança</small><b>${invP(invPoup(t))}</b></div></div>`}
+/* --- Explorar --- */
+function invFiltrar(){
+ const tx=invTx(),q=invSem(iBusca);
+ let L=invAll().filter(p=>(iCls==='todos'||(iCls==='mais'?p.pop:iCls==='meu'?p.custom:p.cls===iCls))&&(!iFgc||p.fgc)&&(!iIso||p.ir==='isento')&&(!q||invSem(p.nome+' '+p.desc+' '+invCls(p.cls)[2]+' '+p.onde).indexOf(q)>=0));
+ const G=p=>invLiqAnual(p,tx);
+ if(iOrd==='rend')L=L.slice().sort((a,b)=>G(b)-G(a));else if(iOrd==='risco')L=L.slice().sort((a,b)=>a.risco-b.risco||G(b)-G(a));else if(iOrd==='nome')L=L.slice().sort((a,b)=>a.nome.localeCompare(b.nome));
+ return L}
+function invExplorar(){
+ const chips=INV_CLS.map(c=>{const n=c[0]==='todos'?invAll().length:c[0]==='mais'?invAll().filter(p=>p.pop).length:c[0]==='meu'?S.cart.inv.prods.length:INV.filter(p=>p.cls===c[0]).length;return `<button class="iv-chip ${iCls===c[0]?'on':''}" onclick="iCls='${c[0]}';render()">${c[1]} ${c[2]} <small>${n}</small></button>`}).join('');
+ return invTicker()+`<div class="card iv-filt"><input id="iv-q" type="search" placeholder="🔎 Buscar: CDB, Tesouro, FIIs, Bitcoin…" value="${esc(iBusca)}" oninput="iBusca=this.value;invLista()" aria-label="Buscar investimento"><div class="iv-chips">${chips}</div>
+  <div class="row" style="margin-top:8px;flex-wrap:wrap"><select id="iv-ord" onchange="iOrd=this.value;render()" aria-label="Ordenar" style="flex:1;min-width:150px">${[['pad','Ordem padrão'],['rend','Maior rendimento líquido'],['risco','Menor risco'],['nome','A a Z']].map(o=>`<option value="${o[0]}" ${iOrd===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>
+  <button class="iv-chip ${iFgc?'on':''}" onclick="iFgc=!iFgc;render()">🛡️ Com FGC</button><button class="iv-chip ${iIso?'on':''}" onclick="iIso=!iIso;render()">💚 Isento de IR</button></div></div>
+ <div id="iv-lista">${invListaHtml()}</div>
+ <button class="sec" style="width:100%;margin-top:4px" onclick="iNovo=invNovoVazio();iSub='exp';render();invScrollTo('iv-novo')">✨ Criar meu próprio investimento</button>
+ ${iNovo?invFormNovo():''}
+ <p class="hint">Rendimentos calculados com as taxas de referência (editáveis no Guia). Renda variável mostra uma estimativa ilustrativa, sem promessa de ganho. Antes de investir, confira condições, taxas e o regulamento com a instituição.</p>`}
+function invListaHtml(){const L=invFiltrar();return `<h3 style="margin-top:6px">${L.length} ${L.length===1?'opção':'opções'}${iCls==='mais'?' mais usadas pelos brasileiros':iCls==='todos'?'':' em '+esc(invCls(iCls)[2])}</h3>`+(L.length?L.map(invCard).join(''):'<div class="vazio">Nenhum investimento encontrado. Tente outra busca ou crie o seu.</div>')}
+function invLista(){const e=$('#iv-lista');if(e)e.innerHTML=invListaHtml()}
+function invScrollTo(id){setTimeout(()=>{const e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},60)}
+function invCard(p){
+ const tx=invTx(),c=invCls(p.cls),open=iAberto===p.id,g=invGross(p,tx),isVar=p.idx==='var',liqA=invLiqAnual(p,tx),r1=invRend1(p,tx),pop=invPoup(tx);
+ const irn=(INV_IR[p.ir]||INV_IR.reg)[0];
+ const big=p.idx==='zero'?`<div class="iv-r"><small>Rendimento</small><b>—</b><em>sem juros</em></div>`
+  :isVar?`<div class="iv-r"><small>Esperado (ilustrativo)</small><b>${invP(g,1)}</b><em>a.a. bruto</em></div>`
+  :`<div class="iv-r"><small>Rende (bruto)</small><b>${invP(g)}</b><em>a.a. · ${invP((Math.pow(1+g/100,1/12)-1)*100)} ao mês</em></div>`;
+ const liqBox=p.idx==='zero'?'':`<div class="iv-r"><small>Líquido após IR${p.adm?' e taxas':''}</small><b>${invP(liqA,1)}</b><em>a.a. (3 anos)</em></div>`;
+ const rBox=(p.idx==='zero'||isVar)?'':`<div class="iv-r"><small>R$ 1.000 em 1 ano</small><b>${BRL(r1)}</b><em>${invSg((r1/1000-1)*100,1)} líquido</em></div>`;
+ const vsP=(p.idx==='zero'||isVar||p.idx==='poup')?'':`<span class="iv-tag ${liqA>=pop?'ok':'bad'}">${liqA>=pop?'▲':'▼'} ${invF(Math.abs(liqA-pop),1)} p.p. ${liqA>=pop?'acima':'abaixo'} da poupança</span>`;
+ const rng=(isVar&&p.lo!=null)?`<div class="iv-rng"><span>pior ano ${invSg(p.lo,0)}</span><i><b style="left:${Math.max(0,Math.min(100,(p.a-p.lo)/((p.hi-p.lo)||1)*100))}%" title="esperado"></b></i><span>melhor ano ${invSg(p.hi,0)}</span></div>`:'';
+ return `<div class="card iv-card ${open?'open':''}" id="ivc-${esc(p.id)}" style="--ivc:${c[3]}">
+  <div class="iv-h" onclick="iAberto=${open?'null':`'${p.id}'`};render();${open?'':`invScrollTo('ivc-${p.id}')`}"><span class="iv-emo">${p.emo}</span><div class="iv-nm"><b>${esc(p.nome)}</b><small>${c[1]} ${esc(c[2])}${p.custom?' · criado por mim':''}</small></div>${p.pop?'<span class="iv-star" title="Mais usada">⭐</span>':''}<span class="iv-car">${open?'▴':'▾'}</span></div>
+  <div class="iv-badges">${invRisco(p.risco)}<span class="iv-tag">Risco ${INV_RISCO[p.risco].toLowerCase()}</span>${p.fgc?'<span class="iv-tag ok">🛡️ FGC</span>':''}${p.ir==='isento'?'<span class="iv-tag ok">💚 Isento de IR</span>':''}${vsP}</div>
+  <div class="iv-rates">${big}${liqBox}${rBox}</div>${rng}
+  ${open?`<p class="iv-desc">${esc(p.desc)}</p>
+  <div class="iv-grid"><div><small>💧 Liquidez</small><b>${esc(p.liq||'—')}</b></div><div><small>⏳ Prazo</small><b>${esc(p.prazo||'—')}</b></div><div><small>💰 Aporte mínimo</small><b>${esc(p.min||'—')}</b></div><div><small>🧾 Imposto</small><b>${esc(irn)}</b></div><div><small>🏷️ Taxas</small><b>${p.adm?invP(p.adm)+' a.a.':'Sem taxa de administração'}</b></div><div><small>🛡️ FGC</small><b>${p.fgc?'Sim, até R$ 250 mil':'Não'}</b></div></div>
+  ${p.pros.length?`<div class="iv-pc"><div><b class="ok">✔ Vantagens</b>${p.pros.map(x=>`<p>${esc(x)}</p>`).join('')}</div><div><b class="bad">⚠ Cuidados</b>${p.cons.map(x=>`<p>${esc(x)}</p>`).join('')}</div></div>`:''}
+  ${p.onde?`<p class="hint">📍 Onde investir: ${esc(p.onde)}</p>`:''}
+  <p class="hint">🧾 ${esc((INV_IR[p.ir]||INV_IR.reg)[1])}</p>
+  <div class="row" style="margin-top:10px;flex-wrap:wrap"><button style="flex:1" onclick="invSimDe('${p.id}')">🧮 Simular</button><button class="sec" style="flex:1" onclick="invRegDe('${p.id}')">＋ Registrar</button>${p.custom?`<button class="ghost" onclick="invEditNovo('${p.id}')" aria-label="Editar">✏️</button><button class="ghost" onclick="invDelNovo('${p.id}')" aria-label="Excluir">🗑</button>`:''}</div>`:''}</div>`}
+function invSimDe(id){const p=invProd(id);if(!p)return;iSim.pid=id;iSim.rt='prod';iSim.fee='';iSim.irm='auto';iSub='sim';render();window.scrollTo(0,0)}
+/* --- Criar investimento --- */
+const invNovoVazio=()=>({id:'',nome:'',emo:'✨',cls:'alt',risco:3,liq:'',prazo:'',min:'',ir:'reg',fgc:false,idx:'aa',a:'',adm:'',lo:'',hi:'',desc:'',pros:'',cons:'',onde:''});
+const INV_EMOS=['✨','💎','🏠','🚗','🌱','🏪','📈','🪙','🎓','🛡️','🏦','🌎','⚡','🎯','🧠','🔑'];
+function invFormNovo(){
+ const f=iNovo,isV=f.idx==='var';
+ const ix=INV_IDX.find(x=>x[0]===f.idx)||INV_IDX[1];
+ return `<div class="card iv-form" id="iv-novo"><h3 style="margin:0 0 8px">${f.id?'✏️ Editar investimento':'✨ Criar investimento'}</h3>
+ <label class="fl" style="margin-top:0">Nome</label><input value="${esc(f.nome)}" maxlength="60" placeholder="Ex.: CDB Banco do Bairro, Consórcio, Terreno em Atibaia" oninput="iNovo.nome=this.value">
+ <label class="fl">Ícone</label><div class="iv-emos">${INV_EMOS.map(e=>`<button class="${f.emo===e?'on':''}" onclick="iNovo.emo='${e}';render()">${e}</button>`).join('')}</div>
+ <div class="row" style="margin-top:8px"><div style="flex:1"><label class="fl">Categoria</label><select onchange="iNovo.cls=this.value">${INV_ICLS.map(c=>`<option value="${c}" ${f.cls===c?'selected':''}>${invCls(c)[1]} ${invCls(c)[2]}</option>`).join('')}</select></div><div style="flex:1"><label class="fl">Risco</label><select onchange="iNovo.risco=+this.value">${[1,2,3,4,5].map(n=>`<option value="${n}" ${f.risco===n?'selected':''}>${n} · ${INV_RISCO[n]}</option>`).join('')}</select></div></div>
+ <label class="fl">Como ele rende?</label><select onchange="iNovo.idx=this.value;render()">${INV_IDX.map(x=>`<option value="${x[0]}" ${f.idx===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select>
+ ${(f.idx==='poup'||f.idx==='zero')?'':`<div class="row" style="margin-top:8px"><input inputmode="decimal" value="${esc(f.a)}" placeholder="${esc(ix[2])}" oninput="iNovo.a=this.value" aria-label="Valor do rendimento"><input inputmode="decimal" value="${esc(f.adm)}" placeholder="Taxa adm. % a.a." oninput="iNovo.adm=this.value" aria-label="Taxa de administração"></div>`}
+ ${isV?`<div class="row" style="margin-top:8px"><input inputmode="decimal" value="${esc(f.lo)}" placeholder="Pior ano (%) ex.: -20" oninput="iNovo.lo=this.value"><input inputmode="decimal" value="${esc(f.hi)}" placeholder="Melhor ano (%) ex.: 30" oninput="iNovo.hi=this.value"></div>`:''}
+ <div class="row" style="margin-top:8px"><div style="flex:1"><label class="fl">Imposto de Renda</label><select onchange="iNovo.ir=this.value">${INV_IRSEL.filter(o=>o[0]!=='auto').concat([['fii','Rendimento isento + 20% no ganho'],['cripto','Cripto (15%)']]).map(o=>`<option value="${o[0]}" ${f.ir===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div><label class="iv-ck"><input type="checkbox" ${f.fgc?'checked':''} onchange="iNovo.fgc=this.checked"> 🛡️ Tem FGC</label></div>
+ <div class="row" style="margin-top:8px"><input value="${esc(f.liq)}" placeholder="Liquidez (ex.: D+1)" oninput="iNovo.liq=this.value"><input value="${esc(f.prazo)}" placeholder="Prazo (ex.: 2 anos)" oninput="iNovo.prazo=this.value"></div>
+ <div class="row" style="margin-top:8px"><input value="${esc(f.min)}" placeholder="Aporte mínimo (ex.: R$ 500)" oninput="iNovo.min=this.value"><input value="${esc(f.onde)}" placeholder="Onde investir" oninput="iNovo.onde=this.value"></div>
+ <textarea style="min-height:64px;margin-top:8px" placeholder="Descrição: o que é e como funciona" oninput="iNovo.desc=this.value">${esc(f.desc)}</textarea>
+ <div class="row" style="margin-top:8px;align-items:stretch"><textarea style="min-height:72px" placeholder="Vantagens (uma por linha)" oninput="iNovo.pros=this.value">${esc(f.pros)}</textarea><textarea style="min-height:72px" placeholder="Cuidados (um por linha)" oninput="iNovo.cons=this.value">${esc(f.cons)}</textarea></div>
+ <div class="row" style="margin-top:10px"><button style="flex:1" onclick="invSalvarNovo()">Salvar investimento</button><button class="ghost" onclick="iNovo=null;render()">Cancelar</button></div></div>`}
+function invSalvarNovo(){
+ const f=iNovo;if(!f)return;if(!f.nome.trim()){info('Dê um nome ao investimento.');return}
+ const o={id:f.id||'u'+uid(),nome:f.nome.trim(),emo:f.emo,cls:f.cls,risco:f.risco,liq:f.liq.trim(),prazo:f.prazo.trim(),min:f.min.trim(),ir:f.ir,fgc:!!f.fgc,idx:f.idx,a:invNum(f.a),adm:Math.max(0,invNum(f.adm)),lo:String(f.lo).trim()===''?null:invNum(f.lo),hi:String(f.hi).trim()===''?null:invNum(f.hi),desc:f.desc.trim(),pros:f.pros.split('\n').map(s=>s.trim()).filter(Boolean),cons:f.cons.split('\n').map(s=>s.trim()).filter(Boolean),onde:f.onde.trim(),custom:true};
+ const L=S.cart.inv.prods,i=L.findIndex(x=>x.id===o.id);if(i>=0)L[i]=o;else L.push(o);
+ iNovo=null;iCls='meu';iAberto=o.id;save();render();info('Investimento salvo. Ele já aparece no Explorar, no Simulador e ao registrar.')}
+function invEditNovo(id){const p=S.cart.inv.prods.find(x=>x.id===id);if(!p)return;iNovo=Object.assign({},p,{a:String(p.a).replace('.',','),adm:p.adm?String(p.adm).replace('.',','):'',lo:p.lo==null?'':String(p.lo),hi:p.hi==null?'':String(p.hi),pros:p.pros.join('\n'),cons:p.cons.join('\n')});render();invScrollTo('iv-novo')}
+function invDelNovo(id){const usa=S.cart.inv.meus.some(x=>x.pid===id);ask('Excluir este investimento criado por você?'+(usa?' Os registros da sua carteira continuam, só não ficam ligados a ele.':''),()=>{S.cart.inv.prods=S.cart.inv.prods.filter(x=>x.id!==id);if(iAberto===id)iAberto=null;if(iSim.pid===id)iSim.pid='tesselic';save();render()})}
+/* --- Minha carteira --- */
+const invRegVazio=()=>({id:'',pid:'',nome:'',cls:'ban',idx:'cdi',taxa:'',adm:'',ir:'reg',inst:'',v:'',d:HOJE,venc:'',atual:'',obs:''});
+function invRegDe(id){const p=invProd(id);if(!p)return;const tx=invTx();iForm=invRegVazio();invFormDe(p,tx);iSub='car';render();invScrollTo('iv-reg')}
+function invFormDe(p,tx){const f=iForm;f.pid=p.id;f.nome=p.nome;f.cls=p.cls;f.ir=p.ir;f.adm=p.adm?String(p.adm).replace('.',','):'';
+ const ix=p.idx;if(ix==='pre'){f.idx='aa';f.taxa=String(cR2(tx.pre+p.a)).replace('.',',')}else if(ix==='ipca'){f.idx='ipcam';f.taxa=String(cR2(tx.ntnb+p.a)).replace('.',',')}else if(ix==='var'||ix==='zero'){f.idx='man';f.taxa=''}else{f.idx=ix;f.taxa=(ix==='poup')?'':String(p.a).replace('.',',')}}
+function invFormEd(it){return {id:it.id,pid:it.pid||'',nome:it.nome,cls:it.cls,idx:it.idx,taxa:it.taxa?String(it.taxa).replace('.',','):'',adm:it.adm?String(it.adm).replace('.',','):'',ir:it.ir,inst:it.inst||'',v:'',d:HOJE,venc:it.venc||'',atual:it.atual!=null?String(it.atual).replace('.',','):'',obs:it.obs||''}}
+function invFormHtml(){
+ const f=iForm,ed=!!f.id,ix=INV_IDX.filter(x=>x[0]!=='var'&&x[0]!=='zero').concat([['man','Informar só o valor atual (renda variável, imóvel…)','']]);
+ const all=invAll(),gp=INV_ICLS.map(c=>{const L=all.filter(p=>p.cls===c);return L.length?`<optgroup label="${invCls(c)[1]} ${esc(invCls(c)[2])}">${L.map(p=>`<option value="${esc(p.id)}" ${f.pid===p.id?'selected':''}>${esc(p.nome)}</option>`).join('')}</optgroup>`:''}).join('');
+ const t=ix.find(x=>x[0]===f.idx)||ix[0];
+ return `<div class="card iv-form" id="iv-reg"><h3 style="margin:0 0 8px">${ed?'✏️ Editar investimento':'＋ Registrar investimento'}</h3>
+ <label class="fl" style="margin-top:0">Tipo de investimento</label><select onchange="invRegPick(this.value)"><option value="">Outro (personalizado)</option>${gp}</select>
+ <label class="fl">Nome / como você chama</label><input value="${esc(f.nome)}" maxlength="60" placeholder="Ex.: CDB 120% CDI Banco X" oninput="iForm.nome=this.value">
+ <div class="row" style="margin-top:8px"><input value="${esc(f.inst)}" maxlength="40" placeholder="Instituição (banco, corretora)" oninput="iForm.inst=this.value"><select onchange="iForm.cls=this.value" aria-label="Categoria">${INV_ICLS.map(c=>`<option value="${c}" ${f.cls===c?'selected':''}>${invCls(c)[1]} ${invCls(c)[2]}</option>`).join('')}</select></div>
+ ${ed?'':`<div class="row" style="margin-top:8px"><input inputmode="decimal" value="${esc(f.v)}" placeholder="Valor investido (R$)" oninput="iForm.v=this.value" aria-label="Valor investido"><input type="date" value="${esc(f.d)}" onchange="iForm.d=this.value" aria-label="Data do investimento"></div>`}
+ <label class="fl">Rendimento contratado</label><select onchange="iForm.idx=this.value;render()">${ix.map(x=>`<option value="${x[0]}" ${f.idx===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select>
+ ${(f.idx==='man'||f.idx==='poup')?'':`<div class="row" style="margin-top:8px"><input inputmode="decimal" value="${esc(f.taxa)}" placeholder="${esc(t[2]||'Taxa')}" oninput="iForm.taxa=this.value" aria-label="Taxa contratada"><input inputmode="decimal" value="${esc(f.adm)}" placeholder="Taxa adm. % a.a." oninput="iForm.adm=this.value" aria-label="Taxa de administração"></div>`}
+ <div class="row" style="margin-top:8px"><div style="flex:1"><label class="fl" style="margin-top:0">Vencimento (opcional)</label><input type="date" value="${esc(f.venc)}" onchange="iForm.venc=this.value"></div><div style="flex:1"><label class="fl" style="margin-top:0">Imposto de Renda</label><select onchange="iForm.ir=this.value">${INV_IRSEL.filter(o=>o[0]!=='auto').concat([['fii','Rendimento isento + 20%'],['cripto','Cripto (15%)']]).map(o=>`<option value="${o[0]}" ${f.ir===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></div></div>
+ <label class="fl">Valor atual (opcional)</label><input inputmode="decimal" value="${esc(f.atual)}" placeholder="${f.idx==='man'?'Quanto vale hoje (R$)':'Deixe vazio para eu estimar pela taxa'}" oninput="iForm.atual=this.value">
+ <input value="${esc(f.obs)}" maxlength="120" placeholder="Observação (opcional)" style="margin-top:8px" oninput="iForm.obs=this.value">
+ <div class="row" style="margin-top:10px"><button style="flex:1" onclick="invSalvarReg()">${ed?'Salvar alterações':'Registrar'}</button><button class="ghost" onclick="iForm=null;render()">Cancelar</button></div></div>`}
+function invRegPick(id){const p=invProd(id);if(!p){iForm.pid='';render();return}const keep={v:iForm.v,d:iForm.d,venc:iForm.venc,inst:iForm.inst,obs:iForm.obs,atual:iForm.atual,id:iForm.id};invFormDe(p,invTx());Object.assign(iForm,keep);render()}
+function invSalvarReg(){
+ const f=iForm;if(!f)return;const ed=!!f.id,nome=f.nome.trim();
+ if(!nome){info('Dê um nome ao investimento.');return}
+ const v=cNum(f.v);if(!ed&&!v){info('Informe o valor investido.');return}
+ const idx=f.idx,taxa=(idx==='man'||idx==='poup')?0:invNum(f.taxa);
+ if(idx!=='man'&&idx!=='poup'&&!taxa&&idx!=='selic'){info('Informe a taxa contratada, ou escolha "Informar só o valor atual".');return}
+ const at=String(f.atual).trim()===''?null:cNum(f.atual);
+ if(ed){const it=S.cart.inv.meus.find(x=>x.id===f.id);if(!it){iForm=null;render();return}Object.assign(it,{nome:nome,cls:f.cls,idx:idx,taxa:taxa,adm:Math.max(0,invNum(f.adm)),ir:f.ir,inst:f.inst.trim(),venc:f.venc||'',atual:at,obs:f.obs.trim(),pid:f.pid||''})}
+ else S.cart.inv.meus.push({id:uid(),pid:f.pid||'',nome:nome,cls:f.cls,idx:idx,taxa:taxa,adm:Math.max(0,invNum(f.adm)),ir:f.ir,inst:f.inst.trim(),venc:f.venc||'',atual:at,obs:f.obs.trim(),aps:[{id:uid(),d:f.d||HOJE,v:v}],fim:null});
+ iForm=null;save();render()}
+function invAddAp(id){const it=S.cart.inv.meus.find(x=>x.id===id);if(!it||!iAp)return;const v=cNum(iAp.v);if(!v){info('Informe o valor do aporte.');return}it.aps.push({id:uid(),d:iAp.d||HOJE,v:v});if(it.atual!=null)it.atual=cR2(it.atual+v);iAp=null;save();render()}
+function invDelAp(id,ap){const it=S.cart.inv.meus.find(x=>x.id===id);if(!it)return;if(it.aps.length<=1){info('O investimento precisa de pelo menos um aporte. Para remover tudo, exclua o investimento.');return}ask('Excluir este aporte?',()=>{it.aps=it.aps.filter(a=>a.id!==ap);save();render()})}
+function invSetAtual(id){const it=S.cart.inv.meus.find(x=>x.id===id),e=$('#iv-at');if(!it||!e)return;const t=e.value.trim();it.atual=t===''?null:cNum(t);save();render()}
+function invEnc(id){const it=S.cart.inv.meus.find(x=>x.id===id);if(!it||!iFech)return;const v=cNum(iFech.v);if(!v&&!/^0/.test(String(iFech.v).trim())){info('Informe quanto você resgatou (valor final).');return}it.fim={d:iFech.d||HOJE,v:v};iFech=null;save();render()}
+function invReabrir(id){const it=S.cart.inv.meus.find(x=>x.id===id);if(it){it.fim=null;save();render()}}
+function invDelReg(id){ask('Excluir este investimento da sua carteira?',()=>{S.cart.inv.meus=S.cart.inv.meus.filter(x=>x.id!==id);if(iPos===id)iPos=null;save();render()})}
+function invDonut(L,tot){
+ let off=0;const seg=L.map(x=>{const p=tot>0?x[1]/tot*100:0,s=`<circle r="15.915" cx="21" cy="21" fill="none" stroke="${x[2]}" stroke-width="7" stroke-dasharray="${Math.max(0,p-.6)} ${100-Math.max(0,p-.6)}" stroke-dashoffset="${-off}" transform="rotate(-90 21 21)"/>`;off+=p;return s}).join('');
+ return `<svg viewBox="0 0 42 42" class="iv-donut" role="img" aria-label="Distribuição por categoria"><circle r="15.915" cx="21" cy="21" fill="none" stroke="var(--ln)" stroke-width="7"/>${seg}</svg>`}
+function invCarteira(){
+ const M=S.cart.inv.meus,P=M.map(it=>[it,invPos(it)]),at=P.filter(x=>!x[0].fim),fe=P.filter(x=>x[0].fim);
+ const apl=cR2(at.reduce((s,x)=>s+x[1].apl,0)),val=cR2(at.reduce((s,x)=>s+x[1].atual,0)),gan=cR2(val-apl),pct=apl?gan/apl*100:0,mes=at.reduce((s,x)=>s+(x[1].mes||0),0);
+ const real=cR2(fe.reduce((s,x)=>s+x[1].ganho,0));
+ const por={};at.forEach(x=>{const c=x[0].cls;por[c]=(por[c]||0)+x[1].atual});
+ const D=Object.keys(por).map(c=>[c,por[c],invCls(c)[3]]).sort((a,b)=>b[1]-a[1]);
+ const meta=S.cart.inv.meta,pm=meta>0?Math.min(100,val/meta*100):0;
+ const hero=at.length?`<div class="card iv-hero"><small>Patrimônio investido (valor atual estimado)</small><strong>${BRL(val)}</strong>
+  <div class="iv-hg"><div><small>Total aplicado</small><b>${BRL(apl)}</b></div><div><small>Ganho</small><b class="${gan>=0?'cw-in':'cw-out'}">${gan>=0?'+':'−'}${BRL(Math.abs(gan))}</b></div><div><small>Rentabilidade</small><b class="${gan>=0?'cw-in':'cw-out'}">${invSg(pct)}</b></div></div>
+  ${mes>0?`<p class="hint" style="margin-top:10px">📆 Seu dinheiro rende cerca de <b>${BRL(mes)} por mês</b> (estimativa líquida)${val>0?', ou '+invP(mes/val*100)+' ao mês':''}.</p>`:''}
+  ${real?`<p class="hint">🏁 Ganho já realizado em investimentos encerrados: <b class="${real>=0?'cw-in':'cw-out'}">${real>=0?'+':'−'}${BRL(Math.abs(real))}</b></p>`:''}</div>
+  <div class="card"><b>Para onde foi o seu dinheiro</b><div class="iv-dn">${invDonut(D,val)}<div class="iv-lg">${D.map(x=>`<div><i style="background:${x[2]}"></i><span>${invCls(x[0])[1]} ${esc(invCls(x[0])[2])}</span><b>${invP(val?x[1]/val*100:0,0)}</b></div>`).join('')}</div></div></div>`
+  :`<div class="card iv-hero"><small>Sua carteira de investimentos</small><strong>${BRL(0)}</strong><p class="hint" style="margin-top:8px">Registre tudo o que você já tem investido: poupança, CDB, Tesouro, ações, fundos, imóveis, cripto… Eu calculo o valor atual e o ganho de cada um.</p></div>`;
+ const metaH=`<div class="card"><div class="cw-row"><span>🎯 Meta de patrimônio</span><b>${meta>0?BRL(meta):'—'}</b></div>${meta>0?`<div class="cw-bar"><i style="width:${pm}%"></i></div><small style="color:var(--mute)">${pm>=100?'🎉 Meta atingida!':'Você já tem '+invP(pm,1)+' da meta · faltam '+BRL(Math.max(0,meta-val))}</small>`:''}
+  <div class="row" style="margin-top:8px"><input id="iv-meta" inputmode="decimal" placeholder="Quanto quer juntar? (R$)" value="${cTxt(meta)}" onkeydown="if(event.key==='Enter')invMeta()"><button class="sec" onclick="invMeta()">Salvar</button></div></div>`;
+ const itens=at.length?INV_ICLS.map(c=>{const L=at.filter(x=>x[0].cls===c);if(!L.length)return'';const tot=cR2(L.reduce((s,x)=>s+x[1].atual,0)),ta=cR2(L.reduce((s,x)=>s+x[1].apl,0));return `<h3>${invCls(c)[1]} ${esc(invCls(c)[2])} · ${BRL(tot)} <span class="${tot>=ta?'cw-in':'cw-out'}" style="font-weight:700">${ta?invSg((tot-ta)/ta*100,1):''}</span></h3><div class="card" style="padding:4px 14px">${L.map(x=>invReg(x[0],x[1])).join('')}</div>`}).join(''):'';
+ const fech=fe.length?`<h3>🏁 Encerrados (${fe.length})</h3><div class="card" style="padding:4px 14px">${fe.map(x=>invReg(x[0],x[1])).join('')}</div>`:'';
+ return hero+(iForm?invFormHtml():`<button style="width:100%;margin-bottom:12px" onclick="iForm=invRegVazio();render();invScrollTo('iv-reg')">＋ Registrar investimento</button>`)+metaH+itens+fech
+  +`<p class="hint">Valores atuais calculados pelas taxas contratadas e pelo IR estimado. Para renda variável, imóveis e cripto, informe o valor atual. É uma estimativa: o extrato da instituição manda.</p>`}
+function invMeta(){S.cart.inv.meta=cNum($('#iv-meta').value);save();render()}
+function invReg(it,ps){
+ const open=iPos===it.id,c=invCls(it.cls),gcl=ps.ganho>=0?'cw-in':'cw-out';
+ const venc=it.venc&&!it.fim?(()=>{const d=Math.round((new Date(it.venc+'T12:00')-new Date(HOJE+'T12:00'))/864e5);return d<0?'<span class="iv-tag bad">venceu</span>':d<=30?`<span class="iv-tag warn">vence em ${d} d</span>`:''})():'';
+ const base=`<div class="item iv-it" onclick="iPos=${open?'null':`'${it.id}'`};iAp=null;iFech=null;render()" style="cursor:pointer"><span class="cw-ic">${(invProd(it.pid)||{emo:c[1]}).emo}</span><div class="t"><b>${esc(it.nome)}</b><br><small style="color:var(--mute)">${it.inst?esc(it.inst)+' · ':''}${ps.fechado?'encerrado em '+esc(fmt(it.fim.d,{day:'2-digit',month:'short',year:'numeric'})):invSub(it)}</small> ${venc}</div><div style="text-align:right"><b class="cw-v">${BRL(ps.atual)}</b><br><small class="${gcl}" style="font-weight:700">${ps.semTaxa?'informe o valor atual':invSg(ps.pct,1)+' · '+(ps.ganho>=0?'+':'−')+BRL(Math.abs(ps.ganho))}</small></div></div>`;
+ if(!open)return base;
+ const rows=[['Total aplicado',BRL(ps.apl)],['Início',fmt(ps.ini,{day:'2-digit',month:'short',year:'numeric'})+' · '+invAnos(Math.round(ps.dias/30.4375))]];
+ if(!ps.fechado&&!ps.manual&&!ps.semTaxa){rows.push(['Valor bruto estimado',BRL(ps.bruto)],['IR estimado',ps.ir?'−'+BRL(ps.ir):'isento'],['Rendimento contratado a.a.',invP(ps.g)]);if(ps.vencido)rows.push(['Obs.','já venceu: rendimento contado até o vencimento'])}
+ if(ps.manual)rows.push(['Valor informado por você','sem cálculo automático']);
+ rows.push([ps.fechado?'Resgatado':'Valor atual',BRL(ps.atual)],['Ganho '+(ps.fechado?'realizado':'estimado'),`<b class="${gcl}">${ps.ganho>=0?'+':'−'}${BRL(Math.abs(ps.ganho))} (${invSg(ps.pct)})</b>`]);
+ if(ps.dias>=30&&ps.apl>0&&!ps.semTaxa){const a=(Math.pow(Math.max(0.0001,ps.atual/ps.apl),365/ps.dias)-1)*100;rows.push(['Média anualizada',invSg(a)])}
+ return base+`<div class="iv-det">${rows.map(r=>`<div class="cw-row"><span>${r[0]}</span><span style="font-weight:600;text-align:right">${r[1]}</span></div>`).join('')}
+  <h3 style="margin:12px 0 4px">Aportes</h3>${it.aps.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(a=>`<div class="cw-row"><span>${esc(fmt(a.d,{day:'2-digit',month:'short',year:'numeric'}))}</span><span><b>${BRL(a.v)}</b> <button class="ghost" style="padding:2px 6px" onclick="invDelAp('${it.id}','${a.id}')" aria-label="Excluir aporte">✕</button></span></div>`).join('')}
+  ${it.obs?`<p class="hint">📝 ${esc(it.obs)}</p>`:''}
+  ${ps.fechado?`<div class="row" style="margin-top:10px"><button class="sec" onclick="invReabrir('${it.id}')">↩ Reabrir</button><button class="ghost" onclick="invDelReg('${it.id}')">🗑 Excluir</button></div>`
+  :(iAp&&iAp.id===it.id)?`<div class="row" style="margin-top:8px"><input inputmode="decimal" id="iv-apv" placeholder="Valor (R$)" oninput="iAp.v=this.value" onkeydown="if(event.key==='Enter')invAddAp('${it.id}')"><input type="date" value="${esc(iAp.d)}" onchange="iAp.d=this.value"></div><div class="row" style="margin-top:8px"><button onclick="invAddAp('${it.id}')">Adicionar aporte</button><button class="ghost" onclick="iAp=null;render()">Cancelar</button></div>`
+  :(iFech&&iFech.id===it.id)?`<div class="row" style="margin-top:8px"><input inputmode="decimal" placeholder="Valor resgatado (R$)" oninput="iFech.v=this.value" onkeydown="if(event.key==='Enter')invEnc('${it.id}')"><input type="date" value="${esc(iFech.d)}" onchange="iFech.d=this.value"></div><div class="row" style="margin-top:8px"><button onclick="invEnc('${it.id}')">Encerrar</button><button class="ghost" onclick="iFech=null;render()">Cancelar</button></div>`
+  :`<div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="sec" style="flex:1" onclick="iAp={id:'${it.id}',v:'',d:HOJE};render();cFoco('iv-apv')">＋ Aporte</button><button class="sec" style="flex:1" onclick="iFech={id:'${it.id}',v:'',d:HOJE};render()">🏁 Encerrar</button></div>
+  <div class="row" style="margin-top:8px"><input id="iv-at" inputmode="decimal" placeholder="Atualizar valor atual (R$)" value="${it.atual!=null?cTxt(it.atual):''}"><button class="sec" onclick="invSetAtual('${it.id}')">Salvar</button></div>
+  <div class="row" style="margin-top:8px"><button class="ghost" onclick="iForm=invFormEd(S.cart.inv.meus.find(x=>x.id==='${it.id}'));render();invScrollTo('iv-reg')">✏️ Editar</button><button class="ghost" onclick="invDelReg('${it.id}')">🗑 Excluir</button></div>`}</div>`}
+function invSub(it){const t=invTx();switch(it.idx){case 'cdi':return invP(it.taxa,1)+' do CDI';case 'aa':return invP(it.taxa)+' a.a.';case 'ipcam':return 'IPCA + '+invP(it.taxa);case 'selic':return 'Selic'+(it.taxa?' + '+invP(it.taxa):'');case 'poup':return 'Poupança';default:return 'valor informado por você'}}
+/* --- Simulador (calculadora inteligente) --- */
+const INV_MODOS=[['fut','🔮','Quanto terei'],['aporte','🎯','Quanto aportar'],['tempo','⏱️','Em quanto tempo'],['comp','⚔️','Comparar'],['renda','🏖️','Renda passiva']];
+function invSS(k,v){iSim[k]=v;invSimUpd()}
+function invSimPar(){
+ const s=iSim,tx=invTx(),p=invProd(s.pid)||null;let g;
+ if(s.rt==='prod'&&p)g=invGross(p,tx);else{const v=invNum(s.rv);g=s.rt==='cdi'?tx.cdi*v/100:s.rt==='ipcam'?((1+tx.ipca/100)*(1+v/100)-1)*100:s.rt==='selic'?tx.selic+v:s.rt==='poup'?invPoup(tx):v}
+ const fee=String(s.fee).trim()===''?(p?p.adm:0):Math.max(0,invNum(s.fee)),irk=s.irm==='auto'?(p?p.ir:'reg'):s.irm,infl=String(s.infl).trim()===''?tx.ipca:invNum(s.infl);
+ const prazo=Math.max(0,invNum(s.prazo)),n=Math.max(1,Math.min(1200,Math.round(s.un==='a'?prazo*12:prazo)));
+ return {p:p,g:g,fee:fee,ir:irk,infl:infl,n:n,tx:tx,v0:cR2(cNum(s.v0)),pmt:cR2(cNum(s.pmt)),meta:cR2(cNum(s.meta)),renda:cR2(cNum(s.renda)),pinf:!!s.pinf,m:invMes(g,fee)}}
+function invChart(o,n){
+ const pts=[],step=Math.max(1,Math.ceil(n/48));for(let k=0;k<=n;k+=step)pts.push(k);if(pts[pts.length-1]!==n)pts.push(n);
+ const D=pts.map(k=>{const r=invNet(o,k);return{k:k,inv:r.inv,net:r.net}}),W=320,H=170,L=6,R=6,T=10,B=24,mx=Math.max.apply(null,D.map(d=>Math.max(d.inv,d.net,1))),X=i=>L+(W-L-R)*i/(D.length-1),Y=v=>T+(H-T-B)*(1-v/mx);
+ const ln=k=>D.map((d,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(d[k]).toFixed(1)).join(' ');
+ const lab=n>=24?[0,Math.round(n/24),Math.round(n/12)].map(v=>v+(v===1?' ano':' anos')):[0,Math.round(n/2),n].map(v=>v+(v===1?' mês':' meses'));
+ return `<svg viewBox="0 0 ${W} ${H}" class="iv-chart" role="img" aria-label="Evolução do investimento ao longo do tempo"><defs><linearGradient id="ivg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--ac)" stop-opacity=".38"/><stop offset="1" stop-color="var(--ac)" stop-opacity="0"/></linearGradient></defs>
+ ${[0,.5,1].map(f=>`<line x1="${L}" x2="${W-R}" y1="${(T+(H-T-B)*f).toFixed(1)}" y2="${(T+(H-T-B)*f).toFixed(1)}" stroke="var(--ln)" stroke-width=".6"/>`).join('')}
+ <path d="${ln('net')} L${X(D.length-1).toFixed(1)} ${H-B} L${L} ${H-B} Z" fill="url(#ivg)"/><path d="${ln('inv')}" fill="none" stroke="var(--mute)" stroke-width="1.6" stroke-dasharray="4 3"/><path d="${ln('net')}" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linejoin="round"/>
+ <circle cx="${X(D.length-1).toFixed(1)}" cy="${Y(D[D.length-1].net).toFixed(1)}" r="3.5" fill="var(--ac)"/>
+ <text x="${L}" y="${H-7}" font-size="9" fill="var(--mute)">${lab[0]}</text><text x="${W/2}" y="${H-7}" font-size="9" fill="var(--mute)" text-anchor="middle">${lab[1]}</text><text x="${W-R}" y="${H-7}" font-size="9" fill="var(--mute)" text-anchor="end">${lab[2]}</text></svg>
+ <div class="iv-leg"><span><i style="background:var(--ac)"></i> Saldo líquido</span><span><i style="background:var(--mute)"></i> Total investido</span></div>`}
+function invTabela(o,n){
+ const rows=[],pass=n>600?5:n>240?2:1;for(let y=pass;y*12<n;y+=pass){const r=invNet(o,y*12);rows.push([y,r])}rows.push([n/12,invNet(o,n)]);
+ return `<details class="iv-tb"><summary>📋 Ver ano a ano</summary><div class="iv-tw"><table><thead><tr><th>Ano</th><th>Investido</th><th>Juros</th><th>Líquido</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${Number.isInteger(r[0])?r[0]:invF(r[0],1)}</td><td>${BRL(r[1].inv)}</td><td>${BRL(r[1].net-r[1].inv)}</td><td><b>${BRL(r[1].net)}</b></td></tr>`).join('')}</tbody></table></div></details>`}
+function invSimOut(){
+ const P=invSimPar(),s=iSim,o={v0:P.v0,pmt:P.pmt,m:P.m,ir:P.ir,infl:P.infl,pinf:P.pinf},tx=P.tx,pop=invPoup(tx),nome=P.p?P.p.nome:'Taxa personalizada',pn=P.p?P.p.emo+' '+P.p.nome:'📝 Taxa personalizada';
+ const real=v=>v/Math.pow(1+P.infl/100,P.n/12);
+ const aviso=(P.p&&P.p.idx==='var'&&s.rt==='prod')?`<p class="hint">⚠️ Renda variável: o resultado usa um retorno esperado ilustrativo (${invP(P.g,1)} a.a.). Veja os cenários abaixo — pode haver prejuízo.</p>`:'';
+ const cen=(P.p&&P.p.idx==='var'&&s.rt==='prod'&&P.p.lo!=null)?(()=>{const f=g=>{const r=invNet(Object.assign({},o,{m:invMes(g,P.fee)}),P.n);return r.net};return `<div class="card"><b>🌦️ Cenários (ilustrativo)</b><div class="iv-cen"><div><small>Ruim</small><b class="cw-out">${BRL(f(P.p.lo))}</b><em>${invSg(P.p.lo,0)} a.a.</em></div><div><small>Esperado</small><b>${BRL(f(P.g))}</b><em>${invSg(P.g,0)} a.a.</em></div><div><small>Bom</small><b class="cw-in">${BRL(f(P.p.hi))}</b><em>${invSg(P.p.hi,0)} a.a.</em></div></div><p class="hint">Considera retornos constantes todos os anos, o que não acontece na prática. Serve só para ter ideia da faixa.</p></div>`})():'';
+ if(s.modo==='fut'){
+  const r=invNet(o,P.n);if(!(P.v0>0||P.pmt>0))return '<div class="vazio">Informe o valor inicial ou o aporte mensal.</div>';
+  const t=invTIR(o,P.n,r.net)*100,aa=(Math.pow(1+t/100,12)-1)*100,rr=((1+aa/100)/(1+P.infl/100)-1)*100,rp=invNet({v0:P.v0,pmt:P.pmt,m:invMes(pop,0),ir:'isento',infl:P.infl,pinf:P.pinf},P.n),dobra=aa>0?Math.log(2)/Math.log(1+aa/100):0;
+  return `<div class="card iv-res"><small>${esc(pn)} · ${invAnos(P.n)}</small><strong>${BRL(r.net)}</strong><small>valor líquido no final</small>
+  <div class="iv-hg"><div><small>Você investiu</small><b>${BRL(r.inv)}</b></div><div><small>Lucro líquido</small><b class="cw-in">+${BRL(r.net-r.inv)}</b></div><div><small>Rentabilidade</small><b class="cw-in">${invSg(r.inv?(r.net-r.inv)/r.inv*100:0,1)}</b></div></div></div>
+  <div class="card">${invChart(o,P.n)}</div>
+  <div class="card"><div class="cw-row"><span>Rendimento bruto</span><b>+${BRL(r.juros)}</b></div><div class="cw-row"><span>Imposto de Renda (${esc((INV_IR[P.ir]||INV_IR.reg)[0].toLowerCase())})</span><b class="cw-out">−${BRL(r.tax)}</b></div><div class="cw-row"><span>Taxa média líquida</span><b>${invP(aa)} a.a. <small style="color:var(--mute)">(${invP(t,3)} a.m.)</small></b></div>
+   <div class="cw-row"><span>Ganho real (acima da inflação de ${invP(P.infl,1)})</span><b class="${rr>=0?'cw-in':'cw-out'}">${invSg(rr)} a.a.</b></div><div class="cw-row"><span>Em poder de compra de hoje</span><b>${BRL(real(r.net))}</b></div>
+   <div class="cw-row"><span>Renda mensal ao final (juros líquidos)</span><b>~${BRL(r.net*P.m*(1-invIRRate(P.ir,99999)))}</b></div>
+   ${dobra?`<div class="cw-row"><span>Dobra o dinheiro em</span><b>~${invAnos(Math.round(dobra*12))}</b></div>`:''}
+   <div class="cw-row"><span>Mesmo valor na poupança</span><b>${BRL(rp.net)} <small class="${r.net>=rp.net?'cw-in':'cw-out'}">${r.net>=rp.net?'+':'−'}${BRL(Math.abs(r.net-rp.net))}</small></b></div></div>${aviso}${cen}${invTabela(o,P.n)}`}
+ if(s.modo==='aporte'){
+  if(!(P.meta>0))return '<div class="vazio">Informe a meta que deseja alcançar.</div>';
+  const pm=invAporteNec(o,P.n,P.meta);
+  if(pm<=0)return `<div class="card iv-res"><small>${esc(pn)}</small><strong>R$ 0,00</strong><small>Só o valor inicial já chega à meta em ${invAnos(P.n)} 🎉</small></div>`;
+  const o2=Object.assign({},o,{pmt:pm}),r=invNet(o2,P.n);
+  return `<div class="card iv-res"><small>Para chegar a ${BRL(P.meta)} em ${invAnos(P.n)} com ${esc(pn)}</small><strong>${BRL(pm)}</strong><small>por mês${P.pinf?' (no 1º ano, reajustado pela inflação depois)':''}</small>
+  <div class="iv-hg"><div><small>Você investe</small><b>${BRL(r.inv)}</b></div><div><small>Lucro líquido</small><b class="cw-in">+${BRL(r.net-r.inv)}</b></div><div><small>% da meta que são juros</small><b>${invP(r.net?(r.net-r.inv)/r.net*100:0,0)}</b></div></div></div>
+  <div class="card">${invChart(o2,P.n)}</div><p class="hint">💡 Em valores de hoje, a meta equivale a ${BRL(P.meta/Math.pow(1+P.infl/100,P.n/12))} de poder de compra daqui a ${invAnos(P.n)} se a inflação for ${invP(P.infl,1)} a.a.</p>${invTabela(o2,P.n)}`}
+ if(s.modo==='tempo'){
+  if(!(P.meta>0))return '<div class="vazio">Informe a meta que deseja alcançar.</div>';
+  if(P.v0<=0&&P.pmt<=0)return '<div class="vazio">Informe o valor inicial ou o aporte mensal.</div>';
+  const nm=invMesesMeta(o,P.meta,1200);
+  if(nm==null)return `<div class="card iv-res"><small>${esc(pn)}</small><strong>mais de 100 anos</strong><small>Aumente o aporte mensal ou escolha um investimento que renda mais.</small></div>`;
+  const r=invNet(o,nm);
+  return `<div class="card iv-res"><small>Para chegar a ${BRL(P.meta)} com ${esc(pn)}</small><strong>${invAnos(nm)}</strong><small>aportando ${BRL(P.pmt)} por mês a partir de ${BRL(P.v0)}</small>
+  <div class="iv-hg"><div><small>Você investe</small><b>${BRL(r.inv)}</b></div><div><small>Lucro líquido</small><b class="cw-in">+${BRL(r.net-r.inv)}</b></div><div><small>Data prevista</small><b>${esc(new Date(new Date().getFullYear(),new Date().getMonth()+nm,1).toLocaleDateString(LOC(),{month:'short',year:'numeric'}))}</b></div></div></div>
+  <div class="card">${invChart(o,nm)}</div>${invTabela(o,nm)}`}
+ if(s.modo==='comp'){
+  if(!(P.v0>0||P.pmt>0))return '<div class="vazio">Informe o valor inicial ou o aporte mensal.</div>';
+  const L=invAll().filter(p=>p.idx!=='var'&&p.idx!=='zero').map(p=>{const g=invGross(p,tx),r=invNet({v0:P.v0,pmt:P.pmt,m:invMes(g,p.adm),ir:p.ir,infl:P.infl,pinf:P.pinf},P.n);return{p:p,g:g,r:r}}).sort((a,b)=>b.r.net-a.r.net),mx=L.length?L[0].r.net:1,pr=L.find(x=>x.p.id==='poup'),base=pr?pr.r.net:L[L.length-1].r.net;
+  const V=invAll().filter(p=>p.idx==='var'&&p.lo!=null&&p.a>0&&p.risco<=4).sort((a,b)=>b.a-a.a).slice(0,5);
+  return `<div class="card"><b>Quanto cada um renderia em ${invAnos(P.n)}</b><p class="hint" style="margin:2px 0 8px">Com ${BRL(P.v0)} + ${BRL(P.pmt)} por mês · valores líquidos, já com IR e taxas</p>${L.map((x,i)=>`<div class="iv-cp"><div class="top"><span><b>${i+1}º</b> ${x.p.emo} ${esc(x.p.nome)}</span><span class="cw-v">${BRL(x.r.net)}</span></div><div class="bar"><i style="width:${Math.max(3,x.r.net/mx*100)}%;background:${invCls(x.p.cls)[3]}"></i></div><small style="color:var(--mute)">${invP(x.g)} a.a. bruto · ${x.p.ir==='isento'?'isento de IR':'IR '+esc((INV_IR[x.p.ir]||INV_IR.reg)[0].toLowerCase())} · ${x.r.net>=base?'<b class="cw-in">+'+BRL(x.r.net-base)+'</b>':'<b class="cw-out">−'+BRL(base-x.r.net)+'</b>'} vs poupança</small></div>`).join('')}</div>
+  ${V.length?`<div class="card"><b>📈 Renda variável (estimativa ilustrativa)</b><p class="hint" style="margin:2px 0 8px">Retorno esperado constante; na vida real oscila e pode dar prejuízo.</p>${V.map(p=>{const r=invNet({v0:P.v0,pmt:P.pmt,m:invMes(p.a,p.adm),ir:p.ir,infl:P.infl,pinf:P.pinf},P.n),lo=invNet({v0:P.v0,pmt:P.pmt,m:invMes(p.lo,p.adm),ir:p.ir},P.n).net,hi=invNet({v0:P.v0,pmt:P.pmt,m:invMes(p.hi,p.adm),ir:p.ir},P.n).net;return `<div class="iv-cp"><div class="top"><span>${p.emo} ${esc(p.nome)}</span><span class="cw-v">${BRL(r.net)}</span></div><small style="color:var(--mute)">faixa: ${BRL(lo)} a ${BRL(hi)}</small></div>`}).join('')}</div>`:''}`}
+ if(s.modo==='renda'){
+  if(!(P.renda>0))return '<div class="vazio">Informe quanto quer receber por mês.</div>';
+  const nl=invLiqAnual({idx:'aa',a:P.g,adm:P.fee,ir:P.ir},tx,Math.max(36,P.n)),mm=Math.pow(1+nl/100,1/12)-1,pat=mm>0?P.renda/mm:0,pm=invAporteNec(o,P.n,pat);
+  if(!(mm>0))return '<div class="vazio">Esse investimento não gera juros. Escolha outro.</div>';
+  return `<div class="card iv-res"><small>Para receber ${BRL(P.renda)} por mês só com os juros de ${esc(pn)}</small><strong>${BRL(pat)}</strong><small>é o patrimônio necessário (rende ${invP(mm*100,3)} ao mês líquido)</small>
+  <div class="iv-hg"><div><small>Em ${invAnos(P.n)}</small><b>${pm<=0?'R$ 0,00':BRL(pm)}</b><small>aporte por mês</small></div><div><small>Hoje você tem</small><b>${BRL(P.v0)}</b></div><div><small>Falta</small><b>${BRL(Math.max(0,pat-P.v0))}</b></div></div></div>
+  <div class="card"><b>🧠 Regra dos 4%</b><p class="hint" style="margin:4px 0 0">Uma referência popular diz para viver de renda com segurança retirando 4% do patrimônio ao ano. Para ${BRL(P.renda)}/mês, isso seria ${BRL(P.renda*12/0.04)}. Depende de inflação, impostos e do seu perfil.</p></div>
+  ${pm>0?`<div class="card">${invChart(Object.assign({},o,{pmt:pm}),P.n)}</div>`:''}`}
+ return ''}
+function invSimUpd(){const e=$('#iv-out');if(e)e.innerHTML=invSimOut();const g=$('#iv-gross');if(g)g.innerHTML=invGrossTxt()}
+function invGrossTxt(){const P=invSimPar();return `Taxa usada: <b>${invP(P.g)}</b> a.a. bruto${P.fee?' · taxa '+invP(P.fee)+' a.a.':''} · IR: <b>${esc((INV_IR[P.ir]||INV_IR.reg)[0])}</b>`}
+function invSimulador(){
+ const s=iSim,p=invProd(s.pid),ix=INV_IDX.filter(x=>x[0]!=='zero'&&x[0]!=='var');
+ const modos=`<div class="iv-modos">${INV_MODOS.map(m=>`<button class="${s.modo===m[0]?'on':''}" onclick="iSim.modo='${m[0]}';render()"><span>${m[1]}</span>${m[2]}</button>`).join('')}</div>`;
+ const all=invAll(),opts=`<option value="">📝 Taxa personalizada</option>`+INV_ICLS.map(c=>{const L=all.filter(q=>q.cls===c&&q.idx!=='zero');return L.length?`<optgroup label="${invCls(c)[1]} ${esc(invCls(c)[2])}">${L.map(q=>`<option value="${esc(q.id)}" ${s.pid===q.id?'selected':''}>${q.emo} ${esc(q.nome)}</option>`).join('')}</optgroup>`:''}).join('');
+ const camp=(k,lb,ph,ex)=>`<div style="flex:1"><label class="fl" style="margin-top:0">${lb}</label><input inputmode="decimal" value="${esc(s[k])}" placeholder="${ph}" oninput="invSS('${k}',this.value)" ${ex||''}></div>`;
+ const prazo=`<div style="flex:1"><label class="fl" style="margin-top:0">Prazo</label><div class="row" style="flex-wrap:nowrap"><input inputmode="numeric" value="${esc(s.prazo)}" oninput="invSS('prazo',this.value)" aria-label="Prazo" style="flex:1 1 0;width:auto;min-width:0"><select onchange="iSim.un=this.value;invSimUpd()" style="width:92px;flex:none"><option value="a" ${s.un==='a'?'selected':''}>anos</option><option value="m" ${s.un==='m'?'selected':''}>meses</option></select></div></div>`;
+ let campos='';
+ if(s.modo==='fut'||s.modo==='comp')campos=`<div class="row">${camp('v0','Valor inicial (R$)','1.000')}${camp('pmt','Aporte mensal (R$)','300')}</div><div class="row" style="margin-top:8px">${prazo}</div>`;
+ else if(s.modo==='aporte')campos=`<div class="row">${camp('meta','Meta (R$)','100.000')}${camp('v0','Já tenho (R$)','0')}</div><div class="row" style="margin-top:8px">${prazo}</div>`;
+ else if(s.modo==='tempo')campos=`<div class="row">${camp('meta','Meta (R$)','100.000')}${camp('v0','Já tenho (R$)','0')}</div><div class="row" style="margin-top:8px">${camp('pmt','Aporte mensal (R$)','500')}</div>`;
+ else campos=`<div class="row">${camp('renda','Renda mensal desejada (R$)','5.000')}${camp('v0','Já tenho (R$)','0')}</div><div class="row" style="margin-top:8px">${prazo}</div>`;
+ const adv=`<details class="iv-adv" ${iSimOpen?'open':''} ontoggle="iSimOpen=this.open"><summary>⚙️ Ajustes avançados</summary>
+  <label class="fl">Rendimento</label><select onchange="iSim.rt=this.value;render()"><option value="prod" ${s.rt==='prod'?'selected':''}>${p?'Usar o do investimento escolhido':'—'}</option>${ix.map(x=>`<option value="${x[0]}" ${s.rt===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select>
+  ${(s.rt==='prod'||s.rt==='poup')?'':`<input inputmode="decimal" style="margin-top:8px" value="${esc(s.rv)}" placeholder="${esc((INV_IDX.find(x=>x[0]===s.rt)||[])[2]||'Taxa')}" oninput="invSS('rv',this.value)" aria-label="Taxa">`}
+  <div class="row" style="margin-top:8px"><div style="flex:1"><label class="fl" style="margin-top:0">Taxa adm./custódia (% a.a.)</label><input inputmode="decimal" value="${esc(s.fee)}" placeholder="${p?invF(p.adm):'0'}" oninput="invSS('fee',this.value)"></div><div style="flex:1"><label class="fl" style="margin-top:0">Inflação (% a.a.)</label><input inputmode="decimal" value="${esc(s.infl)}" placeholder="${invF(invTx().ipca)}" oninput="invSS('infl',this.value)"></div></div>
+  <label class="fl">Imposto de Renda</label><select onchange="iSim.irm=this.value;invSimUpd()">${INV_IRSEL.map(o=>`<option value="${o[0]}" ${s.irm===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>
+  <label class="iv-ck" style="margin-top:10px"><input type="checkbox" ${s.pinf?'checked':''} onchange="iSim.pinf=this.checked;invSimUpd()"> Reajustar o aporte todo ano pela inflação</label></details>`;
+ return modos+`<div class="card iv-sim"><label class="fl" style="margin-top:0">Investimento</label><select onchange="iSim.pid=this.value;iSim.rt=this.value?'prod':'aa';render()">${opts}</select>
+  <div style="margin-top:10px">${campos}</div>${adv}<p class="hint" id="iv-gross">${invGrossTxt()}</p></div><div id="iv-out">${invSimOut()}</div>
+  <p class="hint">Simulação com juros compostos mensais, aportes no fim de cada mês e IR calculado aporte por aporte (cada um com a sua idade). Não considera IOF nos primeiros 30 dias nem variações de taxa. Os números são estimativas, não promessas.</p>`}
+/* --- Guia: taxas, perfil, IR e glossário --- */
+const INV_Q=[['Qual é o seu principal objetivo?',['Guardar com segurança','Equilibrar segurança e crescimento','Crescer o patrimônio ao máximo']],['Por quanto tempo você pode deixar o dinheiro investido?',['Menos de 2 anos','De 2 a 5 anos','Mais de 5 anos']],['Se seus investimentos caíssem 20% em um mês, você…',['Venderia tudo, não aguento perder','Esperaria a recuperação','Aproveitaria para comprar mais']],['Qual é a sua experiência com investimentos?',['Só uso poupança','Já invisto em renda fixa','Invisto em bolsa, fundos ou cripto']],['Você já tem reserva de emergência (6 meses de gastos)?',['Ainda não','Parcialmente','Sim, completa']]];
+const INV_PERFIS={1:['🛡️ Conservador','Prioriza segurança e liquidez. Aceita render menos para dormir tranquilo.',{res:40,tes:30,ban:20,fun:5,rv:5},['res','tes','ban']],2:['⚖️ Moderado','Aceita alguma oscilação em troca de rendimento maior no médio e longo prazo.',{res:20,tes:20,ban:15,cre:5,rv:20,fun:10,pre:5,ext:5},['tes','fun','rv']],3:['🚀 Arrojado','Foca no longo prazo e tolera quedas fortes buscando maior retorno.',{res:10,tes:10,ban:5,rv:35,fun:10,ext:15,cri:5,alt:10},['rv','ext','cri']]};
+function invPerfil(){const q=S.cart.inv.q,ks=Object.keys(q);if(ks.length<INV_Q.length)return 0;const s=ks.reduce((a,k)=>a+q[k],0);return s<=8?1:s<=11?2:3}
+function invQ(i,v){S.cart.inv.q[i]=v;save();render()}
+const invTxSet=(k,v)=>{invNorm();const n=invNum(v);S.cart.inv.tx[k]=n;save()};
+const INV_GLOS=[['CDI','Taxa que serve de referência para a renda fixa. Anda muito perto da Selic. Dizer "110% do CDI" significa render 1,1 vez essa taxa.'],['Selic','Taxa básica de juros da economia, definida pelo Copom do Banco Central. Influencia todos os outros juros.'],['IPCA','Índice oficial de inflação. "IPCA + 6%" quer dizer que o investimento rende a inflação do período mais 6% ao ano.'],['FGC','Fundo Garantidor de Créditos: protege até R$ 250 mil por CPF e por instituição (limite de R$ 1 milhão a cada 4 anos) em caso de quebra do banco.'],['Liquidez','Rapidez para transformar o investimento em dinheiro na conta. D+0 é no mesmo dia, D+1 é no dia útil seguinte, e assim por diante.'],['Marcação a mercado','O preço de títulos pré e IPCA+ varia todo dia. Se vender antes do vencimento, pode ganhar ou perder. Se segurar até o fim, recebe o que foi contratado.'],['Come-cotas','Antecipação do IR de fundos de investimento, cobrada em maio e novembro. Reduz a quantidade de cotas, mas não aumenta o imposto total.'],['Juros compostos','Juros sobre juros. É o que faz o dinheiro crescer em ritmo cada vez maior com o tempo.'],['Reserva de emergência','Dinheiro para imprevistos, de 6 a 12 meses dos seus gastos, em investimento seguro e com liquidez (poupança, CDB de liquidez diária, Tesouro Selic).'],['Diversificação','Não colocar todos os ovos na mesma cesta: dividir o dinheiro entre diferentes tipos de investimento para reduzir riscos.'],['Rentabilidade real','Rendimento descontada a inflação. É quanto o seu poder de compra realmente cresceu.'],['Aporte','Valor que você coloca no investimento, seja o primeiro depósito ou os mensais.']];
+async function invAtualizar(){
+ const B=document.getElementById('iv-upd');if(B){B.disabled=true;B.textContent='Buscando…'}
+ const get=async n=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);try{const r=await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.'+n+'/dados/ultimos/1?formato=json',{signal:c.signal});if(!r.ok)throw 0;const j=await r.json();const v=parseFloat(j&&j[0]&&j[0].valor);if(isNaN(v))throw 0;return v}finally{clearTimeout(t)}};
+ let ok=0;const t=invTx();
+ for(const [k,n] of [['selic',432],['cdi',4389],['ipca',13522]]){try{t[k]=await get(n);ok++}catch(e){}}
+ if(ok){t.upd=HOJE;save();render();info(ok===3?'Taxas atualizadas com os dados do Banco Central.':'Atualizei '+ok+' de 3 taxas. As outras ficam como estavam.')}
+ else{if(B){B.disabled=false;B.textContent='🔄 Atualizar online'}info('Não consegui buscar as taxas agora. Verifique a internet ou edite os valores à mão.')}}
+function invGuia(){
+ const t=invTx(),pf=invPerfil(),q=S.cart.inv.q;
+ const campo=(k,lb,hint)=>`<div><label class="fl" style="margin-top:0">${lb}</label><input inputmode="decimal" value="${esc(String(t[k]).replace('.',','))}" oninput="invTxSet('${k}',this.value)" aria-label="${lb}"><small class="hint" style="display:block;margin-top:2px">${hint}</small></div>`;
+ const taxas=`<div class="card"><b>📈 Taxas de referência</b><p class="hint" style="margin:4px 0 10px">Usadas em todos os cálculos. Eu sugiro valores aproximados de mercado; para os números do momento toque em <b>Atualizar online</b> ou edite à mão.${t.upd?' Última atualização online: '+esc(fmt(t.upd,{day:'2-digit',month:'short',year:'numeric'}))+'.':''}</p>
+  <div class="iv-tx">${campo('selic','Selic (% a.a.)','meta do Copom')}${campo('cdi','CDI (% a.a.)','~Selic − 0,10')}${campo('ipca','IPCA 12 meses (%)','inflação')}${campo('tr','TR (% a.a.)','poupança')}${campo('pre','Taxa prefixada (%)','Tesouro Prefixado')}${campo('ntnb','IPCA+ real (%)','Tesouro IPCA+')}</div>
+  <div class="row" style="margin-top:10px"><button class="sec" id="iv-upd" style="flex:1" onclick="invAtualizar()">🔄 Atualizar online</button><button class="ghost" onclick="S.cart.inv.tx=Object.assign({},INV_TX0);save();render()">Restaurar padrão</button></div>
+  <p class="hint">Poupança hoje: <b>${invP(invPoup(t))}</b> a.a. (0,5% ao mês + TR com Selic acima de 8,5%).</p></div>`;
+ let perfil=`<div class="card"><b>🧭 Descubra seu perfil de investidor</b>${INV_Q.map((x,i)=>`<div class="iv-q"><p>${i+1}. ${x[0]}</p>${x[1].map((o,j)=>`<label class="iv-opt ${q[i]===j+1?'on':''}"><input type="radio" name="ivq${i}" ${q[i]===j+1?'checked':''} onchange="invQ(${i},${j+1})"> ${o}</label>`).join('')}</div>`).join('')}`;
+ if(pf){const P=INV_PERFIS[pf];perfil+=`<div class="iv-pf"><h3 style="margin:0">${P[0]}</h3><p style="margin:4px 0 10px">${P[1]}</p><b style="font-size:13px">Sugestão de distribuição (educativa)</b>${Object.keys(P[2]).map(c=>`<div class="cw-cat"><div class="top"><span>${invCls(c)[1]} ${esc(invCls(c)[2])}</span><span class="cw-v">${P[2][c]}%</span></div><div class="bar"><i style="width:${P[2][c]}%;background:${invCls(c)[3]}"></i></div></div>`).join('')}
+   <div class="row" style="margin-top:10px;flex-wrap:wrap">${P[3].map(c=>`<button class="sec" onclick="iCls='${c}';iSub='exp';render();window.scrollTo(0,0)">${invCls(c)[1]} Ver ${esc(invCls(c)[2])}</button>`).join('')}</div><button class="ghost" onclick="S.cart.inv.q={};save();render()">Refazer o teste</button></div>`}
+ else perfil+=`<p class="hint">Responda as ${INV_Q.length} perguntas para ver o resultado.</p>`;
+ perfil+=`</div>`;
+ const irT=`<div class="card"><b>🧾 Imposto de Renda nos investimentos</b>${Object.keys(INV_IR).filter(k=>k!=='nenhum').map(k=>`<div class="iv-gl"><b>${esc(INV_IR[k][0])}</b><p>${esc(INV_IR[k][1])}</p></div>`).join('')}<p class="hint">Também existe IOF nos resgates de renda fixa em menos de 30 dias. As regras mudam: confirme sempre com a instituição ou um contador.</p></div>`;
+ const glos=`<div class="card"><b>📖 Glossário</b>${INV_GLOS.map(g=>`<details class="iv-gd"><summary>${esc(g[0])}</summary><p>${esc(g[1])}</p></details>`).join('')}</div>`;
+ const dicas=`<div class="card"><b>✅ Antes de investir</b><p class="hint" style="margin:6px 0 0">1) Quite dívidas caras (cartão e cheque especial).<br>2) Monte a reserva de emergência em algo seguro e líquido.<br>3) Defina o objetivo e o prazo de cada dinheiro.<br>4) Diversifique e invista com regularidade.<br>5) Desconfie de retorno garantido muito acima do mercado.<br>6) Confira se a instituição é autorizada pelo Banco Central ou pela CVM.</p></div>`;
+ return taxas+perfil+irT+glos+dicas}
+/* PDF: seção Investimentos */
+function invPdf(d,money,pf){
+ const invSg=(n,dd)=>(n>0?'+':n<0?'-':'')+invF(Math.abs(n),dd==null?2:dd)+'%';
+ invNorm();const v=S.cart.inv,t=v.tx,at=v.meus.map(it=>[it,invPos(it)]);
+ d.h2('Investimentos');
+ d.p('Taxas de referência usadas: Selic '+invP(t.selic)+' · CDI '+invP(t.cdi)+' · IPCA 12m '+invP(t.ipca)+' · Poupança '+invP(invPoup(t))+'. Valores atuais são estimativas.');
+ if(!at.length){d.p('Nenhum investimento registrado na carteira.');return}
+ const A=at.filter(x=>!x[0].fim),apl=cR2(A.reduce((s,x)=>s+x[1].apl,0)),val=cR2(A.reduce((s,x)=>s+x[1].atual,0));
+ d.table([{w:330,wrap:1},{w:185,a:'r'}],[['Total aplicado',money(apl)],['Valor atual estimado',money(val)],{c:['Ganho estimado',(val>=apl?'':'-')+money(Math.abs(val-apl))+(apl?' ('+invSg((val-apl)/apl*100)+')':'')],b:1,sh:1}].concat(v.meta>0?[['Meta de patrimônio',money(v.meta)]]:[]),{nohead:1});
+ d.table([{h:'Investimento',w:150,wrap:1},{h:'Categoria',w:85,wrap:1},{h:'Aplicado',w:75,a:'r'},{h:'Atual',w:75,a:'r'},{h:'Ganho',w:75,a:'r'},{h:'%',w:55,a:'r'}],
+  at.map(x=>[x[0].nome+(x[0].fim?' (encerrado)':''),invCls(x[0].cls)[2],money(x[1].apl),money(x[1].atual),(x[1].ganho<0?'-':'')+money(Math.abs(x[1].ganho)),invSg(x[1].pct,1)]))}
+
 /* ---------- v3.4.0: Carteira · Salário, holerite e melhores dias para pagar ---------- */
 const SAL_DESC0=['INSS','IRRF (Imposto de Renda)','Vale-transporte','Plano de saúde'];
 const SAL_SUG=['Vale-refeição / alimentação','Contribuição sindical','Previdência privada','Empréstimo consignado','Pensão alimentícia','Adiantamento salarial','Faltas / atrasos','Plano odontológico','Coparticipação'];
@@ -3984,11 +4267,6 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
- '3.4.2':[
-  '🎓 Novo menu “Concursos”: veja concursos por estado, com status (edital publicado, em andamento, finalizado ou previsto), separados por nível médio e superior, com vagas, salário, banca, taxa, prazo de inscrição e as matérias previstas de cada um.',
-  '⬇️ Em cada concurso há o botão para baixar o edital (PDF) ou buscar o último edital. Você também pode favoritar com ⭐ e cadastrar o seu em “+ Meu concurso”.',
-  '📚 Nova aba “Guia do Concurseiro”: formas de estudo, matérias para estudar primeiro (com checklist de progresso), rotina semanal e o passo a passo de quando o edital sai.'
- ],
  '3.4.1':[
   '⚖️ Promoções › Comparar preços: entraram os produtos novos dos três mercados, com o novo setor Hortifrúti (frutas, legumes e verduras) e mais itens de laticínios, mercearia, congelados e limpeza.',
   '📄 Carteira: o botão “Baixar PDF” agora aparece em todas as abas e o PDF traz tudo: resumo do mês, para onde foi o dinheiro, gastos, contas fixas (com situação do mês), rendas, salário e os melhores dias para pagar.'
@@ -4238,7 +4516,7 @@ const GUIA_APP=[
  ['📝','Notas','Anotações rápidas para guardar o que importa.'],
  ['📖','Diário','Escreva sobre o seu dia, com humor e fotos.'],
  ['🛒','Compras','Lista de compras que você pode montar falando o produto e o preço. Também escaneia etiquetas com a câmera, compara preços entre mercados, guarda os seus mercados e o histórico das compras.'],
- ['💰','Carteira','Resumo, gastos, contas fixas, renda e salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas).'],
+ ['💰','Carteira','Resumo, gastos, contas fixas, renda, salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas) e Investimentos (catálogo com todas as opções, sua carteira, simulador e guia).'],
  ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
  ['⚙️','Configurações','Perfil, conta (Google ou e-mail), backup, idioma, cores do tema, menu e senha do app.']];
