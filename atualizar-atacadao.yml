@@ -1,0 +1,68 @@
+name: Atualizar promoções do Atacadão
+
+# Roda sozinho de 3 em 3 horas, procura folheto novo no site do Atacadão, lê os preços e
+# grava promocoes/atacadao.json (é esse arquivo que o app lê na aba Promoções › Atacadão).
+# Também roda na hora quando você coloca um PDF na pasta folhetos/atacadao/ e pelo botão
+# Actions › Atualizar promoções do Atacadão › Run workflow.
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['folhetos/atacadao/**', 'scripts/atacadao.py']
+
+concurrency:
+  group: atacadao
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar leitor de PDF
+        run: pip install pdfplumber
+
+      - name: Procurar folhetos novos no site
+        # se o site mudar ou bloquear, esta etapa falha sem derrubar a leitura dos PDFs que já estão na pasta
+        continue-on-error: true
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python scripts/atacadao.py coletar
+
+      - name: Guardar relatório da busca (para conferir o que o site entregou)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-atacadao
+          path: debug-atacadao/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Ler os PDFs e gerar o arquivo do app
+        run: python scripts/atacadao.py ler
+
+      - name: Publicar se mudou
+        run: |
+          rm -rf debug-atacadao
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add promocoes folhetos
+          if git diff --cached --quiet; then
+            echo "Sem novidade."
+          else
+            git commit -m "Promoções do Atacadão atualizadas pelo robô"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi

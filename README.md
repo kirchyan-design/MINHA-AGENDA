@@ -28,6 +28,22 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 - **Caixa “📢 Quadro de avisos”** com as novidades recentes (Salário na Carteira, melhores dias, Kayla que aprende, modo Preto, tema Viking, chamar a Kayla pelo nome). Aparece **uma única vez por aparelho** (chave `ma-recado-novid-v1` no `localStorage`), na próxima abertura do app, depois da senha e das outras caixas. Usuário novo não vê (já recebe a de boas-vindas). Não precisa mudar o `VERSION` do `sw.js`.
 - O texto fica em `RECADO_NOVID` no `index.html`. Para mostrar de novo a todos com uma lista nova, troque `-v1` por `-v2` na chave e atualize a lista.
 
+## Promoções › Assaí: 4ª e 5ª Feirassaí (04 a 05/11/2026)
+
+- Nova lista `AS_FEIRA` (21 itens de hortifrúti) e entrada `feira` em `AS_ENC` no `index.html`. Formato da linha: `nome|embalagem ou kg|preço “de”|preço “por”|limite`. O encarte “Leva o Assaí com você” (02 a 05/11) foi conferido item a item e já estava correto, sem alterações.
+
+## Promoções › Novo Atacarejo: Dia de Feira (04 a 05/11/2026)
+
+- Encarte novo na tabela `NV_ENC` (`fei`) e `NV_TXT` do `index.html`: **Hortifrúti** (20 itens) e **Laticínios, Frios e Congelados** (20 itens). Formato de cada linha: `nome|descrição|preço|un ou kg|1 se for “super oferta”|limite por cliente`. Em Olinda a oferta não vale na loja da Casa Caiada (aviso no texto da tela). O Super Ofertas (03 a 06/11) já estava no app e foi conferido item a item com o PDF.
+
+## Promoções › Atacadão: atualização automática dos folhetos
+
+- **Robô** `.github/workflows/atualizar-atacadao.yml` (Actions › *Atualizar promoções do Atacadão*): roda de 3 em 3 horas, quando um PDF entra em `folhetos/atacadao/` e à mão (Run workflow). Faz duas coisas com o `scripts/atacadao.py`:
+  1. `coletar`: abre o site do Atacadão (Olinda) num navegador, procura PDFs de folheto e baixa os novos para `folhetos/atacadao/`. **Esta etapa é a parte não testada**: o site monta a página por JavaScript. Depois da primeira execução, abra o relatório `relatorio-atacadao` (aba Actions, no fim da página da execução) para ver o que o site entregou.
+  2. `ler`: lê todos os PDFs da pasta (tabela *Produto / Preço promocional / Setor / Validade*) e grava `promocoes/atacadao.json`. Listas vencidas saem do arquivo; PDFs vencidos há mais de 14 dias são apagados.
+- **App**: `atCarregar()` no `index.html` lê `promocoes/atacadao.json` ao abrir, ao voltar para o app e a cada 30 min, guarda a última cópia no aparelho (`ma-at-json`) e mostra as listas como “Folheto · setor” na aba Atacadão e no comparador de preços. As listas digitadas (`AT_TXT`, `AT_LISTAS`) continuam valendo até vencerem.
+- **Caminho garantido**: se o robô não achar o PDF no site, coloque o PDF do folheto na pasta `folhetos/atacadao/` pelo GitHub (Add file › Upload files). O robô roda sozinho em seguida e o app atualiza. Não precisa mudar `VERSION` nem gerar APK.
+
 ## Versão 3.4.0
 
 - **Carteira › Salário** (nova aba, 5ª da Carteira). Duas telas: **Meu salário** e **Melhores dias**.

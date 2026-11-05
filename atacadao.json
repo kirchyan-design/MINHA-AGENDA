@@ -1,0 +1,248 @@
+{
+ "mercado": "atacadao",
+ "listas": [
+  {
+   "t": "Hortifruti",
+   "ini": "2026-11-05",
+   "fim": "2026-11-05",
+   "arq": "ofertas_hortifruti_05-11-2026.pdf",
+   "itens": [
+    [
+     "Batata lavada",
+     "quilo",
+     5.99
+    ],
+    [
+     "Cenoura",
+     "quilo",
+     5.49
+    ],
+    [
+     "Batata-doce",
+     "quilo",
+     3.99
+    ],
+    [
+     "Banana Pacovan",
+     "quilo",
+     1.99
+    ],
+    [
+     "Manga Tommy",
+     "quilo",
+     2.99
+    ],
+    [
+     "Abacaxi Tropical",
+     "unidade",
+     2.99
+    ],
+    [
+     "Limão-taiti",
+     "quilo",
+     9.99
+    ],
+    [
+     "Maçã Nacional Gala",
+     "quilo",
+     8.99
+    ],
+    [
+     "Melancia Baby",
+     "quilo",
+     3.39
+    ],
+    [
+     "Uva Rubi",
+     "bandeja com 500 g",
+     5.99
+    ],
+    [
+     "Goma Peneirada Sinhá Maria",
+     "pacote com 1 kg",
+     3.99
+    ],
+    [
+     "Ovo Branco Grande PVC",
+     "bandeja com 30 unidades",
+     16.69
+    ]
+   ]
+  },
+  {
+   "t": "Laticínios — iogurtes e sobremesas refrigeradas",
+   "ini": "2026-11-05",
+   "fim": "2026-11-10",
+   "arq": "ofertas_laticinios_iogurtes_05-a-10-11-2026.pdf",
+   "itens": [
+    [
+     "Bebida Láctea YoPro",
+     "vários sabores, TP, 250 ml",
+     7.49
+    ],
+    [
+     "Iogurte Danone YoPro Resfriado Morango",
+     "unidade, 160 g",
+     8.49
+    ],
+    [
+     "Iogurte Danone Resfriado",
+     "vários sabores, garrafa, 1,25 kg",
+     14.9
+    ],
+    [
+     "Iogurte Danone Resfriado 5x Zero Morango/5x Zero Batido",
+     "",
+     15.9
+    ],
+    [
+     "Leite Fermentado Activia Resfriado Morango/Ameixa",
+     "garrafa, 800 g",
+     14.49
+    ],
+    [
+     "Leite Fermentado Activia Resfriado Ameixa Zero/Morango Zero",
+     "garrafa, 800 g",
+     14.9
+    ],
+    [
+     "Iogurte Danoninho Resfriado Morango e Banana/Morango",
+     "",
+     2.99
+    ],
+    [
+     "Iogurte Danone Resfriado",
+     "vários sabores, unidade, 170 g",
+     3.29
+    ],
+    [
+     "Iogurte Natural Danone Resfriado",
+     "vários sabores, copo, 160 g",
+     3.69
+    ],
+    [
+     "Iogurte Natural Danone Resfriado Integral/Desnatado",
+     "bandeja, 340 g",
+     7.49
+    ],
+    [
+     "Petit Suisse Danoninho Resfriado",
+     "vários sabores",
+     11.9
+    ],
+    [
+     "Sobremesa Danone Danette Resfriado Chocolate Branco/Chocolate",
+     "",
+     14.9
+    ]
+   ]
+  },
+  {
+   "t": "Laticínios — queijos, manteigas e requeijão",
+   "ini": "2026-11-05",
+   "fim": "2026-11-10",
+   "arq": "ofertas_laticinios_queijos_05-a-10-11-2026.pdf",
+   "itens": [
+    [
+     "Queijo de Coalho Jucurutu Resfriado",
+     "preço por quilo na peça",
+     39.9
+    ],
+    [
+     "Queijo de Coalho Jucurutu Resfriado Zero Lactose",
+     "preço por quilo na peça",
+     54.9
+    ],
+    [
+     "Queijo de Manteiga Jucurutu Resfriada",
+     "preço por quilo na peça",
+     46.9
+    ],
+    [
+     "Queijo Mussarela Jucurutu Resfriado Lanche",
+     "preço por quilo na peça",
+     49.9
+    ],
+    [
+     "Manteiga Sertão Jucurutu Resfriada com Sal",
+     "pote, 500 g",
+     25.9
+    ],
+    [
+     "Requeijão Sertão Jucurutu Resfriada Tradicional",
+     "pote, 400 g",
+     15.9
+    ]
+   ]
+  },
+  {
+   "t": "Mercearia — cafés, bebidas e mercearia seca",
+   "ini": "2026-11-05",
+   "fim": "2026-11-08",
+   "arq": "ofertas_mercearia_05-a-08-11-2026.pdf",
+   "itens": [
+    [
+     "Café 3 Corações Tradicional/Extra Forte",
+     "vácuo/almofada, 250 g",
+     13.99
+    ],
+    [
+     "Café Cappuccino Santa Clara Clássico",
+     "pote, 200 g",
+     14.99
+    ],
+    [
+     "Café em Cápsulas 3 Corações",
+     "",
+     16.99
+    ],
+    [
+     "Café com Leite/Cappuccino Santa Clara",
+     "caixeta, 10x9 g/10x11 g",
+     4.69
+    ],
+    [
+     "Milho de Pipoca Dona Clara",
+     "pacote, 400 g",
+     2.99
+    ],
+    [
+     "Amido de Milho Kimimo",
+     "caixeta, 200 g",
+     2.99
+    ],
+    [
+     "Refresco em Pó Frisco Uva/Laranja",
+     "envelope, 18 g",
+     0.59
+    ],
+    [
+     "Bebida Láctea 3 Corações Power Whey",
+     "frasco, 260 ml",
+     6.99
+    ],
+    [
+     "Bebida Láctea 3 Corações Cappuccino e Chocolate/Cappuccino",
+     "frasco, 260 ml",
+     6.89
+    ],
+    [
+     "Café Gourmet 3 Corações",
+     "vários tipos, pacote, 250 g",
+     24.98
+    ],
+    [
+     "Achocolatado em Pó 3 Corações Chocolatto",
+     "pacote, 900 g",
+     19.98
+    ],
+    [
+     "Café Santa Clara Descafeinado",
+     "vácuo, pacote, 250 g",
+     22.9
+    ]
+   ]
+  }
+ ],
+ "atualizado": "2026-11-05T04:00:11Z"
+}
