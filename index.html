@@ -897,6 +897,11 @@ body.nv #updpill{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 #radiop .rb button{flex:1;min-width:0;padding:11px 4px;font-size:13px;font-weight:800;letter-spacing:.03em;background:var(--acs,#e6f3f5);color:var(--ac,#0f7b8a);border:1px solid transparent;box-shadow:none}
 #radiop .rb button.on{background:var(--ac,#0f7b8a);color:var(--onac,#fff)}
 #radiop .hint{margin:10px 0 0;font-size:12px}
+/* v3.4.6: o título encolhe/corta com reticências em vez de passar por baixo dos botões (rádio + engrenagem) */
+header .brand{flex:1 1 0;min-width:0}
+header .brand h1{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(14px,5vw,21px)}
+header .hbtns{position:relative;z-index:1;flex:none}
+@media(max-width:400px){header{gap:8px}header .brand{gap:8px}header .logo{width:36px;height:36px;border-radius:11px}header .cfg{width:40px;height:40px;border-radius:13px}header .hbtns{gap:6px}}
 
 /* ---------- comando de voz ---------- */
 #vozfab{position:fixed;right:16px;bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:47;width:66px;height:66px;min-width:0;border-radius:50%;border:0;padding:0;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;background:var(--ac);color:var(--onac);box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;transition:transform .12s}
@@ -5632,7 +5637,7 @@ function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!
   p.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.k-c button');if(b)kRun(b.dataset.c)});
   if(!kCfg().seen){const esp=n=>{if(K.open||kCfg().seen||!(S.user&&S.user.name)||n>90)return;if(document.querySelector('.ov')||(typeof permAsking!=='undefined'&&permAsking)||(typeof PIN_LK!=='undefined'&&PIN_LK)){setTimeout(()=>esp(n+1),2000);return}kOpen()};setTimeout(()=>esp(0),6000)}}
  f.style.display=ok&&!K.open?'':'none';if(!ok){const p=$('#kay-p');if(p)p.classList.remove('on');K.open=false}}
-function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div>${on?`<div class="prm"><span class="ic">🗣️</span><span class="t"><b>Chamar pelo nome</b><small>${wakeLig()?'Ligado: com o app aberto na tela, diga “Kayla” e o comando. Gasta um pouco mais de bateria.':'Desligado: diga “Kayla” e o microfone liga sozinho (com o app aberto na tela).'}</small></span><button class="${wakeLig()?'':'sec'}" onclick="wakeTog()" aria-pressed="${wakeLig()}">${wakeLig()?'Desligar':'Ligar'}</button></div><div class="prm"><span class="ic">🧪</span><span class="t"><b>Testar a escuta</b><small>Mostra se o celular está ouvindo e o que ouviu.</small></span><button class="sec" onclick="wakeDiag()">Testar</button></div>`:''}</div>`}
+function kaylaCfg(){const on=!kCfg().off;return `<h3>💬 Assistente Kayla</h3><div class="card"><div class="prm"><span class="ic">💬</span><span class="t"><b>Kayla, assistente virtual</b><small>${on?'Ativada: aparece no canto da tela para ajudar você.':'Desativada: não aparece na tela.'}</small></span><button class="${on?'':'sec'}" onclick="kayTog()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div></div>`}
 function kayTog(){kCfg().off=kCfg().off?0:1;save();kSync();render()}
 /* ===== KAYLA · VOCABULÁRIO AMPLIADO: gírias, sinônimos, erros de digitação, números por extenso, conversa do dia a dia ===== */
 (function(){
@@ -6548,8 +6553,8 @@ function vkBg(){let el=document.querySelector('.vk-bg');
 const WK={on:false,busy:false,seq:0,txt:'',heard:false,dt:null,ls:null,ls2:null,w:null,espera:0,falhas:0,ini:0,ult:0,ouvido:'',alts:'',sess:0,erro:'',pediu:0};
 const WK_RX=/\b(?:(?:k|c|qu|cl|kl)(?:[ae][iy]|ae|ea)\s?l{1,2}a|l[ae][iy]l{1,2}a|t[ae][iy]l{1,2}a)\b/;
 const wakeBase=s=>String(s||'').replace(/[\s\S]/g,c=>c.normalize('NFD')[0]).toLowerCase();
-const wakeLig=()=>{try{return localStorage.getItem('ma-kayla-wake')!=='0'}catch(e){return true}};
-function wakeSet(v){try{localStorage.setItem('ma-kayla-wake',v?'1':'0')}catch(e){}}
+const wakeLig=()=>false;
+function wakeSet(v){}
 function wakeMotivo(){
  if(!wakeLig())return 'desligado nas configurações';
  if(kCfg().off)return 'a Kayla está desativada';
@@ -6661,13 +6666,7 @@ async function wakeDiag(){
  try{if(N){const a=await N.available();disp=a&&a.available?'sim':'não'}else disp=(window.SpeechRecognition||window.webkitSpeechRecognition)?'sim':'não'}catch(e){}
  const m=wakeMotivo();
  info((WK.on?'👂 OUVINDO agora':'⏸️ Parada')+(m?' ('+m+')':'')+' · '+(nat()?'app instalado':'navegador')+' · plugin de voz: '+(N?'sim':'não')+' · reconhecimento disponível: '+disp+' · microfone: '+mic+' · sessões: '+WK.sess+' · último texto ouvido: '+(WK.alts||WK.ouvido||'(nada ainda)')+(WK.erro?' · último erro: '+WK.erro:'')+'. Diga “Kayla” e toque em Testar de novo para ver se ela ouviu.')}
-setInterval(()=>{try{
- const d=wakeDeve();
- if(d&&!WK.on&&Date.now()>=WK.espera)wakeIniciar();
- else if(!d&&WK.on&&!WK.busy)wakeParar();
- /* vigia: se o Android parou de escutar sem avisar, religa (a cada ~7 s de silêncio) */
- else if(WK.on&&!WK.heard&&!WK.w&&Date.now()-WK.ult>9000){wakeParar();WK.espera=Date.now()+100}
- wakeUi()}catch(e){}},500);
+/* v3.4.6: removida a escuta contínua do nome “Kayla” (o vigia religava o microfone a cada ~7 s). O microfone agora só liga quando você toca nele. */
 document.addEventListener('visibilitychange',()=>{if(document.hidden)wakeParar()});
 
 /* ===== Tema ESCRITÓRIO: mesa de madeira (veio de verdade via feTurbulence), luz da janela, caderno, caneca, caneta, planta, clipes ===== */
