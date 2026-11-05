@@ -1726,7 +1726,7 @@ let mmMk='assai';
 function mmSet(k){mmMk=k;render();window.scrollTo(0,0)}
 /* ---------- Promoções: comparador de preços entre mercados ---------- */
 const CMP_MK=[['assai','Assaí','Assaí'],['atacadao','Atacadão','Atacadão'],['novo','Novo Atacarejo','Novo']];
-const CMP_SET=[['Mercearia','🛒'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽']];
+const CMP_SET=[['Mercearia','🛒'],['Hortifrúti','🥬'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽']];
 /* Produtos equivalentes: [id, setor, nome, quantidade de referência, Assaí, Atacadão, Novo].
    Cada mercado lista [nome exato do produto no encarte, tamanho da embalagem em relação à referência]. O preço é dividido por esse tamanho,
    para comparar o mesmo conteúdo (ex.: 3L de refrigerante = 3 × a referência de 1 L). Se houver mais de um produto, vale o mais barato. */
@@ -1742,7 +1742,7 @@ const CMP=[
  ['molho','Mercearia','Molho de tomate','300 g',[["Molho de tomate Predilecta sachê",1],["Molho de tomate Stella D'oro",1]],[["Molho de Tomate Palmeiron",1],["Molho de Tomate Cica Pomodoro Tradicional",1],["Molho de Tomate Tarantella Tradicional · Pouch 300g",1]],[["Molho de Tomate Tambaú",1]]],
  ['aveia','Mercearia','Aveia em flocos','170 g',null,[["Aveia Apti Flocos/Flocos Finos",150/170]],[["Aveia Nestlé",1]]],
  ['condensado','Mercearia','Leite condensado semidesnatado','395 g',[["Leite condensado semidesnatado Italac",1],["Leite condensado semidesnatado Sabe",1]],[["Leite Condensado Betânia",1]],[["Leite Condensado Betânia",1]]],
- ['cafe','Mercearia','Café torrado e moído','250 g',[["Café Melitta tradicional ou extraforte",1]],[["Café São Braz",1]],null],
+ ['cafe','Mercearia','Café torrado e moído','250 g',[["Café Melitta tradicional ou extraforte",1]],[["Café São Braz",1],["Café 3 Corações Tradicional/Extra Forte",1]],null],
  ['cafesol','Mercearia','Café solúvel (sachê)','40 g',[["Café solúvel Melitta sachê",1]],[["Café Solúvel Melitta",1]],null],
  ['oleo','Mercearia','Óleo de soja','900 ml',null,[["Óleo de Soja Liza",1]],[["Óleo de Soja Soya",1]]],
  ['azeite','Mercearia','Azeite extravirgem','500 ml',null,[["Azeite de Oliva Andorinha",1]],[["Azeite Extravirgem Gallo",1]]],
@@ -1764,7 +1764,33 @@ const CMP=[
  ['multiuso','Limpeza','Limpador multiuso','500 ml',[["Limpador multiuso Becker",1]],[["Limpador Multiuso Veja",1],["Limpador Casa & Perfume",1]],null],
  ['sabaob','Limpeza','Sabão em barra','160 g',[["Sabão em barra Bem-te-vi",1]],[["Sabão em Pedaço Ypê",5]],null],
  ['lavapo','Limpeza','Lava-roupas em pó','400 g',null,[["Lava Roupas em Pó Ala",1]],[["Detergente em Pó Ala",1]]],
- ['lavaliq','Limpeza','Lava-roupas líquido','1 L',null,[["Lava Roupas Líquido Tixan",3],["Lava Roupas Líquido Dragão Azul",3]],[["Lava Roupas Líquido Toplin",5]]]
+ ['lavaliq','Limpeza','Lava-roupas líquido','1 L',null,[["Lava Roupas Líquido Tixan",3],["Lava Roupas Líquido Dragão Azul",3]],[["Lava Roupas Líquido Toplin",5]]],
+ ['goma','Mercearia','Goma de mandioca (tapioca)','1 kg',[["Goma de mandioca para tapioca Norte Goma",1]],[["Goma de Mandioca Kicaldo",1],["Goma Peneirada Sinhá Maria",1]],[["Goma de Tapioca Dona Ceci",1]]],
+ ['cream','Mercearia','Biscoito cream cracker','350 g',[["Biscoito cream cracker Vitarella",1]],[["Biscoito Vitamassa",1]],[["Cream Cracker, Maizena ou Maria Pilar",1]]],
+ ['maria','Mercearia','Biscoito Maria / Maizena Pilar','307 g',[["Biscoito Maria ou Maizena Pilar",1]],null,[["Cream Cracker, Maizena ou Maria Pilar",1]]],
+ ['bombom','Mercearia','Bombom sortido (caixa)','200 g',null,[["Bombom Neugebauer Amor Carioca",1]],[["Bombom Sortido Garoto",1.1]]],
+ ['banana','Hortifrúti','Banana-pacovan','1 kg',null,[["Banana Pacovan",1]],[["Manga Keitt ou Banana Pacovan",1]]],
+ ['manga','Hortifrúti','Manga','1 kg',[["Manga-Palmer",1],["Manga-Tommy",1]],[["Manga Tommy",1]],[["Manga Keitt ou Banana Pacovan",1]]],
+ ['melao','Hortifrúti','Melão amarelo','1 kg',[["Melão-amarelo",1]],[["Melão Amarelo",1]],[["Melão Amarelo",1]]],
+ ['abacaxi','Hortifrúti','Abacaxi','1 unidade',[["Abacaxi",1]],[["Abacaxi Tropical",1]],[["Abacaxi Pérola",1]]],
+ ['cenoura','Hortifrúti','Cenoura','1 kg',null,[["Cenoura",1]],[["Cenoura",1]]],
+ ['batata','Hortifrúti','Batata inglesa (lavada)','1 kg',[["Batata lavada",1]],[["Batata lavada",1]],[["Batata Inglesa",1]]],
+ ['batatadoce','Hortifrúti','Batata-doce','1 kg',null,[["Batata-doce",1]],[["Batata Doce",1]]],
+ ['alho','Hortifrúti','Alho a granel','1 kg',[["Alho a granel",1]],null,[["Alho",1]]],
+ ['maca','Hortifrúti','Maçã nacional (gala)','1 kg',[["Maçã-gala",1]],[["Maçã Nacional Gala",1]],[["Limão Taiti ou Maçã Nacional",1]]],
+ ['limao','Hortifrúti','Limão-taiti','1 kg',null,[["Limão-taiti",1]],[["Limão Taiti ou Maçã Nacional",1]]],
+ ['uva','Hortifrúti','Uva sem semente','500 g',[["Uva-branca sem semente",1]],null,[["Uva Verde Da Roça, Seleta ou Delly Fruit",1]]],
+ ['mamao','Hortifrúti','Mamão','1 kg',[["Mamão-formosa",1]],[["Mamão Comum",1]],null],
+ ['abacate','Hortifrúti','Abacate','1 kg',[["Abacate",1]],null,[["Abacate",1]]],
+ ['manteiga','Laticínios','Manteiga com sal','200 g',null,[["Manteiga Betânia",1],["Manteiga Sertão Jucurutu Resfriada com Sal",2.5]],[["Manteiga Camponesa",1]]],
+ ['coalho','Laticínios','Queijo coalho','1 kg',null,[["Queijo de Coalho Jucurutu Resfriado",1]],[["Queijo Coalho Santa Tereza",1]]],
+ ['margcrem','Laticínios','Margarina cremosa com sal','500 g',null,[["Margarina Deline Resfriada",1]],[["Margarina Vegetal Cremosa Qualy",1]]],
+ ['yopro','Laticínios','Iogurte líquido YoPro','250 g',null,[["Bebida Láctea YoPro",1]],[["Iogurte Líquido YoPro",1]]],
+ ['iogcopo','Laticínios','Iogurte em copo (sabores)','170 g',null,[["Iogurte Danone Resfriado · vários sabores, unidade, 170 g",1],["Iogurte Natural Danone Resfriado",160/170]],[["Iogurte Natural Betânia",1]]],
+ ['iogpolpa','Laticínios','Iogurte natural em bandeja','340 g',null,[["Iogurte Natural Danone Resfriado Integral/Desnatado",1]],[["Iogurte Danone Polpa Natural",1]]],
+ ['iog1l','Laticínios','Iogurte em garrafa','1 kg (≈ 1 L)',null,[["Iogurte Danone Resfriado · vários sabores, garrafa, 1,25 kg",1.25],["Iogurte Itambé Resfriado",1.15]],[["Iogurte Betânia",1.25]]],
+ ['lasanha','Carnes e congelados','Lasanha Sadia congelada','600 g',null,[["Lasanha Sadia",1]],[["Lasanha Sadia",1]]],
+ ['papeltoalha','Limpeza','Papel toalha Malu (2 rolos)','2 rolos',null,[["Papel Toalha Malu",1]],[["Papel Toalha Malu",1]]]
 ];
 let mmView='lista',cmpApp=true;try{cmpApp=localStorage.getItem('ma-cmp-app')!=='0'}catch(e){}
 function mmVw(v){mmView=v;render();window.scrollTo(0,0)}
@@ -1778,7 +1804,8 @@ function cmpPrecos(){
  /* listas de produtos e preços (PDF): preço único; nomes repetidos com embalagens diferentes levam a embalagem no nome */
  atTodas().forEach(e=>{if(!vivo(e.fim))return;const L=e.txt.trim().split('\n').map(l=>l.split('|'));
   L.forEach(a=>{if(!(+a[2]>0))return;const dup=L.filter(b=>b[0]===a[0]).length>1;R.atacadao[dup?a[0]+' · '+a[1]:a[0]]={p:+a[2],x:0,tx:'',fim:e.fim}})});
- nvParse(NV_TXT).forEach(s=>{const fim=NV_ENC[s.e].fim;if(!vivo(fim))return;s.it.forEach(i=>{if(i.p>0)R.novo[i.n]={p:i.p,x:0,tx:'',fim:fim}})});
+ const nvS=nvParse(NV_TXT),nvC={};nvS.forEach(q=>q.it.forEach(i=>{nvC[i.n]=(nvC[i.n]||0)+1}));
+ nvS.forEach(q=>{const fim=NV_ENC[q.e].fim;if(!vivo(fim))return;q.it.forEach(i=>{if(i.p>0)R.novo[nvC[i.n]>1?i.n+' · '+i.d:i.n]={p:i.p,x:0,tx:'',fim:fim}})});
  return R}
 /* preço usado na comparação: com a opção ligada vale o menor (loja, app ou cartão); desligada, só o preço da loja */
 function cmpPreco(o){if(!o)return null;if(cmpApp){const v=[o.p,o.x].filter(n=>n>0);return v.length?{p:Math.min.apply(null,v),tag:o.x>0&&(!o.p||o.x<o.p)?o.tx:''}:null}
@@ -2541,6 +2568,14 @@ function cPdfBuild(){
  const R=[['Renda fixa mensal',money(c.base)],['Rendas extras lançadas ('+c.rendas.length+')',money(rTot)],['Contas fixas cadastradas ('+c.fixas.length+') · total do mês atual',money(fAtual)],['Gastos avulsos lançados ('+c.gastos.length+')',money(gTot)]];
  if(s&&salLiq(s)>0)R.push(['Salário líquido',money(salLiq(s))]);
  d.table(KV,R,{nohead:1});
+ /* mês atual: o mesmo da aba Resumo */
+ const k0=cCalc(hoje),usado=k0.renda>0?Math.round(k0.gastos/k0.renda*100):(k0.gastos>0?100:0);
+ d.h2('Mês atual ('+pm(hoje)+')');
+ d.table(KV,[['Renda do mês',money(k0.renda)],['Gastos do mês (contas fixas + gastos avulsos)',money(k0.gastos)],{c:[k0.sobra<0?'Falta':'Sobra',money(Math.abs(k0.sobra))],b:1,sh:1},['Parte da renda já usada',usado+'%'],['Contas fixas já pagas',money(k0.fixPago)],['Contas fixas ainda a pagar',money(k0.falta)]],{nohead:1});
+ const cats=CCATS.map(x=>[x,k0.porCat[x[0]]||0,cSum(c.gastos.filter(g=>ccat(g.cat)[0]===x[0]))]).filter(x=>x[1]>0||x[2]>0).sort((a,b)=>b[1]-a[1]||b[2]-a[2]);
+ d.h2('Para onde foi o dinheiro');
+ if(cats.length)d.table([{h:'Categoria',w:195},{h:'Mês atual',w:110,a:'r'},{h:'% do mês',w:70,a:'r'},{h:'Avulsos (todos os meses)',w:140,a:'r'}],cats.map(x=>[x[0][2],money(x[1]),k0.gastos>0?Math.round(x[1]/k0.gastos*100)+'%':'-',money(x[2])]));
+ else d.p('Nenhum gasto lançado.');
  /* mês a mês */
  const ms=[];c.gastos.forEach(g=>ms.push(g.date.slice(0,7)));c.rendas.forEach(r=>ms.push(r.m));c.fixas.forEach(f=>ms.push(f.ini));
  let ini=ms.sort()[0]||hoje;if(ini>hoje)ini=hoje;
@@ -2551,16 +2586,37 @@ function cPdfBuild(){
   MM.map(x=>[pm(x[0]),money(x[1].renda),money(x[1].fixTot),money(x[1].gasTot),money(x[1].gastos),(x[1].sobra<0?'-':'')+money(Math.abs(x[1].sobra))]));
  else d.p('Nenhum mês com renda ou gastos.');
  /* salário */
- if(s&&(s.bruto>0||salLiq(s)>0)){
-  d.h2('Salário');
+ if(s&&(s.bruto>0||salLiq(s)>0||s.prov.some(x=>x.val>0)||s.desc.some(x=>x.val>0))){
+  d.h2('Salário e holerite');
   const S1=[['Forma de pagamento',s.tipo==='quinzenal'?'Por quinzena (2 pagamentos)':'Uma vez por mês'],['Salário bruto',money(s.bruto)]];
-  if(s.deps>0)S1.push(['Dependentes (para o IRRF)',String(s.deps)]);
-  s.prov.forEach(x=>{if(x.val>0)S1.push(['(+) '+x.nome,money(x.val)])});
-  s.desc.forEach(x=>{if(x.val>0)S1.push(['(-) '+x.nome+(x.pct?' ('+String(x.val).replace('.',',')+'%)':''),money(salDescVal(s,x))])});
+  S1.push(['Dependentes (para o IRRF)',String(s.deps)]);
+  s.prov.forEach(x=>S1.push(['(+) '+(x.nome||'(sem nome)'),money(x.val)]));
+  if(s.prov.length)S1.push({c:['Total de adicionais',money(cSum(s.prov))],b:1});
+  S1.push({c:['Base (bruto + adicionais)',money(salBase(s))],b:1});
+  s.desc.forEach(x=>S1.push(['(-) '+(x.nome||'(sem nome)')+(x.pct?' ('+String(x.val).replace('.',',')+'% da base)':''),money(salDescVal(s,x))]));
+  S1.push({c:['Total de descontos',money(salDescTot(s))],b:1});
   S1.push({c:['Salário líquido',money(salLiq(s))],b:1,sh:1});
   s.pags.forEach((p,i)=>S1.push(['Pagamento '+(i+1)+': '+(p.modo==='util'?p.dia+'º dia útil':'dia '+p.dia),money(salPagVal(s,p))]));
   S1.push(['Se o dia cair no fim de semana',s.fds==='antes'?'Antecipa para sexta':s.fds==='depois'?'Passa para segunda':'Não muda']);
   d.table(KV,S1,{nohead:1})}
+ /* melhores dias para pagar (aba Salário › Melhores dias) */
+ if(s&&salLiq(s)>0){try{
+  const prox=salProximo();
+  d.h2('Melhores dias para pagar as contas');
+  d.p('O melhor dia para pagar é quando o salário acabou de cair: pague primeiro as contas, antes que o dinheiro escape.'+(prox?' Próximo salário: '+pf(prox.date)+' · '+money(prox.val)+'.':''));
+  [hoje,salYM(+hoje.slice(0,4),+hoje.slice(5,7))].forEach(ym=>{
+   const C=salCiclos(ym);if(!C.ciclos.length)return;
+   d.p('Em '+pm(ym)+', os melhores dias para pagar são: '+C.ciclos.map(x=>'dia '+x.ini.slice(8)).join(' e ')+'.');
+   const rows=[];
+   if(C.pre){rows.push({c:['Antes do 1º salário do mês (saem do dinheiro do mês passado)','','',money(C.pre.cont)],b:1,sh:1});C.pre.bills.forEach(b=>rows.push([b.desc||'(sem descrição)',pf(b.date),b.pago?'Paga':'A pagar',money(b.val)]))}
+   C.ciclos.forEach(x=>{const rec=x.ini<HOJE?HOJE:x.ini,fim=iso(new Date(+x.fim.slice(0,4),+x.fim.slice(5,7)-1,+x.fim.slice(8)-1));
+    rows.push({c:['Salário de '+pf(x.ini)+' · vale até '+pf(fim),'','',money(x.val)],b:1,sh:1});
+    x.bills.forEach(b=>rows.push([b.desc||'(sem descrição)',pf(b.date),b.pago?'Paga':b.date<HOJE?'Atrasada':'Pagar no dia '+rec.slice(8),money(b.val)]));
+    if(!x.bills.length)rows.push(['Nenhuma conta fixa vence neste período','','','']);
+    if(x.gast)rows.push(['Gastos lançados no período','','',money(x.gast)]);
+    rows.push({c:[x.sobra<0?'Falta':'Sobra','','',money(Math.abs(x.sobra))],b:1})});
+   d.table([{h:'Conta ou período',w:255,wrap:1},{h:'Vence',w:75},{h:'Situação',w:90,wrap:1},{h:'Valor',w:95,a:'r'}],rows)})
+ }catch(e){}}
  /* rendas extras */
  d.h2('Rendas extras');
  if(c.rendas.length)d.table([{h:'Mês',w:70},{h:'Descrição',w:345,wrap:1},{h:'Valor',w:100,a:'r'}],
@@ -2568,10 +2624,11 @@ function cPdfBuild(){
  else d.p('Nenhuma renda extra lançada. A renda fixa mensal está no resumo geral.');
  /* contas fixas */
  d.h2('Contas fixas');
- if(c.fixas.length)d.table([{h:'Descrição',w:150,wrap:1},{h:'Categoria',w:80,wrap:1},{h:'Dia',w:30,a:'r'},{h:'Valor',w:70,a:'r'},{h:'Período',w:85,wrap:1},{h:'Meses pagos',w:100,wrap:1}],
+ if(c.fixas.length){const fx0=new Set(cFix(hoje).map(x=>x.id));
+  d.table([{h:'Descrição',w:125,wrap:1},{h:'Categoria',w:70,wrap:1},{h:'Dia',w:25,a:'r'},{h:'Valor',w:65,a:'r'},{h:'Período',w:80,wrap:1},{h:'Meses pagos',w:95,wrap:1},{h:'Mês atual',w:55}],
   c.fixas.slice().sort((a,b)=>a.dia-b.dia||a.desc.localeCompare(b.desc)).map(f=>{
    const pagos=Object.keys(c.pagas).sort().filter(m=>c.pagas[m]&&c.pagas[m][f.id]).map(pm).join(', ');
-   return [f.desc||'(sem descrição)',ccat(f.cat)[2],String(f.dia),money(f.val),f.fim?pm(f.ini)+' a '+pm(f.fim):'desde '+pm(f.ini),pagos||'-']}));
+   return [f.desc||'(sem descrição)',ccat(f.cat)[2],String(f.dia),money(f.val),f.fim?pm(f.ini)+' a '+pm(f.fim):'desde '+pm(f.ini),pagos||'-',cPago(hoje,f.id)?'Paga':fx0.has(f.id)?'A pagar':'-']}))}
  else d.p('Nenhuma conta fixa cadastrada.');
  /* gastos avulsos */
  d.h2('Gastos avulsos (todos os lançamentos)');
@@ -2583,6 +2640,7 @@ function cPdfBuild(){
   d.table([{h:'Data',w:70},{h:'Descrição',w:240,wrap:1},{h:'Categoria',w:110,wrap:1},{h:'Valor',w:95,a:'r'}],rows)}
  else d.p('Nenhum gasto avulso lançado.');
  return d.finish('JC ORGANIZA · Carteira · gerado em '+pf(HOJE))}
+const cPdfBtn=()=>`<div class="row" style="margin-top:14px"><button class="sec" style="flex:1" onclick="cPdf()">📄 Baixar PDF com os dados de todas as abas</button></div><p class="hint">O PDF reúne Resumo, Gastos, Fixas, Renda e Salário (com os melhores dias para pagar).</p>`;
 async function cPdf(){
  let txt;try{txt=cPdfBuild()}catch(e){info('Não foi possível montar o PDF da Carteira.');return}
  const nome='jc-organiza-carteira-'+HOJE+'.pdf',FS=plug('Filesystem'),SH=plug('Share');
@@ -2601,7 +2659,7 @@ function vCarteira(){
  const k=cCalc(cMes);
  const seg=`<div class="seg s4 s5">${[['res','📊','Resumo'],['gas','💸','Gastos'],['fix','📌','Fixas'],['ren','💵','Renda'],['sal','🧾','Salário']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
  const nv=`<div class="cal-h"><button class="sec" onclick="cMove(-1)" aria-label="Mês anterior">‹</button><strong class="cw-m">${esc(cMesTxt())}</strong><button class="sec" onclick="cMove(1)" aria-label="Próximo mês">›</button></div>`;
- return `<h2>${_t('Carteira')}</h2>`+seg+((cSub==='sal'&&salV==='cfg')?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cRenda(k))}
+ return `<h2>${_t('Carteira')}</h2>`+seg+((cSub==='sal'&&salV==='cfg')?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cRenda(k))+cPdfBtn()}
 
 /* --- Resumo --- */
 function cResumo(k){
@@ -2620,8 +2678,7 @@ function cResumo(k){
   <small style="color:var(--mute)">${k.renda>0?'Você usou '+real+'% da renda':'Sem renda informada'}</small>${aviso}
   ${k.falta>0?`<p class="hint">📌 Contas fixas ainda por pagar: <b>${BRL(k.falta)}</b></p>`:''}</div>
  <div class="row"><button style="flex:1" onclick="cSub='gas';render();cFoco('cw-gd')">＋ Lançar gasto</button><button class="sec" style="flex:1" onclick="cSub='fix';render()">📌 Contas fixas</button></div>
- <h3>Para onde foi o dinheiro</h3><div class="card">${catHtml}</div>
-  <div class="row" style="margin-top:10px"><button class="sec" style="flex:1" onclick="cPdf()">📄 Baixar PDF com todos os meus dados</button></div>`}
+ <h3>Para onde foi o dinheiro</h3><div class="card">${catHtml}</div>`}
 
 /* --- Gastos avulsos --- */
 function cEditForm(kind,x){
@@ -3671,6 +3728,10 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.4.1':[
+  '⚖️ Promoções › Comparar preços: entraram os produtos novos dos três mercados, com o novo setor Hortifrúti (frutas, legumes e verduras) e mais itens de laticínios, mercearia, congelados e limpeza.',
+  '📄 Carteira: o botão “Baixar PDF” agora aparece em todas as abas e o PDF traz tudo: resumo do mês, para onde foi o dinheiro, gastos, contas fixas (com situação do mês), rendas, salário e os melhores dias para pagar.'
+ ],
  '3.4.0':[
   '🧾 Nova aba “Salário” na Carteira: diga se recebe por mês ou por quinzena, o dia que o salário cai (dia do mês ou N-º dia útil) e o valor de cada pagamento.',
   '💼 Holerite: preencha o salário bruto, os adicionais e os descontos (INSS, IRRF, vale-transporte… e quantos outros quiser, em R$ ou %). O app calcula o líquido e pode estimar INSS e IR pela tabela de 2026.',
