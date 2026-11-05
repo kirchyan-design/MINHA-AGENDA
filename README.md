@@ -23,6 +23,11 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
   - **Usuário novo**: aparece uma vez logo depois de entrar com o nome ou com uma conta (Google, e-mail ou celular).
   - Não empilha com outras caixas: espera elas fecharem. O texto fica em `RECADO_CFG` no `index.html`; se mudar alguma opção das Configurações, atualize a lista. Para mostrar de novo a todos, troque `-v1` por `-v2` na chave.
 
+## Aviso: quadro de avisos das atualizações recentes (não é uma atualização)
+
+- **Caixa “📢 Quadro de avisos”** com as novidades recentes (Salário na Carteira, melhores dias, Kayla que aprende, modo Preto, tema Viking, chamar a Kayla pelo nome). Aparece **uma única vez por aparelho** (chave `ma-recado-novid-v1` no `localStorage`), na próxima abertura do app, depois da senha e das outras caixas. Usuário novo não vê (já recebe a de boas-vindas). Não precisa mudar o `VERSION` do `sw.js`.
+- O texto fica em `RECADO_NOVID` no `index.html`. Para mostrar de novo a todos com uma lista nova, troque `-v1` por `-v2` na chave e atualize a lista.
+
 ## Versão 3.4.0
 
 - **Carteira › Salário** (nova aba, 5ª da Carteira). Duas telas: **Meu salário** e **Melhores dias**.
