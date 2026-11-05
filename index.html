@@ -2471,6 +2471,132 @@ const cSel=(id,cur)=>`<select id="${id}" aria-label="Categoria">${CCATS.map(c=>`
 const cClear=ids=>ids.forEach(i=>{const e=$('#'+i);if(e)e.value=''});
 const cFoco=id=>{const e=$('#'+id);if(e)e.focus()};
 
+/* ---------- Carteira: PDF com todos os dados e registros ----------
+   Gerador de PDF próprio (texto, tabelas e páginas A4), sem biblioteca e sem internet: o arquivo é montado aqui mesmo no aparelho. */
+const PDF_WN=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584],PDF_WB=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+function pdfCh(ch){const n=ch.charCodeAt(0);if(n===160)return 32;if((n>=32&&n<=126)||(n>=161&&n<=255))return n;
+ return {8211:150,8212:151,8216:145,8217:146,8220:147,8221:148,8226:149,8230:133,8364:128}[n]||0}
+function pdfDoc(){
+ const PW=595,PH=842,M=40,AC='0.059 0.482 0.541',pages=[];let cur,y;
+ const wch=(n,b)=>{const T=b?PDF_WB:PDF_WN;if(n>=32&&n<=126)return T[n-32];
+  if(n>=161){const k=String.fromCharCode(n).normalize('NFD').charCodeAt(0);if(k>=32&&k<=126)return T[k-32]}return 556};
+ const bytes=s=>{const o=[];for(const ch of String(s==null?'':s)){const n=pdfCh(ch);if(n)o.push(n)}return o};
+ const wid=(s,b,sz)=>bytes(s).reduce((a,n)=>a+wch(n,b),0)*sz/1000;
+ const hex=a=>'<'+a.map(n=>n.toString(16).padStart(2,'0')).join('')+'>';
+ const f2=n=>String(Math.round(n*100)/100);
+ const page=()=>{cur=[];pages.push(cur);y=PH-M};
+ const txt=(x,yy,s,o)=>{o=o||{};const sz=o.sz||9,b=!!o.b,a=bytes(s);if(!a.length)return;
+  cur.push(`BT /${b?'F2':'F1'} ${sz} Tf ${o.c||'0.1 0.1 0.1'} rg ${f2(o.a==='r'?x-wid(s,b,sz):x)} ${f2(yy)} Td ${hex(a)} Tj ET`)};
+ const rect=(x,yy,w,h,c)=>cur.push(`${c} rg ${f2(x)} ${f2(yy)} ${f2(w)} ${f2(h)} re f`);
+ const hline=(yy,c)=>cur.push(`0.5 w ${c} RG ${M} ${f2(yy)} m ${PW-M} ${f2(yy)} l S`);
+ const wrap=(s,w,b,sz)=>{const out=[];String(s==null?'':s).split('\n').forEach(par=>{let l='';
+  par.split(/\s+/).filter(Boolean).forEach(wd=>{
+   while(wid(wd,b,sz)>w){let k=1;while(k<wd.length&&wid(wd.slice(0,k+1),b,sz)<=w)k++;if(l){out.push(l);l=''}out.push(wd.slice(0,k));wd=wd.slice(k)}
+   const t=l?l+' '+wd:wd;if(l&&wid(t,b,sz)>w){out.push(l);l=wd}else l=t});
+  out.push(l)});return out.length?out:['']};
+ const need=h=>{if(y-h<46)page()};
+ page();
+ return {
+  head(t,sub){rect(0,PH-64,PW,64,AC);txt(M,PH-30,t,{b:1,sz:16,c:'1 1 1'});txt(M,PH-49,sub,{sz:9,c:'1 1 1'});y=PH-64-24},
+  h2(t){need(76);y-=8;txt(M,y-12,t,{b:1,sz:12,c:AC});hline(y-17,AC);y-=26},
+  p(t){wrap(t,PW-2*M,false,9).forEach(l=>{need(14);txt(M,y-10,l,{sz:9,c:'0.35 0.35 0.35'});y-=12});y-=6},
+  table(cols,rows,o){o=o||{};const sz=9,lh=11.5,xs=[];let a=M;cols.forEach(c=>{xs.push(a);a+=c.w});
+   const tx=i=>cols[i].a==='r'?xs[i]+cols[i].w-4:xs[i]+4;
+   const head=()=>{if(o.nohead)return;need(40);rect(M,y-15,PW-2*M,16,'0.90 0.95 0.96');cols.forEach((c,i)=>txt(tx(i),y-11,c.h,{b:1,sz:8.5,a:c.a,c:'0.2 0.2 0.2'}));y-=18};
+   head();
+   rows.forEach(r=>{const ar=Array.isArray(r),cells=ar?r:r.c,b=!ar&&!!r.b,sh=!ar&&!!r.sh;
+    const L=cells.map((t,i)=>cols[i].wrap?wrap(t,cols[i].w-8,b,sz):[t]);
+    const n=Math.max.apply(null,[1].concat(L.map(q=>q.length))),h=n*lh+5;
+    if(y-h-(sh?lh+5:0)<46){page();head()}
+    if(sh)rect(M,y-h+2,PW-2*M,h-2,'0.94 0.94 0.94');
+    L.forEach((ls,i)=>ls.forEach((s,j)=>txt(tx(i),y-lh*(j+1)+2,s,{b:b,sz:sz,a:cols[i].a})));
+    hline(y-h+2,'0.86 0.86 0.86');y-=h});
+   y-=8},
+  finish(rodape){const N=pages.length;
+   pages.forEach((pg,i)=>{cur=pg;txt(M,24,rodape,{sz:8,c:'0.5 0.5 0.5'});txt(PW-M,24,'Página '+(i+1)+' de '+N,{sz:8,a:'r',c:'0.5 0.5 0.5'})});
+   const O=[];O[1]='<< /Type /Catalog /Pages 2 0 R >>';
+   O[2]='<< /Type /Pages /Kids ['+pages.map((_,i)=>(5+2*i)+' 0 R').join(' ')+'] /Count '+N+' >>';
+   O[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+   O[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+   pages.forEach((pg,i)=>{const s=pg.join('\n');
+    O[5+2*i]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+2*i} 0 R >>`;
+    O[6+2*i]=`<< /Length ${s.length} >>\nstream\n${s}\nendstream`});
+   O[5+2*N]='<< /Title (JC ORGANIZA - Carteira) /Producer (JC ORGANIZA) >>';
+   let out='%PDF-1.4\n';const off=[];
+   for(let i=1;i<O.length;i++){off[i]=out.length;out+=i+' 0 obj\n'+O[i]+'\nendobj\n'}
+   const xr=out.length;out+='xref\n0 '+O.length+'\n0000000000 65535 f \n';
+   for(let i=1;i<O.length;i++)out+=String(off[i]).padStart(10,'0')+' 00000 n \n';
+   return out+'trailer\n<< /Size '+O.length+' /Root 1 0 R /Info '+(5+2*N)+' 0 R >>\nstartxref\n'+xr+'\n%%EOF'}
+ }}
+/* monta o PDF da Carteira com tudo o que está salvo: resumo, mês a mês, salário, rendas, contas fixas (com pagamentos) e todos os gastos */
+function cPdfBuild(){
+ normCart();const c=S.cart,d=pdfDoc();
+ const pf=s=>s?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):'',pm=m=>m.slice(5,7)+'/'+m.slice(0,4);
+ const money=v=>BRL(v).replace(/\u00a0/g,' ');
+ const nome=(S.user&&S.user.name)||'',hoje=HOJE.slice(0,7);
+ d.head('JC ORGANIZA · Carteira',(nome?'Usuário: '+nome+'   ·   ':'')+'Dados e registros gerados em '+pf(HOJE));
+ const KV=[{w:330,wrap:1},{w:185,a:'r'}];
+ const gTot=cSum(c.gastos),rTot=cSum(c.rendas),fAtual=cSum(cFix(hoje)),s=c.sal;
+ d.h2('Resumo geral');
+ const R=[['Renda fixa mensal',money(c.base)],['Rendas extras lançadas ('+c.rendas.length+')',money(rTot)],['Contas fixas cadastradas ('+c.fixas.length+') · total do mês atual',money(fAtual)],['Gastos avulsos lançados ('+c.gastos.length+')',money(gTot)]];
+ if(s&&salLiq(s)>0)R.push(['Salário líquido',money(salLiq(s))]);
+ d.table(KV,R,{nohead:1});
+ /* mês a mês */
+ const ms=[];c.gastos.forEach(g=>ms.push(g.date.slice(0,7)));c.rendas.forEach(r=>ms.push(r.m));c.fixas.forEach(f=>ms.push(f.ini));
+ let ini=ms.sort()[0]||hoje;if(ini>hoje)ini=hoje;
+ const lista=[];for(let m=ini,n=0;m<=hoje&&n<600;m=salYM(+m.slice(0,4),+m.slice(5,7)),n++)lista.push(m);
+ const MM=lista.map(m=>[m,cCalc(m)]).filter(x=>x[1].renda>0||x[1].gastos>0).reverse().slice(0,60);
+ d.h2('Mês a mês');
+ if(MM.length)d.table([{h:'Mês',w:70},{h:'Renda',w:85,a:'r'},{h:'Contas fixas',w:90,a:'r'},{h:'Gastos avulsos',w:90,a:'r'},{h:'Total de gastos',w:90,a:'r'},{h:'Sobra / falta',w:90,a:'r'}],
+  MM.map(x=>[pm(x[0]),money(x[1].renda),money(x[1].fixTot),money(x[1].gasTot),money(x[1].gastos),(x[1].sobra<0?'-':'')+money(Math.abs(x[1].sobra))]));
+ else d.p('Nenhum mês com renda ou gastos.');
+ /* salário */
+ if(s&&(s.bruto>0||salLiq(s)>0)){
+  d.h2('Salário');
+  const S1=[['Forma de pagamento',s.tipo==='quinzenal'?'Por quinzena (2 pagamentos)':'Uma vez por mês'],['Salário bruto',money(s.bruto)]];
+  if(s.deps>0)S1.push(['Dependentes (para o IRRF)',String(s.deps)]);
+  s.prov.forEach(x=>{if(x.val>0)S1.push(['(+) '+x.nome,money(x.val)])});
+  s.desc.forEach(x=>{if(x.val>0)S1.push(['(-) '+x.nome+(x.pct?' ('+String(x.val).replace('.',',')+'%)':''),money(salDescVal(s,x))])});
+  S1.push({c:['Salário líquido',money(salLiq(s))],b:1,sh:1});
+  s.pags.forEach((p,i)=>S1.push(['Pagamento '+(i+1)+': '+(p.modo==='util'?p.dia+'º dia útil':'dia '+p.dia),money(salPagVal(s,p))]));
+  S1.push(['Se o dia cair no fim de semana',s.fds==='antes'?'Antecipa para sexta':s.fds==='depois'?'Passa para segunda':'Não muda']);
+  d.table(KV,S1,{nohead:1})}
+ /* rendas extras */
+ d.h2('Rendas extras');
+ if(c.rendas.length)d.table([{h:'Mês',w:70},{h:'Descrição',w:345,wrap:1},{h:'Valor',w:100,a:'r'}],
+  c.rendas.slice().sort((a,b)=>b.m.localeCompare(a.m)).map(r=>[pm(r.m),r.desc||'(sem descrição)',money(r.val)]));
+ else d.p('Nenhuma renda extra lançada. A renda fixa mensal está no resumo geral.');
+ /* contas fixas */
+ d.h2('Contas fixas');
+ if(c.fixas.length)d.table([{h:'Descrição',w:150,wrap:1},{h:'Categoria',w:80,wrap:1},{h:'Dia',w:30,a:'r'},{h:'Valor',w:70,a:'r'},{h:'Período',w:85,wrap:1},{h:'Meses pagos',w:100,wrap:1}],
+  c.fixas.slice().sort((a,b)=>a.dia-b.dia||a.desc.localeCompare(b.desc)).map(f=>{
+   const pagos=Object.keys(c.pagas).sort().filter(m=>c.pagas[m]&&c.pagas[m][f.id]).map(pm).join(', ');
+   return [f.desc||'(sem descrição)',ccat(f.cat)[2],String(f.dia),money(f.val),f.fim?pm(f.ini)+' a '+pm(f.fim):'desde '+pm(f.ini),pagos||'-']}));
+ else d.p('Nenhuma conta fixa cadastrada.');
+ /* gastos avulsos */
+ d.h2('Gastos avulsos (todos os lançamentos)');
+ if(c.gastos.length){
+  const por={};c.gastos.forEach(g=>{(por[g.date.slice(0,7)]=por[g.date.slice(0,7)]||[]).push(g)});
+  const rows=[];Object.keys(por).sort().reverse().forEach(m=>{const gs=por[m].sort((a,b)=>b.date.localeCompare(a.date));
+   rows.push({c:[pm(m)+' · '+gs.length+(gs.length===1?' gasto':' gastos'),'','',money(cSum(gs))],b:1,sh:1});
+   gs.forEach(g=>rows.push([pf(g.date),g.desc||'(sem descrição)',ccat(g.cat)[2],money(g.val)]))});
+  d.table([{h:'Data',w:70},{h:'Descrição',w:240,wrap:1},{h:'Categoria',w:110,wrap:1},{h:'Valor',w:95,a:'r'}],rows)}
+ else d.p('Nenhum gasto avulso lançado.');
+ return d.finish('JC ORGANIZA · Carteira · gerado em '+pf(HOJE))}
+async function cPdf(){
+ let txt;try{txt=cPdfBuild()}catch(e){info('Não foi possível montar o PDF da Carteira.');return}
+ const nome='jc-organiza-carteira-'+HOJE+'.pdf',FS=plug('Filesystem'),SH=plug('Share');
+ if(nat()&&FS){
+  const b64=btoa(txt);
+  try{const r=await FS.writeFile({path:nome,data:b64,directory:'CACHE'});
+   if(SH){await SH.share({title:'Carteira · JC ORGANIZA',text:'Meus dados da Carteira',url:r.uri,dialogTitle:'Salvar ou abrir o PDF'});return}
+  }catch(e){if(cancelado(e))return}
+  try{await FS.writeFile({path:'MeuPlano/'+nome,data:b64,directory:'DOCUMENTS',recursive:true});info('PDF salvo no celular em Documentos/MeuPlano/'+nome);return}catch(e){}
+  info('Não foi possível salvar o PDF neste aparelho.');return}
+ const by=Uint8Array.from(txt,ch=>ch.charCodeAt(0));
+ try{const f=new File([by],nome,{type:'application/pdf'});if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Carteira · JC ORGANIZA'});return}}catch(e){if(e&&e.name==='AbortError')return}
+ try{const u=URL.createObjectURL(new Blob([by],{type:'application/pdf'})),a=document.createElement('a');a.href=u;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);info('PDF gerado: '+nome+'. Procure na pasta Downloads.')}catch(e){info('Não foi possível gerar o PDF.')}}
+
 function vCarteira(){
  const k=cCalc(cMes);
  const seg=`<div class="seg s4 s5">${[['res','📊','Resumo'],['gas','💸','Gastos'],['fix','📌','Fixas'],['ren','💵','Renda'],['sal','🧾','Salário']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
@@ -2494,7 +2620,8 @@ function cResumo(k){
   <small style="color:var(--mute)">${k.renda>0?'Você usou '+real+'% da renda':'Sem renda informada'}</small>${aviso}
   ${k.falta>0?`<p class="hint">📌 Contas fixas ainda por pagar: <b>${BRL(k.falta)}</b></p>`:''}</div>
  <div class="row"><button style="flex:1" onclick="cSub='gas';render();cFoco('cw-gd')">＋ Lançar gasto</button><button class="sec" style="flex:1" onclick="cSub='fix';render()">📌 Contas fixas</button></div>
- <h3>Para onde foi o dinheiro</h3><div class="card">${catHtml}</div>`}
+ <h3>Para onde foi o dinheiro</h3><div class="card">${catHtml}</div>
+  <div class="row" style="margin-top:10px"><button class="sec" style="flex:1" onclick="cPdf()">📄 Baixar PDF com todos os meus dados</button></div>`}
 
 /* --- Gastos avulsos --- */
 function cEditForm(kind,x){

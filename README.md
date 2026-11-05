@@ -28,6 +28,12 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 - **Caixa “📢 Quadro de avisos”** com as novidades recentes (Salário na Carteira, melhores dias, Kayla que aprende, modo Preto, tema Viking, chamar a Kayla pelo nome). Aparece **uma única vez por aparelho** (chave `ma-recado-novid-v1` no `localStorage`), na próxima abertura do app, depois da senha e das outras caixas. Usuário novo não vê (já recebe a de boas-vindas). Não precisa mudar o `VERSION` do `sw.js`.
 - O texto fica em `RECADO_NOVID` no `index.html`. Para mostrar de novo a todos com uma lista nova, troque `-v1` por `-v2` na chave e atualize a lista.
 
+## Carteira › Baixar PDF com todos os dados
+
+- Botão **📄 Baixar PDF com todos os meus dados** no fim da aba *Resumo* da Carteira. O PDF (A4, várias páginas) traz: resumo geral, mês a mês (renda, contas fixas, gastos avulsos, sobra/falta), salário (bruto, proventos, descontos, líquido e dias de pagamento), rendas extras, contas fixas (com os meses pagos) e **todos** os gastos avulsos agrupados por mês, com subtotal.
+- É gerado no próprio aparelho, sem internet e sem biblioteca externa (funções `pdfDoc`, `cPdfBuild` e `cPdf` no `index.html`, antes de `vCarteira`). No APK abre a tela de compartilhar (salvar/abrir); se não der, grava em Documentos/MeuPlano. No navegador baixa o arquivo `jc-organiza-carteira-AAAA-MM-DD.pdf`.
+- Emojis não entram no PDF (a fonte padrão do PDF não tem emoji). Se for criada outra aba ou dado novo na Carteira, inclua a seção em `cPdfBuild`.
+
 ## Promoções › Assaí: 4ª e 5ª Feirassaí (04 a 05/11/2026)
 
 - Nova lista `AS_FEIRA` (21 itens de hortifrúti) e entrada `feira` em `AS_ENC` no `index.html`. Formato da linha: `nome|embalagem ou kg|preço “de”|preço “por”|limite`. O encarte “Leva o Assaí com você” (02 a 05/11) foi conferido item a item e já estava correto, sem alterações.
