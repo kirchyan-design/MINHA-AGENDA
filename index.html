@@ -1052,6 +1052,39 @@ html[data-theme="black"][data-eff="dark"] body{background:#000}
 .iv-gd summary{cursor:pointer;font-weight:600;padding:9px 0;border-bottom:1px solid var(--ln);font-size:14px}.iv-gd p{font-size:13px;color:var(--mute);margin:8px 0 4px}
 .iv-sim select,.iv-form select,.iv-adv select,.iv-filt select{max-width:100%;min-width:0;width:100%}.iv-form .row>select,.iv-filt .row>select,.iv-adv .row>select{flex:1 1 0;width:auto}
 @media(max-width:380px){.iv-pc{grid-template-columns:1fr}.iv-hero strong,.iv-res strong{font-size:29px}.iv-dn{flex-direction:column;align-items:stretch}.iv-donut{align-self:center}}
+/* Conversor de moedas */
+.iv-seg.s5 button{font-size:11px!important;padding:8px 1px!important;line-height:1.15}
+.iv-cvx{flex:none;width:44px;height:44px;padding:0;font-size:20px;border-radius:14px}
+/* Concursos */
+.cn-card{background:var(--sf);border:1px solid var(--ln);border-left:4px solid var(--cc,var(--ac));border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.cn-top{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.cn-b{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px}
+.cn-uf{font-size:11.5px;font-weight:700;color:var(--mute);border:1px solid var(--ln);padding:2px 8px;border-radius:99px}
+.cn-fv{margin-left:auto;background:transparent;border:0;font-size:20px;padding:2px 6px;color:var(--ink);width:auto}
+.cn-card h4{margin:0 0 6px;font-size:15.5px;line-height:1.25}
+.cn-pz{font-size:13px;color:var(--mute);margin-bottom:8px}
+.cn-g,.cn-r{font-size:13px}
+.cn-r{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dashed var(--ln)}
+.cn-r span{color:var(--mute);flex:0 0 auto}.cn-r b{text-align:right;font-weight:600}
+.cn-card details{margin-top:8px;font-size:13px}.cn-card summary{cursor:pointer;color:var(--ac);font-weight:600}
+.cn-card details p{margin:6px 0 0;color:var(--ink)}.cn-nv{color:var(--mute)!important;font-size:12px}
+.cn-act{display:flex;gap:8px;margin-top:10px;align-items:center}
+.cn-lk{display:inline-block;background:var(--acs);color:var(--ac);font-weight:700;font-size:13px;padding:8px 12px;border-radius:10px;text-decoration:none}
+.cn-h{display:flex;align-items:center;gap:8px;margin:18px 0 8px}.cn-h small{background:var(--acs);color:var(--ac);border-radius:99px;padding:1px 9px;font-size:12px}
+.cn-fl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.cn-fl .seg{flex:1 1 180px}
+.cn-sel,.cn-q{width:100%;padding:10px;border-radius:10px;border:1px solid var(--ln);background:var(--sf);color:var(--ink);font:inherit;box-sizing:border-box}
+.cn-fl .cn-sel{flex:1 1 150px;width:auto}
+.cn-st{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}.cn-st:last-child{border:0}
+.cn-st>span{flex:0 0 28px;height:28px;border-radius:50%;background:var(--ac);color:var(--onac);display:grid;place-items:center;font-weight:800;font-size:14px}
+.cn-st p,.cn-ge p{margin:2px 0 0;font-size:13.5px;color:var(--mute)}
+.cn-ge{display:flex;gap:12px;align-items:flex-start}.cn-ge>span{font-size:24px}
+.cn-pb{height:10px;border-radius:99px;background:var(--acs);margin-top:8px;overflow:hidden}.cn-pb i{display:block;height:100%;background:var(--ac);border-radius:99px;transition:width .3s}
+.cn-mt{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--ln);cursor:pointer}.cn-mt:last-child{border:0}
+.cn-mt input{width:20px;height:20px;margin-top:2px;flex:0 0 20px}.cn-mt small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px;font-weight:400}
+.cn-mt.on b{text-decoration:line-through;opacity:.6}
+.row>.cn-sel{flex:1;min-width:0}
+.cn-act{flex-wrap:wrap}.cn-dl{background:var(--ac);color:var(--onac)}
+.cn-chips{display:flex;flex-wrap:wrap;gap:6px}.cn-chips span{background:var(--acs);color:var(--ac);font-size:12px;font-weight:600;padding:4px 9px;border-radius:99px}
 </style>
 
 </head>
@@ -1154,6 +1187,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ concursos:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/>',
  inicio:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
  agenda:'<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4V3h6v1"/><path d="m9 13 2 2 4-4.5"/>',
  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
@@ -1190,7 +1224,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -2376,8 +2410,233 @@ function restaurar(txt){let d;try{d=JSON.parse(String(txt).trim());if(d&&d.app==
  ask('Substituir todos os dados atuais por este backup?',()=>{const cc=ct();S=Object.assign({ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',menu:'side',tabsOff:[],pl:[]},d.S);S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.tabsOff=Array.isArray(S.tabsOff)?S.tabsOff:[];S.pl=Array.isArray(S.pl)?S.pl:[];S.hosp=Array.isArray(S.hosp)?S.hosp:[];S.mercados=Array.isArray(S.mercados)?S.mercados:[];S.scans=Array.isArray(S.scans)?S.scans:[];S.user=S.user||{name:''};if(cc)S.user.conta=cc;else delete S.user.conta;S.notif=Object.assign({on:false,lead:10,plOn:true,plLead:60},S.notif||{});normCart();LOGOS=d.LOGOS||{};FOTOS=d.FOTOS||{};try{localStorage.setItem('minha-agenda-logos',JSON.stringify(LOGOS))}catch(e){}saveFotos();const ok=save();render();info(ok?'Backup restaurado com sucesso.':'Backup restaurado, mas faltou espaço para guardar tudo neste aparelho.')},'Substituir')}
 function importar(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restaurar(r.result);r.onerror=()=>info('Não foi possível ler o arquivo.');r.readAsText(f);inp.value=''}
 function colarBk(){const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="dlg"><p>Cole aqui o texto do backup</p><textarea id="bkt" style="min-height:120px;margin-bottom:10px"></textarea><div class="row"><button id="bkok">Restaurar</button><button class="sec" id="bkno">Cancelar</button></div></div>';document.body.appendChild(o);o.querySelector('#bkno').onclick=()=>o.remove();o.querySelector('#bkok').onclick=()=>{const t=o.querySelector('#bkt').value;if(!t.trim())return;o.remove();restaurar(t)};o.querySelector('#bkt').focus()}
+/* ===== CONCURSOS (menu + Guia do Concurseiro) ===== */
+const CN_UF=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+const CN_ST={edital:['📝','Edital publicado','#2f9e6b'],andamento:['🔄','Em andamento','#e08a1e'],final:['🏁','Finalizado','#6b7c88'],prev:['🔮','Previsto','#7c5cd6']};
+const CN_GR=[['M','📘','Nível médio'],['S','🎓','Nível superior'],['MS','📚','Médio e superior']];
+const CN_ATUAL='05/11/2026';
+/* st: edital (inscrição aberta ou futura; se o prazo passou vira "Em andamento" sozinho) | andamento | final | prev. n: M, S ou MS. Dados de referência: sempre confirme no edital oficial. */
+const CN_DATA=[
+{id:'cd',o:'Câmara dos Deputados',uf:'BR',st:'edital',n:'S',v:'66 + CR',s:'R$ 32.070,88',tx:'R$ 130',fim:'2026-11-17',c:'Analista Legislativo (comunicação, arquivologia, biblioteconomia, engenharias, museólogo, registro e redação)',l:'fivenews.cbnet.net.br/concursos/cd_26_analista'},
+{id:'mar',o:'Marinha do Brasil – Serviço Militar Voluntário (RM2)',uf:'BR',st:'edital',n:'S',v:'375 temporárias',s:'Acima de R$ 9 mil',tx:'R$ 150',fim:'2026-11-10',c:'Oficiais temporários (medicina, saúde, técnica, magistério, engenharia)',l:'marinha.mil.br'},
+{id:'abdi',o:'ABDI – Agência Bras. de Desenv. Industrial',uf:'BR',st:'edital',n:'S',v:'20 + CR',s:'R$ 16.034,70',b:'FGV',tx:'R$ 100',fim:'2026-11-10',c:'Analista de Produtividade e Inovação (contabilidade, dados, TI, jurídico, RH, comunicação…)',l:'conhecimento.fgv.br/concursos/psabdi'},
+{id:'trt8',o:'TRT 8ª Região (PA/AP)',uf:'PA',st:'edital',n:'MS',v:'Cadastro reserva',s:'R$ 9.776,71 a R$ 16.040,88',b:'FCC',tx:'R$ 90 a R$ 110',fim:'2026-11-05',c:'Analista e Técnico Judiciário (várias áreas)',l:'concursosfcc.com.br'},
+{id:'trt4',o:'TRT 4ª Região (RS)',uf:'RS',st:'edital',n:'MS',v:'Cadastro reserva',s:'R$ 9.776,71 a R$ 16.040,88',b:'FCC',tx:'R$ 90 a R$ 110',fim:'2026-11-25',c:'Analista e Técnico Judiciário (várias áreas)',l:'concursosfcc.com.br'},
+{id:'trt3',o:'TRT 3ª Região (MG)',uf:'MG',st:'edital',n:'MS',v:'Cadastro reserva',s:'R$ 9.776,73 a R$ 20.013,11',b:'Vunesp',tx:'R$ 100 a R$ 160',fim:'2026-11-23',c:'Analista Judiciário (sistemas, TI, oficial de justiça, judiciária) e Técnico Judiciário (contabilidade, sistemas, suporte, TI)',l:'vunesp.com.br'},
+{id:'tjpb',o:'TJ-PB – Tribunal de Justiça da Paraíba',uf:'PB',st:'edital',n:'S',v:'50 + CR',s:'R$ 7.526,14 (+ auxílios)',b:'FGV',tx:'R$ 120',fim:'2026-11-18',c:'Analista Judiciário (judiciária, TI, contabilidade)',l:'conhecimento.fgv.br/concursos/tjpb26'},
+{id:'dppb',o:'Defensoria Pública da Paraíba',uf:'PB',st:'edital',n:'MS',v:'13 a 20 + CR (2 editais)',s:'R$ 4.042,50 a R$ 5.197,50',b:'FCC',tx:'R$ 103 (médio) / R$ 123 (superior)',fim:'2026-11-13',c:'Técnico e Analista da Defensoria (jurídico, TI, psicologia, serviço social…)',l:'concursosfcc.com.br'},
+{id:'dpsp',o:'Defensoria Pública de São Paulo',uf:'SP',st:'edital',n:'S',v:'70',s:'R$ 29.716 a R$ 34.156,32',b:'FCC',tx:'R$ 250',fim:'2026-11-11',c:'Defensor(a) Público(a)',l:'concursosfcc.com.br'},
+{id:'sead',o:'Secretaria da Administração (BA)',uf:'BA',st:'edital',n:'S',v:'50',s:'R$ 10.860,62',b:'Cesgranrio',tx:'R$ 220',fim:'2026-11-11',c:'Especialista em Políticas Públicas e Gestão Governamental',l:'cesgranrio.org.br'},
+{id:'cbmpe',o:'Corpo de Bombeiros Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'570 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-05',c:'Soldado (510) – médio; 2º Tenente (60) – superior',l:'institutoaocp.org.br'},
+{id:'pmpe',ed:'arquivos.qconcursos.com/regulamento/arquivo/102167/pm-pe-2026-edital-n-1-edital.pdf',o:'Polícia Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'1.320 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-05',c:'Soldado (1.250) – médio; 2º Tenente (70) – superior',l:'institutoaocp.org.br'},
+{id:'pmsc',o:'Polícia Militar de Santa Catarina',uf:'SC',st:'edital',n:'M',v:'500 + suplentes',s:'R$ 8.505 (+ aux. alimentação R$ 550)',b:'IAOCP',tx:'R$ 200',fim:'2026-11-16',c:'Soldado (QPPM)',l:'institutoaocp.org.br'},
+{id:'pmmg',o:'PM de Minas Gerais – Curso de Formação de Oficiais',uf:'MG',st:'edital',n:'S',v:'90 (18 p/ pessoas negras)',s:'R$ 7.912,17 a R$ 12.170,61',tx:'R$ 243',fim:'2026-12-10',c:'Cadete CFO (exige graduação em Direito)',l:'policiamilitar.mg.gov.br/site/crs'},
+{id:'tcego',o:'TCE-GO – Tribunal de Contas de Goiás',uf:'GO',st:'edital',n:'M',v:'16',s:'R$ 11.862,19',b:'FCC',tx:'R$ 100',fim:'2026-11-06',c:'Técnico de Controle Externo (administrativo – 6; TI – 10)',l:'concursosfcc.com.br'},
+{id:'cauap',o:'CAU-AP – Conselho de Arquitetura e Urbanismo',uf:'AP',st:'edital',n:'MS',v:'15 + CR',s:'R$ 2.341,23 a R$ 8.250',b:'Quadrix',tx:'R$ 60 / R$ 65',fim:'2026-11-09',c:'Assistente administrativo, auxiliar e agente de fiscalização',l:'quadrix.org.br/informacoes/3072/'},
+{id:'crecies',o:'Creci-ES (13ª Região)',uf:'ES',st:'edital',n:'MS',v:'15 + CR',s:'R$ 2.341,23 a R$ 8.250',b:'Quadrix',tx:'R$ 66 / R$ 68',fim:'2026-11-10',c:'Assistente, analista de TI, agente fiscal, especialistas (jurídico, contábil, RH)',l:'quadrix.org.br/informacoes/3049/'},
+{id:'pgoias',o:'Prefeitura de Petrolina de Goiás',uf:'GO',st:'edital',n:'MS',v:'2.956 + 14.780 CR',s:'R$ 3.070,76 a R$ 4.508,28',b:'Instituto Verbena',tx:'R$ 130 a R$ 150',fim:'2026-12-09',c:'Agente executivo, auxiliar de secretaria, profissional da educação',l:'institutoverbena.ufg.br'},
+{id:'cpires',o:'Câmara Municipal de Pires do Rio',uf:'GO',st:'edital',n:'MS',v:'42 (12 imediatas)',s:'R$ 2.000 a R$ 6.523,44',b:'Instituto Verbena',tx:'R$ 115 a R$ 145',fim:'2026-11-18',c:'Assistente administrativo, analistas, auxiliar de serviços gerais',l:'institutoverbena.ufg.br'},
+{id:'curitiba',o:'Prefeitura de Curitiba',uf:'PR',st:'edital',n:'S',v:'63 + CR',s:'R$ 4.333,71 a R$ 14.117,18 (+30% gratif.)',b:'Fafipa',tx:'R$ 150',fim:'2026-11-05',c:'Analista administrativo/finanças, assistente social, auditor fiscal, contador, engenheiro civil',l:'fundacaofafipa.org.br'},
+{id:'mossoro',o:'Câmara Municipal de Mossoró',uf:'RN',st:'edital',n:'S',v:'24 + 33 CR',s:'R$ 6.624,55 a R$ 8.810,69',b:'Comperve',tx:'R$ 150',fim:'2026-11-12',c:'Consultor legislativo, analista (TI, comunicação, documental), jornalista, revisor',l:'comperve.ufrn.br'},
+{id:'contagem',o:'Prefeitura de Contagem',uf:'MG',st:'edital',n:'MS',v:'272 + CR',s:'R$ 2.698,73 a R$ 13.305,57',b:'IBGP',tx:'R$ 70 a R$ 100',fim:'2026-11-17',c:'Cargos de nível médio/técnico e superior',l:'ibgpconcursos.com.br'},
+{id:'sjdr',o:'Prefeitura de São João del-Rei',uf:'MG',st:'edital',n:'MS',v:'256 + CR',s:'R$ 1.603,82 a R$ 15.164,56',b:'IBGP',tx:'R$ 60 a R$ 100',fim:'2026-11-12',c:'Níveis fundamental, médio, técnico e superior',l:'novo.ibgpconcursos.com.br'},
+{id:'vgrande',o:'Prefeitura de Várzea Grande',uf:'MT',st:'edital',n:'MS',v:'5.156 + CR',s:'R$ 1.903,63 a R$ 4.670,03',b:'Selecon',tx:'R$ 75 a R$ 85',fim:'2026-11-09',c:'Processo seletivo da educação: professor, agente administrativo, técnicos escolares, motorista',l:'selecon-mt.selecao.net.br'},
+{id:'cuiaba',o:'Câmara Municipal de Cuiabá',uf:'MT',st:'edital',n:'MS',v:'26 + CR',s:'R$ 5.518,91 a R$ 11.629,67',b:'Selecon',tx:'R$ 90 (médio) / R$ 120 (superior)',fim:'2026-11-30',c:'Técnico legislativo, analista legislativo (TI, segurança, psicologia…), controlador interno',l:'selecon.org.br'},
+{id:'buriti',o:'Prefeitura de Canto do Buriti',uf:'PI',st:'edital',n:'MS',v:'209 + CR',s:'R$ 1.621 a R$ 16.210',b:'Inst. Vicente Nelson',tx:'R$ 76 a R$ 99',fim:'2026-11-26',c:'Vários cargos (inclui nível fundamental)',l:'institutovicentenelson.com.br'},
+{id:'sgon',o:'Prefeitura de São Gonçalo – Guarda Municipal',uf:'RJ',st:'edital',n:'MS',v:'101 + 505 CR',s:'R$ 3.172,96 a R$ 4.535,54',b:'Selecon',tx:'R$ 95,18 a R$ 136,06',fim:'2026-11-18',c:'Guarda Municipal II (100) e Guarda III – Psicólogo (1)',l:'selecon.selecao.net.br'},
+{id:'saroque',o:'Prefeitura de São Roque – Guarda Civil',uf:'SP',st:'edital',n:'M',v:'30 + CR',s:'R$ 2.220,94',b:'ABCP',tx:'R$ 120',fim:'2026-11-23',c:'Guarda Civil Municipal 3ª classe (24 masc. / 6 fem.)',l:'abcp.selecao.net.br'},
+{id:'santana',o:'Prefeitura de Santana – Guarda Civil',uf:'AP',st:'edital',n:'M',v:'50 + 50 CR',s:'R$ 2.100',b:'IDCAP',tx:'R$ 110',fim:'2026-11-09',c:'Guarda Civil Municipal 3ª classe',l:'idcap.selecao.net.br'},
+{id:'jucurutu',o:'Prefeitura de Jucurutu',uf:'RN',st:'edital',n:'MS',v:'144',s:'R$ 1.713,23 a R$ 4.867,69',b:'Igeduc',tx:'R$ 125 a R$ 150',fim:'2026-11-09',c:'Cargos de nível médio, técnico e superior',l:'igeduc.selecao.net.br'},
+{id:'itaporoca',o:'Prefeitura de Itaporoca',uf:'PB',st:'edital',n:'MS',v:'175',s:'R$ 1.621 a R$ 10 mil',b:'Facet',tx:'R$ 80 a R$ 115',fim:'2026-11-20',c:'Níveis fundamental, médio e superior',l:'concursos.facetconcursos.com.br'},
+{id:'groairas',o:'Prefeitura de Groaíras',uf:'CE',st:'edital',n:'MS',v:'33 + 11 CR',s:'R$ 1.621 a R$ 11 mil',b:'Consulpam',tx:'R$ 80 a R$ 150',fim:'2026-11-15',c:'Assistente social, enfermeiro, médico, motorista, técnico de enfermagem e outros',l:'consulpam.com.br'},
+{id:'horizonte',o:'Prefeitura de Horizonte',uf:'CE',st:'edital',n:'MS',v:'15 + 45 CR',s:'R$ 1.636,24 a R$ 5.620,27',b:'Consulpam',tx:'R$ 70 a R$ 140',fim:'2026-11-08',c:'Eletricista, engenheiro de seg. do trabalho, fiscal, veterinário, motorista, técnico',l:'consulpam.com.br'},
+{id:'aracati',o:'Prefeitura de Aracati',uf:'CE',st:'edital',n:'MS',v:'127 + CR',s:'R$ 1.518 a R$ 5.431',b:'FCPC/UFC',tx:'R$ 120 / R$ 150',fim:'2026-11-06',c:'Auditor fiscal, arquiteto, psicólogo, nutricionista, vigilante sanitário, auxiliar de serviço…',l:'centraldeconcursos.fcpc.ufc.br'},
+{id:'ifsp',o:'IFSP – Instituto Federal de São Paulo',uf:'SP',st:'edital',n:'S',v:'35',s:'R$ 6.397,19 a R$ 13.753,96',tx:'R$ 200',fim:'2026-11-17',c:'Professor EBTT (informática, eletrônica, pedagogia, design e outras)',l:'concursopublico.ifsp.edu.br'},
+{id:'ifmg',o:'IFMG – Instituto Federal de Minas Gerais',uf:'MG',st:'edital',n:'S',v:'33',s:'R$ 7.589,19 a R$ 14.945,96',tx:'R$ 250',fim:'2026-11-13',c:'Professor EBTT (enfermagem, física, informática, engenharias…)',l:'portal.concursos.ifmg.edu.br'},
+{id:'ipa',o:'IPA-SP – Instituto de Pesquisas Ambientais',uf:'SP',st:'edital',n:'S',v:'98',s:'R$ 9.052,47',b:'Vunesp',tx:'R$ 150',ini:'2026-11-18',fim:'2026-12-22',c:'Pesquisador Científico I-A (dezenas de áreas)',l:'vunesp.com.br'},
+{id:'bocaiuva',o:'Hospital Municipal Dr. Gil Alves – Bocaiúva',uf:'MG',st:'edital',n:'MS',v:'183',s:'R$ 1.621 a R$ 7.950',b:'Fadenor',tx:'R$ 65 a R$ 95',ini:'2026-11-27',fim:'2026-12-28',c:'Técnico de enfermagem, enfermeiro, médico e outros',l:'cotec.fadenor.com.br'},
+{id:'lagoasanta',o:'Prefeitura de Lagoa Santa',uf:'MG',st:'edital',n:'MS',v:'79 + CR',s:'R$ 2.220,57 a R$ 8.860,79',b:'IBGP',tx:'R$ 50 a R$ 100',ini:'2026-12-16',fim:'2027-01-18',c:'Níveis fundamental, médio, técnico e superior',l:'novo.ibgpconcursos.com.br'},
+{id:'sluzia',o:'Prefeitura de Santa Luzia',uf:'MG',st:'edital',n:'MS',v:'454 + CR',s:'Até R$ 8.628,87',b:'Fadenor',tx:'R$ 70 a R$ 175',ini:'2026-12-17',fim:'2027-01-15',c:'Analista, assistente administrativo, enfermeiro, professor, psicólogo, procurador',l:'cotec.fadenor.com.br'},
+{id:'paraguacu',o:'Prefeitura de Paraguaçu',uf:'MG',st:'edital',n:'MS',v:'100 + CR',s:'R$ 1.638,83 a R$ 20.128,27',b:'IBDO',tx:'R$ 80 a R$ 150',ini:'2026-12-21',fim:'2027-01-19',c:'Guarda civil, motorista, técnico em enfermagem, enfermeiro, médico, educador…',l:'concursos.ibdoprojetos.org.br'},
+{id:'bhedu',o:'Secretaria Municipal de Educação de Belo Horizonte',uf:'MG',st:'edital',n:'S',v:'112',s:'R$ 3.660,96',tx:'Gratuita',ini:'2026-12-21',fim:'2027-01-19',c:'Professor municipal (1º/2º ciclos, ed. física, geografia, inglês, matemática). Exige a Prova Nacional Docente 2026.',l:'prefeitura.pbh.gov.br'},
+/* em andamento */
+{id:'cgu',o:'CGU – Controladoria-Geral da União',uf:'BR',st:'edital',n:'S',v:'54 + CR',s:'R$ 20.000',b:'Cebraspe',tx:'R$ 170',fim:'2026-11-04',c:'Auditor Federal de Finanças e Controle (auditoria e TI)',l:'bit.ly/cgu26-cebraspe'},
+{id:'sefazsp',o:'Secretaria da Fazenda e Planejamento (SP)',uf:'SP',st:'edital',n:'S',v:'60 + CR',s:'R$ 11.359,50',b:'FCC',tx:'R$ 150',fim:'2026-11-03',c:'Analista em Planejamento, Orçamento e Finanças Públicas',l:'concursosfcc.com.br'},
+{id:'ufpe',o:'UFPE – Universidade Federal de Pernambuco',uf:'PE',st:'edital',n:'S',v:'2 + CR',s:'R$ 4.165,25',b:'UPENET',tx:'R$ 280',fim:'2026-11-02',c:'Advogado (Petrolina e Região Metropolitana do Recife)',l:'upenet.com.br'},
+{id:'belovale',o:'Prefeitura de Belo Vale',uf:'MG',st:'edital',n:'MS',v:'179',s:'R$ 1.745 a R$ 8.000',b:'Consulplan',tx:'R$ 50 a R$ 120',fim:'2026-11-03',c:'Cargos de nível fundamental, médio, técnico e superior',l:'institutoconsulplan.org.br'},
+{id:'nav',o:'NAV Brasil – Navegação Aérea',uf:'BR',st:'andamento',n:'MS',v:'—',s:'—',c:'Edital nº 01/2026: cargos efetivos de nível médio, médio-técnico e superior',ob:'Resultado final da 1ª fase divulgado; 16 cargos já homologados (edital nº 10, de 23/10/2026). Acompanhe as demais etapas.',l:'atlaspublico.com.br/noticias/nav-brasil-homologa-resultado-final-de-16-cargos-do-94574'},
+/* finalizados */
+{id:'cnu',o:'CNU – Concurso Público Nacional Unificado',uf:'BR',st:'final',n:'S',v:'—',s:'—',c:'Especialista em Políticas Públicas',ob:'Resultado final homologado em 09/06/2026 (Edital nº 92 do MGI).',l:'atlaspublico.com.br/noticias/ministra-homologou-resultado-final-do-concurso-nacional-55387'},
+{id:'tjrj',o:'TJ-RJ – 62º Concurso (Analista Judiciário)',uf:'RJ',st:'final',n:'S',v:'—',s:'—',b:'FGV',c:'Analista Judiciário (sem e com especialidade)',ob:'Resultado final e homologação publicados em 09/06/2026.',l:'conhecimento.fgv.br'},
+{id:'tjpe',o:'TJPE – Concurso de Servidores 2025',uf:'PE',st:'final',n:'MS',v:'—',s:'—',c:'Cargos de servidor do Tribunal de Justiça de Pernambuco',ob:'Homologado em 14/07/2026; validade de 2 anos, prorrogável por igual período.',l:'portal.tjpe.jus.br/web/concursos-e-selecoes'},
+{id:'caruaru',o:'Prefeitura de Caruaru (editais 03 e 04/2025)',uf:'PE',st:'final',n:'S',v:'—',s:'—',c:'Assistente Social, Psicólogo e outros cargos dos dois editais',ob:'Resultado final homologado em 2026 (decretos 045 e 046/2026).',l:'portaldeprefeitura.com.br'},
+{id:'riacho',o:'Prefeitura de Riacho das Almas – Guarda Municipal',uf:'PE',st:'final',n:'M',v:'—',s:'—',c:'Guarda Municipal',ob:'Resultado final homologado em 2026; validade conta da homologação (prorrogável).',l:'portaldeprefeitura.com.br'},
+{id:'upe',o:'UPE – Universidade de Pernambuco',uf:'PE',st:'final',n:'S',v:'—',s:'—',c:'Professor Universitário (Assistente e Adjunto)',ob:'Resultado final homologado (notícia de jan/2026).',l:'portaldeprefeitura.com.br'},
+/* previstos */
+{id:'ibge',o:'IBGE – Concursos para 2027',uf:'BR',st:'prev',n:'MS',v:'≈ 27.330',s:'—',c:'Recenseador e Analista Censitário (1.020 vagas de nível superior, entrada prevista jan/2027)',ob:'Edital era esperado para outubro/2026 e convocação até março/2027. Confirme no site do IBGE se já foi publicado.',l:'ibge.gov.br'},
+{id:'rf',o:'Receita Federal',uf:'BR',st:'prev',n:'S',v:'146 (autorizadas)',s:'Até ≈ R$ 29,9 mil',c:'Auditor Fiscal e Analista',ob:'Vagas autorizadas pelo Governo Federal; prazo citado: dezembro/2026.',l:'gov.br/receitafederal'},
+{id:'bcb',o:'Banco Central',uf:'BR',st:'prev',n:'MS',v:'170',s:'Técnico R$ 6.402,76 / Analista R$ 9.219,11',c:'Técnico e Analista',ob:'Autorizado; prazo citado: até 03/01/2027.',l:'bcb.gov.br'},
+{id:'anpd',o:'ANPD – Autoridade Nacional de Proteção de Dados',uf:'BR',st:'prev',n:'S',v:'50',s:'—',c:'Cargos de nível superior',ob:'Autorizado; prazo citado: até 24/12/2026.',l:'gov.br/anpd'},
+{id:'inss',o:'INSS',uf:'BR',st:'prev',n:'MS',v:'2 mil (emergencial) a 10 mil (pedido)',s:'—',c:'Técnico e Analista do Seguro Social',ob:'Pedido de autorização em análise no MGI; não há edital publicado.',l:'gov.br/inss'},
+{id:'prf',o:'PRF – Policial',uf:'BR',st:'prev',n:'S',v:'Proposta: 4.902 cargos',s:'R$ 12.862,33',c:'Policial Rodoviário Federal',ob:'Aguardando autorização do MGI; sem banca definida.',l:'gov.br/prf'},
+{id:'prfadm',o:'PRF – Administrativo',uf:'BR',st:'prev',n:'M',v:'248 a 264 (fontes divergem)',s:'Até ≈ R$ 5 mil a R$ 7,2 mil (fontes divergem)',c:'Agente Administrativo',ob:'Pedido de autorização enviado; sem banca definida.',l:'gov.br/prf'},
+{id:'pf',o:'Polícia Federal – Administrativo (PEC/PF)',uf:'BR',st:'prev',n:'MS',v:'—',s:'—',c:'Cargos administrativos da PF',ob:'Novo edital pode sair em 2027; a PF ainda convoca excedentes do concurso anterior.',l:'gov.br/pf'},
+{id:'saude_min',o:'Ministério da Saúde',uf:'BR',st:'prev',n:'MS',v:'7.027 (solicitadas)',s:'—',c:'Cargos de nível médio e superior',ob:'Vagas solicitadas; dependem de autorização.',l:'gov.br/saude'},
+{id:'pmam',o:'Polícia Militar do Amazonas',uf:'AM',st:'prev',n:'M',v:'—',s:'—',c:'Soldado',ob:'Anunciado; edital pode sair em 2027.',l:''}
+];
+
+/* Matérias previstas: estimativa pelo tipo de cargo e padrão das bancas. O conteúdo oficial está no anexo do edital. */
+const CN_TPL={
+leg:['Língua Portuguesa','Raciocínio Lógico','Informática','Direito Constitucional','Direito Administrativo','Processo Legislativo / Regimento Interno','Administração Pública','Conhecimentos específicos do cargo'],
+jud:['Língua Portuguesa','Raciocínio Lógico','Informática','Direito Constitucional','Direito Administrativo','Direito Processual (civil/penal, conforme a área)','Legislação institucional do órgão','Conhecimentos específicos do cargo'],
+def:['Direito Constitucional','Direito Administrativo','Direito Civil','Direito Processual Civil','Direito Penal','Direito Processual Penal','Direitos Humanos','Princípios e legislação da Defensoria (LC 80/94)'],
+fisc:['Língua Portuguesa','Raciocínio Lógico','Direito Constitucional','Direito Administrativo','Contabilidade Geral e Pública','Administração Financeira e Orçamentária','Direito Tributário','Auditoria','Economia e Estatística','Informática / TI (conforme a área)'],
+ctrl:['Língua Portuguesa','Raciocínio Lógico','Informática / TI (conforme a área)','Direito Constitucional','Direito Administrativo','Administração Pública','Contabilidade Pública e Orçamento','Controle externo e legislação do órgão'],
+gest:['Língua Portuguesa','Raciocínio Lógico','Gestão e Políticas Públicas','Direito Constitucional','Direito Administrativo','Economia','Estatística','Atualidades'],
+pol:['Língua Portuguesa','Matemática / Raciocínio Lógico','Atualidades','Noções de Direito Constitucional','Noções de Direito Penal / Penal Militar','Direitos Humanos','Legislação institucional da corporação'],
+polpe:['Língua Portuguesa','Matemática / Raciocínio Lógico','Atualidades','Noções de Direito Constitucional','Noções de Direito Penal / Penal Militar','Direitos Humanos','Legislação institucional da corporação','Redação (prova discursiva)'],
+pmof:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','Direito Penal','Direito Processual Penal','Direito Penal Militar','Direitos Humanos','Legislação institucional da PM'],
+prf:['Língua Portuguesa','Raciocínio Lógico','Informática','Ética no serviço público','Direito Constitucional','Direito Administrativo','Direito Penal e Processual Penal','Legislação de trânsito','Física'],
+mun:['Língua Portuguesa','Matemática / Raciocínio Lógico','Conhecimentos Gerais e Atualidades','Informática','Noções de Direito Constitucional e Administrativo','Legislação municipal','Conhecimentos específicos do cargo'],
+gcm:['Língua Portuguesa','Matemática','Atualidades','Informática','Noções de Direito Constitucional','Noções de Direito Penal e Processual Penal','Direitos Humanos','Estatuto Geral das Guardas Municipais (Lei 13.022/2014)'],
+prof:['Língua Portuguesa','Legislação educacional (LDB, ECA, BNCC)','Didática e Pedagogia','Conhecimentos específicos da disciplina / cargo','Legislação municipal ou estadual da educação'],
+doc:['Conhecimentos específicos da área','Prova didática (aula)','Prova de títulos','Legislação do serviço público / institucional'],
+con:['Língua Portuguesa','Raciocínio Lógico','Informática','Noções de Direito Constitucional e Administrativo','Legislação do conselho','Conhecimentos específicos do cargo'],
+adm:['Língua Portuguesa','Raciocínio Lógico','Direito Administrativo','Administração Pública','Conhecimentos específicos do perfil'],
+mil:['Língua Portuguesa','Matemática','Conhecimentos gerais','Conhecimentos específicos da área do cargo'],
+pesq:['Conhecimentos específicos da área','Língua Portuguesa','Legislação ambiental e do órgão','Prova de títulos'],
+saude:['Língua Portuguesa','Matemática','SUS (Leis 8.080/90 e 8.142/90)','Conhecimentos específicos da profissão'],
+adv:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','Direito Civil e Processual Civil','Direito do Trabalho','Direito Previdenciário','Legislação universitária'],
+gen:['Língua Portuguesa','Raciocínio Lógico','Informática','Noções de Direito Constitucional','Noções de Direito Administrativo','Ética no serviço público','Conhecimentos específicos do cargo'],
+nav:['Língua Portuguesa','Raciocínio Lógico / Matemática','Informática','Conhecimentos específicos do cargo'],
+ibge:['Língua Portuguesa','Matemática / Raciocínio Lógico','Noções de Informática','Conhecimentos específicos do cargo (estatística, geografia, conforme a função)'],
+anpd:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','LGPD (Lei 13.709/2018) e proteção de dados','Informática / TI (conforme a área)','Conhecimentos específicos do cargo'],
+inss:['Língua Portuguesa','Raciocínio Lógico','Informática','Ética no serviço público','Direito Constitucional','Direito Administrativo','Direito Previdenciário e Seguridade Social']};
+const CN_MP={leg:'cd mossoro cuiaba cpires',jud:'trt8 trt4 trt3 tjpb dppb tjrj tjpe',def:'dpsp',fisc:'cgu sefazsp rf bcb',ctrl:'tcego',gest:'sead cnu',pol:'pmsc pmam',polpe:'pmpe cbmpe',pmof:'pmmg',prf:'prf',mun:'pgoias curitiba contagem sjdr buriti jucurutu itaporoca groairas horizonte aracati belovale lagoasanta sluzia paraguacu caruaru',gcm:'sgon saroque santana riacho',prof:'bhedu vgrande',doc:'ifsp ifmg upe',con:'cauap crecies',adm:'abdi',mil:'mar',pesq:'ipa',saude:'bocaiuva',adv:'ufpe',gen:'prfadm pf saude_min',nav:'nav',ibge:'ibge',anpd:'anpd',inss:'inss'};
+const cnMatPrev=c=>{if(Array.isArray(c.mt)&&c.mt.length)return c.mt;for(const k in CN_MP)if((' '+CN_MP[k]+' ').includes(' '+c.id+' '))return CN_TPL[k];return null};
+let cnTab='lista',cnUF='',cnSt='all',cnNv='all',cnQ='',cnFav=false,cnForm=false,cnGs='ini',cnGn='M';
+const cnIni=()=>{S.conc=S.conc||{};S.conc.fav=S.conc.fav||[];S.conc.mine=S.conc.mine||[];S.conc.guia=S.conc.guia||{};return S.conc};
+const cnD=i=>i?i.split('-').reverse().join('/'):'';
+const cnDias=i=>Math.round((new Date(i+'T12:00:00')-new Date(HOJE+'T12:00:00'))/864e5);
+const cnStatus=c=>(c.st==='edital'&&c.fim&&c.fim<HOJE)?'andamento':c.st;
+const cnAll=()=>CN_DATA.concat(cnIni().mine.map(x=>Object.assign({mine:1},x)));
+const cnUrl=l=>l?(/^https?:/.test(l)?l:'https://'+l):'';
+function cnPrazo(c,s){
+ if(s==='edital'){if(c.ini&&c.ini>HOJE)return `📅 Inscrições de ${cnD(c.ini)} a ${cnD(c.fim)}`;
+  if(!c.fim)return '';const d=cnDias(c.fim);return `⏳ Inscrições até ${cnD(c.fim)} · <b>${d===0?'termina hoje':d===1?'termina amanhã':'faltam '+d+' dias'}</b>`}
+ if(s==='andamento')return c.ob?'🔄 '+esc(c.ob):`🔄 Inscrições encerradas em ${cnD(c.fim)}. Acompanhe prova e resultado no site da banca.`;
+ return c.ob?'ℹ️ '+esc(c.ob):''}
+function cnMatHtml(c){const m=cnMatPrev(c);if(!m)return '';return `<p class="cn-nv" style="margin-bottom:4px">Matérias previstas</p><div class="cn-chips">${m.map(x=>`<span>${esc(x)}</span>`).join('')}</div><p class="cn-nv">Estimativa pelo tipo de cargo e padrão das bancas. O conteúdo oficial está no anexo do edital: confira lá antes de montar seu plano.</p>`}
+function cnBusca(c,s){return 'https://www.google.com/search?q='+encodeURIComponent('edital '+c.o+(s==='prev'?' último edital':s==='final'?' edital de abertura':' 2026')+' filetype:pdf')}
+function cnCard(c){
+ const s=cnStatus(c),m=CN_ST[s]||CN_ST.edital,fav=cnIni().fav.includes(c.id),l=cnUrl(c.l);
+ const row=(k,v)=>v&&v!=='—'?`<div class="cn-r"><span>${k}</span><b>${esc(v)}</b></div>`:'';
+ return `<div class="cn-card" style="--cc:${m[2]}"><div class="cn-top"><span class="cn-b" style="background:${m[2]}22;color:${m[2]}">${m[0]} ${m[1]}</span><span class="cn-uf">${c.uf==='BR'?'Nacional':esc(c.uf)}</span><button class="cn-fv" onclick="cnFavT('${c.id}')" aria-label="Favoritar" aria-pressed="${fav}">${fav?'⭐':'☆'}</button></div>
+ <h4>${esc(c.o)}</h4><div class="cn-pz">${cnPrazo(c,s)}</div>
+ <div class="cn-g">${row('Vagas',c.v)}${row('Salário',c.s)}${row('Banca',c.b)}${row('Taxa',c.tx)}</div>
+ <details><summary>📚 Matérias previstas e cargos</summary>${cnMatHtml(c)}<p><b>Cargos:</b> ${esc(c.c||'—')}</p>${c.ob&&s==='edital'?`<p>${esc(c.ob)}</p>`:''}<p class="cn-nv">${esc((CN_GR.find(g=>g[0]===c.n)||[])[2]||'')}</p></details>
+ <div class="cn-act">${c.ed?`<a class="cn-lk cn-dl" href="${esc(cnUrl(c.ed))}" target="_blank" rel="noopener" download>⬇️ Baixar edital (PDF)</a>`:`<a class="cn-lk cn-dl" href="${esc(cnBusca(c,s))}" target="_blank" rel="noopener">🔎 ${s==='prev'||s==='final'?'Buscar último edital':'Buscar edital (PDF)'}</a>`}${l?`<a class="cn-lk" href="${esc(l)}" target="_blank" rel="noopener">Abrir site ↗</a>`:''}${c.mine?`<button class="sec" onclick="cnDel('${c.id}')">Remover</button>`:''}</div></div>`}
+function cnFiltrar(ignoraSt){
+ const q=cnQ.trim().toLowerCase();
+ return cnAll().filter(c=>{const s=cnStatus(c);
+  if(cnUF&&c.uf!==cnUF)return false;
+  if(!ignoraSt&&cnSt!=='all'&&s!==cnSt)return false;
+  if(cnNv!=='all'&&!(c.n===cnNv||c.n==='MS'))return false;
+  if(cnFav&&!cnIni().fav.includes(c.id))return false;
+  if(q&&!((c.o+' '+(c.c||'')+' '+(c.b||'')+' '+c.uf).toLowerCase().includes(q)))return false;
+  return true}).sort((a,b)=>(cnStatus(a)==='edital'&&cnStatus(b)==='edital')?(a.fim||'9').localeCompare(b.fim||'9'):0)}
+function cnRes(){
+ const l=cnFiltrar(false);
+ if(!l.length)return `<div class="vazio">Nenhum concurso encontrado com esses filtros.<br>Tente outro estado, status ou nível — ou use <b>+ Meu concurso</b>.</div>`;
+ const ord={edital:0,andamento:1,prev:2,final:3},srt=a=>a.slice().sort((x,y)=>ord[cnStatus(x)]-ord[cnStatus(y)]);
+ let h='';
+ if(cnNv==='all'){CN_GR.forEach(g=>{const x=srt(l.filter(c=>c.n===g[0]));if(x.length)h+=`<h3 class="cn-h">${g[1]} ${g[2]} <small>${x.length}</small></h3>${x.map(cnCard).join('')}`})}
+ else{const nm=cnNv==='M'?['📘','Nível médio']:['🎓','Nível superior'];h+=`<h3 class="cn-h">${nm[0]} ${nm[1]} <small>${l.length}</small></h3>`+srt(l).map(cnCard).join('')}
+ return h}
+function cnRefresh(){const e=$('#cres');if(e)e.innerHTML=cnRes();const k=$('#cchips');if(k)k.innerHTML=cnChips()}
+function cnChips(){
+ const base=cnFiltrar(true),n=k=>base.filter(c=>cnStatus(c)===k).length;
+ return [['all','📋','Todos',base.length]].concat(Object.keys(CN_ST).map(k=>[k,CN_ST[k][0],{edital:'Edital',andamento:'Andamento',final:'Finalizado',prev:'Previstos'}[k],n(k)])).map(a=>`<button class="${cnSt===a[0]?'on':''}" onclick="cnSt='${a[0]}';cnRefresh()"><span class="sl-ei">${a[1]}</span>${a[2]}<br><b>${a[3]}</b></button>`).join('')}
+function cnLista(){
+ const f=cnForm?cnFormHtml():'';
+ return `<p class="hint" style="margin:0 0 10px">Dados de referência (atualizado em ${CN_ATUAL}). Datas, vagas e taxas mudam: confirme sempre no edital oficial e no site da banca.</p>
+ <div class="seg s5" id="cchips">${cnChips()}</div>
+ <div class="card"><div class="cn-fl"><select id="cuf" class="cn-sel" onchange="cnUF=this.value;cnRefresh()" aria-label="Estado"><option value="">🗺️ Todos os estados</option><option value="BR"${cnUF==='BR'?' selected':''}>🇧🇷 Nacional / federal</option>${CN_UF.map(u=>`<option value="${u}"${cnUF===u?' selected':''}>${u}</option>`).join('')}</select>
+ <div class="seg s3" style="margin:0">${[['all','Todos'],['M','📘 Médio'],['S','🎓 Superior']].map(a=>`<button class="${cnNv===a[0]?'on':''}" onclick="cnNv='${a[0]}';render()">${a[1]}</button>`).join('')}</div></div>
+ <input id="cq" class="cn-q" placeholder="Buscar órgão, cargo ou banca…" value="${esc(cnQ)}" oninput="cnQ=this.value;cnRefresh()">
+ <div class="row" style="margin-top:8px"><button class="${cnFav?'':'sec'}" onclick="cnFav=!cnFav;render()" aria-pressed="${cnFav}">${cnFav?'⭐ Só favoritos':'☆ Favoritos'}</button><button onclick="cnForm=!cnForm;render()">${cnForm?'Fechar':'+ Meu concurso'}</button></div></div>${f}<div id="cres">${cnRes()}</div>`}
+function cnFormHtml(){return `<div class="card"><h3 style="margin-top:0">Adicionar concurso</h3>
+ <input id="cf-o" placeholder="Órgão / concurso (ex.: Prefeitura de Olinda)"><div class="row" style="margin-top:8px"><select id="cf-uf" class="cn-sel">${['BR'].concat(CN_UF).map(u=>`<option value="${u}"${u==='PE'?' selected':''}>${u==='BR'?'Nacional':u}</option>`).join('')}</select><select id="cf-n" class="cn-sel"><option value="M">Nível médio</option><option value="S">Nível superior</option><option value="MS">Médio e superior</option></select></div>
+ <div class="row" style="margin-top:8px"><select id="cf-st" class="cn-sel"><option value="edital">📝 Edital publicado</option><option value="andamento">🔄 Em andamento</option><option value="final">🏁 Finalizado</option><option value="prev">🔮 Previsto</option></select><input id="cf-fim" type="date" aria-label="Fim das inscrições"></div>
+ <div class="row" style="margin-top:8px"><input id="cf-v" placeholder="Vagas"><input id="cf-s" placeholder="Salário"></div>
+ <input id="cf-b" placeholder="Banca (opcional)" style="margin-top:8px"><input id="cf-l" placeholder="Link do site / inscrição (opcional)" style="margin-top:8px"><input id="cf-ed" placeholder="Link do edital em PDF para baixar (opcional)" style="margin-top:8px"><input id="cf-mt" placeholder="Matérias, separadas por vírgula (opcional)" style="margin-top:8px"><input id="cf-ob" placeholder="Observações (opcional)" style="margin-top:8px">
+ <button onclick="cnSalvar()" style="margin-top:10px">Salvar concurso</button></div>`}
+function cnSalvar(){const g=i=>($('#'+i)||{}).value||'',o=g('cf-o').trim();if(!o){$('#cf-o').focus();return}
+ cnIni().mine.push({id:'m'+uid(),o,uf:g('cf-uf'),n:g('cf-n'),st:g('cf-st'),fim:g('cf-fim'),v:g('cf-v').trim(),s:g('cf-s').trim(),b:g('cf-b').trim(),l:g('cf-l').trim(),ed:g('cf-ed').trim(),mt:g('cf-mt').split(',').map(x=>x.trim()).filter(Boolean),ob:g('cf-ob').trim(),c:g('cf-ob').trim()});
+ cnForm=false;save();render()}
+function cnDel(id){if(!confirm('Remover este concurso da sua lista?'))return;const c=cnIni();c.mine=c.mine.filter(x=>x.id!==id);c.fav=c.fav.filter(x=>x!==id);save();render()}
+function cnFavT(id){const c=cnIni(),i=c.fav.indexOf(id);if(i<0)c.fav.push(id);else c.fav.splice(i,1);save();const y=window.scrollY;render();window.scrollTo(0,y)}
+function vConcursos(){cnIni();
+ const seg=`<div class="seg">${[['lista','🎯 Concursos'],['guia','📚 Guia do Concurseiro']].map(a=>`<button class="${cnTab===a[0]?'on':''}" onclick="cnTab='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`;
+ return `<h2>${_t('Concursos')}</h2>`+seg+(cnTab==='guia'?cnGuia():cnLista())}
+/* ===== GUIA DO CONCURSEIRO ===== */
+const GM={M:[
+{g:'🥇 Base comum — comece por aqui',it:[
+['pt','Língua Portuguesa','Interpretação de texto, ortografia, concordância, regência, crase, pontuação e reescrita. Vale muitas questões em quase toda prova.'],
+['rl','Raciocínio Lógico e Matemática','Proposições, porcentagem, regra de três, razão e proporção, conjuntos, sequências e problemas do dia a dia.'],
+['inf','Informática','Windows, Word, Excel, internet, e-mail, segurança da informação e noções de nuvem.'],
+['cf','Noções de Direito Constitucional','Direitos e garantias fundamentais, organização do Estado e administração pública (art. 37).'],
+['ad','Noções de Direito Administrativo','Princípios, atos administrativos, agentes públicos, poderes e licitações (Lei 14.133/2021).'],
+['at','Atualidades','Fatos dos últimos 12 meses: política, economia, meio ambiente, tecnologia e a sua região.']]},
+{g:'🧩 Complementares (conforme o edital)',it:[
+['et','Ética no serviço público','Código de ética, deveres e proibições do servidor.'],
+['rd','Redação oficial e noções de arquivo','Ofício, memorando, requerimento; arquivo e protocolo.'],
+['lei','Legislação local','Estatuto do servidor e lei orgânica do estado/município do edital.']]},
+{g:'🎯 Específicas do cargo (depois da base)',it:[['esp','Conhecimentos específicos','Pegue o conteúdo programático do edital: Agente Administrativo, Técnico de Enfermagem, Guarda Municipal, Soldado etc.']]}],
+S:[
+{g:'🥇 Base comum — comece por aqui',it:[
+['pt','Língua Portuguesa','Interpretação, sintaxe, concordância, regência, crase, pontuação e reescrita, com nível de banca superior.'],
+['rl','Raciocínio Lógico e Matemática','Lógica proposicional, porcentagem, probabilidade, análise combinatória e conjuntos.'],
+['cf','Direito Constitucional','Direitos fundamentais, poderes, organização do Estado, controle de constitucionalidade.'],
+['ad','Direito Administrativo','Princípios, atos, poderes, serviços públicos, improbidade, licitações (Lei 14.133/2021).'],
+['inf','Informática','Pacote Office, redes, segurança da informação e noções de nuvem.']]},
+{g:'🏛️ Área administrativa e tribunais',it:[['adm','Administração Geral e Pública','Teorias, gestão de pessoas, processos, planejamento.'],['afo','Administração Financeira e Orçamentária','Ciclo orçamentário, receitas e despesas públicas.'],['proc','Direito Processual Civil','Atos processuais, prazos, recursos.'],['8112','Lei 8.112/90 e regime jurídico','Provimento, direitos, deveres e responsabilidades do servidor.']]},
+{g:'🛡️ Área policial e jurídica',it:[['pen','Direito Penal','Teoria do crime, penas, crimes em espécie.'],['pp','Direito Processual Penal','Inquérito, ação penal, provas, prisões.'],['dh','Legislação especial e Direitos Humanos','Leis penais extravagantes e tratados.']]},
+{g:'💰 Área fiscal e controle',it:[['cont','Contabilidade Geral e Pública','Demonstrações, patrimônio, MCASP.'],['trib','Direito Tributário','Sistema tributário, tributos, obrigação e crédito.'],['aud','Auditoria, Economia e Estatística','Normas de auditoria, micro/macro e estatística básica.']]},
+{g:'🩺 Saúde',it:[['sus','SUS','Leis 8.080/90 e 8.142/90, princípios e diretrizes.'],['esps','Conhecimentos da profissão','Conteúdo específico do seu cargo no edital.']]},
+{g:'📖 Educação',it:[['ldb','LDB e BNCC','Lei 9.394/96, BNCC, ECA e legislação educacional.'],['did','Didática e Pedagogia','Avaliação, currículo, planejamento e inclusão.']]},
+{g:'💻 Tecnologia da Informação',it:[['bd','Banco de dados e redes','SQL, modelagem, redes e protocolos.'],['seg','Segurança e engenharia de software','Criptografia, normas, ciclo de vida, programação.']]}]};
+const GF=[
+['🔁','Ciclo de estudos','Em vez de dias fixos, faça um rodízio entre as matérias: termine uma, passe para a próxima. Dá mais peso às que você tem mais dificuldade.'],
+['⏱️','Pomodoro','25 min de foco + 5 min de pausa (ou 50/10). A cada 4 blocos, pausa longa. Celular longe.'],
+['✅','Questões logo após a teoria','Estude um tópico curto e resolva 10–20 questões da banca do seu concurso. Questão é onde você realmente aprende.'],
+['🧠','Revisão espaçada','Revise em 24 horas, em 7 dias e em 30 dias. Revisar pouco e várias vezes vale mais do que reler tudo de uma vez.'],
+['📝','Resumos e mapas mentais','Faça resumos curtos, com as suas palavras. Mapas mentais ajudam em matérias de muita decoreba.'],
+['🗂️','Flashcards','Perfeitos para artigos de lei, prazos, conceitos e fórmulas. Use no ônibus ou na fila.'],
+['📖','Lei seca','Leia o artigo, grife o essencial, faça questões sobre ele. Para Direito, vá sempre do texto da lei para as questões.'],
+['🧪','Simulados','A cada 2–3 semanas, faça um simulado cronometrado, no formato da prova. Treina tempo e emocional.'],
+['📕','Caderno de erros','Anote cada questão errada: o motivo (falta de atenção, não sabia, pegadinha) e a regra certa. Releia toda semana.'],
+['🗣️','Ensinar em voz alta','Explicar o assunto como se desse uma aula mostra o que você ainda não entendeu.']];
+const GR=[['Seg','Língua Portuguesa'],['Ter','Raciocínio Lógico / Matemática'],['Qua','Informática'],['Qui','Direito Constitucional'],['Sex','Direito Administrativo'],['Sáb','Questões + revisão + simulado'],['Dom','Descanso ou revisão leve']];
+function cnGuia(){
+ const tabs=[['ini','🧭','Começar'],['est','🧠','Como estudar'],['mat','🥇','Matérias'],['rot','🗓️','Rotina'],['edi','📝','Saiu o edital']];
+ const seg=`<div class="seg s5">${tabs.map(a=>`<button class="${cnGs===a[0]?'on':''}" onclick="cnGs='${a[0]}';render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
+ let b='';
+ if(cnGs==='ini'){const st=[['Escolha a carreira e o nível','Administrativa, policial, tribunais, fiscal, saúde ou educação. Nível médio ou superior define o que você estuda.'],['Defina um concurso-alvo','Escolha um órgão e uma banca. Use a aba Concursos e favorite os que combinam com você.'],['Baixe o edital anterior','Ele mostra as matérias, o peso de cada uma e o estilo da banca, mesmo antes do novo edital sair.'],['Estude primeiro a base comum','Português, Raciocínio Lógico, Informática e noções de Direito aparecem em quase todo concurso. Veja a aba Matérias.'],['Monte sua rotina','Mesmo 2 horas por dia, com constância, rendem mais do que maratonas de fim de semana.'],['Meça seu progresso','Questões todo dia, simulado a cada 2–3 semanas e caderno de erros.']];
+  b=`<div class="card"><h3 style="margin-top:0">Por onde começar</h3>${st.map((s,i)=>`<div class="cn-st"><span>${i+1}</span><div><b>${s[0]}</b><p>${s[1]}</p></div></div>`).join('')}</div>`}
+ if(cnGs==='est')b=`<h3>Formas de estudo que funcionam</h3>${GF.map(f=>`<div class="card cn-ge"><span>${f[0]}</span><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('')}`;
+ if(cnGs==='mat'){const G=cnIni().guia,gr=GM[cnGn],all=[].concat(...gr.map(x=>x.it)),ok=all.filter(i=>G[cnGn+':'+i[0]]).length,pc=Math.round(ok/all.length*100);
+  b=`<div class="seg">${[['M','📘 Nível médio'],['S','🎓 Nível superior']].map(a=>`<button class="${cnGn===a[0]?'on':''}" onclick="cnGn='${a[0]}';render()">${a[1]}</button>`).join('')}</div>
+  <div class="card"><b>Seu progresso: ${ok} de ${all.length} matérias (${pc}%)</b><div class="cn-pb"><i style="width:${pc}%"></i></div><p class="hint" style="margin:8px 0 0">Comece de cima para baixo: primeiro a base comum, depois as complementares e, por último, as específicas do cargo. Toque para marcar o que você já domina.</p></div>
+  ${gr.map(x=>`<h3>${x.g}</h3><div class="card">${x.it.map((i,n)=>{const k=cnGn+':'+i[0],on=!!G[k];return `<label class="cn-mt${on?' on':''}"><input type="checkbox" ${on?'checked':''} onchange="cnMat('${k}')"><span><b>${esc(i[1])}</b><small>${esc(i[2])}</small></span></label>`}).join('')}</div>`).join('')}`}
+ if(cnGs==='rot')b=`<h3>Exemplo de rotina semanal</h3><div class="card">${GR.map(r=>`<div class="cn-r"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}<p class="hint" style="margin:10px 0 0">Sugestão: 2 a 4 horas por dia, em blocos de 25–50 minutos. Ajuste ao seu horário e às matérias do seu edital. Em plantões ou dias cheios, faça só questões e revisão.</p></div>`;
+ if(cnGs==='edi'){const st=[['Leia o edital inteiro','Datas, requisitos do cargo, taxa, vagas, conteúdo programático, etapas e critérios de eliminação.'],['Inscreva-se e pague a taxa','Confira o prazo de pagamento da taxa, que pode ser diferente do prazo de inscrição. Guarde o comprovante.'],['Veja se tem isenção','Alguns editais isentam a taxa em casos como CadÚnico ou doação de sangue. Confira as regras e os prazos.'],['Monte o cronograma de trás para frente','Parta da data da prova e distribua as matérias do edital até lá, com revisão e simulados no final.'],['Prepare a documentação','Separe documentos para inscrição, títulos (se houver) e comprovação de requisitos.'],['No dia da prova','Confira local e horário no cartão de confirmação; leve documento original com foto e caneta conforme o edital.'],['Depois da prova','Confira o gabarito, avalie recursos e acompanhe resultado, convocação e homologação.']];
+  b=`<div class="card"><h3 style="margin-top:0">Saiu o edital: o que fazer</h3>${st.map((s,i)=>`<div class="cn-st"><span>${i+1}</span><div><b>${s[0]}</b><p>${s[1]}</p></div></div>`).join('')}</div>`}
+ return seg+b}
+function cnMat(k){const G=cnIni().guia;if(G[k])delete G[k];else G[k]=1;save();const y=window.scrollY;render();window.scrollTo(0,y)}
+
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -3004,6 +3263,7 @@ function invNorm(){
  const c=S.cart;if(!c)return;
  const v=c.inv=(c.inv&&typeof c.inv==='object'&&!Array.isArray(c.inv))?c.inv:{};
  v.tx=Object.assign({},INV_TX0,(v.tx&&typeof v.tx==='object')?v.tx:{});
+ const fx=v.fx=(v.fx&&typeof v.fx==='object'&&!Array.isArray(v.fx))?v.fx:{};fx.r=(fx.r&&typeof fx.r==='object')?fx.r:{};['USD','EUR','GBP','BTC'].forEach(k=>{const n=+fx.r[k];fx.r[k]=(n>0&&isFinite(n))?n:0});fx.upd=+fx.upd>0?+fx.upd:0;fx.man=!!fx.man;
  ['selic','cdi','ipca','tr','pre','ntnb'].forEach(k=>{const n=parseFloat(v.tx[k]);v.tx[k]=isNaN(n)?INV_TX0[k]:n});
  v.meus=Array.isArray(v.meus)?v.meus.filter(x=>x&&typeof x==='object'):[];
  v.prods=Array.isArray(v.prods)?v.prods.filter(x=>x&&typeof x==='object'&&x.id):[];
@@ -3029,11 +3289,11 @@ function invPos(it){
 /* ---------- telas ---------- */
 let iSub='exp',iCls='mais',iBusca='',iOrd='pad',iFgc=false,iIso=false,iAberto=null,iPos=null,iForm=null,iNovo=null,iAp=null,iFech=null,iSimOpen=false;
 let iSim={modo:'fut',pid:'tesselic',rt:'prod',rv:'',fee:'',irm:'auto',v0:'1000',pmt:'300',prazo:'10',un:'a',meta:'100000',renda:'5000',infl:'',pinf:false};
-const INV_SUBS=[['exp','📚','Explorar'],['car','💼','Minha carteira'],['sim','🧮','Simulador'],['gui','🎓','Guia']];
+const INV_SUBS=[['exp','📚','Explorar'],['car','💼','Minha carteira'],['sim','🧮','Simulador'],['cnv','💱','Conversor'],['gui','🎓','Guia']];
 function vInv(){
  invNorm();
- const nav=`<div class="seg s4 iv-seg">${INV_SUBS.map(a=>`<button class="${iSub===a[0]?'on':''}" onclick="iSub='${a[0]}';render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
- return `<div class="iv-title"><h3 style="margin:0">📈 Investimentos</h3><small>Referência, não é recomendação</small></div>`+nav+(iSub==='exp'?invExplorar():iSub==='car'?invCarteira():iSub==='sim'?invSimulador():invGuia())}
+ const nav=`<div class="seg s4 s5 iv-seg">${INV_SUBS.map(a=>`<button class="${iSub===a[0]?'on':''}" onclick="iSub='${a[0]}';render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
+ return `<div class="iv-title"><h3 style="margin:0">📈 Investimentos</h3><small>Referência, não é recomendação</small></div>`+nav+(iSub==='exp'?invExplorar():iSub==='car'?invCarteira():iSub==='sim'?invSimulador():iSub==='cnv'?invConversor():invGuia())}
 const invRisco=n=>`<span class="iv-risk" title="Risco: ${INV_RISCO[n]}" aria-label="Risco ${INV_RISCO[n]}">${[1,2,3,4,5].map(i=>`<i style="${i<=n?'background:'+INV_RCOR[n]:''}"></i>`).join('')}</span>`;
 function invTicker(){const t=invTx();
  return `<div class="iv-tick" onclick="iSub='gui';render()" role="button" aria-label="Editar taxas de referência"><div><small>Selic</small><b>${invP(t.selic)}</b></div><div><small>CDI</small><b>${invP(t.cdi)}</b></div><div><small>IPCA 12m</small><b>${invP(t.ipca)}</b></div><div><small>Poupança</small><b>${invP(invPoup(t))}</b></div></div>`}
@@ -3277,6 +3537,63 @@ function invSimulador(){
  return modos+`<div class="card iv-sim"><label class="fl" style="margin-top:0">Investimento</label><select onchange="iSim.pid=this.value;iSim.rt=this.value?'prod':'aa';render()">${opts}</select>
   <div style="margin-top:10px">${campos}</div>${adv}<p class="hint" id="iv-gross">${invGrossTxt()}</p></div><div id="iv-out">${invSimOut()}</div>
   <p class="hint">Simulação com juros compostos mensais, aportes no fim de cada mês e IR calculado aporte por aporte (cada um com a sua idade). Não considera IOF nos primeiros 30 dias nem variações de taxa. Os números são estimativas, não promessas.</p>`}
+/* --- Conversor de moedas (Invest.) ---
+   Cotações em R$ por 1 unidade, guardadas em S.cart.inv.fx. Busca online na AwesomeAPI (cotação comercial) e deixa editar à mão. */
+const CV={BRL:{e:'🇧🇷',n:'Real',s:'R$',d:2},USD:{e:'🇺🇸',n:'Dólar',s:'US$',d:2},EUR:{e:'🇪🇺',n:'Euro',s:'€',d:2},GBP:{e:'🇬🇧',n:'Libra',s:'£',d:2},BTC:{e:'₿',n:'Bitcoin',s:'₿',d:8}};
+let iCv={v:'1000',de:'BRL',para:'USD',fee:'',tried:false};
+const cvNum=v=>{const n=parseFloat(String(v==null?'':v).trim().replace(/\s/g,'').replace(',','.'));return isNaN(n)||!isFinite(n)?0:n};
+const cvRt=c=>{if(c==='BRL')return 1;invNorm();return S.cart.inv.fx.r[c]||0};
+const invCvConv=(a,de,para)=>{const x=cvRt(de),y=cvRt(para);return(x>0&&y>0)?a*x/y:null};
+const cvD=(c,n)=>c==='BTC'?(n<1?8:2):(c==='BRL'?2:4);
+const cvF=(c,n,d)=>CV[c].s+' '+invF(n,d==null?CV[c].d:d);
+function invCvSt(){invNorm();const f=S.cart.inv.fx;
+ if(f.man)return '✏️ Cotações ajustadas à mão';
+ if(f.upd)return '🕒 Atualizado em '+new Date(f.upd).toLocaleString(LOC(),{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+ return 'Sem cotação ainda'}
+function invCvOut(){
+ const s=iCv,a=invNum(s.v),fee=Math.min(99.99,Math.max(0,cvNum(s.fee)));
+ const falta=[s.de,s.para].filter((c,i,l)=>l.indexOf(c)===i&&!cvRt(c));
+ if(falta.length)return `<div class="card"><p class="hint" style="margin:0">Falta a cotação de ${falta.map(c=>CV[c].n.toLowerCase()).join(' e ')}. Toque em “Atualizar cotações” (precisa de internet) ou digite o valor em “Editar cotações”.</p></div>`;
+ const g=invCvConv(a,s.de,s.para),net=g*(1-fee/100),um=invCvConv(1,s.de,s.para),inv=invCvConv(1,s.para,s.de);
+ const hero=`<div class="card iv-res"><small>${esc(cvF(s.de,a))} equivalem a</small><strong>${esc(cvF(s.para,net))}</strong>
+  <div class="iv-hg"><div><small>1 ${s.de} =</small><b>${esc(cvF(s.para,um,cvD(s.para,um)))}</b></div><div><small>1 ${s.para} =</small><b>${esc(cvF(s.de,inv,cvD(s.de,inv)))}</b></div><div><small>${fee>0?'Taxa descontada ('+esc(invF(fee))+'%)':'Taxa'}</small><b>${fee>0?'− '+esc(cvF(s.para,g-net)):'—'}</b></div></div>
+  ${fee>0?`<p class="hint" style="margin:10px 0 0">Sem a taxa seriam ${esc(cvF(s.para,g))}.</p>`:''}</div>`;
+ const rows=Object.keys(CV).filter(c=>c!==s.de).map(c=>{const x=invCvConv(a,s.de,c);return x==null?'':`<div class="iv-cp"><div class="top"><span>${CV[c].e} ${CV[c].n}</span><b>${esc(cvF(c,x*(1-fee/100)))}</b></div></div>`}).join('');
+ return hero+(rows?`<div class="card"><h3 style="margin:0 0 4px;font-size:15px">Esse valor nas outras moedas</h3>${rows}</div>`:'')}
+function invCvUpd(){const e=document.getElementById('iv-cv-out');if(e)e.innerHTML=invCvOut();const t=document.getElementById('iv-cv-st');if(t)t.textContent=invCvSt()}
+function invCvS(k,v){iCv[k]=v;invCvUpd()}
+function invCvTroca(){const t=iCv.de;iCv.de=iCv.para;iCv.para=t;render()}
+function invCvRate(k,v){invNorm();const f=S.cart.inv.fx;f.r[k]=cvNum(v);f.man=true;save();invCvUpd()}
+async function invCvBuscar(auto){
+ const B=document.getElementById('iv-cv-btn');if(B){B.disabled=true;B.textContent='Buscando…'}
+ const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);
+ try{
+  const r=await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL,BTC-BRL',{signal:c.signal});
+  if(!r.ok)throw 0;const j=await r.json();invNorm();const f=S.cart.inv.fx;let ok=0;
+  ['USD','EUR','GBP','BTC'].forEach(k=>{const n=parseFloat(j&&j[k+'BRL']&&j[k+'BRL'].bid);if(n>0&&isFinite(n)){f.r[k]=n;ok++}});
+  if(!ok)throw 0;f.upd=Date.now();f.man=false;save();
+  if(!auto)info(ok===4?'Cotações atualizadas.':'Atualizei '+ok+' de 4 cotações. As outras ficam como estavam.')
+ }catch(e){if(!auto)info('Não consegui buscar as cotações agora. Verifique a internet ou digite as cotações à mão.')}
+ finally{clearTimeout(t);const b=document.getElementById('iv-cv-btn');if(b){b.disabled=false;b.textContent='🔄 Atualizar cotações'}
+  if(typeof tab!=='undefined'&&tab==='carteira'&&cSub==='inv'&&iSub==='cnv')render()}}
+function invConversor(){
+ invNorm();const f=S.cart.inv.fx;
+ /* ao abrir pela primeira vez na sessão, busca sozinho se tiver internet e a cotação estiver velha (mais de 1 h); não mexe em cotação ajustada à mão */
+ if(!iCv.tried){iCv.tried=true;if(navigator.onLine!==false&&!f.man&&(!f.upd||Date.now()-f.upd>3600000))setTimeout(()=>invCvBuscar(true),50)}
+ const opts=sel=>Object.keys(CV).map(c=>`<option value="${c}" ${sel===c?'selected':''}>${CV[c].e} ${CV[c].n} (${c})</option>`).join('');
+ const rates=['USD','EUR','GBP','BTC'].map(k=>`<div style="flex:1 1 140px;min-width:0"><label class="fl" style="margin-top:8px">${CV[k].e} 1 ${k} vale (R$)</label><input inputmode="decimal" value="${f.r[k]?esc(String(f.r[k]).replace('.',',')):''}" placeholder="0,00" oninput="invCvRate('${k}',this.value)" aria-label="Cotação do ${esc(CV[k].n)} em reais"></div>`).join('');
+ return `<div class="iv-title"><h3 style="margin:0">💱 Conversor de moedas</h3><small>Real, dólar, euro, libra e bitcoin</small></div>
+ <div class="card iv-sim"><label class="fl" style="margin-top:0">Valor</label><input inputmode="decimal" value="${esc(iCv.v)}" placeholder="1.000,00" oninput="invCvS('v',this.value)" aria-label="Valor a converter">
+  <div class="row iv-cv" style="margin-top:10px;flex-wrap:nowrap;align-items:flex-end"><div style="flex:1;min-width:0"><label class="fl" style="margin-top:0">De</label><select onchange="iCv.de=this.value;render()">${opts(iCv.de)}</select></div>
+   <button class="sec iv-cvx" onclick="invCvTroca()" aria-label="Inverter as moedas">⇄</button>
+   <div style="flex:1;min-width:0"><label class="fl" style="margin-top:0">Para</label><select onchange="iCv.para=this.value;render()">${opts(iCv.para)}</select></div></div>
+  <label class="fl">Taxa, IOF ou spread (%) <small style="font-weight:400;color:var(--mute)">opcional</small></label><input inputmode="decimal" value="${esc(iCv.fee)}" placeholder="0" oninput="invCvS('fee',this.value)" aria-label="Taxa em porcentagem">
+  <p class="hint">Banco, corretora e casa de câmbio cobram IOF e spread. Coloque a taxa que eles cobram para ver quanto você realmente recebe.</p></div>
+ <div id="iv-cv-out">${invCvOut()}</div>
+ <div class="card"><div class="row" style="align-items:center;justify-content:space-between;gap:8px"><small id="iv-cv-st" style="color:var(--mute);font-size:12px">${esc(invCvSt())}</small></div>
+  <button class="sec" id="iv-cv-btn" style="width:100%;margin-top:8px" onclick="invCvBuscar()">🔄 Atualizar cotações</button>
+  <details class="iv-adv"><summary>✏️ Editar cotações</summary><div class="row" style="gap:8px">${rates}</div><p class="hint">Digite quanto vale 1 unidade da moeda em reais. Ao editar, o app para de atualizar sozinho; toque em “Atualizar cotações” para voltar às cotações online.</p></details></div>
+ <p class="hint">Cotação comercial online (AwesomeAPI). É de referência: o valor cobrado na compra ou venda real costuma ser diferente. Não é recomendação de investimento.</p>`}
 /* --- Guia: taxas, perfil, IR e glossário --- */
 const INV_Q=[['Qual é o seu principal objetivo?',['Guardar com segurança','Equilibrar segurança e crescimento','Crescer o patrimônio ao máximo']],['Por quanto tempo você pode deixar o dinheiro investido?',['Menos de 2 anos','De 2 a 5 anos','Mais de 5 anos']],['Se seus investimentos caíssem 20% em um mês, você…',['Venderia tudo, não aguento perder','Esperaria a recuperação','Aproveitaria para comprar mais']],['Qual é a sua experiência com investimentos?',['Só uso poupança','Já invisto em renda fixa','Invisto em bolsa, fundos ou cripto']],['Você já tem reserva de emergência (6 meses de gastos)?',['Ainda não','Parcialmente','Sim, completa']]];
 const INV_PERFIS={1:['🛡️ Conservador','Prioriza segurança e liquidez. Aceita render menos para dormir tranquilo.',{res:40,tes:30,ban:20,fun:5,rv:5},['res','tes','ban']],2:['⚖️ Moderado','Aceita alguma oscilação em troca de rendimento maior no médio e longo prazo.',{res:20,tes:20,ban:15,cre:5,rv:20,fun:10,pre:5,ext:5},['tes','fun','rv']],3:['🚀 Arrojado','Foca no longo prazo e tolera quedas fortes buscando maior retorno.',{res:10,tes:10,ban:5,rv:35,fun:10,ext:15,cri:5,alt:10},['rv','ext','cri']]};
@@ -4267,6 +4584,14 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.4.4':[
+  '💱 Carteira › Invest.: nova aba “Conversor” para converter entre real, dólar, euro, libra e bitcoin. Busca as cotações online, deixa editar à mão e tem campo opcional para IOF/spread, para ver quanto você realmente recebe.'
+ ],
+ '3.4.3':[
+  '🎓 Novo menu “Concursos”: veja concursos por estado, com status (edital publicado, em andamento, finalizado ou previsto), separados por nível médio e superior, com vagas, salário, banca, taxa, prazo de inscrição e as matérias previstas de cada um.',
+  '⬇️ Em cada concurso há o botão para baixar o edital (PDF) ou buscar o último edital. Você também pode favoritar com ⭐ e cadastrar o seu em “+ Meu concurso”.',
+  '📚 Nova aba “Guia do Concurseiro”: formas de estudo, matérias para estudar primeiro (com checklist de progresso), rotina semanal e o passo a passo de quando o edital sai.'
+ ],
  '3.4.1':[
   '⚖️ Promoções › Comparar preços: entraram os produtos novos dos três mercados, com o novo setor Hortifrúti (frutas, legumes e verduras) e mais itens de laticínios, mercearia, congelados e limpeza.',
   '📄 Carteira: o botão “Baixar PDF” agora aparece em todas as abas e o PDF traz tudo: resumo do mês, para onde foi o dinheiro, gastos, contas fixas (com situação do mês), rendas, salário e os melhores dias para pagar.'
@@ -4516,7 +4841,7 @@ const GUIA_APP=[
  ['📝','Notas','Anotações rápidas para guardar o que importa.'],
  ['📖','Diário','Escreva sobre o seu dia, com humor e fotos.'],
  ['🛒','Compras','Lista de compras que você pode montar falando o produto e o preço. Também escaneia etiquetas com a câmera, compara preços entre mercados, guarda os seus mercados e o histórico das compras.'],
- ['💰','Carteira','Resumo, gastos, contas fixas, renda, salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas) e Investimentos (catálogo com todas as opções, sua carteira, simulador e guia).'],
+ ['💰','Carteira','Resumo, gastos, contas fixas, renda, salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas) e Investimentos (catálogo com todas as opções, sua carteira, simulador, conversor de moedas e guia).'],
  ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
  ['⚙️','Configurações','Perfil, conta (Google ou e-mail), backup, idioma, cores do tema, menu e senha do app.']];
