@@ -191,3 +191,9 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 - **Atualização automática**: o robô `.github/workflows/atualizar-vagas.yml` roda de 3 em 3 horas (e pelo botão Run workflow), executa `scripts/vagas.py` e grava `vagas/clt.json`. O app lê esse arquivo ao abrir, ao voltar para o app e a cada 30 min (`cltCarregar`), e o botão **🔄 Atualizar** do menu CLT força a busca. Vagas com mais de 30 dias saem; as vagas novas ganham o selo **🆕 Nova**.
 - A lista fixa de 06/11/2026 continua valendo por 14 dias; depois disso só aparecem as vagas do robô. Se o robô não achar nada, o `clt.json` anterior é mantido.
 - **Fontes**: API pública do Gupy (sem chave) e Adzuna (opcional, traz salário: cadastre os secrets `ADZUNA_ID` e `ADZUNA_KEY`). Depois da primeira execução, abra o relatório `relatorio-vagas` (Actions) para ver o que cada fonte entregou.
+
+## Espaço Cultural (versão 3.5.1)
+
+- **Menu novo “Espaço Cultural” 🎭**: shows, teatro e humor, infantil, festivais, festas/samba, artes e exposições e Carnaval 2027 em Recife, Olinda, Paulista e Jaboatão dos Guararapes, pagos e gratuitos. Filtros por cidade, categoria, preço e período, busca, favoritos (⭐), botão **Pôr na Agenda**, **Mapa** e **Ingressos**. Eventos que já passaram somem sozinhos.
+- **Dados**: ficam em `CU_BASE` no `index.html` e no arquivo `cultural.json` (mesma lista). Ao abrir o menu, o app lê o `cultural.json`; para atualizar a lista sem lançar app novo, troque o arquivo e aumente `atualizado` (AAAA-MM-DD). Campos: `t` título, `d` data, `f` data final, `h` horário, `l` local, `c` cidade (`r` Recife, `o` Olinda, `p` Paulista, `j` Jaboatão), `k` categoria, `p` preço, `g` (1 gratuito, 0 pago, vazio = consultar), `u` link, `o` observações.
+- Lista reunida em 06/11/2026 de sites de ingressos e agendas culturais. Paulista e Jaboatão têm poucos eventos publicados nessas fontes.
