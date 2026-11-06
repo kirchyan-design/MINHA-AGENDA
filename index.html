@@ -3210,18 +3210,40 @@ function cEditForm(kind,x){
 function cGItem(g){
  if(cEd&&cEd.k==='g'&&cEd.id===g.id)return cEditForm('g',g);
  const c=ccat(g.cat);
- return `<div class="item"><span class="cw-ic" aria-hidden="true">${c[1]}</span><div class="t" onclick="cEdit('g','${g.id}')" style="cursor:pointer"><b>${esc(g.desc||c[2])}</b><br><small style="color:var(--mute)">${fmt(g.date,{weekday:'short',day:'2-digit',month:'short'})} · ${c[2]}</small></div><b class="cw-v">${BRL(g.val)}</b><button class="ghost" onclick="cDelG('${g.id}')" aria-label="Excluir gasto">✕</button></div>`}
+ return `<div class="item"><span class="cw-ic" aria-hidden="true">${c[1]}</span><div class="t" onclick="cEdit('g','${g.id}')" style="cursor:pointer"><b>${esc(g.desc||c[2])}</b><br><small style="color:var(--mute)">${fmt(g.date,{weekday:'short',day:'2-digit',month:'short'})} · ${c[2]}${g.pg?' · 💳 parcela '+g.pn+'/'+g.pt:''}</small></div><b class="cw-v">${BRL(g.val)}</b><button class="ghost" onclick="cDelG('${g.id}')" aria-label="Excluir gasto">✕</button></div>`}
 function cGastos(k){
  const form=`<div class="card"><input id="cw-gd" placeholder="O que foi? (ex.: Feira, Uber, Presente)" maxlength="60" onkeydown="if(event.key==='Enter')cFoco('cw-gv')">
   <div class="row" style="margin-top:8px"><input id="cw-gv" inputmode="decimal" placeholder="Valor (R$)" onkeydown="if(event.key==='Enter')cAddG()">${cSel('cw-gc','feira')}</div>
-  <div class="row" style="margin-top:8px"><input type="date" id="cw-gdt" value="${cDataPad()}" aria-label="Data"><button onclick="cAddG()">＋ Adicionar</button></div></div>`;
+  <div class="row" style="margin-top:8px"><input type="date" id="cw-gdt" value="${cDataPad()}" aria-label="Data da primeira parcela"><input id="cw-gp" type="number" min="1" max="60" inputmode="numeric" value="1" style="width:96px" aria-label="Número de parcelas" placeholder="Parcelas" onkeydown="if(event.key==='Enter')cAddG()"></div>
+  <div class="row" style="margin-top:8px"><select id="cw-gpt" aria-label="Tipo do valor"><option value="total">Valor total (divido nas parcelas)</option><option value="parc">Valor de cada parcela</option></select><button onclick="cAddG()">＋ Adicionar</button></div>
+  <p class="hint" style="margin:6px 0 0">Parcelas: 1 = à vista. Com 2 ou mais, o app lança um gasto por mês, no mesmo dia da data escolhida.</p></div>`;
  return form+`<h3>Gastos do mês · ${BRL(k.gasTot)}</h3>`+(k.gs.length?`<div class="card">${k.gs.map(cGItem).join('')}</div><p class="hint">Toque em um gasto para editar.</p>`:'<div class="vazio">Nenhum gasto avulso neste mês.</div>')}
 function cAddG(){
  const d=$('#cw-gd').value.trim(),v=cNum($('#cw-gv').value),c=$('#cw-gc').value,dt=$('#cw-gdt').value||HOJE;
+ const pe=$('#cw-gp'),np=Math.min(60,Math.max(1,parseInt(pe&&pe.value)||1)),tp=($('#cw-gpt')||{}).value||'total';
  if(!v){info('Informe o valor do gasto.');return}
- S.cart.gastos.push({id:uid(),date:dt,cat:c,desc:d,val:v});cMes=dt.slice(0,7);
+ if(np===1){S.cart.gastos.push({id:uid(),date:dt,cat:c,desc:d,val:v});cMes=dt.slice(0,7);
+  save();render();cClear(['cw-gd','cw-gv']);cFoco('cw-gd');return}
+ /* parcelado: um gasto por mês, mesmo dia (ou último dia do mês, se o mês for mais curto) */
+ const gid=uid(),a=dt.split('-').map(Number),cada=tp==='parc'?v:cR2(v/np);
+ let acum=0;
+ for(let i=0;i<np;i++){
+  const ult=new Date(a[0],a[1]-1+i+1,0).getDate(),dia=Math.min(a[2],ult),date=iso(new Date(a[0],a[1]-1+i,dia));
+  let val=cada;if(tp!=='parc'){if(i===np-1)val=cR2(v-acum);else acum=cR2(acum+cada)}
+  S.cart.gastos.push({id:uid(),date,cat:c,desc:(d||ccat(c)[2])+' ('+(i+1)+'/'+np+')',val,pg:gid,pn:i+1,pt:np})}
+ cMes=dt.slice(0,7);
+ info('Lancei '+np+' parcelas de '+BRL(cada)+(tp==='parc'?'':' (total de '+BRL(v)+')')+', uma em cada mês.');
  save();render();cClear(['cw-gd','cw-gv']);cFoco('cw-gd')}
-function cDelG(id){ask('Excluir este gasto?',()=>{S.cart.gastos=S.cart.gastos.filter(x=>x.id!==id);save();render()})}
+function cDelG(id){
+ const g=S.cart.gastos.find(x=>x.id===id);
+ if(g&&g.pg){
+  const o=document.createElement('div');o.className='ov';
+  o.innerHTML=`<div class="dlg" role="alertdialog"><p>${esc(_t('Este gasto é uma parcela ('+g.pn+'/'+g.pt+'). O que excluir?'))}</p><div class="row" style="flex-wrap:wrap"><button id="u1" style="flex:1">${_t('Só esta parcela')}</button><button id="u2" style="flex:1">${_t('Esta e as próximas')}</button></div><div class="row"><button class="sec" id="no" style="flex:1">${_t('Cancelar')}</button></div></div>`;
+  document.body.appendChild(o);
+  o.querySelector('#u1').onclick=()=>{o.remove();S.cart.gastos=S.cart.gastos.filter(x=>x.id!==id);save();render()};
+  o.querySelector('#u2').onclick=()=>{o.remove();S.cart.gastos=S.cart.gastos.filter(x=>!(x.pg===g.pg&&x.pn>=g.pn));save();render()};
+  o.querySelector('#no').onclick=()=>o.remove();o.onclick=e=>{if(e.target===o)o.remove()};return}
+ ask('Excluir este gasto?',()=>{S.cart.gastos=S.cart.gastos.filter(x=>x.id!==id);save();render()})}
 function cEdit(kind,id){cEd={k:kind,id:id};render();cFoco('cw-e-v')}
 function cSaveEd(){
  if(!cEd)return;const L=cEd.k==='g'?S.cart.gastos:cEd.k==='r'?S.cart.rendas:S.cart.fixas,x=L.find(i=>i.id===cEd.id);
