@@ -1251,6 +1251,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ clt:'<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18M10.5 13v1.5h3V13"/>',
  mulher:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>',
  concursos:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/>',
  inicio:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
@@ -1289,7 +1290,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['mulher','🌸','Espaço Mulher']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -2723,6 +2724,347 @@ function cnGuia(){
  return seg+b}
 function cnMat(k){const G=cnIni().guia;if(G[k])delete G[k];else G[k]=1;save();const y=window.scrollY;render();window.scrollTo(0,y)}
 
+/* ===== CLT: vagas de emprego (Recife, Olinda, Paulista e Jaboatão dos Guararapes) =====
+   Levantamento feito em 06/11/2026 a partir de portais públicos de vagas.
+   Cada vaga traz a fonte e a data de publicação quando o portal informa. Vagas mudam rápido: confirme sempre no site da fonte.
+   Nível (superior, médio, fundamental) é estimado pelo tipo de cargo quando o anúncio não informa. */
+const CLT_ATUAL="06/11/2026";
+const CLT_CID={R:["Recife","#2f7fd6"],O:["Olinda","#d9822b"],P:["Paulista","#2f9e6b"],J:["Jaboatão","#7c5cd6"]};
+const CLT_NOME={R:"Recife",O:"Olinda",P:"Paulista",J:"Jaboatão dos Guararapes"};
+const CLT_NV=[["S","🎓","Ensino superior"],["M","📘","Ensino médio e técnico"],["F","🧰","Ensino fundamental ou sem exigência"]];
+const CLT_AR={
+adm:["🗂️","Administrativo","#2f7fd6"],
+com:["🛍️","Comércio e vendas","#e0609a"],
+ate:["🎧","Atendimento e cobrança","#17a2b8"],
+fin:["💰","Financeiro, contábil e fiscal","#3fa66b"],
+rh:["👥","Recursos humanos","#8e6bd6"],
+sau:["🩺","Saúde","#d6409f"],
+edu:["📖","Educação","#d9a10f"],
+tec:["💻","Tecnologia e telecom","#4b5fe0"],
+log:["🚚","Logística, estoque e transporte","#e08a1e"],
+ind:["🏭","Indústria e produção","#6b7c88"],
+cons:["🔧","Construção, manutenção e mecânica","#a0643c"],
+ali:["🍽️","Alimentação e hotelaria","#e8344f"],
+ser:["🧹","Serviços gerais e segurança","#4f8f7a"],
+apr:["🌱","Jovem aprendiz e estágio","#7cb342"]};
+/* fontes: links das páginas de listagem de cada portal (por cidade quando existir) */
+const CLT_SRC={
+gor:["GoRecife (Prefeitura do Recife)",{d:"https://gorecife.recife.pe.gov.br/oportunidades"}],
+epe:["Empregos Pernambuco",{d:"https://empregospernambuco.com.br/jobs"}],
+epm:["Empregos Pernambuco",{d:"https://empregospernambuco.com.br/jobs/motorista-carreteiro-local-muribeca-jaboatao-dos-guararapes"}],
+job:["Jobbol",{d:"https://www.jobbol.com.br/regioes/recife-pe"}],
+vag:["Vagas.com",{d:"https://www.vagas.com.br/vagas-em-recife"}],
+emr:["Empregos Recife",{d:"https://empregosrecife.com.br/"}],
+ind:["Indeed",{R:"https://br.indeed.com/empregos-em-Recife-PE",O:"https://br.indeed.com/l-olinda,-pe-vagas.html",P:"https://br.indeed.com/l-paulista,-pe-vagas.html",J:"https://br.indeed.com/l-jaboat%C3%A3o-dos-guararapes,-pe-vagas.html"}],
+bne:["BNE",{R:"https://www.bne.com.br/vagas-de-emprego-em-recife-pe",O:"https://www.bne.com.br/vagas-de-emprego-em-olinda-pe"}],
+tb:["Trabalha Brasil",{O:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-olinda-pe",P:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-paulista-pe"}],
+cat:["Catho",{P:"https://www.catho.com.br/vagas/pe/paulista/",J:"https://www.catho.com.br/vagas/pe/jaboatao-dos-guararapes/"}],
+gl:["Glassdoor",{P:"https://www.glassdoor.com.br/Vaga/paulista-vagas-SRCH_IL.0,8_IC2505964.htm",J:"https://www.glassdoor.com.br/Vaga/jaboat%C3%A3o-dos-guararapes-vagas-SRCH_IL.0,23_IC4161563.htm"}],
+li:["LinkedIn",{J:"https://br.linkedin.com/jobs/vagas-em-jaboat%C3%A3o-dos-guararapes"}],
+sim:["SimplyHired",{d:"https://www.simplyhired.com.br/search?q=trabalhe+conosco&l=paulista%2C+pe"}],
+eb:["Empregando Brasil",{d:"https://empregandobrasil.com.br/cidades/olinda-pe/"}],
+inf:["Infojobs",{d:"https://www.infojobs.com.br/empregos-em-jaboatao-guararapes,-pe.aspx"}],
+cim:["Clique SP (vagas Cimed)",{d:"https://cliquesp.com.br/noticias/vagas-cimed-2026-48-oportunidades-abertas-em-8-estados-saiba-como-se-candidatar/"}]};
+/* atalhos "mais vagas ao vivo" de cada cidade */
+const CLT_LIVE={
+R:[["Indeed","ind"],["Vagas.com","vag"],["GoRecife","gor"],["Jobbol","job"],["BNE","bne"]],
+O:[["Indeed","ind"],["Trabalha Brasil","tb"],["BNE","bne"],["Empregando Brasil","eb"]],
+P:[["Indeed","ind"],["Trabalha Brasil","tb"],["Catho","cat"],["Glassdoor","gl"]],
+J:[["Indeed","ind"],["Catho","cat"],["Glassdoor","gl"],["LinkedIn","li"]]};
+/* [cidade, cargo, empresa, área, nível, salário, quantidade, data, fonte, observações] */
+const CLT_RAW=[
+/* ---- RECIFE ---- */
+["R","Assistente de direção de restaurante","LBS Alimentos","ali","M","R$ 1.954,00","2 vagas","05/11/2026","gor","Atendimento ao cliente, operar caixa, controle de planilhas, liberação e recebimento de mercadoria."],
+["R","Assistente administrativo","","adm","M","","2 vagas","05/11/2026","gor",""],
+["R","Caixa de bar, lanchonete e restaurante","","ali","M","","3 vagas","05/11/2026","gor","Atendimento ao cliente e operação de caixa."],
+["R","Analista de cobrança","","ate","M","","7 vagas","05/11/2026","gor","Cobrança por ligações ou WhatsApp, negociação e regularização de pagamentos, registro das informações em sistema."],
+["R","Chefe de fila nos serviços de alimentação","","ali","M","","","05/11/2026","gor",""],
+["R","Auxiliar de limpeza","","ser","F","","3 vagas","05/11/2026","gor",""],
+["R","Auxiliar de cozinha","","ali","F","","5 vagas","05/11/2026","gor",""],
+["R","Cozinheiro de restaurante","","ali","F","","4 vagas","05/11/2026","gor",""],
+["R","Almoxarife","Lo Maque Aluguel de Máquinas","log","M","","","04/11/2026","epe","Madalena, Recife."],
+["R","Estoquista","Prego","log","M","","","04/11/2026","epe",""],
+["R","Operador de caixa","Prego","com","M","","","04/11/2026","epe",""],
+["R","Bartender","Prego","ali","M","","","04/11/2026","epe",""],
+["R","Auxiliar de bar","Prego","ali","F","","","04/11/2026","epe",""],
+["R","Cozinheiro","Seu Tito","ali","F","","","04/11/2026","epe",""],
+["R","Auxiliar de cozinha","Seu Tito","ali","F","","","04/11/2026","epe",""],
+["R","Auxiliar de serviços gerais","Seu Tito","ser","F","","","04/11/2026","epe",""],
+["R","Auxiliar administrativo","Padaria Triunfo","adm","M","","","04/11/2026","epe",""],
+["R","Gestor de área de fibra óptica I","Empresa de telecomunicações","tec","S","","","29/10/2026","job","Afogados, Recife. Área de manutenção e construção."],
+["R","Técnico de dados júnior","Empresa de telecomunicações","tec","M","","","29/10/2026","job","Afogados, Recife. Área de informática e TI."],
+["R","Técnico de fibra óptica","Empresa de telecomunicações","tec","M","","","29/10/2026","job","Afogados, Recife."],
+["R","Auxiliar técnico de fibra óptica","Empresa de telecomunicações","tec","M","","","29/10/2026","job","Afogados, Recife."],
+["R","Ajudante de mecânico","Oficina mecânica","cons","F","","","29/10/2026","job","Afogados, Recife."],
+["R","Auxiliar de serviços gerais","Doceria","ser","F","","","29/10/2026","job","Boa Viagem, Recife."],
+["R","Auxiliar de aeroporto (acessível a PcD)","GOL Linhas Aéreas","log","M","","","","ind","Aeroporto do Recife (REC). Residir próximo ou ter fácil acesso ao aeroporto."],
+["R","Assistente de departamento pessoal (sem experiência)","Caderno Nacional (escritório de contabilidade)","rh","M","","","","ind","Benefícios: VA de R$ 21,56 por dia, VT, day off, vale-presente de R$ 100, plano de saúde 50% pago pela empresa e odontológico."],
+["R","Assistente administrativo – Imbiribeira","Technet","adm","M","","","","ind",""],
+["R","Terapeuta ocupacional","Santa Casa de Misericórdia do Recife","sau","S","","","","bne",""],
+["R","Médico psiquiatra","Santa Casa de Misericórdia do Recife","sau","S","","","","bne",""],
+["R","Analista contábil","ABRE Recife","fin","S","","","","bne",""],
+["R","Gerente de loja","ABRE Recife","com","S","","","","bne","Metas, indicadores, negociação de contratos, treinamento e gestão da equipe de vendas."],
+["R","Analista de departamento pessoal","","rh","S","","","","bne",""],
+["R","Auxiliar de escrita fiscal","","fin","M","","","","bne",""],
+["R","Recepcionista (check-in de alunos e venda de aulas)","","ate","M","","","","bne",""],
+["R","Executivo(a) de contas sênior","Melitta South America","com","S","","","","vag","Estratégia com grandes clientes, indicadores de Sell In e Sell Out, visitas aos pontos de venda."],
+["R","Supervisor de análises clínicas","Marcelo Magalhães (Grupo Fleury)","sau","S","","","","vag","Unidades em Recife, Olinda e Jaboatão dos Guararapes."],
+["R","Analista fiscal","","fin","S","","","","vag","Lançamentos fiscais, diferencial de alíquota, DAE e GNRE, certidões negativas estaduais, Gia ST e Sintegra."],
+["R","Auxiliar de RH","","rh","M","","","03/11/2026","emr",""],
+["R","Seleção para professores e ASG (auxiliar de serviços gerais)","","edu","S","","","03/11/2026","emr",""],
+/* ---- OLINDA ---- */
+["O","Assistente administrativo","Santana & Guedes","adm","M","","","","ind","Suporte administrativo, atendimento a clientes presencial ou remoto, gerenciamento de informações."],
+["O","Operador de caixa","Comercial Drugstore","com","M","","","","ind","Ensino médio completo. Aceita primeiro emprego. Benefício: convênio farmácia."],
+["O","Atendente Neoenergia – Shopping Patteo","Logos Teleatendimento","ate","M","","","","ind",""],
+["O","Auxiliar de produção","Bunge","ind","F","","","","ind",""],
+["O","Auxiliar administrativo","UNINASSAU","adm","M","","","","ind",""],
+["O","Recepcionista","Multigastro (clínica de endoscopia)","sau","M","","","","ind","Instituição de saúde especializada em endoscopia."],
+["O","Conferente – Peixinhos","Norlog Logística","log","M","","","","ind",""],
+["O","Auxiliar de transporte I","Norlog Logística","log","F","","","","ind",""],
+["O","Vendedor(a)","Magazine Luiza","com","M","","","","ind",""],
+["O","Vendedor – Patteo Olinda","Centauro","com","M","","","","ind",""],
+["O","Auxiliar de farmácia","Grupo DPSP (Drogarias Pacheco)","sau","M","","","","ind",""],
+["O","Auxiliar de expedição","KGM Lan Distribuidora","log","M","","","","ind","Unidades Olinda e Recife."],
+["O","Assistente de departamento pessoal","Capta RH Consultoria","rh","M","","","","ind",""],
+["O","Auxiliar administrativo de logística – Varadouro","Capta RH Consultoria","log","M","","","","ind",""],
+["O","Assistente contábil","","fin","M","","","","ind",""],
+["O","Jovem aprendiz","Studio Z","apr","M","","","","ind","Código 1162."],
+["O","Repositor de mercadorias","Comercial de Alimentos Zona Norte","com","F","","","","ind",""],
+["O","Operador de loja (frente de caixa e mercearia)","Novo Mateus (Novo Atacarejo)","com","M","","","","ind",""],
+["O","Monitor – Shopping Patteo Olinda","Game Station","ate","F","","","","ind",""],
+["O","Atendente de loja – Casa Caiada","Amorito","com","M","","","","ind",""],
+["O","Assistente financeiro","Keyppy Dedetizações","fin","M","R$ 1.760,00","","","tb","Presencial. Efetivo/CLT."],
+["O","Controlador de pragas","Keyppy Dedetizações","ser","F","","","","tb","Presencial. Efetivo/CLT."],
+["O","Vendedor","Keyppy Dedetizações","com","M","","","","tb","Presencial. Efetivo/CLT."],
+["O","Serralheiro","R4 Metais Metalúrgica e Serralharia","cons","F","","4 vagas","","tb","Presencial. Efetivo/CLT."],
+["O","Auxiliar de cozinha","232 Burguer Olinda","ali","F","R$ 1.700,00","4 vagas","","tb",""],
+["O","Pedagogo","Colégio Pequenino","edu","S","","6 vagas","","tb","Presencial. Efetivo/CLT."],
+["O","Ajudante de cozinha","Tribuna Sabores Ibéricos","ali","F","","","","tb","Presencial. Efetivo/CLT."],
+["O","Marceneiro","Dellux Móveis","cons","F","R$ 2.000,00","2 vagas","","tb","Presencial. Efetivo/CLT."],
+["O","Desenhista (edificações, arquitetura, design de interiores ou engenharia civil)","","cons","S","","","","bne","Formado ou cursando."],
+["O","Técnico de edificações","Usina de Obras","cons","M","","","","bne",""],
+["O","Coordenador de recursos humanos","","rh","S","","","","bne",""],
+["O","Açougueiro","","com","F","","","","bne","Unidade de Olinda."],
+["O","Técnico de enfermagem","Várias empresas","sau","M","","8 vagas","27/08/2026","eb","Levantamento mais antigo: confirme se ainda está aberta."],
+["O","Enfermeiro","Várias empresas","sau","S","","7 vagas","27/08/2026","eb","Levantamento mais antigo: confirme se ainda está aberta."],
+/* ---- PAULISTA ---- */
+["P","Auxiliar de limpeza","Disbec Distribuidora","ser","F","R$ 1.639,00","","","tb","Presencial. Efetivo/CLT."],
+["P","Ajudante de carga e descarga","Disbec Distribuidora","log","F","R$ 1.740,00","","","tb","Presencial. Efetivo/CLT."],
+["P","Estoquista","Disbec Distribuidora","log","F","","","","gl",""],
+["P","Vendedor de loja","SG Soluções Gerenciais","com","M","R$ 1.412,00","","","tb","Presencial. Efetivo/CLT."],
+["P","Vendedor","Pernambuco Motos","com","M","R$ 1.250,00","3 vagas","","tb","Presencial. Efetivo/CLT."],
+["P","Coordenador pedagógico","Escola Passos Sapientes","edu","S","R$ 2.000,00","","","tb",""],
+["P","Mecânico de manutenção","","cons","M","","","","tb",""],
+["P","Operador de produção","Sandene (via InBetta)","ind","F","","","","ind",""],
+["P","Assistente administrativo – Jardim Paulista","Via Jobbol","adm","M","","","","ind",""],
+["P","Estoquista","Comercial de Alimentos Zona Norte","log","F","","","","ind",""],
+["P","Repositor de mercadorias","Comercial de Alimentos Zona Norte","com","F","","","","ind",""],
+["P","Recepcionista comercial","RHF Talentos (via Jobbol)","ate","M","","","","ind",""],
+["P","Florista","Morada da Paz","com","F","","","","ind",""],
+["P","Atendente de loja – Janga","Via Jobbol","com","M","","","","ind",""],
+["P","Atendente de farmácia","Arruda & Azevedo Comércio de Medicamentos","sau","M","","","","sim",""],
+["P","Auxiliar administrativo","Grupo Lam","adm","M","","","","sim",""],
+["P","Secretária / recepcionista","Escritório de advocacia previdenciária (via Meet Recrutamento)","adm","M","","","","sim","Atuação presencial em Paulista."],
+["P","Reposição e merchandising","Nestlé","com","M","","","","sim",""],
+["P","Vendedor Cartão de Todos","Barreiro","com","M","","","","sim",""],
+["P","Assistente comercial – Paratibe","IEL-PE (via Jobbol)","com","M","","","","sim",""],
+["P","Auxiliar de disciplina (sem experiência)","Colégio Elo (via Jobbol)","edu","M","","","","sim",""],
+["P","Atendente comercial","Vipcred Promotora","ate","M","A partir de R$ 2.000,00","17 vagas","03/09/2026","cat","Inclui 6 benefícios. Confirme se ainda está aberta."],
+["P","Operador logístico","FORTPEL","log","M","","10 vagas","21/08/2026","cat","Confirme se ainda está aberta."],
+["P","Auxiliar de produção (exclusiva para PcD e reabilitados do INSS)","Gigroup","ind","F","","8 vagas","21/09/2026","cat","Confirme se ainda está aberta."],
+["P","Professor de inglês (adulto e kids)","Multimundo Soluções Empresariais","edu","S","","2 + 3 vagas","","cat",""],
+["P","Recepcionista","Dasa","sau","M","","","","gl",""],
+["P","Atendente","Lojas Renner","com","M","","","","gl",""],
+/* ---- JABOATÃO DOS GUARARAPES ---- */
+["J","Encarregado de supermercado","","com","M","","6 vagas","05/11/2026","gor",""],
+["J","Repositor de mercadorias","","com","F","","10 vagas","05/11/2026","gor",""],
+["J","Motorista carreteiro","Transportes Ilimitado","log","M","","","05/11/2026","epm","Muribeca. Benefícios: plano de saúde e odontológico, day off, parcerias, diárias e bonificações."],
+["J","Motorista de Munck","","log","M","","","","epm",""],
+["J","Analista de estoque","","log","M","","","","epm",""],
+["J","Auxiliar de logística I (exclusiva para PcD)","Cimed – CD Jaboatão","log","M","","","","cim","Vaga exclusiva para pessoa com deficiência."],
+["J","Atendente de loja – Shopping Guararapes","Laço de Fita Comércio de Bijuterias","com","M","","","","ind",""],
+["J","Assistente administrativo – Muribeca","Via Jobbol","adm","M","","","","ind",""],
+["J","Banco de talentos – Almoxarifado (todas as filiais)","Dias Branco","log","M","","","","ind",""],
+["J","Recepcionista – Piedade","Pet Dream (via Jobbol)","ate","M","","","","ind",""],
+["J","Recepcionista de clínica","Rede Ális (via Jobbol)","sau","M","","","","ind",""],
+["J","Auxiliar administrativo","Plena Distribuidora de Medicamentos","adm","M","","","","ind",""],
+["J","Auxiliar de logística","Farmácias Pague Menos","log","M","","","","ind",""],
+["J","Atendente de farmácia – Jardim Piedade","Arruda & Azevedo","sau","M","","","","ind",""],
+["J","Auxiliar de produção","Grupo Meganordeste","ind","F","R$ 1.718 a R$ 1.900","","","gl","Operação de máquinas de perfilação (telhas e lambril), corte (oxicorte e guilhotina) e conformação de tubos de aço."],
+["J","Auxiliar de logística","GNX Group","log","F","R$ 2.000 a R$ 2.140","","","gl","Operação logística em Jaboatão dos Guararapes."],
+["J","Auxiliar de almoxarifado (vaga inclusiva para PcD)","Procisa do Brasil","log","M","R$ 1.621,00","","","gl",""],
+["J","Operador de CDP I – almoxarifado (PcD)","Sotreq","log","M","","","","gl","Código 260701631."],
+["J","Porteiro – BR-232 Curado","Verzani & Sandrini","ser","F","","","","li",""],
+["J","Auxiliar de serviços gerais","Verzani & Sandrini","ser","F","","","","li",""],
+["J","Auxiliar de estocagem","Pacaembu Autopeças","log","F","","","","li",""],
+["J","Abastecedor de linha de produção","Novo TempoRH","ind","F","","","","li",""],
+["J","Professor(a) de formação geral (banco de talentos)","UniFG Guararapes (Ecossistema Ânima)","edu","S","","","","inf","Ciclo acadêmico 27.1."],
+["J","Professor(a) de saúde (banco de talentos)","UniFG Guararapes (Ecossistema Ânima)","edu","S","","","","inf","Ciclo acadêmico 27.1."],
+["J","Mediador(a) pedagógico(a) semipresencial","UniFG Guararapes","edu","S","","","","inf",""],
+["J","Vendedor(a) externo – rastreamento veicular","","com","M","","","","inf",""],
+["J","Vendedor de eletro – Guararapes","Mazzini","com","M","R$ 1.811,00","1 vaga","","cat","Inclui 2 benefícios."],
+["J","Vendedor(a) rotativo externo","Sem Parar","com","M","A partir de R$ 2.000,00","2 vagas","","cat",""],
+["J","Auxiliar de caixa e faturamento","RHF Nordeste","fin","M","A partir de R$ 2.000,00","1 vaga","","cat",""],
+["J","Auxiliar financeiro","RHF Talentos","fin","M","Até R$ 2.000,00","1 vaga","","cat",""]
+];
+const cltHash=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return (h>>>0).toString(36)};
+const CLT_DATA=CLT_RAW.map((r,i)=>({id:"v"+cltHash(r[0]+"|"+r[1]+"|"+r[2]+"|"+r[8]+"|"+i),cid:r[0],c:r[1],e:r[2],a:r[3],n:r[4],s:r[5],q:r[6],d:r[7],f:r[8],o:r[9]}));
+let cltCid="",cltNv="all",cltAr="",cltQ="",cltFav=false;
+const cltIni=()=>{S.clt=S.clt||{};S.clt.fav=Array.isArray(S.clt.fav)?S.clt.fav:[];return S.clt};
+function cltUrlFonte(v){const f=CLT_SRC[v.f];if(!f)return "";return f[1][v.cid]||f[1].d||""}
+function cltBusca(v){return "https://www.google.com/search?q="+encodeURIComponent("vaga "+v.c+(v.e&&!/^via /i.test(v.e)?" "+v.e:"")+" "+CLT_NOME[v.cid]+" PE")}
+function cltFiltrar(ignoraCid){
+ const q=cltQ.trim().toLowerCase(),fav=cltIni().fav;
+ return CLT_DATA.filter(v=>{
+  if(!ignoraCid&&cltCid&&v.cid!==cltCid)return false;
+  if(cltNv!=="all"&&v.n!==cltNv)return false;
+  if(cltAr&&v.a!==cltAr)return false;
+  if(cltFav&&!fav.includes(v.id))return false;
+  if(q&&!((v.c+" "+v.e+" "+v.o+" "+CLT_NOME[v.cid]+" "+(CLT_AR[v.a]||[,""])[1]).toLowerCase().includes(q)))return false;
+  return true})}
+function cltCard(v){
+ const ci=CLT_CID[v.cid],ar=CLT_AR[v.a],fav=cltIni().fav.includes(v.id),src=CLT_SRC[v.f],fu=cltUrlFonte(v);
+ const row=(k,x)=>x?`<div class="cn-r"><span>${k}</span><b>${esc(x)}</b></div>`:"";
+ return `<div class="cn-card" style="--cc:${ar[2]}"><div class="cn-top"><span class="cn-b" style="background:${ci[1]}22;color:${ci[1]}">📍 ${esc(ci[0])}</span><span class="cn-uf">${ar[0]} ${esc(ar[1])}</span><button class="cn-fv" onclick="cltFavT('${v.id}')" aria-label="Favoritar" aria-pressed="${fav}">${fav?"⭐":"☆"}</button></div>
+ <h4>${esc(v.c)}</h4>${v.e?`<div class="cn-pz">🏢 ${esc(v.e)}</div>`:""}${(cltIni().sent||{})[v.id]?`<div class="cn-pz" style="color:#2f9e6b">✅ Currículo enviado em ${esc(cltIni().sent[v.id])}</div>`:""}
+ <div class="cn-g">${row("Vagas",v.q)}${row("Salário",v.s)}${row("Publicada",v.d)}${row("Contrato","CLT")}${row("Fonte",src?src[0]:"")}</div>
+ ${v.o?`<p class="cn-nv" style="margin:8px 0 0">${esc(v.o)}</p>`:""}
+ <div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="cltEnviar('${v.id}');return false">📨 Enviar currículo</a><a class="cn-lk" href="${esc(cltBusca(v))}" target="_blank" rel="noopener">🔎 Buscar vaga</a>${fu?`<a class="cn-lk" href="${esc(fu)}" target="_blank" rel="noopener">Abrir ${esc(src[0].split(" (")[0])} ↗</a>`:""}</div></div>`}
+function cltRes(){
+ const l=cltFiltrar(false);
+ if(!l.length)return `<div class="vazio">Nenhuma vaga encontrada com esses filtros.<br>Tente outra cidade, nível ou área.</div>`;
+ let h="";
+ CLT_NV.forEach(g=>{
+  const x=l.filter(v=>v.n===g[0]);if(!x.length)return;
+  h+=`<h3 class="cn-h">${g[1]} ${g[2]} <small>${x.length}</small></h3>`;
+  Object.keys(CLT_AR).forEach(k=>{
+   const y=x.filter(v=>v.a===k);if(!y.length)return;
+   const a=CLT_AR[k];
+   h+=`<details class="cl-ar" open><summary style="--cc:${a[2]}"><span>${a[0]} ${esc(a[1])}</span><small>${y.length}</small></summary>${y.map(cltCard).join("")}</details>`})});
+ return h}
+function cltChips(){
+ const base=cltFiltrar(true),n=k=>base.filter(v=>v.cid===k).length;
+ return [["","📋","Todas",base.length]].concat(Object.keys(CLT_CID).map(k=>[k,"📍",CLT_CID[k][0],n(k)])).map(a=>`<button class="${cltCid===a[0]?"on":""}" onclick="cltCid='${a[0]}';cltRefresh()"><span class="sl-ei">${a[1]}</span>${a[2]}<br><b>${a[3]}</b></button>`).join("")}
+function cltAreas(){
+ const q=cltFiltrar(false),n=k=>CLT_DATA.filter(v=>v.a===k&&(!cltCid||v.cid===cltCid)&&(cltNv==="all"||v.n===cltNv)).length;
+ return `<option value="">🧭 Todas as áreas</option>`+Object.keys(CLT_AR).map(k=>`<option value="${k}"${cltAr===k?" selected":""}>${CLT_AR[k][0]} ${CLT_AR[k][1]} (${n(k)})</option>`).join("")}
+function cltRefresh(){const e=$("#clres");if(e)e.innerHTML=cltRes();const k=$("#clchips");if(k)k.innerHTML=cltChips();const s=$("#clar");if(s)s.innerHTML=cltAreas();const t=$("#cllive");if(t)t.innerHTML=cltLive()}
+function cltLive(){
+ const cs=cltCid?[cltCid]:Object.keys(CLT_CID);
+ return `<p class="cn-nv" style="margin:8px 0 4px">As listas dos portais mudam toda hora. Toque para abrir e ver as vagas mais novas.</p>`+cs.map(c=>`<div class="cn-act" style="margin:4px 0"><b style="min-width:84px;font-size:13px">📍 ${esc(CLT_CID[c][0])}</b>${CLT_LIVE[c].map(a=>{const u=(CLT_SRC[a[1]][1][c])||CLT_SRC[a[1]][1].d;return `<a class="cn-lk" href="${esc(u)}" target="_blank" rel="noopener">${esc(a[0])} ↗</a>`}).join("")}</div>`).join("")}
+function cltFavT(id){const c=cltIni(),i=c.fav.indexOf(id);if(i<0)c.fav.push(id);else c.fav.splice(i,1);save();const y=window.scrollY;render();window.scrollTo(0,y)}
+function vClt(){cltIni();
+ const nvb=[["all","Todos"],["S","🎓 Superior"],["M","📘 Médio"],["F","🧰 Fundam."]];
+ return `<h2>${_t("CLT")}</h2>
+ <p class="hint" style="margin:0 0 10px">Vagas de emprego com carteira assinada em Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE). Levantamento de ${CLT_ATUAL} em portais públicos. Vagas fecham rápido: confirme sempre no site da fonte. O nível de escolaridade é estimado pelo cargo quando o anúncio não informa.</p>
+ ${cvCard()}
+ <div class="seg s5" id="clchips">${cltChips()}</div>
+ <div class="card"><div class="seg s4" style="margin-bottom:8px">${nvb.map(a=>`<button class="${cltNv===a[0]?"on":""}" onclick="cltNv='${a[0]}';render()">${a[1]}</button>`).join("")}</div>
+ <select id="clar" class="cn-sel" onchange="cltAr=this.value;cltRefresh()" aria-label="Área">${cltAreas()}</select>
+ <input id="clq" class="cn-q" style="margin-top:8px" placeholder="Buscar cargo, empresa ou bairro…" value="${esc(cltQ)}" oninput="cltQ=this.value;cltRefresh()">
+ <div class="row" style="margin-top:8px"><button class="${cltFav?"":"sec"}" onclick="cltFav=!cltFav;render()" aria-pressed="${cltFav}">${cltFav?"⭐ Só favoritas":"☆ Favoritas"}</button></div></div>
+ <details class="card cl-live"><summary>🔗 Ver mais vagas ao vivo nos portais</summary><div id="cllive">${cltLive()}</div></details>
+ <div id="clres">${cltRes()}</div>`}
+(function(){const s=document.createElement("style");s.textContent=
+".cl-ar{margin:0 0 8px}.cl-ar>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-weight:700;font-size:14px;padding:9px 12px;margin-bottom:8px;border-radius:12px;background:var(--sf);border:1px solid var(--ln);border-left:4px solid var(--cc,var(--ac))}"+
+".cl-ar>summary::-webkit-details-marker{display:none}.cl-ar>summary small{background:var(--acs);color:var(--ac);border-radius:99px;padding:1px 9px;font-size:12px}"+
+".cl-live>summary{cursor:pointer;font-weight:700;color:var(--ac);font-size:14px}.cl-live{padding:12px 14px}.cl-ar>summary::after{content:'▾';color:var(--mute);margin-left:4px}.cl-ar:not([open])>summary::after{content:'▸'}";
+document.head.appendChild(s)})();
+
+/* ===== CLT › Meu currículo: carregar o arquivo e enviar para a empresa por e-mail =====
+   O arquivo fica só neste aparelho (IndexedDB 'jc-curriculo'), fora do backup e da nuvem. Em S.clt ficam só os dados leves:
+   cv (nome, tamanho, tipo, data), mail (e-mail digitado por vaga), sent (data do envio), tel e msg (mensagem padrão).
+   O app não tem servidor de e-mail: ele abre o app de e-mail/compartilhar do aparelho com o currículo anexado. */
+const CV_MAX=5*1024*1024,CV_EXT=["pdf","doc","docx","odt"];
+const CV_MSG_PAD="Olá, tudo bem?\n\nMeu nome é {nome}. Tenho interesse na vaga de {cargo}{empresa}{cidade} e envio meu currículo em anexo.\n\nFico à disposição para uma conversa.\n{contato}\nAtenciosamente,\n{nome}";
+const CV_MIME={pdf:"application/pdf",doc:"application/msword",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",odt:"application/vnd.oasis.opendocument.text"};
+const cvDb=()=>new Promise((ok,no)=>{try{const r=indexedDB.open("jc-curriculo",1);r.onupgradeneeded=()=>r.result.createObjectStore("s");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}});
+const cvTx=(modo,fn)=>cvDb().then(db=>new Promise((ok,no)=>{const t=db.transaction("s",modo),q=fn(t.objectStore("s"));t.oncomplete=()=>{db.close();ok(q&&q.result)};t.onerror=()=>{db.close();no(t.error)}}));
+const cvPut=b=>cvTx("readwrite",s=>s.put(b,"cv"));
+const cvGet=()=>cvTx("readonly",s=>s.get("cv"));
+const cvDel=()=>cvTx("readwrite",s=>s.delete("cv"));
+const cvExt=n=>(String(n).split(".").pop()||"").toLowerCase();
+const cvTam=b=>b<1024*1024?Math.max(1,Math.round(b/1024))+" KB":(b/1048576).toFixed(1).replace(".",",")+" MB";
+const cvHoje=()=>new Date().toLocaleDateString("pt-BR");
+const cvMailOk=e=>/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]{2,}$/.test(String(e||"").trim());
+async function cvArquivo(){const b=await cvGet();if(!b)return null;const n=(cltIni().cv||{}).name||"curriculo.pdf",t=b.type||CV_MIME[cvExt(n)]||"application/octet-stream";return new File([b],n,{type:t})}
+async function cvUp(inp){
+ const f=inp.files&&inp.files[0];inp.value="";if(!f)return;
+ if(!CV_EXT.includes(cvExt(f.name))){info("Envie o currículo em PDF, DOC, DOCX ou ODT.");return}
+ if(f.size>CV_MAX){info("O arquivo passa de 5 MB. Reduza o tamanho (o ideal é PDF) e tente de novo.");return}
+ if(!f.size){info("Esse arquivo está vazio.");return}
+ try{await cvPut(f)}catch(e){info("Não foi possível guardar o currículo neste aparelho. Verifique o espaço e tente de novo.");return}
+ cltIni().cv={name:f.name,size:f.size,type:f.type||CV_MIME[cvExt(f.name)]||"",at:cvHoje()};save();render();info("Currículo guardado neste aparelho. Agora toque em “Enviar currículo” em qualquer vaga.")}
+async function cvVer(){
+ const f=await cvArquivo();if(!f){info("Nenhum currículo guardado.");return}
+ const u=URL.createObjectURL(f),a=document.createElement("a");a.href=u;a.download=f.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
+function cvRemover(){ask("Remover o currículo guardado neste aparelho?",async()=>{try{await cvDel()}catch(e){}delete cltIni().cv;save();render()},"Remover")}
+function cvCampo(k,v){cltIni()[k]=v;save()}
+function cvResumo(){const c=cltIni(),n=Object.keys(c.sent||{}).length;return n}
+function cvCard(){
+ const c=cltIni(),cv=c.cv,n=cvResumo();
+ const corpo=cv
+  ?`<div class="cn-r"><span>📄 Arquivo</span><b style="word-break:break-all;text-align:right">${esc(cv.name)}</b></div><div class="cn-r"><span>Tamanho</span><b>${cvTam(cv.size)}</b></div><div class="cn-r"><span>Guardado em</span><b>${esc(cv.at||"")}</b></div>
+   <div class="cn-act"><a class="cn-lk" href="#" onclick="cvVer();return false">👁️ Abrir / baixar</a><a class="cn-lk" href="#" onclick="$('#cvf').click();return false">🔄 Trocar</a><a class="cn-lk" href="#" onclick="cvRemover();return false">🗑️ Remover</a></div><div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="cltEnviar(null);return false">📨 Enviar para outra empresa</a></div>`
+  :`<p class="cn-nv" style="margin:0 0 8px">Carregue seu currículo (PDF, DOC, DOCX ou ODT, até 5 MB) para enviar às empresas direto do app.</p><div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="$('#cvf').click();return false">📎 Carregar currículo</a></div>`;
+ return `<details class="card cl-live" ${cv?"":"open"}><summary>📄 Meu currículo${cv?" ✅":""}${n?` · ${n} enviado${n>1?"s":""}`:""}</summary>
+ <input type="file" id="cvf" hidden accept=".pdf,.doc,.docx,.odt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text" onchange="cvUp(this)">
+ <div style="margin-top:10px">${corpo}</div>
+ <p class="cn-nv" style="margin:10px 0 4px">Seu telefone ou WhatsApp (vai na mensagem, opcional)</p><input class="cn-q" type="tel" placeholder="(81) 90000-0000" value="${esc(c.tel||"")}" oninput="cvCampo('tel',this.value)">
+ <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--ac);font-weight:600;font-size:13px">✏️ Mensagem padrão do e-mail</summary>
+ <textarea class="cn-q" rows="8" style="margin-top:6px" oninput="cvCampo('msg',this.value)">${esc(c.msg||CV_MSG_PAD)}</textarea>
+ <p class="cn-nv" style="margin:4px 0 0">Use {nome}, {cargo}, {empresa}, {cidade} e {contato}; o app troca pelos dados da vaga.</p>
+ <a class="cn-lk" href="#" style="margin-top:8px" onclick="delete cltIni().msg;save();render();return false">Restaurar mensagem original</a></details>
+ <p class="cn-nv" style="margin:10px 0 0">🔒 O arquivo fica só neste aparelho: não vai para a nuvem nem entra no backup. O app não envia e-mail sozinho: ele abre o seu app de e-mail ou o compartilhar do celular com o currículo anexado, e você confirma o envio.</p></details>`}
+function cvMonta(x){
+ const c=cltIni(),nome=(S.user&&S.user.name)||"",tel=(c.tel||"").trim();
+ const emp=x.e&&!/^via /i.test(x.e)?" na empresa "+x.e:"",cid=x.cid&&CLT_NOME[x.cid]?" em "+CLT_NOME[x.cid]+"/PE":"";
+ const txt=(c.msg||CV_MSG_PAD).replace(/\{nome\}/g,nome).replace(/\{cargo\}/g,x.c||"").replace(/\{empresa\}/g,emp).replace(/\{cidade\}/g,cid).replace(/\{contato\}/g,tel?"\nContato: "+tel+"\n":"");
+ return{subj:"Candidatura – "+(x.c||"vaga")+(nome?" – "+nome:""),body:txt.replace(/\n{3,}/g,"\n\n")}}
+let cvEnv=null;
+function cltEnviar(id){
+ const c=cltIni(),livre=!id,v=livre?{id:"",cid:"",c:"",e:""}:CLT_DATA.find(z=>z.id===id);if(!v)return;
+ cvEnv=v;const m=cvMonta(v),mail=livre?"":(c.mail&&c.mail[id])||"",sent=!livre&&c.sent&&c.sent[id];
+ const o=document.createElement("div");o.className="ov";o.id="cvov";
+ o.innerHTML=`<div class="dlg" role="dialog" aria-label="Enviar currículo" style="max-height:90vh;overflow:auto;text-align:left">
+ <b style="font-size:16px">📨 Enviar currículo</b>
+ ${livre?`<input id="cve-c" class="cn-q" style="margin-top:8px" placeholder="Cargo da vaga" oninput="cvRefaz()"><input id="cve-e" class="cn-q" style="margin-top:6px" placeholder="Empresa (opcional)" oninput="cvRefaz()">`:`<p style="margin:6px 0 0"><b>${esc(v.c)}</b>${v.e?`<br><small>🏢 ${esc(v.e)}</small>`:""}</p>`}
+ ${sent?`<p class="cn-nv" style="margin:6px 0 0">✅ Você marcou como enviado em ${esc(sent)}.</p>`:""}
+ <p class="cn-nv" style="margin:10px 0 4px">E-mail da empresa (o de RH ou o do anúncio)</p>
+ <input id="cve-m" class="cn-q" type="email" inputmode="email" autocomplete="off" placeholder="rh@empresa.com.br" value="${esc(mail)}">
+ <p class="cn-nv" style="margin:6px 0 0">Os portais costumam receber a candidatura pelo próprio site (botão “Abrir fonte”). Use o e-mail quando a empresa divulgar um. O app não inventa endereços.</p>
+ <p class="cn-nv" style="margin:10px 0 4px">Assunto</p><input id="cve-s" class="cn-q" value="${esc(m.subj)}">
+ <p class="cn-nv" style="margin:8px 0 4px">Mensagem</p><textarea id="cve-b" class="cn-q" rows="9">${esc(m.body)}</textarea>
+ <p class="cn-nv" id="cve-cv" style="margin:8px 0 0">${c.cv?`📎 Anexo: ${esc(c.cv.name)} (${cvTam(c.cv.size)})`:`⚠️ Você ainda não carregou o currículo. Feche e use “Meu currículo” no topo do menu CLT.`}</p>
+ <div class="cn-act" style="flex-direction:column;align-items:stretch;gap:8px;margin-top:12px">
+ <a class="cn-lk cn-dl" href="#" style="text-align:center" onclick="cvAcao('share');return false">📎 Enviar com o currículo anexado</a>
+ <a class="cn-lk" href="#" style="text-align:center" onclick="cvAcao('mailto');return false">✉️ Abrir só o e-mail (anexo manual)</a>
+ <a class="cn-lk" href="#" style="text-align:center" onclick="cvAcao('copy');return false">📋 Copiar e-mail e mensagem</a>
+ ${livre?"":`<a class="cn-lk" href="#" style="text-align:center" onclick="cvAcao('sent');return false">${sent?"↩️ Desmarcar como enviado":"✅ Já enviei esta candidatura"}</a>`}
+ <a class="cn-lk" href="#" style="text-align:center;background:transparent" onclick="document.getElementById('cvov').remove();return false">Fechar</a></div></div>`;
+ o.onclick=e=>{if(e.target===o)o.remove()};document.body.appendChild(o)}
+function cvRefaz(){const v=cvEnv;if(!v||v.id)return;const g=i=>(document.getElementById(i)||{}).value||"";v.c=g("cve-c").trim();v.e=g("cve-e").trim();const m=cvMonta(v),s=document.getElementById("cve-s"),b=document.getElementById("cve-b");if(s)s.value=m.subj;if(b)b.value=m.body}
+async function cvAcao(a){
+ const g=i=>(document.getElementById(i)||{}).value||"",c=cltIni(),v=cvEnv;if(!v)return;
+ const mail=g("cve-m").trim(),subj=g("cve-s"),body=g("cve-b");
+ if(!v.id){v.c=g("cve-c").trim();v.e=g("cve-e").trim()}
+ if(a==="sent"){c.sent=c.sent||{};if(c.sent[v.id])delete c.sent[v.id];else c.sent[v.id]=cvHoje();if(mail&&cvMailOk(mail)){c.mail=c.mail||{};c.mail[v.id]=mail}save();const o=document.getElementById("cvov");if(o)o.remove();render();return}
+ if(a!=="copy"&&!cvMailOk(mail)){info("Digite um e-mail válido da empresa (exemplo: rh@empresa.com.br).");return}
+ if(v.id&&cvMailOk(mail)){c.mail=c.mail||{};c.mail[v.id]=mail;save()}
+ if(a==="copy"){const t=(mail?"Para: "+mail+"\n":"")+"Assunto: "+subj+"\n\n"+body;try{await navigator.clipboard.writeText(t);info("Copiado! Cole no seu app de e-mail e anexe o currículo.")}catch(e){info("Não foi possível copiar automaticamente. Selecione o texto da mensagem e copie.")}return}
+ const mt="mailto:"+encodeURIComponent(mail).replace(/%40/g,"@")+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
+ if(a==="mailto"){window.location.href=mt;return}
+ /* share: compartilha o arquivo com a mensagem; o destinatário vai copiado para colar no "Para" */
+ let f=null;try{f=await cvArquivo()}catch(e){}
+ if(!f){info("Carregue seu currículo primeiro (card “Meu currículo”, no topo do menu CLT). Se quiser, use “Abrir só o e-mail”.");return}
+ try{await navigator.clipboard.writeText(mail)}catch(e){}
+ if(navigator.canShare&&navigator.canShare({files:[f]})){
+  try{await navigator.share({files:[f],title:subj,text:body});info("Se o seu app de e-mail abriu, cole o endereço no campo “Para” (já copiei: "+mail+"). Depois de enviar, toque em “Já enviei esta candidatura”.")}catch(e){if(e&&e.name!=="AbortError")info("Não consegui abrir o compartilhar. Use “Abrir só o e-mail” e anexe o arquivo.")}
+  return}
+ /* computador / navegador sem compartilhar arquivo: baixa o currículo e abre o e-mail para anexar */
+ await cvVer();window.location.href=mt;
+ setTimeout(()=>info("Baixei seu currículo e abri o e-mail. Anexe o arquivo baixado antes de enviar."),600)}
+
 /* ===== ESPAÇO MULHER =====
    Ciclo, sintomas, autocuidado, contatos e conquistas ficam só neste aparelho (localStorage 'ma-mulher'), fora da sincronização em nuvem.
    Só os lembretes de saúde entram na Agenda (S.ev), para tocarem o alarme normal do app. */
@@ -2862,7 +3204,7 @@ function vMulher(){
  return '<h2>Espaço Mulher</h2>'+seg+({ciclo:muCiclo,saude:muSaude,care:muCare,seg:muSeg,mais:muMais}[muTab]||muCiclo)()}
 
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,mulher:vMulher,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -4841,6 +5183,13 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.4.9':[
+  '📄 CLT › Meu currículo: carregue seu currículo (PDF, DOC, DOCX ou ODT) e envie para as empresas pelo e-mail, direto do app, com a mensagem pronta e o arquivo anexado. O app marca as vagas para as quais você já enviou.'
+ ],
+ '3.4.8':[
+  '💼 Novo menu “CLT”: vagas de emprego com carteira assinada em Recife, Olinda, Paulista e Jaboatão dos Guararapes. As vagas ficam separadas por ensino superior, médio e fundamental, e dentro de cada nível por área (administrativo, comércio, saúde, educação, logística, indústria e mais).',
+  '🔎 Filtre por cidade, nível e área, busque por cargo ou empresa e favorite com ⭐. Cada vaga mostra a fonte, a data de publicação e botões para buscar a vaga ou abrir o site de origem. Há também atalhos para ver mais vagas ao vivo em cada cidade.'
+ ],
  '3.4.5':[
   '📻 Novo: Rádio Pop 2K. Toque no ícone do rádio, ao lado da engrenagem, e use PAUSE, STOP e PLAY. No APK novo ela continua tocando com a tela desligada e com o app em segundo plano. Dá para desativar em Configurações › Rádio.',
   '🔔 Notificações corrigidas: os lembretes agora ficam ligados sozinhos, pedem a permissão e avisam com o app aberto ou fechado. Em Configurações › Lembretes e alarme há o botão “Testar notificação”.',
@@ -4992,7 +5341,7 @@ const RECADO_CFG=[
  ['📖','Tela inicial','Ativar ou desativar o versículo bíblico do dia.'],
  ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
  ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
- ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções) para ele aparecer ou sumir da navegação.'],
+ ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções, Concursos, CLT) para ele aparecer ou sumir da navegação.'],
  ['🎨','Aparência','Modo automático, claro, escuro ou preto e a cor do tema.'],
  ['🔒','Segurança','Criar uma senha de 4 dígitos, alterar, remover e escolher quando o app bloqueia de novo.'],
  ['🛡️','Permissões','Arquivos, fotos e vídeos, música e áudio, notificações, câmera e microfone. Tem o botão “Permitir tudo” e o atalho para os ajustes do celular.'],
@@ -5508,7 +5857,7 @@ function kParse(txt,now){now=now||new Date();txt=kFalaHora(txt);const n=kNorm(tx
   .replace(/^\s*(?:de|do|da|para|pra|que|um|uma|o|a|às|as|em|no|na)(?=\s)\s*/i,' ').replace(/\s+(em|no|na|às|as|para|pra|de|do|da)\s*$/i,'').replace(/\s+/g,' ').trim();
  if(t)t=t[0].toUpperCase()+t.slice(1);
  return {title:t,date:date,time:time}}
-const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
+const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
 const kFaq=[
  [/lembret|alarme|notifica/,'Para ter lembretes, ative em Configurações › Lembretes e alarme. Depois, todo compromisso com hora avisa antes de começar. Quer que eu ative agora? Digite “ativar lembretes”.'],
  [/backup|restaurar|exportar/,'Em Configurações › Backup no celular você salva, compartilha e restaura seus dados. Se conectar uma conta, também há sincronização na nuvem.'],
@@ -5994,7 +6343,7 @@ function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||nu
   return say(out.length?'Agenda dos próximos 7 dias:\n'+out.join('\n'):'Nenhum compromisso '+(prox?'na semana que vem.':'nos próximos 7 dias.'))}
  return false}
 /* ---- 6. traduz o jeito de falar para os comandos do app ---- */
-const TABAL=[['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
+const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
 const tabDe=n=>{for(const [t,r] of TABAL)if(new RegExp('(?:^|\\s)(?:'+r+')(?:\\s|$)').test(n))return t;return null};
 const TABOUT={cal:'calendario',config:'configuracoes'};
 const DICT=['agendar','agende','marcar','marque','lembrar','lembre','anotar','anote','comprar','compre','apagar','apague','excluir','exclua','remover','remova','concluir','conclua','finalizar','abrir','abra','desfazer','ativar','desativar','esconder','mostrar','adicionar','adicione','incluir','inclua','colocar','coloque','criar','crie','cancelar','cancele','deletar','limpar','tirar','escrever','guardar','salvar','registrar','cadastrar','reservar','programar'];
@@ -7129,7 +7478,7 @@ let _naRun=false;
 /* ===== v4: skin Tropicália + menu em grupos + painel inicial ===== */
 (function(){
 COR.push(['tropical','Tropicália','#3b4cf0']);
-const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['mulher','concursos']]];
+const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['mulher','concursos','clt']]];
 const NG=()=>S.layout==='novo',HP=NG;
 const act=g=>g[2].filter(k=>TABS.some(t=>t[0]===k)),grOf=k=>GR.find(g=>g[2].includes(k));
 const nome=k=>{const t=TABS_ALL.find(x=>x[0]===k);return t?_t(t[2]):k};
@@ -7180,7 +7529,7 @@ function vPainel(){
   notas:['#d9a10f',S.notes.length+(S.notes.length===1?' nota':' notas'),"go('notas')"],
   compras:['#f08a24',faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop)),"go('compras')",'w2'],
   carteira:['#3fa66b',kc.renda>0?(kc.sobra<0?'Faltam '+BRL(-kc.sobra):'Sobram '+BRL(kc.sobra))+' este mês':'Controle seus gastos',"go('carteira')",'w2'],
-  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"]};
+  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
  const tiles=TABS.map(t=>t[0]).filter(k=>T[k]).map(k=>{const x=T[k];return `<button class="stat tl ${x[3]||''}" style="--h:${x[0]}" onclick="${x[2]}"><span class="si">${svg(k)}</span><b>${esc(nome(k))}</b><small>${x[1]}</small></button>`}).join('');
  const plHtml=plh.map(p=>`<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><span class="t"><b>Plantão ${p.ent} → ${p.sai}</b>${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';sel=HOJE;mes=new Date();go('cal')" aria-label="Abrir plantões">›</button></div>`).join('');
  const busca=`<form class="gsearch" action="https://chatgpt.com/" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pergunte ao ChatGPT" aria-label="Pergunte ao ChatGPT" enterkeyhint="search" autocomplete="off"><button type="submit">Perguntar</button></form>`;
