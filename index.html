@@ -3309,38 +3309,441 @@ function muAddM(s,n){const d=new Date(s+'T12:00'),dia=d.getDate();d.setDate(1);d
 function muDif(a,b){return Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5)}
 function muTel(p){return String(p||'').replace(/\D/g,'')}
 
-/* ---------- Ciclo ---------- */
+/* ---------- Ciclo (completo) ----------
+   Previsão ponderada pelos últimos ciclos, roda das fases, janela fértil (ajustada por teste de ovulação e temperatura basal),
+   calendário mensal, registro diário detalhado, análises, alertas, lembretes automáticos na Agenda, relatório e backup. */
+MU.cfg=Object.assign({mode:'track',cl:28,pl:5,lp:14,rh:'09:00',pill:0,ph:'21:00',sy:''},MU.cfg||{});
+MU.cfg.rm=Object.assign({mens:0,fert:0,ov:0,tpm:0},MU.cfg.rm||{});
+var muSub='hoje',muSel=HOJE,muMes=HOJE.slice(0,7),muFull=false;
+var MU_FS={
+ mens:{n:'Menstruação',ic:'🩸',c:'#e5486a',d:'O revestimento do útero é eliminado e os hormônios (estrogênio e progesterona) estão nos níveis mais baixos do ciclo.',en:'É comum sentir menos energia, principalmente nos primeiros dias, e mais vontade de descansar.',al:'Alimentos ricos em ferro (feijão, lentilha, folhas verde-escuras, carnes) com uma fonte de vitamina C ajudam a repor o ferro perdido. Beba bastante água.',ex:'Caminhada leve, alongamentos e yoga costumam ser bem tolerados. Com cólica, movimentos suaves podem ajudar.',cu:'Calor na barriga e nas costas costuma aliviar a cólica. Reserve pausas e durma bem.'},
+ fol:{n:'Fase folicular',ic:'🌱',c:'#6f9be0',d:'Depois da menstruação, o estrogênio vai subindo e um novo óvulo amadurece no ovário.',en:'Humor e disposição tendem a melhorar a cada dia, com mais foco e vontade de estar com gente.',al:'Proteínas, grãos integrais, frutas, legumes e verduras variados dão base para a energia que está subindo.',ex:'Costuma ser um bom momento para treinos mais puxados, musculação e atividades novas.',cu:'A pele costuma ficar mais equilibrada. Aproveite para começar projetos e hábitos novos.'},
+ fert:{n:'Período fértil',ic:'🌼',c:'#2fb37c',d:'O estrogênio está alto e o corpo se prepara para ovular. Os espermatozoides podem sobreviver alguns dias, por isso a chance de gravidez começa antes da ovulação.',en:'Muitas mulheres sentem mais disposição e mais libido, e o corrimento fica claro e elástico, parecido com clara de ovo.',al:'Mantenha a hidratação e refeições com fibras, gorduras boas (azeite, castanhas, abacate) e proteínas.',ex:'A energia costuma estar em alta: bom para treinos intensos e atividades em grupo.',cu:'É o período de maior chance de gravidez. Se quer evitar, use um método contraceptivo eficaz; se quer engravidar, são os melhores dias para tentar.'},
+ ov:{n:'Ovulação (estimada)',ic:'✨',c:'#1d8f5e',d:'O óvulo é liberado pelo ovário e vive de 12 a 24 horas. É o dia de maior chance de gravidez.',en:'Pode haver uma dorzinha leve de um lado do baixo-ventre, mais libido e corrimento tipo clara de ovo. A temperatura basal sobe logo depois.',al:'Água e refeições leves e equilibradas.',ex:'Muitas se sentem no auge da disposição. Treinos intensos costumam ser bem aceitos.',cu:'A data é uma estimativa: a ovulação pode mudar de um mês para o outro por estresse, doença ou sono ruim.'},
+ lut:{n:'Fase lútea',ic:'🍂',c:'#f2a33c',d:'Depois da ovulação, a progesterona sobe para preparar o útero. Se não houver gravidez, os hormônios caem no fim da fase.',en:'A energia pode diminuir aos poucos. Algumas mulheres sentem mais sono, mais fome e mais sensibilidade.',al:'Refeições regulares com fibras e carboidratos complexos ajudam com a fome. Castanhas e sementes são boas fontes de magnésio. Menos sal ajuda no inchaço.',ex:'Treinos moderados, pilates, natação e caminhadas. Diminua a intensidade se estiver cansada.',cu:'Organize a semana com mais folga e priorize o sono.'},
+ tpm:{n:'TPM (fim do ciclo)',ic:'🌙',c:'#b36ad9',d:'Nos dias antes da menstruação os hormônios caem. É quando aparecem os sintomas da TPM.',en:'Irritação, ansiedade, tristeza, choro fácil, inchaço, dor nos seios e vontade de doce são comuns.',al:'Reduzir cafeína, sal e álcool pode ajudar. Prefira refeições pequenas e frequentes, com fibras.',ex:'Atividade física regular, mesmo leve, costuma aliviar os sintomas.',cu:'Seja gentil consigo. Se os sintomas atrapalham muito a sua vida, converse com sua ginecologista: existe tratamento.'}};
+var MU_SG=[['🤕 Dor',['Cólica','Dor de cabeça','Dor nas costas','Dor nas pernas','Dor pélvica','Dor na relação']],['🫧 Corpo',['Inchaço','Cansaço','Seios sensíveis','Tontura','Calorão','Insônia','Retenção de líquido']],['🍽️ Digestão e apetite',['Enjoo','Constipação','Diarreia','Gases','Vontade de doces','Apetite aumentado','Pouco apetite']],['✨ Pele e cabelo',['Acne','Pele oleosa','Cabelo oleoso','Queda de cabelo']],['💭 Emoções e libido',['TPM','Ansiedade','Irritação','Choro fácil','Libido alta','Libido baixa','Dificuldade de concentração']]];
+var MU_S=[].concat.apply([],MU_SG.map(function(g){return g[1]})),MU_H=['😄','🙂','😐','😔','😢','😡'],MU_MT=['Calma','Motivada','Ansiosa','Estressada','Sensível','Criativa'];
+var MU_FL=[[1,'· Manchinha'],[2,'💧 Leve'],[3,'💧💧 Médio'],[4,'💧💧💧 Intenso']],MU_MU=[['sc','Seco'],['pg','Pegajoso'],['cr','Cremoso'],['aq','Aquoso'],['cl','Clara de ovo']];
+var MU_MD=[['track','🌸 Só acompanhar'],['avoid','🛡️ Evitar gravidez'],['conceive','🤰 Tentar engravidar']];
+var MU_CHN=[['Baixa','#6b7d8a'],['Média','#e0a526'],['Alta','#e8793a'],['Máxima','#e5486a']];
+var MU_EVL={mens:['🩸','Menstruação prevista'],fert:['🌼','Período fértil'],ov:['✨','Ovulação estimada'],tpm:['🌙','Possível TPM']};
+
+function muR(){const y=window.scrollY;render();window.scrollTo(0,y)}
+function muSubGo(k){muSub=k;render();window.scrollTo(0,0)}
+function muClamp(v,a,b,d){v=parseInt(v,10);return isFinite(v)?Math.max(a,Math.min(b,v)):d}
+function muNum(v){const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0}
+function muDM(d){return d.slice(8,10)+'/'+d.slice(5,7)}
+function muShare(t,tt){if(navigator.share){navigator.share({title:tt||'',text:t}).catch(function(){})}else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){info('Copiado. Cole onde quiser.')},function(){info(t)})}else info(t)}
+function muDados(){muSave();muSync()}
+
+/* ---- dados do ciclo ---- */
 function muCic(){return MU.cy.slice().sort(function(a,b){return a.s<b.s?-1:a.s>b.s?1:0})}
-function muMedia(){const c=muCic(),d=[];for(let i=1;i<c.length;i++){const x=muDif(c[i-1].s,c[i].s);if(x>=18&&x<=45)d.push(x)}const u=d.slice(-6);return u.length?Math.round(u.reduce(function(a,b){return a+b},0)/u.length):28}
-function muProx(){const c=muCic();if(!c.length)return null;const L=muMedia(),ult=c[c.length-1].s,prox=muAdd(ult,L),ov=muAdd(prox,-14);return{L:L,ult:ult,prox:prox,f1:muAdd(ov,-5),f2:muAdd(ov,1),n:c.length}}
-function muIni(d){d=d||HOJE;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){info('Escolha uma data válida.');return}if(MU.cy.some(function(c){return c.s===d})){info('Esse início já está registrado.');return}MU.cy.push({s:d,e:''});muSave();render()}
+function muLens(){const c=muCic(),r=[];for(let i=1;i<c.length;i++)r.push({s:c[i-1].s,n:muDif(c[i-1].s,c[i].s)});return r}
+function muLensOk(){return muLens().filter(function(x){return x.n>=18&&x.n<=45})}
+function muMedia(){const u=muLensOk().slice(-6);if(!u.length)return MU.cfg.cl;let a=0,b=0;u.forEach(function(x,i){a+=x.n*(i+1);b+=i+1});return Math.round(a/b)}
+function muPeriodos(){return muCic().filter(function(c){return c.e&&muDif(c.s,c.e)>=0&&muDif(c.s,c.e)<=14}).map(function(c){return muDif(c.s,c.e)+1})}
+function muPL(){const u=muPeriodos().slice(-6);return u.length?Math.round(u.reduce(function(a,b){return a+b},0)/u.length):MU.cfg.pl}
+function muLP(){return MU.cfg.lp}
+function muDP(a){if(a.length<2)return 0;const m=a.reduce(function(x,y){return x+y},0)/a.length;return Math.sqrt(a.reduce(function(x,y){return x+(y-m)*(y-m)},0)/a.length)}
+function muFl(x){return(x&&x.fl)||((x&&Array.isArray(x.s)&&x.s.indexOf('Fluxo intenso')>=0)?4:0)}
+/* sinais reais de ovulação no ciclo: teste de LH positivo ou subida da temperatura basal */
+function muOvEv(s,fim){
+ let lh=null;const ds=Object.keys(MU.sym).filter(function(d){return d>=s&&d<fim}).sort(),tp=[];
+ ds.forEach(function(d){const x=MU.sym[d];if(x.lh==='p'&&!lh)lh=d;if(x.t>34&&x.t<42)tp.push([d,x.t])});
+ for(let i=6;i+2<tp.length;i++){
+  let mx=0;for(let j=i-6;j<i;j++)mx=Math.max(mx,tp[j][1]);
+  if(muDif(tp[i-6][0],tp[i+2][0])<=14&&tp[i][1]>mx&&tp[i+1][1]>mx&&tp[i+2][1]>=mx+0.2)return{d:muAdd(tp[i][0],-1),src:'temp'}}
+ if(lh)return{d:muAdd(lh,1),src:'lh'};
+ return null}
+function muFaseNum(dia,len,pl,ov){
+ if(dia<=pl)return'mens';
+ if(dia===ov)return'ov';
+ if(dia>=ov-5&&dia<=ov+1)return'fert';
+ if(dia>ov+1)return dia>len-5?'tpm':'lut';
+ return'fol'}
+/* fase de qualquer data: usa os ciclos registrados e projeta os próximos com a média */
+function muFaseDe(d){
+ const c=muCic();if(!c.length||d<c[0].s)return null;
+ let k=0;for(let i=0;i<c.length;i++){if(c[i].s<=d)k=i}
+ const last=k===c.length-1,LP=muLP();
+ let s=c[k].s,len=last?muMedia():muDif(s,c[k+1].s),e=c[k].e,proj=false,off=muDif(s,d),g=0;
+ if(!last&&len>60)return{f:'gap',dia:off+1,len:len,pl:0,ov:0,s:s,proj:false,src:''};
+ if(last)while(off>=len&&g<80){s=muAdd(s,len);off=muDif(s,d);e='';proj=true;g++}
+ const ev=proj?null:muOvEv(s,last?muAdd(HOJE,1):c[k+1].s),pl=e?Math.min(muDif(s,e)+1,14):muPL();
+ let ov=ev&&ev.d>s?muDif(s,ev.d)+1:len-LP+1;ov=Math.max(ov,pl+1);
+ const dia=off+1;
+ return{f:muFaseNum(dia,len,pl,ov),dia:dia,len:len,pl:pl,ov:ov,s:s,proj:proj,src:ev?ev.src:''}}
+function muProx(){
+ const c=muCic();if(!c.length)return null;
+ const L=muMedia(),u=c[c.length-1],prox=muAdd(u.s,L),ev=muOvEv(u.s,muAdd(HOJE,1)),PL=muPL();
+ let ov=ev&&ev.d>u.s?ev.d:muAdd(prox,-muLP());if(muDif(u.s,ov)<PL)ov=muAdd(u.s,PL);
+ return{L:L,ult:u.s,prox:prox,ov:ov,f1:muAdd(ov,-5),f2:muAdd(ov,1),tpm:muAdd(prox,-5),n:c.length,src:ev?ev.src:'',pl:PL}}
+/* próximos eventos previstos (menstruação, janela fértil, ovulação, TPM) */
+function muFut(n){
+ const p=muProx();if(!p)return[];
+ const out=[],LP=muLP();let s=p.ult,ov=p.ov;
+ for(let i=0;i<=n;i++){
+  const ns=muAdd(s,p.L);if(i>0)ov=muAdd(ns,-LP);
+  out.push({t:'fert',d:muAdd(ov,-5),d2:muAdd(ov,1)},{t:'ov',d:ov},{t:'tpm',d:muAdd(ns,-5),d2:muAdd(ns,-1)},{t:'mens',d:ns,d2:muAdd(ns,p.pl-1)});
+  s=ns}
+ return out.filter(function(e){return(e.d2||e.d)>=HOJE}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0})}
+function muChance(i,x){
+ if(!i||i.f==='gap')return null;
+ const r=i.dia-i.ov;let n=0;
+ if(r===-1||r===0)n=3;else if(r===-2||r===-3)n=2;else if(r===-5||r===-4||r===1)n=1;
+ if(i.f==='mens')n=0;
+ if(x&&x.mu==='cl')n=Math.max(n,2);
+ if(x&&x.lh==='p')n=3;
+ return n}
+function muConf(){const ok=muLensOk().map(function(x){return x.n}),sd=muDP(ok.slice(-6));return ok.length<2?'baixa, poucos ciclos registrados':sd<=2?'alta':sd<=4?'média':'baixa, seus ciclos variam bastante'}
+
+/* ---- registro: início, fim e histórico ---- */
+function muIni(d){
+ d=d||HOJE;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){info('Escolha uma data válida.');return}
+ if(d>HOJE){info('Você só pode registrar datas até hoje.');return}
+ if(MU.cy.some(function(c){return Math.abs(muDif(c.s,d))<8})){info('Já existe um início de menstruação em uma data muito próxima (menos de 8 dias).');return}
+ MU.cy.push({s:d,e:''});muDados();muR()}
 function muIniData(){const e=$('#mu-di');muIni(e?e.value:'')}
-function muFim(){const c=muCic().filter(function(x){return x.s<=HOJE&&!x.e}).pop();if(!c){info('Não há menstruação em andamento para encerrar.');return}c.e=HOJE;muSave();render()}
-function muDelCy(s){ask('Excluir este registro do ciclo?',function(){MU.cy=MU.cy.filter(function(c){return c.s!==s});muSave();render()})}
-var MU_S=['Cólica','Dor de cabeça','Inchaço','Cansaço','TPM','Enjoo','Acne','Seios sensíveis','Fluxo intenso'],MU_H=['😄','🙂','😐','😔','😢','😡'];
-function muSymD(){return MU.sym[HOJE]=MU.sym[HOJE]||{m:'',s:[]}}
-function muHum(i){const x=muSymD();x.m=x.m===MU_H[i]?'':MU_H[i];muSave();render()}
-function muSint(i){const x=muSymD(),k=MU_S[i],p=x.s.indexOf(k);if(p<0)x.s.push(k);else x.s.splice(p,1);muSave();render()}
-function muLembraProx(){const p=muProx();if(!p)return;const t='🌸 Previsão: início do ciclo';if(S.ev.some(function(e){return e.title===t&&e.date===p.prox})){info('Esse lembrete já está na Agenda.');return}S.ev.push({id:uid(),title:t,date:p.prox,time:'',done:false});save();info('Lembrete criado na Agenda para '+fmt(p.prox)+'.')}
+function muFimD(d){
+ const c=muCic().filter(function(x){return x.s<=d&&!x.e&&muDif(x.s,d)<=14}).pop();
+ if(!c){info('Não há menstruação em andamento nessa data para encerrar.');return}
+ c.e=d;muDados();muR()}
+function muFim(){muFimD(HOJE)}
+function muSetEnd(s,v){
+ const c=MU.cy.find(function(x){return x.s===s});if(!c)return;
+ if(!v){c.e=''}else{if(v<s||muDif(s,v)>14||v>HOJE){info('A data final precisa ser depois do início, até 14 dias, e não pode ser no futuro.');muR();return}c.e=v}
+ muDados();muR()}
+function muDelCy(s){ask('Excluir este registro do ciclo?',function(){MU.cy=MU.cy.filter(function(c){return c.s!==s});muDados();muR()})}
+function muAddPast(){
+ const s=$('#mu-ps').value,e=$('#mu-pe').value;
+ if(!s||s>HOJE){info('Escolha uma data de início válida (até hoje).');return}
+ if(MU.cy.some(function(c){return Math.abs(muDif(c.s,s))<8})){info('Já existe um início de menstruação muito próximo dessa data.');return}
+ if(e&&(e<s||muDif(s,e)>14||e>HOJE)){info('A data final precisa ser depois do início, em até 14 dias.');return}
+ MU.cy.push({s:s,e:e||''});muDados();muR()}
+function muComecar(){
+ const d=$('#mu-ob-d').value,pl=muClamp($('#mu-ob-pl').value,2,10,5),cl=muClamp($('#mu-ob-cl').value,21,45,28),md=$('#mu-ob-md').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||d>HOJE){info('Escolha uma data válida, até hoje.');return}
+ MU.cfg.pl=pl;MU.cfg.cl=cl;MU.cfg.mode=md;const fim=muAdd(d,pl-1);
+ MU.cy.push({s:d,e:fim<=HOJE?fim:''});muDados();muR()}
+
+/* ---- registro diário ---- */
+function muX(d){return MU.sym[d]=MU.sym[d]||{m:'',s:[]}}
+function muClean(d){const x=MU.sym[d];if(!x)return;if(Object.keys(x).every(function(k){const v=x[k];return !v||(Array.isArray(v)&&!v.length)}))delete MU.sym[d]}
+function muPick(d,k,v){const x=muX(d);if(k==='fl'&&muFl(x)&&x.s){const p=x.s.indexOf('Fluxo intenso');if(p>=0)x.s.splice(p,1);if(!x.fl)x.fl=4}x[k]=(x[k]===v)?(typeof v==='number'?0:''):v;muClean(d);muSave();if(k==='lh')muSync();muR()}
+function muTog(d,k,v){const x=muX(d);if(!Array.isArray(x[k]))x[k]=[];const p=x[k].indexOf(v);if(p<0)x[k].push(v);else x[k].splice(p,1);muClean(d);muSave();muR()}
+function muFlag(d,k){const x=muX(d);x[k]=x[k]?0:1;muClean(d);muSave();
+ if(k==='pil'&&d===HOJE&&typeof S!=='undefined'&&Array.isArray(S.ev)){S.ev.forEach(function(e){if(e.mg==='mupill'&&e.date===HOJE)e.done=!!x.pil});save()}
+ muR()}
+function muVal(d,k,v){
+ const n=muNum(v),x=muX(d);
+ if(n&&((k==='t'&&(n<34||n>42))||(k==='wt'&&(n<25||n>300)))){info(k==='t'?'Temperatura fora do esperado. Use algo entre 34 e 42 °C.':'Peso fora do esperado.');muClean(d);muR();return}
+ x[k]=n>0?Math.round(n*100)/100:0;muClean(d);muSave();if(k==='t')muSync();muR()}
+function muNota(d,v){const x=muX(d);x.nt=String(v||'').slice(0,300);muClean(d);muSave()}
+function muPillSeq(){let n=0,d=HOJE;if(!(MU.sym[d]&&MU.sym[d].pil))d=muAdd(d,-1);while(MU.sym[d]&&MU.sym[d].pil&&n<400){n++;d=muAdd(d,-1)}return n}
+
+/* ---- ajustes ---- */
+function muMode(m){MU.cfg.mode=m;muSave();muR()}
+function muCfgSet(k,v){
+ const r={cl:[21,45],pl:[2,10],lp:[10,16]}[k];
+ if(r){MU.cfg[k]=muClamp(v,r[0],r[1],MU.cfg[k])}else if(k==='rh'||k==='ph'){if(/^\d{2}:\d{2}$/.test(v))MU.cfg[k]=v}
+ muDados();muR()}
+function muRm(k){MU.cfg.rm[k]=MU.cfg.rm[k]?0:1;muDados();muR()}
+function muPillCfg(){MU.cfg.pill=MU.cfg.pill?0:1;muDados();muR()}
+function muApagar(){ask('Apagar TODOS os registros do ciclo (menstruações, sintomas, temperatura, testes) deste aparelho? Os lembretes automáticos do ciclo também serão removidos.',function(){
+ MU.cy=[];MU.sym={};MU.cfg.rm={mens:0,fert:0,ov:0,tpm:0};MU.cfg.pill=0;
+ if(typeof S!=='undefined'&&Array.isArray(S.ev)){S.ev=S.ev.filter(function(e){return e.mg!=='mucy'&&e.mg!=='mupill'});save()}
+ muSave();muR()},'Apagar')}
+function muBackup(){muShare(JSON.stringify({v:2,cy:MU.cy,sym:MU.sym,cfg:MU.cfg}),'Backup do ciclo')}
+function muRestore(){
+ let o;try{o=JSON.parse(($('#mu-bk').value||'').trim())}catch(e){info('Esse texto não é um backup válido.');return}
+ if(!o||!Array.isArray(o.cy)||typeof o.sym!=='object'){info('Esse texto não é um backup válido.');return}
+ const ok=/^\d{4}-\d{2}-\d{2}$/;
+ const cy=o.cy.filter(function(c){return c&&ok.test(c.s||'')&&(!c.e||ok.test(c.e))}).map(function(c){return{s:c.s,e:c.e||''}});
+ ask('Substituir os dados atuais do ciclo por este backup ('+cy.length+' ciclos)?',function(){
+  MU.cy=cy;MU.sym={};Object.keys(o.sym||{}).forEach(function(d){if(ok.test(d)&&o.sym[d]&&typeof o.sym[d]==='object')MU.sym[d]=o.sym[d]});
+  if(o.cfg&&typeof o.cfg==='object'){MU.cfg=Object.assign(MU.cfg,o.cfg);MU.cfg.rm=Object.assign({mens:0,fert:0,ov:0,tpm:0},o.cfg.rm||{})}
+  muDados();muR()},'Restaurar')}
+
+/* ---- lembretes automáticos na Agenda (se atualizam sozinhos quando os dados mudam) ---- */
+function muSync(){
+ if(typeof S==='undefined'||!S||!Array.isArray(S.ev))return;
+ const cf=MU.cfg,rm=cf.rm,h=cf.rh||'09:00',feitos={};
+ S.ev.forEach(function(e){if(e.done&&(e.mg==='mucy'||e.mg==='mupill'))feitos[e.title+'|'+e.date]=1});
+ S.ev=S.ev.filter(function(e){return(e.mg!=='mucy'&&e.mg!=='mupill')||e.date<HOJE});
+ const add=function(t,d,hh,g){if(d<HOJE)return;S.ev.push({id:uid(),title:t,date:d,time:hh,done:!!feitos[t+'|'+d],mg:g})};
+ if(rm.mens||rm.fert||rm.ov||rm.tpm){muFut(3).forEach(function(e){
+  if(e.t==='mens'&&rm.mens){add('🌸 A menstruação pode começar em 2 dias',muAdd(e.d,-2),h,'mucy');add('🌸 Previsão: a menstruação pode começar hoje',e.d,h,'mucy')}
+  if(e.t==='fert'&&rm.fert)add('🌼 Começa o período fértil estimado',e.d,h,'mucy');
+  if(e.t==='ov'&&rm.ov)add('✨ Ovulação estimada para hoje',e.d,h,'mucy');
+  if(e.t==='tpm'&&rm.tpm)add('🌙 Possível início da TPM',e.d,h,'mucy')})}
+ if(cf.pill){for(let i=0;i<60;i++)add('💊 Anticoncepcional',muAdd(HOJE,i),cf.ph||'21:00','mupill')}
+ cf.sy=HOJE;muSave();save()}
+window.addEventListener('load',function(){setTimeout(function(){try{if(MU.cfg.sy!==HOJE)muSync()}catch(e){}},4000)});
+
+/* ---- alertas e relatório ---- */
+function muAlertas(){
+ const a=[],p=muProx();if(!p)return a;
+ const falta=muDif(HOJE,p.prox),desde=muDif(p.ult,HOJE),ln=muLens().slice(-6).map(function(x){return x.n});
+ if(desde>90)a.push(['w','Já faz mais de 3 meses desde o início da última menstruação registrada. Se você não está grávida, amamentando ou na menopausa, vale conversar com uma médica. Se deixou de registrar, adicione os ciclos em Ajustes.']);
+ else if(falta<0){const n=-falta;a.push(n>=7?['w','Atraso de '+n+' dias. Se teve relação sem proteção, considere fazer um teste de gravidez. Se der negativo e o atraso continuar, converse com sua ginecologista.']:['i','Atraso de '+n+(n===1?' dia':' dias')+'. Pequenas variações são comuns (estresse, sono, viagem, doença). Quando descer, toque em “Comecei hoje”.'])}
+ if(ln.length>=3){
+  const m=ln.reduce(function(x,y){return x+y},0)/ln.length,mx=Math.max.apply(null,ln),mn=Math.min.apply(null,ln);
+  if(m<21||m>35)a.push(['w','Seu ciclo médio ('+Math.round(m)+' dias) está fora do intervalo mais comum, de 21 a 35 dias. Vale comentar com sua ginecologista.']);
+  if(mx-mn>9)a.push(['w','Seus ciclos variaram '+(mx-mn)+' dias entre o mais curto e o mais longo. Variações de até 7 a 9 dias são normais; acima disso vale investigar.'])}
+ if(muPeriodos().slice(-3).some(function(n){return n>7}))a.push(['w','Você registrou menstruação com mais de 7 dias. Se isso se repetir, converse com sua ginecologista.']);
+ const u=muCic().pop();
+ if(u){let it=0;for(let i=0;i<12;i++){if(muFl(MU.sym[muAdd(u.s,i)])===4)it++}if(it>=3)a.push(['w','Você registrou fluxo intenso em vários dias. Se encharcar o absorvente a cada 1 ou 2 horas, tiver coágulos grandes, tontura ou muito cansaço, procure atendimento: pode haver perda excessiva de sangue.'])}
+ let pt=false,sx=false;
+ for(let i=0;i<30;i++){const x=MU.sym[muAdd(HOJE,-i)];if(x){if(x.pt==='p')pt=true;if(i<5&&x.sx==='n')sx=true}}
+ if(pt)a.push(['i','Você registrou um teste de gravidez positivo recentemente. Procure a UBS ou sua médica para confirmar e iniciar o pré-natal.']);
+ if(sx&&MU.cfg.mode!=='conceive')a.push(['i','Você registrou relação sem proteção nos últimos 5 dias. A pílula do dia seguinte funciona melhor quanto mais cedo for tomada, e está disponível gratuitamente no SUS. Em caso de dúvida, procure a UBS ou uma farmácia. Se necessário, converse sobre teste de IST.']);
+ return a}
+function muRelatorio(){
+ const c=muCic(),p=muProx(),ls=muLens().slice(-6),ln=ls.map(function(x){return x.n}),cnt={};
+ Object.keys(MU.sym).forEach(function(d){(MU.sym[d].s||[]).forEach(function(k){cnt[k]=(cnt[k]||0)+1})});
+ const top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).slice(0,6).map(function(k){return k+' ('+cnt[k]+')'});
+ let t='RELATÓRIO DO CICLO MENSTRUAL\nGerado em '+fmt(HOJE,{day:'numeric',month:'long',year:'numeric'})+'\n\n';
+ t+='Última menstruação (DUM): '+(c.length?fmt(c[c.length-1].s,{day:'numeric',month:'long',year:'numeric'}):'não registrada')+'\n';
+ t+='Ciclos registrados: '+c.length+'\n';
+ if(ln.length)t+='Ciclo médio: '+muMedia()+' dias (mais curto '+Math.min.apply(null,ln)+', mais longo '+Math.max.apply(null,ln)+')\nÚltimos ciclos: '+ls.map(function(x){return muDM(x.s)+' ('+x.n+' d)'}).join(', ')+'\n';
+ if(muPeriodos().length)t+='Duração média da menstruação: '+muPL()+' dias\n';
+ if(p)t+='Próxima menstruação prevista: '+fmt(p.prox,{day:'numeric',month:'long'})+'\n';
+ if(top.length)t+='Sintomas mais registrados: '+top.join(', ')+'\n';
+ t+='Anticoncepcional: '+(MU.cfg.pill?'em uso (lembrete ativo)':'não informado')+'\n';
+ const al=muAlertas();if(al.length)t+='\nPontos de atenção:\n'+al.map(function(x){return '- '+x[1]}).join('\n')+'\n';
+ t+='\nDados informados pela própria usuária, sem valor de diagnóstico.';
+ muShare(t,'Relatório do ciclo')}
+(function(){const s=document.createElement('style');s.textContent=
+'.mu-ring{display:block;margin:0 auto 6px;max-width:250px;width:100%}'+
+'.mu-b{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}'+
+'.mu-ok{font-size:13px;font-weight:700;color:var(--ok);padding:8px 4px}'+
+'.mu-ta{width:100%;box-sizing:border-box;min-height:70px;border:1px solid var(--ln);border-radius:12px;background:var(--bg);color:var(--ink);padding:10px;font:inherit;resize:vertical;margin-top:6px}'+
+'.mu-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mu-cal .h{font-size:11px;color:var(--mute);text-align:center;padding:2px 0}'+
+'.mu-cal button{aspect-ratio:1;padding:0;width:100%;min-width:0;border-radius:10px;background:var(--bg);color:var(--ink);border:2px solid transparent;font-size:13px;font-weight:600;position:relative}'+
+'.mu-cal button.p-m{background:#e5486a;color:#fff}.mu-cal button.p-mp{background:rgba(229,72,106,.14);border:2px dashed #e5486a}'+
+'.mu-cal button.p-f{background:rgba(47,179,124,.22)}.mu-cal button.p-o{background:#1d8f5e;color:#fff}.mu-cal button.p-t{background:rgba(179,106,217,.2)}'+
+'.mu-cal button.p-fl{border-color:#e5486a}.mu-cal button.hj{box-shadow:0 0 0 2px var(--ink)}.mu-cal button.sel{outline:3px solid var(--ac);outline-offset:1px}'+
+'.mu-cal button.lg::after{content:"";position:absolute;bottom:4px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:currentColor;opacity:.8}'+
+'.mu-lgd{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:10px}.mu-lgd i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-2px;margin-right:4px}'+
+'.mu-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.mu-st{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px}.mu-st b{display:block;font:700 22px "Bricolage Grotesque",sans-serif}.mu-st small{color:var(--mute);font-size:12px}'+
+'.mu-ch{width:100%;height:auto;display:block}'+
+'.mu-al{border-left:4px solid var(--ac);padding:10px 12px;border-radius:10px;background:var(--bg);margin-bottom:8px;font-size:14px;line-height:1.45}.mu-al.w{border-left-color:#e8793a}'+
+'.mu-pt{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}.mu-pt span{flex:0 0 120px}.mu-pt div{flex:1;height:8px;border-radius:999px;background:var(--bg);overflow:hidden}.mu-pt div i{display:block;height:100%;background:var(--ac)}.mu-pt small{flex:0 0 38px;text-align:right;color:var(--mute)}'+
+'.mu-fr{margin:8px 0 0;font-size:14px;line-height:1.45}.mu-fr b{display:block;font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.3px}';
+document.head.appendChild(s)})();
+
+/* ---- gráficos em SVG ---- */
+function muArc(cx,cy,r,a0,a1){const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);return'M'+x0.toFixed(2)+' '+y0.toFixed(2)+' A'+r+' '+r+' 0 '+((a1-a0)>Math.PI?1:0)+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2)}
+function muRing(ci,dia,late){
+ const len=ci.len,cx=120,cy=120,r=96,T=Math.PI*2,pa=function(n){return n/len*T-Math.PI/2},seg=[];let cur=null,sv='';
+ for(let n=1;n<=len;n++){let f=muFaseNum(n,len,ci.pl,ci.ov);if(f==='ov')f='fert';if(cur&&cur.f===f)cur.b=n;else{cur={f:f,a:n,b:n};seg.push(cur)}}
+ seg.forEach(function(s){sv+='<path d="'+muArc(cx,cy,r,pa(s.a-1)+0.025,pa(s.b)-0.025)+'" fill="none" stroke="'+MU_FS[s.f].c+'" stroke-width="18"/>'});
+ const ao=pa(ci.ov-0.5),ox=cx+r*Math.cos(ao),oy=cy+r*Math.sin(ao),ad=pa(Math.min(dia,len)-0.5),tx=cx+r*Math.cos(ad),ty=cy+r*Math.sin(ad);
+ const f=late?'tpm':muFaseNum(dia,len,ci.pl,ci.ov),F=MU_FS[f];
+ return'<svg class="mu-ring" viewBox="0 0 240 240" role="img" aria-label="Roda do ciclo, dia '+dia+'" style="color:var(--ink)">'+sv+
+  '<circle cx="'+ox.toFixed(1)+'" cy="'+oy.toFixed(1)+'" r="5" fill="#fff" stroke="#1d8f5e" stroke-width="2.5"/>'+
+  '<circle cx="'+tx.toFixed(1)+'" cy="'+ty.toFixed(1)+'" r="12" style="fill:var(--sf);stroke:var(--ink)" stroke-width="3"/>'+
+  '<text x="120" y="92" text-anchor="middle" font-size="11" style="fill:var(--mute)">DIA DO CICLO</text>'+
+  '<text x="120" y="124" text-anchor="middle" font-size="36" font-weight="700" fill="currentColor">'+dia+'</text>'+
+  '<text x="120" y="146" text-anchor="middle" font-size="13" font-weight="700" fill="'+F.c+'">'+esc(late?'Atrasada':F.n)+'</text>'+
+  '<text x="120" y="162" text-anchor="middle" font-size="11" style="fill:var(--mute)">'+(late?'':'de '+len+' dias')+'</text></svg>'}
+function muBars(v,lb,bd){
+ if(!v.length)return'';
+ const W=320,H=140,pl=26,pb=22,pt=14,n=v.length,mx=Math.max.apply(null,v.concat([bd?bd[1]+3:0])),aw=(W-pl-4)/n,bw=Math.min(30,aw-6);
+ const sy=function(y){return pt+(H-pt-pb)*(1-y/mx)};
+ let s='<svg viewBox="0 0 '+W+' '+H+'" class="mu-ch" role="img" aria-label="Gráfico de barras" style="color:var(--mute)">';
+ if(bd)s+='<rect x="'+pl+'" y="'+sy(bd[1]).toFixed(1)+'" width="'+(W-pl-4)+'" height="'+(sy(bd[0])-sy(bd[1])).toFixed(1)+'" fill="#2fb37c" opacity=".15"/>';
+ s+='<text x="2" y="'+(pt+4)+'" font-size="10" fill="currentColor">'+mx+'</text><text x="2" y="'+(H-pb)+'" font-size="10" fill="currentColor">0</text>';
+ v.forEach(function(y,i){const x=pl+aw*i+(aw-bw)/2,fora=bd&&(y<bd[0]||y>bd[1]),yy=sy(y);
+  s+='<rect x="'+x.toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,H-pb-yy).toFixed(1)+'" rx="4" style="fill:'+(fora?'#e8793a':'var(--ac)')+'"/>'+
+  '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(yy-3).toFixed(1)+'" font-size="10" text-anchor="middle" fill="currentColor">'+y+'</text>'+
+  '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-7)+'" font-size="9" text-anchor="middle" fill="currentColor">'+esc(lb[i])+'</text>'});
+ return s+'</svg>'}
+function muLine(pts,dec,ovd){
+ if(pts.length<3)return'';
+ const W=320,H=150,pl=36,pr=8,pt=10,pb=22,ys=pts.map(function(p){return p[1]});
+ let mn=Math.min.apply(null,ys),mx=Math.max.apply(null,ys);const pad=(mx-mn)*0.15||0.2;mn-=pad;mx+=pad;
+ const d0=pts[0][0],dn=muDif(d0,pts[pts.length-1][0])||1;
+ const X=function(d){return pl+(W-pl-pr)*muDif(d0,d)/dn},Y=function(y){return pt+(H-pt-pb)*(1-(y-mn)/(mx-mn))};
+ let s='<svg viewBox="0 0 '+W+' '+H+'" class="mu-ch" role="img" aria-label="Gráfico de linha" style="color:var(--mute)">';
+ if(ovd&&ovd>=d0&&ovd<=pts[pts.length-1][0])s+='<line x1="'+X(ovd).toFixed(1)+'" x2="'+X(ovd).toFixed(1)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#1d8f5e" stroke-dasharray="4 3"/><text x="'+(X(ovd)+3).toFixed(1)+'" y="'+(pt+9)+'" font-size="9" fill="#1d8f5e">ovulação</text>';
+ s+='<text x="2" y="'+(pt+8)+'" font-size="10" fill="currentColor">'+(mx-pad*0).toFixed(dec)+'</text><text x="2" y="'+(H-pb)+'" font-size="10" fill="currentColor">'+mn.toFixed(dec)+'</text>'+
+  '<text x="'+pl+'" y="'+(H-6)+'" font-size="9" fill="currentColor">'+muDM(d0)+'</text><text x="'+(W-pr)+'" y="'+(H-6)+'" font-size="9" text-anchor="end" fill="currentColor">'+muDM(pts[pts.length-1][0])+'</text>'+
+  '<path d="'+pts.map(function(p,i){return(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join(' ')+'" fill="none" style="stroke:var(--ac)" stroke-width="2"/>';
+ pts.forEach(function(p){s+='<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="3" style="fill:var(--ac)"/>'});
+ return s+'</svg>'}
+
+/* ---- registro do dia (usado em Hoje e no Calendário) ---- */
+function muDia(d,compact){
+ const x=MU.sym[d]||{},A=function(k){return Array.isArray(x[k])?x[k]:[]},fl=muFl(x),c=muCic();
+ const q=function(v){return typeof v==='number'?v:"'"+v+"'"};
+ const P=function(k,v,txt,on){return'<button class="'+((on===undefined?x[k]===v:on)?'on':'')+'" onclick="muPick(\''+d+'\',\''+k+'\','+q(v)+')">'+txt+'</button>'};
+ const T=function(k,v,txt){return'<button class="'+(A(k).indexOf(v)>=0?'on':'')+'" onclick="muTog(\''+d+'\',\''+k+'\',\''+v+'\')">'+txt+'</button>'};
+ const F=function(k,txt){return'<button class="'+(x[k]?'on':'')+'" onclick="muFlag(\''+d+'\',\''+k+'\')">'+txt+'</button>'};
+ const H=function(t){return'<strong style="display:block;margin-top:12px">'+t+'</strong>'};
+ const ch=function(a){return'<div class="mu-chips">'+a.join('')+'</div>'};
+ const ehIni=c.some(function(k){return k.s===d}),ehFim=c.some(function(k){return k.e===d}),emPer=c.some(function(k){return d>=k.s&&d<=(k.e||muAdd(k.s,muPL()-1))});
+ let h='<strong>🩸 Menstruação</strong><div class="row" style="margin-top:6px">'+(ehIni?'<span class="mu-ok">✅ Início registrado</span>':'<button class="sec" onclick="muIni(\''+d+'\')">Começou neste dia</button>')+(ehFim?'<span class="mu-ok">✅ Fim registrado</span>':'<button class="sec" onclick="muFimD(\''+d+'\')">Terminou neste dia</button>')+'</div>'+
+  ch(MU_FL.map(function(f){return P('fl',f[0],f[1],fl===f[0])}));
+ if(fl>0&&!emPer)h+='<p class="hint">Você registrou fluxo fora de uma menstruação. Se foi o começo, toque em “Começou neste dia”.</p>';
+ h+=H('😊 Humor')+ch(MU_H.map(function(e){return P('m',e,e)}))+ch(MU_MT.map(function(t){return T('mt',t,t)}));
+ h+=H('⚡ Energia')+ch([1,2,3,4,5].map(function(n){return P('en',n,['🪫 1','2','3','4','⚡ 5'][n-1])}));
+ (compact?MU_SG.slice(0,2):MU_SG).forEach(function(g){h+=H(g[0])+ch(g[1].map(function(s){return T('s',s,s)}))});
+ if(!compact){
+  h+=H('💧 Corrimento')+ch(MU_MU.map(function(m){return P('mu',m[0],m[1])}))+
+   H('💞 Relação sexual')+ch([P('sx','p','Protegida'),P('sx','n','Sem proteção')])+
+   H('🧪 Teste de ovulação (LH)')+ch([P('lh','n','Negativo'),P('lh','p','Positivo')])+
+   H('🤰 Teste de gravidez')+ch([P('pt','n','Negativo'),P('pt','p','Positivo')])+
+   H('💊 Remédios')+ch([F('pil','Anticoncepcional tomado'),F('vt','Vitaminas ou outros')])+
+   H('📏 Medidas')+'<div class="row" style="margin-top:6px"><label class="hint" style="margin:0">Temperatura basal (°C)<input type="number" step="0.01" inputmode="decimal" placeholder="36,50" value="'+(x.t||'')+'" onchange="muVal(\''+d+'\',\'t\',this.value)" style="width:100px;display:block;margin-top:4px"></label><label class="hint" style="margin:0">Peso (kg)<input type="number" step="0.1" inputmode="decimal" placeholder="60,0" value="'+(x.wt||'')+'" onchange="muVal(\''+d+'\',\'wt\',this.value)" style="width:100px;display:block;margin-top:4px"></label></div>'+
+   H('📝 Anotações')+'<textarea class="mu-ta" maxlength="300" placeholder="Como foi o seu dia, o que sentiu…" oninput="muNota(\''+d+'\',this.value)">'+esc(x.nt||'')+'</textarea>'}
+ return h}
+
+/* ---- aba Hoje ---- */
+function muOnb(){
+ return'<div class="card"><h3 style="margin-top:0">🌸 Vamos começar</h3><p class="hint" style="margin:0 0 10px">Com poucas informações o app monta a roda do seu ciclo, o período fértil e a previsão da próxima menstruação. Quanto mais você registrar, mais precisa fica.</p>'+
+  '<label class="hint">Primeiro dia da última menstruação</label><input type="date" id="mu-ob-d" value="'+HOJE+'" max="'+HOJE+'" style="width:100%">'+
+  '<div class="row" style="margin-top:8px"><label class="hint" style="margin:0;flex:1">Menstruação dura (dias)<input type="number" id="mu-ob-pl" value="'+MU.cfg.pl+'" min="2" max="10" inputmode="numeric" style="width:100%;display:block;margin-top:4px"></label><label class="hint" style="margin:0;flex:1">Ciclo dura (dias)<input type="number" id="mu-ob-cl" value="'+MU.cfg.cl+'" min="21" max="45" inputmode="numeric" style="width:100%;display:block;margin-top:4px"></label></div>'+
+  '<label class="hint" style="display:block;margin-top:8px">O que você quer do app?</label><select id="mu-ob-md" style="width:100%">'+MU_MD.map(function(m){return'<option value="'+m[0]+'"'+(MU.cfg.mode===m[0]?' selected':'')+'>'+m[1]+'</option>'}).join('')+'</select>'+
+  '<button style="width:100%;margin-top:10px" onclick="muComecar()">Começar</button></div>'+
+  '<h3>Como você está hoje?</h3><div class="card">'+muDia(HOJE,true)+'</div>'}
+function muFertCard(p,ci,dia,fase,x){
+ const n=muChance({f:fase,dia:dia,ov:ci.ov},x);if(n===null)return'';
+ const md=MU.cfg.mode,B=MU_CHN[n];
+ let h='<div class="card"><div class="row" style="align-items:center;justify-content:space-between"><strong>🤰 Chance de gravidez hoje</strong><span class="mu-b" style="background:'+B[1]+'">'+B[0]+'</span></div><div class="mu-bar"><i style="width:'+(25*(n+1))+'%;background:'+B[1]+'"></i></div>'+
+  '<p class="hint" style="margin:0">Janela fértil estimada: <b>'+esc(muDM(p.f1))+' a '+esc(muDM(p.f2))+'</b> · Ovulação: <b>'+esc(muDM(p.ov))+'</b>'+(p.src==='lh'?' (ajustada pelo seu teste de ovulação)':p.src==='temp'?' (confirmada pela temperatura basal)':'')+'</p>';
+ if(x&&x.mu==='cl')h+='<p class="hint">Você registrou corrimento tipo clara de ovo hoje, um sinal de fertilidade alta.</p>';
+ if(md==='conceive')h+='<p class="hint">'+(n>=2?'Hoje é um ótimo dia para tentar: os 2 ou 3 dias antes da ovulação e o dia dela são os de maior chance.':'Os melhores dias para tentar são de '+esc(muDM(muAdd(p.ov,-3)))+' a '+esc(muDM(p.ov))+'. Faça o teste de gravidez a partir do primeiro dia de atraso.')+'</p>';
+ else if(md==='avoid')h+='<p class="hint">Estas datas são só estimativas e o ciclo pode mudar. Um calendário sozinho não evita gravidez: use um método eficaz (preservativo, pílula, DIU…) e converse com sua ginecologista.</p>';
+ else h+='<p class="hint">Estimativa baseada nos seus ciclos. A ovulação pode variar de um mês para o outro.</p>';
+ return h+'</div>'}
+function muHoje(){
+ const cf=MU.cfg;if(cf.sy!==HOJE)setTimeout(muSync,300);
+ const p=muProx();if(!p)return muOnb();
+ const dia=Math.max(1,muDif(p.ult,HOJE)+1),falta=muDif(HOJE,p.prox),late=falta<0,ci={len:p.L,pl:p.pl,ov:muDif(p.ult,p.ov)+1};
+ const fase=late?'tpm':muFaseNum(dia,ci.len,ci.pl,ci.ov),F=MU_FS[fase],x=MU.sym[HOJE]||{};
+ const c=muCic(),u=c[c.length-1],emAnd=!!(u&&!u.e&&muDif(u.s,HOJE)>=0&&muDif(u.s,HOJE)<10);
+ let h='<div class="card" style="text-align:center">'+muRing(ci,dia,late)+
+  '<div style="margin:6px 0"><span class="mu-b" style="background:'+(late?MU_FS.tpm.c:F.c)+'">'+(late?'⏳ Atrasada':F.ic+' '+esc(F.n))+'</span>'+(emAnd?' <span class="mu-b" style="background:#e5486a">Menstruada</span>':'')+'</div>'+
+  '<div>'+(falta>0?'Próxima menstruação em <b>'+falta+(falta===1?' dia':' dias')+'</b> ('+esc(fmt(p.prox))+')':falta===0?'Próxima menstruação <b>prevista para hoje</b>':'Previsão passada há <b>'+(-falta)+(falta===-1?' dia':' dias')+'</b> ('+esc(fmt(p.prox))+')')+'</div>'+
+  '<p class="hint">Ciclo médio: '+p.L+' dias'+(muLensOk().length<3?' (padrão até você registrar 3 ciclos)':'')+' · Menstruação: '+p.pl+' dias · Confiança da previsão: '+esc(muConf())+'</p></div>';
+ h+='<div class="card"><div class="row"><button onclick="muIni()">🩸 Comecei hoje</button><button class="sec" onclick="muFim()">Terminou hoje</button></div>'+
+  '<div class="row" style="margin-top:8px"><input type="date" id="mu-di" value="'+HOJE+'" max="'+HOJE+'" aria-label="Data de início"><button class="sec" style="flex:none" onclick="muIniData()">Adicionar início</button></div></div>';
+ if(cf.pill){const tomou=!!x.pil,seq=muPillSeq();h+='<div class="card"><div class="row" style="align-items:center"><div style="flex:1"><strong>💊 Anticoncepcional</strong><br><small style="color:var(--mute)">'+(seq?seq+(seq===1?' dia seguido':' dias seguidos')+' sem esquecer':'Registre cada dia que tomar')+' · lembrete às '+esc(cf.ph)+'</small></div><button class="'+(tomou?'':'sec')+'" style="flex:none" onclick="muFlag(\''+HOJE+'\',\'pil\')">'+(tomou?'✅ Tomei hoje':'Tomei hoje')+'</button></div><p class="hint">Esqueceu? As regras variam conforme o tipo de pílula. Leia a bula ou pergunte à farmacêutica ou à sua ginecologista.</p></div>'}
+ h+='<h3>Como você está hoje?</h3><div class="card">'+muDia(HOJE,!muFull)+'<button class="sec" style="width:100%;margin-top:12px" onclick="muFull=!muFull;muR()">'+(muFull?'➖ Menos campos':'➕ Mais campos (corrimento, testes, temperatura, notas)')+'</button></div>';
+ h+=muFertCard(p,ci,dia,fase,x);
+ const al=muAlertas();if(al.length)h+='<h3>⚠️ Atenção</h3><div class="card">'+al.map(function(a){return'<div class="mu-al '+a[0]+'">'+esc(a[1])+'</div>'}).join('')+'</div>';
+ const ev=muFut(2).slice(0,7);
+ h+='<h3>📅 Próximos dias</h3><div class="card">'+ev.map(function(e){const L=MU_EVL[e.t],ate=muDif(HOJE,e.d);return'<div class="item"><span style="font-size:22px">'+L[0]+'</span><span class="t"><b>'+L[1]+'</b><br><small style="color:var(--mute)">'+esc(fmt(e.d))+(e.d2?' a '+esc(fmt(e.d2)):'')+'</small></span><small style="color:var(--mute);flex:none">'+(ate>0?'em '+ate+(ate===1?' dia':' dias'):'agora')+'</small></div>'}).join('')+'<button class="sec" style="width:100%;margin-top:8px" onclick="muSubGo(\'cal\')">Ver no calendário</button></div>';
+ const Fx=MU_FS[fase],ca=MU.care[HOJE]||{w:0,sl:0};
+ h+='<h3>'+Fx.ic+' '+esc(Fx.n)+': o que esperar</h3><div class="card"><p style="margin:0">'+esc(Fx.d)+'</p>'+
+  '<p class="mu-fr"><b>Corpo e humor</b>'+esc(Fx.en)+'</p><p class="mu-fr"><b>Alimentação</b>'+esc(Fx.al)+'</p><p class="mu-fr"><b>Exercício</b>'+esc(Fx.ex)+'</p><p class="mu-fr"><b>Cuidados</b>'+esc(Fx.cu)+'</p>'+
+  '<p class="hint">Hoje: 💧 '+ca.w+' de 8 copos · 😴 '+(ca.sl?ca.sl+' h de sono':'sono sem registro')+' · autocuidado em '+muPct(HOJE)+'%</p><button class="sec" style="width:100%;margin-top:8px" onclick="muGo(\'care\')">💧 Ir para Autocuidado</button></div>';
+ const rm=cf.rm,R=function(k,t){return'<button class="'+(rm[k]?'on':'')+'" onclick="muRm(\''+k+'\')">'+(rm[k]?'✓ ':'')+t+'</button>'};
+ h+='<h3>🔔 Lembretes automáticos</h3><div class="card"><p class="hint" style="margin:0 0 8px">Ligue o que quiser receber. Os avisos entram na Agenda, tocam o alarme do app e se atualizam sozinhos quando você registra um novo ciclo.</p><div class="mu-chips">'+R('mens','🩸 Menstruação')+R('fert','🌼 Período fértil')+R('ov','✨ Ovulação')+R('tpm','🌙 TPM')+'</div>'+
+  '<div class="row" style="align-items:center;margin-top:6px"><span class="hint" style="margin:0;flex:1">Horário dos avisos</span><input type="time" value="'+esc(cf.rh)+'" onchange="muCfgSet(\'rh\',this.value)" style="width:auto"></div></div>';
+ return h}
+
+/* ---- aba Calendário ---- */
+function muMesGo(n){const y=+muMes.slice(0,4),m=+muMes.slice(5,7)+n;muMes=iso(new Date(y,m-1,1)).slice(0,7);muR()}
+function muSelGo(d){muSel=d;muMes=d.slice(0,7);muR();setTimeout(function(){const e=$('#mu-ed');if(e&&e.scrollIntoView)e.scrollIntoView({behavior:'smooth',block:'start'})},60)}
+function muDiaInfo(d){
+ const i=muFaseDe(d);
+ let h='<strong>'+esc(fmt(d,{weekday:'long',day:'numeric',month:'long'}))+'</strong>';
+ if(i&&i.f!=='gap'){const F=MU_FS[i.f];h+='<div style="margin-top:6px"><span class="mu-b" style="background:'+F.c+'">'+F.ic+' '+esc(F.n)+'</span> <small style="color:var(--mute)">Dia '+i.dia+' do ciclo'+((i.proj||d>HOJE)?' · previsão':'')+'</small></div>';
+  const n=muChance(i,MU.sym[d]);if(n!==null&&n>0)h+='<div class="hint">Chance de gravidez: <b>'+MU_CHN[n][0]+'</b></div>'}
+ else h+='<div class="hint">Sem fase calculada para este dia. Registre o início da menstruação para o app calcular.</div>';
+ const ev=(typeof S!=='undefined'&&S&&Array.isArray(S.ev)?S.ev:[]).filter(function(e){return e.date===d});
+ if(ev.length)h+='<div class="hint" style="margin-top:8px"><b>Na sua Agenda:</b><br>'+ev.slice(0,6).map(function(e){return(e.time?esc(e.time)+' · ':'')+esc(e.title)}).join('<br>')+'</div>';
+ return h}
+function muCalV(){
+ const y=+muMes.slice(0,4),m=+muMes.slice(5,7),dim=new Date(y,m,0).getDate(),w0=new Date(y,m-1,1).getDay();
+ let cells='';
+ for(let i=0;i<7;i++)cells+='<div class="h">'+esc(new Date(2024,0,7+i).toLocaleDateString(LOC(),{weekday:'narrow'}))+'</div>';
+ for(let i=0;i<w0;i++)cells+='<span></span>';
+ for(let n=1;n<=dim;n++){
+  const d=muMes+'-'+String(n).padStart(2,'0'),i=muFaseDe(d),x=MU.sym[d];let cl='';
+  if(i&&i.f!=='gap'){const real=!i.proj&&d<=HOJE;cl=i.f==='mens'?(real?'p-m':'p-mp'):i.f==='ov'?'p-o':i.f==='fert'?'p-f':i.f==='tpm'?'p-t':''}
+  if(x&&muFl(x)>0&&cl!=='p-m')cl+=' p-fl';
+  if(d===HOJE)cl+=' hj';if(d===muSel)cl+=' sel';
+  if(x&&(x.m||(x.s&&x.s.length)||x.fl||x.nt||x.sx||x.t||x.lh||x.pil||x.mu||x.en))cl+=' lg';
+  cells+='<button class="'+cl+'" onclick="muSelGo(\''+d+'\')" aria-label="'+esc(fmt(d,{weekday:'long',day:'numeric',month:'long'}))+'">'+n+'</button>'}
+ const nome=new Date(y,m-1,1).toLocaleDateString(LOC(),{month:'long',year:'numeric'});
+ let h='<div class="card"><div class="row" style="align-items:center;justify-content:space-between;flex-wrap:nowrap"><button class="sec" style="flex:none" onclick="muMesGo(-1)" aria-label="Mês anterior">◀</button><strong style="text-transform:capitalize">'+esc(nome)+'</strong><button class="sec" style="flex:none" onclick="muMesGo(1)" aria-label="Próximo mês">▶</button></div>'+
+  '<div class="mu-cal" style="margin-top:10px">'+cells+'</div>'+
+  '<div class="mu-lgd"><span><i style="background:#e5486a"></i>Menstruação</span><span><i style="border:2px dashed #e5486a"></i>Prevista</span><span><i style="background:rgba(47,179,124,.5)"></i>Fértil</span><span><i style="background:#1d8f5e"></i>Ovulação</span><span><i style="background:rgba(179,106,217,.5)"></i>TPM</span><span>● registro</span></div>'+
+  (muMes!==HOJE.slice(0,7)?'<button class="sec" style="width:100%;margin-top:10px" onclick="muSelGo(\''+HOJE+'\')">Voltar para hoje</button>':'')+'</div>';
+ h+='<div id="mu-ed" class="card">'+muDiaInfo(muSel)+'</div>';
+ h+=muSel>HOJE?'<div class="card"><p class="hint" style="margin:0">Este dia ainda não chegou. Você pode registrar sintomas a partir de hoje.</p></div>':'<div class="card">'+muDia(muSel,false)+'</div>';
+ return h}
+
+/* ---- aba Análises ---- */
+function muPadroes(){
+ const ph={};
+ Object.keys(MU.sym).forEach(function(d){
+  if(d>HOJE)return;const x=MU.sym[d];if(!x.m&&!(x.s&&x.s.length))return;
+  const i=muFaseDe(d);if(!i||i.f==='gap')return;const f=i.f==='ov'?'fert':i.f,o=ph[f]=ph[f]||{n:0,s:{},m:{}};
+  o.n++;(x.s||[]).forEach(function(k){o.s[k]=(o.s[k]||0)+1});if(x.m)o.m[x.m]=(o.m[x.m]||0)+1});
+ return ph}
+function muAna(){
+ const c=muCic();
+ if(!c.length)return'<div class="card"><div class="vazio" style="padding:10px">Registre a sua menstruação para ver as análises do ciclo.</div></div>';
+ const all=muLens(),ls=all.slice(-12),ln=all.slice(-6).map(function(x){return x.n}),per=muPeriodos(),sd=muDP(ln);
+ const mn=ln.length?Math.min.apply(null,ln):0,mx=ln.length?Math.max.apply(null,ln):0,rg=mx-mn;
+ const reg=ln.length<3?'Poucos ciclos':rg<=7?'Regular':rg<=9?'Pouco irregular':'Irregular';
+ const st=function(v,l){return'<div class="mu-st"><b>'+v+'</b><small>'+l+'</small></div>'};
+ let h='<div class="mu-stats">'+st(muMedia()+' dias','Ciclo médio')+st(muPL()+' dias','Menstruação média')+st(ln.length?mn+' a '+mx:'-','Mais curto e mais longo')+st(ln.length>=3?'±'+sd.toFixed(1)+' dias':'-','Variação (desvio)')+st(reg,'Regularidade')+st(c.length+' / '+Object.keys(MU.sym).length,'Ciclos / dias registrados')+'</div>';
+ h+='<h3>Duração dos ciclos</h3><div class="card">'+(ls.length?muBars(ls.map(function(x){return x.n}),ls.map(function(x){return muDM(x.s)}),[21,35])+'<p class="hint">A faixa verde mostra o intervalo mais comum, de 21 a 35 dias. Barras laranja ficaram fora dele.</p>':'<div class="vazio" style="padding:10px">Registre pelo menos 2 inícios de menstruação para ver este gráfico.</div>')+'</div>';
+ const pc=c.filter(function(k){return k.e&&muDif(k.s,k.e)>=0&&muDif(k.s,k.e)<=14}).slice(-12);
+ if(pc.length>=2)h+='<h3>Duração da menstruação</h3><div class="card">'+muBars(pc.map(function(k){return muDif(k.s,k.e)+1}),pc.map(function(k){return muDM(k.s)}),[3,7])+'<p class="hint">Em geral dura de 3 a 7 dias.</p></div>';
+ const ph=muPadroes(),ordem=['mens','fol','fert','lut','tpm'];let pad='';
+ ordem.forEach(function(f){const o=ph[f];if(!o||o.n<2)return;const top=Object.keys(o.s).sort(function(a,b){return o.s[b]-o.s[a]}).slice(0,3),md=Object.keys(o.m).sort(function(a,b){return o.m[b]-o.m[a]})[0];
+  if(!top.length&&!md)return;
+  pad+='<div style="margin-top:10px"><b>'+MU_FS[f].ic+' '+esc(MU_FS[f].n)+'</b> <small style="color:var(--mute)">'+o.n+' dias registrados'+(md?' · humor mais comum '+md:'')+'</small>'+top.map(function(k){const p=Math.round(100*o.s[k]/o.n);return'<div class="mu-pt"><span>'+esc(k)+'</span><div><i style="width:'+p+'%"></i></div><small>'+p+'%</small></div>'}).join('')+'</div>'});
+ h+='<h3>🔎 Padrões do seu corpo</h3><div class="card">'+(pad||'<div class="vazio" style="padding:10px">Registre sintomas e humor por alguns dias em cada fase. Depois o app mostra o que costuma acontecer com você e quando.</div>')+(pad?'<p class="hint">Porcentagem dos dias registrados em cada fase em que o sintoma apareceu.</p>':'')+'</div>';
+ const cnt={};Object.keys(MU.sym).forEach(function(d){(MU.sym[d].s||[]).forEach(function(k){cnt[k]=(cnt[k]||0)+1})});
+ const tops=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).slice(0,6);
+ if(tops.length){const m=cnt[tops[0]];h+='<h3>Sintomas mais frequentes</h3><div class="card">'+tops.map(function(k){return'<div class="mu-pt"><span>'+esc(k)+'</span><div><i style="width:'+Math.round(100*cnt[k]/m)+'%"></i></div><small>'+cnt[k]+'x</small></div>'}).join('')+'</div>'}
+ const tp=[],pw=[];Object.keys(MU.sym).sort().forEach(function(d){const x=MU.sym[d];if(x.t&&d>=muAdd(HOJE,-60))tp.push([d,x.t]);if(x.wt&&d>=muAdd(HOJE,-120))pw.push([d,x.wt])});
+ const u=c[c.length-1],ev=muOvEv(u.s,muAdd(HOJE,1));
+ h+='<h3>🌡️ Temperatura basal</h3><div class="card">'+(tp.length>=3?muLine(tp.slice(-45),2,ev&&ev.src==='temp'?ev.d:'')+'<p class="hint">'+(ev&&ev.src==='temp'?'O app encontrou uma subida de temperatura e marcou a ovulação em '+esc(fmt(ev.d))+'.':'Registre a temperatura ao acordar todo dia. Após a ovulação ela sobe cerca de 0,2 a 0,5 °C.')+'</p>':'<p class="hint" style="margin:0">Registre a temperatura ao acordar (em Hoje, “Mais campos”) por pelo menos 3 dias para ver o gráfico. Com ciclos completos, o app detecta a ovulação sozinho.</p>')+'</div>';
+ if(pw.length>=3)h+='<h3>⚖️ Peso</h3><div class="card">'+muLine(pw.slice(-40),1,'')+'</div>';
+ return h}
+
+/* ---- aba Aprender ---- */
+var MU_APR=[
+['🔄 As fases do ciclo','O ciclo começa no 1º dia da menstruação e termina no dia anterior à próxima. Tem 4 fases: menstrual (sangramento), folicular (o óvulo amadurece), ovulatória (o óvulo é liberado) e lútea (o corpo se prepara para uma possível gravidez).\nUm ciclo típico dura de 21 a 35 dias. Os 28 dias são só uma média, e é normal o ciclo variar alguns dias de um mês para o outro.'],
+['✨ Como saber que ovulou','Sinais comuns: corrimento claro e elástico (clara de ovo), uma dorzinha leve de um lado do baixo-ventre, mais libido e a temperatura basal subindo de 0,2 a 0,5 °C depois da ovulação.\nO teste de ovulação (LH) de farmácia avisa com 1 ou 2 dias de antecedência. Nenhum sinal é 100% certo sozinho; o app cruza os que você registrar.'],
+['🌡️ Temperatura basal: como medir','Meça todos os dias ao acordar, na mesma hora, antes de levantar, falar ou beber água, com termômetro digital e sempre no mesmo local. Durma pelo menos 3 horas seguidas antes.\nAo registrar, o app marca a ovulação quando vê 3 dias seguidos acima da maior temperatura dos 6 dias anteriores. A confirmação só vem depois que ela já aconteceu, por isso serve para conhecer o seu padrão.'],
+['💧 Corrimento (muco cervical)','Ao longo do ciclo ele muda: seco ou pegajoso, depois cremoso, aquoso e, perto da ovulação, parecido com clara de ovo (o mais fértil). Depois volta a ficar mais seco.\nProcure atendimento se tiver cheiro forte, cor esverdeada ou amarelada, coceira ou ardência.'],
+['🧪 Teste de ovulação (LH)','Detecta o pico do hormônio LH, que acontece de 24 a 36 horas antes da ovulação. Siga a bula do teste (em geral, a partir de uns 10 dias depois do início da menstruação, sempre no mesmo horário).\nQuando der positivo, registre no app: ele ajusta a ovulação para o dia seguinte. Quem tem SOP pode ter resultados positivos sem ovular.'],
+['😣 TPM e cólicas','A TPM aparece na semana antes da menstruação, com irritação, ansiedade, inchaço e vontade de doce. Se for tão intensa que atrapalha trabalho e relações, pode ser TDPM: existe tratamento.\nCalor local, exercício leve e boas noites de sono ajudam nas cólicas. Dor que impede a rotina, piora a cada mês ou aparece na relação merece avaliação (pode ser endometriose).'],
+['🚨 Quando procurar uma médica','• Ciclos quase sempre menores que 21 ou maiores que 35 dias\n• Menstruação por mais de 7 dias\n• Fluxo que encharca absorvente a cada 1 ou 2 horas, ou coágulos grandes\n• Dor forte que não melhora\n• Sangramento entre as menstruações ou depois da relação\n• 3 meses sem menstruar (fora gravidez, amamentação e menopausa)\n• Ciclos irregulares com acne forte e pelos em excesso (pode ser SOP)\n• Tontura, palpitação ou cansaço intenso durante a menstruação'],
+['🛡️ Contracepção: o que saber','Calendário ou aplicativo sozinho não é método contraceptivo confiável: a ovulação varia e esses métodos falham com frequência. O preservativo também protege contra ISTs.\nPílula, injetável, DIU e preservativos são oferecidos pelo SUS: converse na UBS ou com sua ginecologista para escolher o melhor para você. A pílula do dia seguinte é de emergência e funciona melhor quanto mais cedo for tomada.'],
+['🤰 Gravidez: primeiros sinais','Atraso da menstruação, enjoo, seios sensíveis, sono e vontade de urinar mais vezes são sinais comuns. O teste de farmácia é mais confiável a partir do primeiro dia de atraso. Confirme com exame de sangue e comece o pré-natal na UBS.\nSe você pretende engravidar, converse antes com sua médica sobre ácido fólico e exames.'],
+['🌿 Perimenopausa','A partir dos 40 anos, mais ou menos, os ciclos podem ficar mais curtos, mais longos ou irregulares, com ondas de calor e sono pior. É uma transição normal, mas converse com sua ginecologista para cuidar dos sintomas e da saúde dos ossos e do coração.']];
+function muApr(){
+ return'<div class="card"><p class="hint" style="margin:0 0 6px">Informações gerais e educativas. Não substituem a consulta com uma médica.</p>'+MU_APR.map(function(a){return'<details class="mu-d"><summary>'+esc(a[0])+'</summary>'+a[1].split('\n').map(function(p){return'<p>'+esc(p)+'</p>'}).join('')+'</details>'}).join('')+'</div>'}
+
+/* ---- aba Ajustes ---- */
+function muAju(){
+ const cf=MU.cfg,c=muCic();
+ const nr=function(t,sub,k,mn,mx){return'<div class="row" style="align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:nowrap"><span style="flex:1">'+t+'<br><small style="color:var(--mute)">'+sub+'</small></span><input type="number" min="'+mn+'" max="'+mx+'" value="'+cf[k]+'" inputmode="numeric" onchange="muCfgSet(\''+k+'\',this.value)" style="width:78px"></div>'};
+ let h='<h3>🎯 Objetivo</h3><div class="card"><div class="mu-chips">'+MU_MD.map(function(m){return'<button class="'+(cf.mode===m[0]?'on':'')+'" onclick="muMode(\''+m[0]+'\')">'+m[1]+'</button>'}).join('')+'</div><p class="hint" style="margin:0">Muda as mensagens sobre fertilidade. Os cálculos são os mesmos.</p></div>';
+ h+='<h3>🔧 Valores padrão</h3><div class="card"><p class="hint" style="margin:0">Usados enquanto o app não tem ciclos suficientes. Depois ele usa a média dos seus registros.</p>'+nr('Ciclo (dias)','De 21 a 45','cl',21,45)+nr('Menstruação (dias)','De 2 a 10','pl',2,10)+nr('Fase lútea (dias)','Da ovulação até a menstruação, de 10 a 16. O comum é 14.','lp',10,16)+'</div>';
+ h+='<h3>💊 Anticoncepcional</h3><div class="card"><button class="'+(cf.pill?'':'sec')+'" style="width:100%" onclick="muPillCfg()">'+(cf.pill?'✓ Lembrete diário ligado':'Ligar lembrete diário')+'</button>'+(cf.pill?'<div class="row" style="align-items:center;margin-top:8px"><span class="hint" style="margin:0;flex:1">Horário do lembrete</span><input type="time" value="'+esc(cf.ph)+'" onchange="muCfgSet(\'ph\',this.value)" style="width:auto"></div>':'')+'<p class="hint">O lembrete entra na Agenda pelos próximos 60 dias e se renova sozinho quando você abre o app.</p></div>';
+ h+='<h3>🗂️ Histórico de ciclos</h3><div class="card">'+(c.length?c.slice().reverse().slice(0,24).map(function(k){return'<div class="item"><span class="t"><b>'+esc(fmt(k.s,{day:'numeric',month:'short',year:'numeric'}))+'</b><br><small style="color:var(--mute)">Fim: <input type="date" value="'+(k.e||'')+'" min="'+k.s+'" max="'+HOJE+'" onchange="muSetEnd(\''+k.s+'\',this.value)" style="width:auto;margin-top:4px;padding:4px 6px">'+(k.e?' · '+(muDif(k.s,k.e)+1)+' dias':'')+'</small></span><button class="sec" style="flex:none" onclick="muDelCy(\''+k.s+'\')" aria-label="Excluir">🗑️</button></div>'}).join(''):'<div class="vazio" style="padding:10px">Nenhum ciclo registrado ainda.</div>')+
+  '<strong style="display:block;margin-top:12px">Adicionar ciclo anterior</strong><div class="row" style="margin-top:6px"><label class="hint" style="margin:0">Início<input type="date" id="mu-ps" max="'+HOJE+'" style="display:block;margin-top:4px"></label><label class="hint" style="margin:0">Fim (opcional)<input type="date" id="mu-pe" max="'+HOJE+'" style="display:block;margin-top:4px"></label></div><button class="sec" style="width:100%;margin-top:8px" onclick="muAddPast()">Adicionar ao histórico</button><p class="hint">Com 3 ou mais ciclos a previsão fica bem mais precisa.</p></div>';
+ h+='<h3>📤 Relatório e backup</h3><div class="card"><button class="sec" style="width:100%" onclick="muRelatorio()">📋 Relatório para levar à consulta</button><button class="sec" style="width:100%;margin-top:8px" onclick="muBackup()">💾 Copiar backup dos dados do ciclo</button>'+
+  '<textarea class="mu-ta" id="mu-bk" placeholder="Para restaurar, cole aqui o backup copiado"></textarea><button class="sec" style="width:100%;margin-top:8px" onclick="muRestore()">♻️ Restaurar backup</button><p class="hint">Os dados do ciclo ficam só neste aparelho. Se trocar de celular ou limpar o app, o backup evita perder tudo.</p></div>';
+ h+='<button class="sec" style="width:100%;color:var(--rd)" onclick="muApagar()">🗑️ Apagar todos os dados do ciclo</button>';
+ return h}
+
 function muCiclo(){
- const p=muProx(),x=MU.sym[HOJE]||{m:'',s:[]},c=muCic(),ult=c[c.length-1];
- const emAnd=!!(ult&&!ult.e&&muDif(ult.s,HOJE)>=0&&muDif(ult.s,HOJE)<10);
- let st;
- if(!p)st='<p class="hint" style="margin:0">Registre o primeiro dia da sua menstruação para o app calcular a previsão.</p>';
- else{const dia=muDif(p.ult,HOJE)+1,falta=muDif(HOJE,p.prox),fert=HOJE>=p.f1&&HOJE<=p.f2;
-  st='<small style="color:var(--mute)">'+(emAnd?'Menstruação em andamento':fert?'Período fértil estimado':'Hoje')+'</small><div class="mu-big">Dia '+dia+' do ciclo</div><div>'+
-   (falta>0?'Próxima menstruação em <b>'+falta+(falta===1?' dia':' dias')+'</b> ('+esc(fmt(p.prox))+')':falta===0?'Próxima menstruação <b>prevista para hoje</b>':'Previsão passada há <b>'+(-falta)+(falta===-1?' dia':' dias')+'</b> ('+esc(fmt(p.prox))+')')+'</div>'+
-   '<p class="hint">Ciclo médio: '+p.L+' dias'+(p.n<3?' (padrão até você registrar 3 ciclos)':'')+' · Período fértil estimado: '+esc(fmt(p.f1))+' a '+esc(fmt(p.f2))+'</p>'}
- const botoes='<div class="row"><button onclick="muIni()">🩸 Comecei hoje</button><button class="sec" onclick="muFim()">Terminou hoje</button></div>'+
-  '<div class="row" style="margin-top:8px"><input type="date" id="mu-di" value="'+HOJE+'" max="'+HOJE+'" aria-label="Data de início"><button class="sec" style="flex:none" onclick="muIniData()">Adicionar início</button></div>'+
-  (p?'<button class="sec" style="width:100%;margin-top:8px" onclick="muLembraProx()">🔔 Avisar na Agenda quando a próxima chegar</button>':'');
- const hum='<div class="mu-chips">'+MU_H.map(function(e,i){return '<button class="'+(x.m===e?'on':'')+'" onclick="muHum('+i+')" aria-label="Humor">'+e+'</button>'}).join('')+'</div>';
- const sint='<div class="mu-chips">'+MU_S.map(function(e,i){return '<button class="'+(x.s.indexOf(e)>=0?'on':'')+'" onclick="muSint('+i+')">'+e+'</button>'}).join('')+'</div>';
- const hist=c.length?c.slice(-6).reverse().map(function(k){return '<div class="item"><span class="t"><b>'+esc(fmt(k.s))+'</b><br><small style="color:var(--mute)">'+(k.e?'até '+esc(fmt(k.e))+' · '+(muDif(k.s,k.e)+1)+' dias':'em andamento')+'</small></span><button class="sec" style="flex:none" onclick="muDelCy(\''+k.s+'\')" aria-label="Excluir">🗑️</button></div>'}).join(''):'<div class="vazio" style="padding:10px">Nenhum ciclo registrado ainda.</div>';
- return '<div class="card">'+st+'</div><div class="card">'+botoes+'</div>'+
-  '<h3>Como você está hoje?</h3><div class="card"><strong>Humor</strong>'+hum+'<strong>Sintomas</strong>'+sint+'</div>'+
-  '<h3>Últimos ciclos</h3><div class="card">'+hist+'</div>'+
-  '<p class="hint">As datas são estimativas feitas com os seus registros. Não use como método para evitar gravidez, e converse com sua ginecologista se o ciclo mudar muito. Os dados do ciclo ficam só neste aparelho.</p>'}
+ const nav='<div class="seg">'+[['hoje','🌸 Hoje'],['cal','📅 Calendário'],['ana','📊 Análises'],['apr','📚 Aprender'],['aju','⚙️ Ajustes']].map(function(a){return'<button class="'+(muSub===a[0]?'on':'')+'" onclick="muSubGo(\''+a[0]+'\')">'+a[1]+'</button>'}).join('')+'</div>';
+ return nav+({hoje:muHoje,cal:muCalV,ana:muAna,apr:muApr,aju:muAju}[muSub]||muHoje)()+'<p class="hint">As datas são estimativas feitas com os seus registros. Este app não é método contraceptivo nem substitui uma consulta médica. Converse com sua ginecologista se o ciclo mudar muito. Os dados do ciclo ficam só neste aparelho.</p>'}
 
 /* ---------- Saúde e lembretes ---------- */
 var MU_CH=['🩺 Consulta ginecologista','🔬 Papanicolau','🎀 Mamografia','💊 Anticoncepcional','💊 Vitaminas','📋 Exames de rotina','💉 Vacina','🩻 Ultrassom'],MU_R={u:'uma vez',d:'todo dia (30 dias)',s:'toda semana (12 semanas)',m:'todo mês (12 meses)'};
@@ -5827,7 +6230,7 @@ const RECADO_QUADRO_TAG_V1='quadro-v1',RECADO_QUADRO_KEY_V1='ma-recado-'+RECADO_
 /* n:2 = item novo do quadro v2 (nenhum no momento). Quem já viu o quadro v1 vê só os itens n:2; quem nunca viu vê tudo. */
 const RECADO_QUADRO=[
  {ic:'🌸',t:'Espaço Mulher',d:'Um espaço de cuidado e bem-estar, com tudo guardado só no seu aparelho.',
-  l:['🌸 Ciclo: registre o início e o fim, veja a previsão do próximo e dos dias férteis.','🩺 Saúde: lembretes de consultas, exames e remédios, que tocam o alarme da Agenda.','💧 Autocuidado: água, sono, humor e o “Tempo para mim”.','🛡️ Segurança: contatos de confiança, onde buscar ajuda e um resumo dos direitos da mulher.','🏆 Conquistas: anote o que você conseguiu hoje.'],
+  l:['🌸 Ciclo: roda das fases, calendário, previsão com período fértil e ovulação, registro diário completo, análises, alertas e lembretes automáticos.','🩺 Saúde: lembretes de consultas, exames e remédios, que tocam o alarme da Agenda.','💧 Autocuidado: água, sono, humor e o “Tempo para mim”.','🛡️ Segurança: contatos de confiança, onde buscar ajuda e um resumo dos direitos da mulher.','🏆 Conquistas: anote o que você conseguiu hoje.'],
   b:['Abrir Espaço Mulher',"go('mulher')"]},
  {ic:'🧭',t:'Novo layout',d:'Um jeito novo de navegar, sem perder nada. O clássico continua disponível.',
   l:['☰ Menu em grupos: Hoje, Planejar, Dinheiro e Para você.','➕ Botão + para criar compromisso, nota, diário ou compra rapidinho.','🏠 Painel inicial com o próximo compromisso e atalhos para todos os seus espaços.','🎨 Tema Tropicália, com cores vivas e fonte nova (em Aparência).','⚙️ Troque quando quiser em Configurações › Layout do app.'],
@@ -6828,7 +7231,7 @@ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
  }catch(e){try{console.warn('Kayla vocab:',e)}catch(x){}_run(txt)}};
 /* ---- 8. mais respostas de ajuda ---- */
 kFaq.push([/cultur|show|teatro|peca de teatro|ingresso|espetaculo/,'Em Espaço Cultural você vê shows, peças de teatro, eventos infantis, festivais e festas em Recife, Olinda, Paulista e Jaboatão, pagos e gratuitos. Dá para filtrar por cidade, categoria, preço e data e pôr o evento na Agenda. Posso abrir: digite “abrir espaço cultural”.'],
- [/mulher|ciclo|menstrua|tpm/,'Em Espaço Mulher você acompanha o ciclo, lembretes de saúde, autocuidado e contatos de segurança. Toque em “Espaço Mulher” no menu.'],
+ [/mulher|ciclo|menstrua|tpm/,'Em Espaço Mulher você acompanha o ciclo (fases, período fértil, calendário, sintomas, análises e lembretes), saúde, autocuidado e contatos de segurança. Toque em “Espaço Mulher” no menu.'],
  [/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Mercado) você acompanha as ofertas dos mercados. Posso abrir: digite “abrir promoções”.'],
  [/diari|desabaf/,'No Diário você escreve como foi o dia e marca seu humor. Quer abrir? Digite “abrir diário”.'],
  [/nota|anotac/,'Em Notas você guarda anotações com cores. Para salvar rápido, escreva: “anotar: sua ideia”.'],
