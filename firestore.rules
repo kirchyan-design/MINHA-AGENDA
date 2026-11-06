@@ -8,5 +8,46 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
     }
+
+    // Menu Comentários (públicos): qualquer pessoa pode LER os comentários e ENVIAR um novo (com ou sem login,
+    // anônimo ou não), mas ninguém consegue alterar ou apagar pelo app. Para apagar um comentário impróprio,
+    // use o console do Firebase (Firestore Database › comentarios), que não passa por estas regras.
+    // O contato (e-mail/telefone) NÃO fica aqui: vai para comentarios_contatos, que ninguém lê pelo app.
+    match /comentarios/{id} {
+      allow get: if true;
+      allow list: if request.query.limit <= 50;
+      allow create: if request.resource.data.keys().hasOnly(
+            ['nota','gostou','melhorar','nome','anonimo','versao','plataforma','idioma','criadoEm'])
+        && request.resource.data.nota is int
+        && request.resource.data.nota >= 0 && request.resource.data.nota <= 4
+        && request.resource.data.gostou is string && request.resource.data.gostou.size() <= 700
+        && request.resource.data.melhorar is string && request.resource.data.melhorar.size() <= 700
+        && request.resource.data.nome is string && request.resource.data.nome.size() <= 60
+        && request.resource.data.anonimo is bool
+        && request.resource.data.versao is string && request.resource.data.versao.size() <= 20
+        && request.resource.data.plataforma is string && request.resource.data.plataforma.size() <= 20
+        && request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5
+        && request.resource.data.criadoEm is timestamp
+        && (request.resource.data.nota > 0
+            || request.resource.data.gostou.size() > 0
+            || request.resource.data.melhorar.size() > 0);
+      allow update, delete: if false;
+    }
+
+    // Contato opcional de quem quer resposta: só o dono do projeto lê (pelo console).
+    match /comentarios_contatos/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['contato'])
+        && request.resource.data.contato is string
+        && request.resource.data.contato.size() > 0 && request.resource.data.contato.size() <= 100;
+      allow read, update, delete: if false;
+    }
+
+    // Denúncias de comentários: qualquer pessoa envia; só o dono do projeto lê (pelo console).
+    match /denuncias/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['comentario','criadoEm'])
+        && request.resource.data.comentario is string && request.resource.data.comentario.size() <= 40
+        && request.resource.data.criadoEm is timestamp;
+      allow read, update, delete: if false;
+    }
   }
 }

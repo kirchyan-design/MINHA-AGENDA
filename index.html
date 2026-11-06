@@ -1148,6 +1148,41 @@ nav button.plus svg{width:24px;height:24px}
 .ring{--p:0;flex:none;width:68px;height:68px;border-radius:50%;background:conic-gradient(var(--sun,#ffc83d) calc(var(--p)*1%),rgba(255,255,255,.25) 0);display:grid;place-items:center;position:relative}
 .ring::before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--ac)}.ring i{position:relative;font:700 14px/1 Figtree,sans-serif;font-style:normal}
 .stats.bento .tl{min-height:92px;background:color-mix(in srgb,var(--h) 16%,var(--sf))}.stats.bento .tl.w2{grid-column:1/-1}
+
+/* ===== Menu Comentários: destaque no menu, cartão no Início e formulário ===== */
+@keyframes comPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ac) 50%,transparent)}65%{box-shadow:0 0 0 9px transparent}}
+nav button.chl{position:relative;color:var(--ac);font-weight:700}
+nav button.chl .ni,nav button.chl.on .ni{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 50%,#ff4f9a));color:var(--onac);box-shadow:0 6px 14px -6px var(--ac)}
+nav button.chl.cnw .ni{animation:comPulse 2.4s ease-out infinite}
+nav button.chl.cnw::after{content:"";position:absolute;top:1px;right:calc(50% - 26px);width:11px;height:11px;border-radius:50%;background:#ff3d7f;border:2px solid var(--sf)}
+.drw button.chl{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 50%,#ff4f9a));color:var(--onac)}
+.drw button.chl.on{filter:brightness(.94)}
+.drw button.chl.cnw::after{content:"";margin-left:auto;width:10px;height:10px;border-radius:50%;background:#fff}
+.com-ban{position:relative;display:flex;align-items:stretch;margin:0 0 14px;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 50%,#ff4f9a));color:var(--onac);box-shadow:0 12px 26px -14px var(--ac)}
+.com-ban .com-bm{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:14px;background:none;color:inherit;text-align:left;border-radius:0;box-shadow:none}
+.com-bi{font-size:30px;line-height:1;flex:none}
+.com-bt{flex:1;min-width:0}.com-bt b{display:block;font-size:16px;line-height:1.2}.com-bt small{display:block;margin-top:3px;font-size:13px;font-weight:500;opacity:.92;line-height:1.3}
+.com-bg{flex:none;background:rgba(255,255,255,.24);padding:8px 12px;border-radius:12px;font-weight:700;font-size:13px}
+.com-ban .com-bx{align-self:flex-start;background:none;color:inherit;opacity:.8;padding:8px 10px;border-radius:0;box-shadow:none}
+.com-hero{margin:0 0 14px;padding:14px 16px;border-radius:18px;background:var(--acs);color:var(--ink)}
+.com-hero b{display:block;font-size:17px}.com-hero p{margin:6px 0 0;font-size:14px;color:var(--mute);line-height:1.4}
+.com-faces{display:flex;gap:8px;margin:6px 0 16px}
+.com-f{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--sf);color:var(--mute);border:1.5px solid var(--ln);padding:10px 2px;border-radius:14px;font-weight:600;box-shadow:none}
+.com-f span{font-size:28px;line-height:1;filter:grayscale(.75);opacity:.75;transition:transform .15s,filter .15s,opacity .15s}
+.com-f small{font-size:10.5px;line-height:1.15;text-align:center}
+.com-f.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}.com-f.on span{filter:none;opacity:1;transform:scale(1.18)}
+.com-ta{min-height:84px}
+.com-an{margin:2px 0 12px;font-size:13px;font-weight:600;color:var(--ac)}
+.com-ok{text-align:center}.com-ok .com-oki{font-size:44px;line-height:1.1;margin-bottom:8px}.com-ok b{font-size:16px;line-height:1.35}
+/* layout novo com 5 grupos (inclui Comentários): os botões dividem a barra e cabem na tela */
+@media not all and (orientation:landscape) and (max-height:540px){
+nav div#nav.n5{gap:0}
+nav div#nav.n5 button{flex:1 1 0;min-width:0;padding:3px 0 2px}
+nav div#nav.n5 button.plus{flex:0 0 46px;min-width:46px}
+nav div#nav.n5 button .nl{font-size:10px;letter-spacing:-.02em;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+nav div#nav.n5 button .ni{width:100%;max-width:46px}
+}
+@media (prefers-reduced-motion:reduce){nav button.chl.cnw .ni{animation:none}.com-f span{transition:none}}
 </style>
 
 </head>
@@ -1235,7 +1270,7 @@ new MutationObserver(ms=>{if(LANG==='pt'||_busy)return;ms.forEach(m=>m.addedNode
 function setMenu(m){S.menu=m==='side'?'side':'bottom';fecharMenu();save();render()}
 function fecharMenu(){const d=document.getElementById('drw');if(d)d.remove()}
 function abrirMenu(){fecharMenu();const o=document.createElement('div');o.id='drw';o.className='drw';
- const it=(k,ic,l)=>`<button class="${tab===k?'on':''}" onclick="fecharMenu();go('${k}')">${svg(ic)}<span>${_t(l)}</span></button>`;
+ const it=(k,ic,l)=>`<button class="${(tab===k?'on':'')+hlCls(k)}" onclick="fecharMenu();go('${k}')">${svg(ic)}<span>${_t(l)}</span></button>`;
  o.innerHTML=`<aside role="dialog" aria-label="Menu"><div class="dh">${avatar()}<span>${esc(S.user.name||'')}</span></div>${TABS.map(t=>it(t[0],t[0],t[2])).join('')}<hr>${it('config','inicio','Configurações').replace(svg('inicio'),'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>')}</aside>`;
  o.onclick=e=>{if(e.target===o)fecharMenu()};document.body.appendChild(o)}
 [['Menus do app','App menus','Menús de la app','App-Menüs'],['Escolha quais menus aparecem na navegação. Os desativados somem do menu, mas seus dados continuam guardados. Configurações fica sempre disponível.','Choose which menus appear in navigation. Disabled menus are hidden, but your data stays saved. Settings is always available.','Elige qué menús aparecen en la navegación. Los desactivados se ocultan, pero tus datos siguen guardados. Ajustes siempre está disponible.','Wählen Sie, welche Menüs in der Navigation erscheinen. Deaktivierte Menüs werden ausgeblendet, Ihre Daten bleiben gespeichert. Einstellungen ist immer verfügbar.'],['Pelo menos um menu precisa ficar ativo.','At least one menu must stay on.','Al menos un menú debe quedar activo.','Mindestens ein Menü muss aktiv bleiben.'],['Aparece no menu.','Shown in the menu.','Aparece en el menú.','Im Menü sichtbar.'],['Escondido do menu.','Hidden from the menu.','Oculto del menú.','Im Menü ausgeblendet.'],['Ativar','Turn on','Activar','Aktivieren'],['Desativar','Turn off','Desactivar','Deaktivieren']].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
@@ -1251,6 +1286,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ comentarios:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5z"/><path d="M8.5 8h7M8.5 11h4.5"/>',
  clt:'<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18M10.5 13v1.5h3V13"/>',
  mulher:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>',
  cultural:'<path d="M3.5 4.5h10v6.5a5 5 0 0 1-10 0z"/><path d="M6.5 8.5v.6M10.5 8.5v.6"/><path d="M6 12.2c1.2 1.1 3.3 1.1 4.5 0"/><path d="M13.5 8.5h7v6.5a5 5 0 0 1-8.2 3.8"/><path d="M16 12.5v.6M19 12.5v.6"/>',
@@ -1291,14 +1327,14 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural']];
+const TABS_ALL=[['inicio','🏠','Início'],['comentarios','💬','Comentários'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
 tabsAtualizar();
 
 
-function nav(){tabsAtualizar();if(!window._tabChk){window._tabChk=1;if(tab!=='config'&&!TABS.some(t=>t[0]===tab))tab=TABS[0][0]}$('#nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"${tab===t[0]?' aria-current="page"':''}><span class="ni">${svg(t[0])}</span><span class="nl">${_t(t[2])}</span></button>`).join('');const n=$('#nav'),b=n.querySelector('.on');if(b&&n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;navHint(n)}
+function nav(){tabsAtualizar();if(!window._tabChk){window._tabChk=1;if(tab!=='config'&&!TABS.some(t=>t[0]===tab))tab=TABS[0][0]}$('#nav').innerHTML=TABS.map(t=>`<button class="${(tab===t[0]?'on':'')+hlCls(t[0])}" onclick="go('${t[0]}')"${tab===t[0]?' aria-current="page"':''}><span class="ni">${svg(t[0])}</span><span class="nl">${_t(t[2])}</span></button>`).join('');const n=$('#nav'),b=n.querySelector('.on');if(b&&n.scrollWidth>n.clientWidth)n.scrollLeft=b.offsetLeft-(n.clientWidth-b.offsetWidth)/2;navHint(n)}
 function navHint(n){
  if(!(S.user&&S.user.name))return; /* tela de login: sem aviso */
  if(window._nvh||n.scrollWidth<=n.clientWidth)return;window._nvh=1;
@@ -3515,7 +3551,7 @@ function vMulher(){
  return '<h2>Espaço Mulher</h2>'+seg+({ciclo:muCiclo,saude:muSaude,care:muCare,seg:muSeg,mais:muMais}[muTab]||muCiclo)()}
 
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,comentarios:vComentarios,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -5519,6 +5555,13 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.5.7':[
+  '👥 Comentários agora são públicos: na tela Comentários você lê o que os outros usuários escreveram. Quem não informa o nome aparece como Anônimo, e o e-mail ou telefone nunca é mostrado. Dá para denunciar um comentário pelo ⚑.'
+ ],
+ '3.5.6':[
+  '💬 Novo menu Comentários, em destaque logo depois do Início: diga se está gostando do app, o que mais gosta e o que precisa melhorar. Você não precisa se identificar: nome e contato são opcionais e o comentário pode ser totalmente anônimo.',
+  '📌 O Quadro de avisos e a tela Início ganharam um convite para deixar o seu comentário. Se estiver sem internet, o app guarda o comentário e envia quando a conexão voltar.'
+ ],
  '3.5.5':[
   '⚖️ Promoções › Comparar preços: atualizado com os encartes de 06 a 08/11 do Assaí, Atacadão e Novo Atacarejo. Entraram requeijão, iogurtes (copo, bandeja e garrafa), leite fermentado, Power Whey, carne moída, bananinha, fígado, cervejas, frisante, sucos, shampoo, absorvente, água sanitária, inseticida, esponja e mais itens de limpeza e mercearia, e saíram os nomes de encartes vencidos.',
   '🛠️ Comparar preços: o Assaí agora diferencia produtos de mesmo nome com embalagens diferentes (ex.: iogurte Nestlé de 170 g e de 340 g), que antes se misturavam.'
@@ -5809,9 +5852,14 @@ function recadoNovidQuandoLivre(n){n=n||0;
    Mesma regra do aviso das últimas atualizações: a marca é guardada por conta (e-mail, celular ou id) no localStorage
    (ma-recado-quadro-v1:<usuário>) e dentro dos dados do usuário (S.user.avisos['quadro-v1']), que vão para a nuvem.
    É gravada antes de mostrar a caixa, então nunca repete. Espera a senha e as outras caixas saírem da frente.
-   Para mostrar de novo a todos, troque quadro-v1 por quadro-v2 em RECADO_QUADRO_TAG. O texto fica em RECADO_QUADRO. */
-const RECADO_QUADRO_TAG='quadro-v1',RECADO_QUADRO_KEY='ma-recado-'+RECADO_QUADRO_TAG;
+   Para mostrar de novo a todos, troque quadro-v2 por quadro-v3 em RECADO_QUADRO_TAG (e mova a tag antiga para RECADO_QUADRO_TAG_V1). O texto fica em RECADO_QUADRO. */
+const RECADO_QUADRO_TAG='quadro-v2',RECADO_QUADRO_KEY='ma-recado-'+RECADO_QUADRO_TAG;
+const RECADO_QUADRO_TAG_V1='quadro-v1',RECADO_QUADRO_KEY_V1='ma-recado-'+RECADO_QUADRO_TAG_V1;
+/* n:2 = item novo do quadro v2 (Comentários). Quem já viu o quadro v1 vê só os itens n:2; quem nunca viu vê tudo. */
 const RECADO_QUADRO=[
+ {n:2,ic:'💬',t:'Comentários',d:'Um menu para você falar com a gente: conte se está gostando e o que precisa melhorar no app.',
+  l:['🙂 Diga se está gostando, com uma carinha: de “Não estou gostando” a “Adorei!”.','💡 Deixe sugestões e aponte o que precisa melhorar.','🕶️ Sem se identificar: nome e contato são opcionais, e o comentário pode ser totalmente anônimo (aparece como Anônimo).','👥 Os comentários são públicos: você lê o que os outros usuários escreveram e eles leem o seu. E-mail e telefone nunca aparecem, e dá para denunciar qualquer comentário.','📨 Só vai o que você escrever aqui. Seus compromissos, notas e dados do app não são enviados.','⭐ O menu fica em destaque, logo depois do Início (no layout novo, na barra de baixo).'],
+  b:['Abrir Comentários',"go('comentarios')"]},
  {ic:'🌸',t:'Espaço Mulher',d:'Um espaço de cuidado e bem-estar, com tudo guardado só no seu aparelho.',
   l:['🌸 Ciclo: registre o início e o fim, veja a previsão do próximo e dos dias férteis.','🩺 Saúde: lembretes de consultas, exames e remédios, que tocam o alarme da Agenda.','💧 Autocuidado: água, sono, humor e o “Tempo para mim”.','🛡️ Segurança: contatos de confiança, onde buscar ajuda e um resumo dos direitos da mulher.','🏆 Conquistas: anote o que você conseguiu hoje.'],
   b:['Abrir Espaço Mulher',"go('mulher')"]},
@@ -5828,6 +5876,9 @@ const quadroUsuario=()=>{const c=S.user&&S.user.conta;return String((c&&(c.email
 function quadroVisto(){
  try{if(localStorage.getItem(RECADO_QUADRO_KEY+':'+quadroUsuario()))return true}catch(e){}
  return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG])}
+function quadroVistoV1(){
+ try{if(localStorage.getItem(RECADO_QUADRO_KEY_V1+':'+quadroUsuario()))return true}catch(e){}
+ return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG_V1])}
 function quadroMarca(){
  try{localStorage.setItem(RECADO_QUADRO_KEY+':'+quadroUsuario(),'1')}catch(e){}
  try{S.user.avisos=S.user.avisos||{};S.user.avisos[RECADO_QUADRO_TAG]=1;save()}catch(e){}}
@@ -5835,10 +5886,11 @@ function recadoQuadro(){
  if(!S.user||!S.user.name)return;
  if(document.querySelector('.rc-ov')||quadroVisto())return;
  quadroMarca(); /* marca antes de mostrar: nunca aparece duas vezes */
- const it=RECADO_QUADRO.map((q,i)=>'<div class="nv-it'+(i===0?' nv-new':'')+'"><div class="nv-h"><b>'+q.ic+' '+esc(q.t)+'</b></div><div class="nv-t">'+esc(q.d)+'</div>'+q.l.map(x=>'<div class="nv-t">'+esc(x)+'</div>').join('')+'<div style="margin-top:8px"><button type="button" class="sec" data-qb="'+i+'">'+esc(q.b[0])+'</button></div></div>').join('');
+ const lista=quadroVistoV1()?RECADO_QUADRO.filter(q=>q.n===2):RECADO_QUADRO;
+ const it=lista.map((q,i)=>'<div class="nv-it'+(i===0?' nv-new':'')+'"><div class="nv-h"><b>'+q.ic+' '+esc(q.t)+'</b></div><div class="nv-t">'+esc(q.d)+'</div>'+q.l.map(x=>'<div class="nv-t">'+esc(x)+'</div>').join('')+'<div style="margin-top:8px"><button type="button" class="sec" data-qb="'+i+'">'+esc(q.b[0])+'</button></div></div>').join('');
  const o=document.createElement('div');o.className='ov rc-ov';
  o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Quadro de avisos"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
-  +'<div class="rc-h"><p>📌 Quadro de avisos: novidades do app</p><small>Conheça os menus e recursos novos. Este aviso aparece só uma vez para você.</small></div>'
+  +'<div class="rc-h"><p>📌 Quadro de avisos: '+(lista.length===1?'novidade':'novidades')+' do app</p><small>Conheça '+(lista.length===1?'o menu novo':'os menus e recursos novos')+'. Este aviso aparece só uma vez para você.</small></div>'
   +'<div class="rc-b">'+it+'</div>'
   +'<div class="rc-f"><button type="button" id="rc-ok">Entendi</button></div></div>';
  document.body.appendChild(o);
@@ -5846,7 +5898,7 @@ function recadoQuadro(){
  const kd=e=>{if(e.key==='Escape')fim()};
  document.addEventListener('keydown',kd,true);
  o.querySelector('.dev-x').onclick=fim;o.querySelector('#rc-ok').onclick=fim;
- o.querySelectorAll('[data-qb]').forEach(b=>{b.onclick=()=>{const c=RECADO_QUADRO[+b.dataset.qb].b[1];fim();try{new Function(c)()}catch(e){}}});
+ o.querySelectorAll('[data-qb]').forEach(b=>{b.onclick=()=>{const c=lista[+b.dataset.qb].b[1];fim();try{new Function(c)()}catch(e){}}});
  setTimeout(()=>{try{o.querySelector('#rc-ok').focus()}catch(e){}},50)}
 function recadoQuadroQuandoLivre(n){n=n||0;
  if(n>600)return;
@@ -5870,6 +5922,7 @@ const GUIA_APP=[
  ['💰','Carteira','Resumo, gastos, contas fixas, renda, salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas) e Investimentos (catálogo com todas as opções, sua carteira, simulador, conversor de moedas e guia).'],
  ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🎭','Espaço Cultural','Shows, peças de teatro, eventos infantis, festivais, festas e exposições em Recife, Olinda, Paulista e Jaboatão, pagos e gratuitos. Filtre por cidade, categoria, preço e data, favorite com ⭐ e ponha o evento na Agenda.'],
+ ['💬','Comentários','Diga se está gostando e o que precisa melhorar. Dá para enviar sem se identificar.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
  ['⚙️','Configurações','Perfil, conta (Google ou e-mail), backup, idioma, cores do tema, menu e senha do app.']];
 function guiaNovosInit(){
@@ -6262,7 +6315,7 @@ function kParse(txt,now){now=now||new Date();txt=kFalaHora(txt);const n=kNorm(tx
   .replace(/^\s*(?:de|do|da|para|pra|que|um|uma|o|a|às|as|em|no|na)(?=\s)\s*/i,' ').replace(/\s+(em|no|na|às|as|para|pra|de|do|da)\s*$/i,'').replace(/\s+/g,' ').trim();
  if(t)t=t[0].toUpperCase()+t.slice(1);
  return {title:t,date:date,time:time}}
-const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
+const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['comentarios',/\b(comentarios?|sugestoes|sugestao|feedback|opiniao)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
 const kFaq=[
  [/lembret|alarme|notifica/,'Para ter lembretes, ative em Configurações › Lembretes e alarme. Depois, todo compromisso com hora avisa antes de começar. Quer que eu ative agora? Digite “ativar lembretes”.'],
  [/backup|restaurar|exportar/,'Em Configurações › Backup no celular você salva, compartilha e restaura seus dados. Se conectar uma conta, também há sincronização na nuvem.'],
@@ -6748,7 +6801,7 @@ function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||nu
   return say(out.length?'Agenda dos próximos 7 dias:\n'+out.join('\n'):'Nenhum compromisso '+(prox?'na semana que vem.':'nos próximos 7 dias.'))}
  return false}
 /* ---- 6. traduz o jeito de falar para os comandos do app ---- */
-const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
+const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['comentarios','comentarios?|sugest\\w*|feedback|opiniao|elogios?|reclamac\\w*|avaliar o app'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
 const tabDe=n=>{for(const [t,r] of TABAL)if(new RegExp('(?:^|\\s)(?:'+r+')(?:\\s|$)').test(n))return t;return null};
 const TABOUT={cal:'calendario',config:'configuracoes'};
 const DICT=['agendar','agende','marcar','marque','lembrar','lembre','anotar','anote','comprar','compre','apagar','apague','excluir','exclua','remover','remova','concluir','conclua','finalizar','abrir','abra','desfazer','ativar','desativar','esconder','mostrar','adicionar','adicione','incluir','inclua','colocar','coloque','criar','crie','cancelar','cancele','deletar','limpar','tirar','escrever','guardar','salvar','registrar','cadastrar','reservar','programar'];
@@ -7884,7 +7937,7 @@ let _naRun=false;
 /* ===== v4: skin Tropicália + menu em grupos + painel inicial ===== */
 (function(){
 COR.push(['tropical','Tropicália','#3b4cf0']);
-const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','mulher','concursos','clt']]];
+const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','mulher','concursos','clt']],['op','Comentários',['comentarios']]];
 const NG=()=>S.layout==='novo',HP=NG;
 const act=g=>g[2].filter(k=>TABS.some(t=>t[0]===k)),grOf=k=>GR.find(g=>g[2].includes(k));
 const nome=k=>{const t=TABS_ALL.find(x=>x[0]===k);return t?_t(t[2]):k};
@@ -7901,17 +7954,17 @@ function subt(){const el=$('#subt');if(!el)return;const g=grOf(tab),a=g?act(g):[
 /* barra inferior em grupos, com botão + no centro */
 const _nav=nav;
 nav=function(){
- if(!NG()){_nav();subt();return}
+ if(!NG()){_nav();$('#nav').classList.remove('n5');subt();return}
  tabsAtualizar();
  if(!window._tabChk){window._tabChk=1;if(tab!=='config'&&!TABS.some(t=>t[0]===tab))tab=TABS[0][0]}
- const g0=grOf(tab),gs=GR.filter(g=>act(g).length),b=g=>{const on=g===g0;return `<button class="${on?'on':''}" onclick="gGo('${g[0]}')"${on?' aria-current="page"':''}><span class="ni">${svg(act(g)[0])}</span><span class="nl">${_t(g[1])}</span></button>`};
+ const g0=grOf(tab),gs=GR.filter(g=>act(g).length),b=g=>{const on=g===g0;return `<button class="${(on?'on':'')+hlCls(g[0]==='op'?'comentarios':'')}" onclick="gGo('${g[0]}')"${on?' aria-current="page"':''}><span class="ni">${svg(act(g)[0])}</span><span class="nl">${_t(g[1])}</span></button>`};
  const plus=`<button class="plus" onclick="qkAbrir()" aria-label="${_t('Criar')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>`,h=Math.ceil(gs.length/2);
- $('#nav').innerHTML=gs.slice(0,h).map(b).join('')+plus+gs.slice(h).map(b).join('');subt()};
+ $('#nav').innerHTML=gs.slice(0,h).map(b).join('')+plus+gs.slice(h).map(b).join('');$('#nav').classList.toggle('n5',gs.length>=5);subt()};
 const _h=head;head=function(){_h.apply(this,arguments);try{subt()}catch(e){}};
 /* menu lateral agrupado */
 const _am=abrirMenu;abrirMenu=function(){_am();if(!NG())return;const a=document.querySelector('#drw aside');if(!a)return;
  const bt={};a.querySelectorAll('button').forEach(x=>{const m=(x.getAttribute('onclick')||'').match(/go\('(\w+)'\)/);if(m)bt[m[1]]=x});const hr=a.querySelector('hr');
- GR.forEach(g=>{const ks=act(g).filter(k=>bt[k]);if(!ks.length)return;if(g[0]!=='hoje'){const t=document.createElement('h3');t.textContent=_t(g[1]);a.insertBefore(t,hr)}ks.forEach(k=>a.insertBefore(bt[k],hr))})};
+ GR.forEach(g=>{const ks=act(g).filter(k=>bt[k]);if(!ks.length)return;if(g[0]!=='hoje'&&g[0]!=='op'){const t=document.createElement('h3');t.textContent=_t(g[1]);a.insertBefore(t,hr)}ks.forEach(k=>a.insertBefore(bt[k],hr))})};
 /* criar rápido (+) */
 const fx=s=>`setTimeout(()=>{const i=document.querySelector('${s}');i&&i.focus()},80)`;
 const QK=[['agenda','Compromisso',`go('agenda');${fx('#at')}`],['notas','Nota',`go('notas');S.notes.push({id:uid(),title:'',text:'',color:'',at:Date.now()});save();render();${fx('.nota input')}`],['diario','Diário',`dsel=HOJE;go('diario')`],['compras','Compra',`go('compras');${fx('#st')}`]];
@@ -7952,6 +8005,164 @@ window.avisoV4=function(){qkFechar();const o=document.createElement('div');o.id=
  o.onclick=e=>{if(e.target===o)fim()};document.body.appendChild(o)};
 setTimeout(()=>{try{if(S.user&&S.user.name&&!S.avisoV4&&!document.getElementById('qks'))avisoV4()}catch(e){}},3000);
 })();
+
+
+/* ===== Menu Comentários (v3.5.6) =====
+   Sugestões sobre o app, com ou sem identificação. Vão para o Firestore (coleção "comentarios") pela API REST, sem login:
+   as regras (firestore.rules) deixam qualquer pessoa só CRIAR comentários, com limites de tamanho; ninguém lê, edita ou apaga pelo app.
+   Quem lê os comentários é o dono do projeto, em Firebase › Firestore › comentarios.
+   Sem internet (ou antes de publicar as regras), o comentário fica guardado em S.coment (ok:false) e é reenviado sozinho depois.
+   O menu fica em destaque (classe chl): TABS_ALL, hlCls() e o cartão comBanner() no Início. */
+[["Comentários","Comments","Comentarios","Kommentare"],
+["Está gostando do app?","Are you enjoying the app?","¿Te está gustando la app?","Gefällt Ihnen die App?"],
+["Deixe sua opinião ou sugestão. Pode ser anônimo!","Leave your opinion or suggestion. You can stay anonymous!","Deja tu opinión o sugerencia. ¡Puedes ser anónimo!","Hinterlassen Sie Ihre Meinung oder einen Vorschlag. Gerne anonym!"],
+["Comentar","Comment","Comentar","Kommentieren"],
+["Fechar","Close","Cerrar","Schließen"],
+["Sua opinião ajuda o app a melhorar","Your opinion helps improve the app","Tu opinión ayuda a mejorar la app","Ihre Meinung hilft, die App zu verbessern"],
+["Você não precisa se identificar: pode enviar sem nome e sem contato.","You don't need to identify yourself: you can send without a name or contact.","No necesitas identificarte: puedes enviar sin nombre ni contacto.","Sie müssen sich nicht zu erkennen geben: Senden ohne Namen und Kontakt ist möglich."],
+["Não estou gostando","Not enjoying it","No me gusta","Gefällt mir nicht"],
+["Mais ou menos","So-so","Más o menos","Geht so"],
+["Gostei","I like it","Me gustó","Gefällt mir"],
+["Adorei!","Love it!","¡Me encanta!","Ich liebe es!"],
+["O que você mais gosta?","What do you like most?","¿Qué es lo que más te gusta?","Was gefällt Ihnen am meisten?"],
+["O que precisa melhorar?","What needs improvement?","¿Qué hay que mejorar?","Was sollte verbessert werden?"],
+["Seu nome (opcional)","Your name (optional)","Tu nombre (opcional)","Ihr Name (optional)"],
+["E-mail ou telefone, se quiser resposta (opcional)","Email or phone, if you want a reply (optional)","Correo o teléfono, si quieres respuesta (opcional)","E-Mail oder Telefon, falls Sie eine Antwort möchten (optional)"],
+["Será enviado de forma anônima.","It will be sent anonymously.","Se enviará de forma anónima.","Wird anonym gesendet."],
+["Será enviado com o nome ou contato que você informou.","It will be sent with the name or contact you entered.","Se enviará con el nombre o contacto que indicaste.","Wird mit dem angegebenen Namen oder Kontakt gesendet."],
+["Só vai o que você escrever aqui: seus compromissos, notas e dados do app não são enviados.","Only what you write here is sent: your appointments, notes and app data are not.","Solo se envía lo que escribas aquí: tus citas, notas y datos de la app no se envían.","Nur was Sie hier schreiben wird gesendet: Termine, Notizen und App-Daten nicht."],
+["Enviar comentário","Send comment","Enviar comentario","Kommentar senden"],
+["Enviando…","Sending…","Enviando…","Wird gesendet…"],
+["Escolha uma carinha ou escreva algo para enviar.","Pick a face or write something to send.","Elige una carita o escribe algo para enviar.","Wählen Sie ein Gesicht oder schreiben Sie etwas."],
+["Aguarde alguns segundos antes de enviar outro comentário.","Wait a few seconds before sending another comment.","Espera unos segundos antes de enviar otro comentario.","Warten Sie einige Sekunden, bevor Sie einen weiteren Kommentar senden."],
+["Obrigado! Seu comentário foi enviado.","Thank you! Your comment was sent.","¡Gracias! Tu comentario fue enviado.","Danke! Ihr Kommentar wurde gesendet."],
+["Sem conexão agora. Guardei seu comentário e envio assim que a internet voltar.","No connection right now. I saved your comment and will send it when the internet is back.","Sin conexión ahora. Guardé tu comentario y lo envío cuando vuelva internet.","Gerade keine Verbindung. Ihr Kommentar ist gespeichert und wird gesendet, sobald das Internet zurück ist."],
+["Escrever outro comentário","Write another comment","Escribir otro comentario","Weiteren Kommentar schreiben"],
+["Seus comentários","Your comments","Tus comentarios","Ihre Kommentare"],
+["✓ Enviado","✓ Sent","✓ Enviado","✓ Gesendet"],
+["⏳ Aguardando envio","⏳ Waiting to send","⏳ Esperando envío","⏳ Wartet auf Senden"],
+["Reenviar","Resend","Reenviar","Erneut senden"],
+["Sem texto","No text","Sin texto","Kein Text"],
+["Ainda não foi possível enviar. Tente de novo quando tiver internet.","Could not send yet. Try again when you have internet.","Aún no se pudo enviar. Inténtalo de nuevo cuando tengas internet.","Senden noch nicht möglich. Versuchen Sie es mit Internet erneut."]
+].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
+[["Seu comentário aparecerá como Anônimo.","Your comment will appear as Anonymous.","Tu comentario aparecerá como Anónimo.","Ihr Kommentar erscheint als Anonym."],
+["Seu comentário aparecerá com o seu nome. O contato nunca é mostrado.","Your comment will appear with your name. Contact is never shown.","Tu comentario aparecerá con tu nombre. El contacto nunca se muestra.","Ihr Kommentar erscheint mit Ihrem Namen. Kontakt wird nie angezeigt."],
+["Seu comentário fica visível para os outros usuários. Só vai o que você escrever aqui: seus compromissos, notas e dados do app não são enviados.","Your comment is visible to other users. Only what you write here is sent: your appointments, notes and app data are not.","Tu comentario es visible para otros usuarios. Solo se envía lo que escribas aquí: tus citas, notas y datos de la app no se envían.","Ihr Kommentar ist für andere Nutzer sichtbar. Nur was Sie hier schreiben wird gesendet: Termine, Notizen und App-Daten nicht."],
+["E-mail ou telefone, se quiser resposta (opcional, nunca é mostrado)","Email or phone, if you want a reply (optional, never shown)","Correo o teléfono, si quieres respuesta (opcional, nunca se muestra)","E-Mail oder Telefon, falls Sie eine Antwort möchten (optional, wird nie angezeigt)"],
+["Comentários de outros usuários","Comments from other users","Comentarios de otros usuarios","Kommentare anderer Nutzer"],
+["Anônimo","Anonymous","Anónimo","Anonym"],
+["Ainda não há comentários. Seja o primeiro!","No comments yet. Be the first!","Aún no hay comentarios. ¡Sé el primero!","Noch keine Kommentare. Seien Sie der Erste!"],
+["Carregando comentários…","Loading comments…","Cargando comentarios…","Kommentare werden geladen…"],
+["Não foi possível carregar os comentários agora.","Could not load the comments right now.","No se pudieron cargar los comentarios ahora.","Kommentare konnten gerade nicht geladen werden."],
+["Tentar de novo","Try again","Intentar de nuevo","Erneut versuchen"],
+["Denunciar","Report","Denunciar","Melden"],
+["Denunciar este comentário? Ele some para você e o responsável do app será avisado.","Report this comment? It will be hidden for you and the app owner will be notified.","¿Denunciar este comentario? Se oculta para ti y se avisa al responsable de la app.","Diesen Kommentar melden? Er wird für Sie ausgeblendet und der Verantwortliche informiert."],
+["Obrigado. O comentário foi denunciado.","Thanks. The comment was reported.","Gracias. El comentario fue denunciado.","Danke. Der Kommentar wurde gemeldet."]
+].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
+var COM_VER='3.5.7',COM_MAX=700;
+var COM_NOTAS=[[1,'😞','Não estou gostando'],[2,'😐','Mais ou menos'],[3,'🙂','Gostei'],[4,'😍','Adorei!']];
+function comSt(){return window._comSt||(window._comSt={nota:0,gostou:'',melhorar:'',nome:'',contato:'',busy:false,fim:''})}
+/* classe de destaque do menu: "chl" sempre; "cnw" (bolinha e pulso) até a pessoa abrir o menu pela primeira vez */
+function hlCls(k){return k==='comentarios'?' chl'+(S.comVisto?'':' cnw'):''}
+function comVer(){return new Promise(res=>{try{
+ if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return res(COM_VER);
+ const mc=new MessageChannel();mc.port1.onmessage=m=>res(String(m.data||COM_VER));
+ navigator.serviceWorker.controller.postMessage('VERSION',[mc.port2]);setTimeout(()=>res(COM_VER),800)}catch(e){res(COM_VER)}})}
+/* envia um comentário (sem login, sem uid: nada identifica a pessoa além do que ela escreveu) */
+async function comPost(it){
+ const v=await comVer();
+ const campos={nota:{integerValue:String(it.nota||0)},gostou:fsv(it.gostou),melhorar:fsv(it.melhorar),nome:fsv(it.nome),anonimo:{booleanValue:!it.nome},versao:fsv(v),plataforma:fsv(nat()?'apk':'web'),idioma:fsv(LANG),criadoEm:{timestampValue:new Date(it.at).toISOString()}};
+ const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
+ try{
+  const r=await fetch(FS_B+'/comentarios?documentId='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:campos}),signal:ctl.signal});
+  clearTimeout(to);const ok=r.ok||r.status===409; /* 409 = já tinha chegado antes */
+  if(ok&&it.contato&&!it.ctOk){ /* contato fica numa coleção à parte, que ninguém lê pelo app (nunca é público) */
+   try{const r2=await fetch(FS_B+'/comentarios_contatos?documentId='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{contato:fsv(it.contato)}})});if(r2.ok||r2.status===409)it.ctOk=true}catch(e){}}
+  return ok}
+ catch(e){clearTimeout(to);return false}}
+function comAnTxt(){const c=comSt();return !c.nome.trim()?'🕶️ '+_t('Seu comentário aparecerá como Anônimo.'):'👤 '+_t('Seu comentário aparecerá com o seu nome. O contato nunca é mostrado.')}
+function comNota(n){const c=comSt();c.nota=c.nota===n?0:n;
+ document.querySelectorAll('.com-f').forEach(b=>{const on=+b.dataset.n===c.nota;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
+function comTxt(k,v){comSt()[k]=v;if(k==='nome'){const e=document.getElementById('com-an');if(e)e.textContent=comAnTxt()}}
+function comNovo(){comSt().fim='';render()}
+async function comEnviar(){
+ const c=comSt();if(c.busy)return;
+ const gostou=c.gostou.trim().slice(0,COM_MAX),melhorar=c.melhorar.trim().slice(0,COM_MAX),nome=c.nome.trim().slice(0,60),contato=c.contato.trim().slice(0,100);
+ if(!c.nota&&!gostou&&!melhorar){info('Escolha uma carinha ou escreva algo para enviar.');return}
+ const ult=(S.coment||[])[0];if(ult&&Date.now()-ult.at<30000){info('Aguarde alguns segundos antes de enviar outro comentário.');return}
+ const it={id:uid()+uid(),at:Date.now(),nota:c.nota,gostou,melhorar,nome,contato,ok:false};
+ S.coment=[it].concat(S.coment||[]).slice(0,20);save(); /* guarda antes de enviar: não perde se a conexão cair */
+ c.busy=true;render();
+ const ok=await comPost(it);it.ok=ok;save();if(ok)comPubSt().t=0;
+ Object.assign(c,{nota:0,gostou:'',melhorar:'',nome:'',contato:'',busy:false,fim:ok?'ok':'fila'});
+ if(tab==='comentarios')render()}
+let _comRe=false;
+async function comReenviar(manual){
+ if(_comRe)return;const fila=(S.coment||[]).filter(x=>!x.ok);if(!fila.length)return;
+ _comRe=true;let mudou=false;
+ try{for(const it of fila){if(await comPost(it)){it.ok=true;mudou=true}}}finally{_comRe=false}
+ if(mudou)save();
+ if(manual===true&&!mudou)info('Ainda não foi possível enviar. Tente de novo quando tiver internet.');
+ if(tab==='comentarios'&&!comSt().busy&&document.activeElement&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='INPUT')render()}
+function vComentarios0(){
+ try{if(!S.comVisto){S.comVisto=1;save();nav()}}catch(e){}
+ const c=comSt(),cab='<h2>💬 '+_t('Comentários')+'</h2>';
+ const hist=(S.coment||[]).slice(0,5);
+ const hh=hist.length?`<h3>${_t('Seus comentários')}</h3><div class="card">${hist.map(x=>{
+  const d=new Date(x.at).toLocaleDateString(LOC(),{day:'2-digit',month:'short'}),face=(COM_NOTAS.find(a=>a[0]===x.nota)||[0,'💬'])[1],txt=(x.melhorar||x.gostou||'').slice(0,80);
+  return `<div class="item"><span class="hora" style="min-width:28px;font-size:20px">${face}</span><span class="t"><b>${txt?esc(txt):_t('Sem texto')}</b><br><small style="color:var(--mute)">${esc(d)} · ${_t(x.ok?'✓ Enviado':'⏳ Aguardando envio')}</small></span>${x.ok?'':`<button type="button" class="sec" onclick="comReenviar(true)">${_t('Reenviar')}</button>`}</div>`}).join('')}</div>`:'';
+ if(c.fim)return cab+`<div class="card com-ok"><div class="com-oki">${c.fim==='ok'?'💜':'⏳'}</div><b>${_t(c.fim==='ok'?'Obrigado! Seu comentário foi enviado.':'Sem conexão agora. Guardei seu comentário e envio assim que a internet voltar.')}</b><button type="button" onclick="comNovo()" style="width:100%;margin-top:14px">${_t('Escrever outro comentário')}</button></div>`+hh;
+ const faces=COM_NOTAS.map(a=>`<button type="button" class="com-f${c.nota===a[0]?' on':''}" data-n="${a[0]}" aria-pressed="${c.nota===a[0]}" onclick="comNota(${a[0]})"><span>${a[1]}</span><small>${esc(_t(a[2]))}</small></button>`).join('');
+ return cab+`<div class="com-hero"><b>${_t('Sua opinião ajuda o app a melhorar')}</b><p>${_t('Você não precisa se identificar: pode enviar sem nome e sem contato.')}</p></div>`
+  +`<div class="card"><label class="fl">${_t('Está gostando do app?')}</label><div class="com-faces" role="group" aria-label="${esc(_t('Está gostando do app?'))}">${faces}</div>`
+  +`<label class="fl" for="com-g">💜 ${_t('O que você mais gosta?')}</label><textarea id="com-g" class="com-ta" maxlength="${COM_MAX}" oninput="comTxt('gostou',this.value)">${esc(c.gostou)}</textarea>`
+  +`<label class="fl" for="com-m" style="margin-top:12px;display:block">🛠️ ${_t('O que precisa melhorar?')}</label><textarea id="com-m" class="com-ta" maxlength="${COM_MAX}" oninput="comTxt('melhorar',this.value)">${esc(c.melhorar)}</textarea>`
+  +`<label class="fl" for="com-n" style="margin-top:12px;display:block">${_t('Seu nome (opcional)')}</label><input id="com-n" maxlength="60" autocomplete="off" value="${esc(c.nome)}" oninput="comTxt('nome',this.value)">`
+  +`<label class="fl" for="com-c" style="margin-top:12px;display:block">${_t('E-mail ou telefone, se quiser resposta (opcional, nunca é mostrado)')}</label><input id="com-c" maxlength="100" autocomplete="off" value="${esc(c.contato)}" oninput="comTxt('contato',this.value)">`
+  +`<p class="com-an" id="com-an" style="margin-top:12px">${comAnTxt()}</p>`
+  +`<button type="button" style="width:100%" onclick="comEnviar()"${c.busy?' disabled':''}>${_t(c.busy?'Enviando…':'Enviar comentário')}</button>`
+  +`<p class="hint">${_t('Seu comentário fica visível para os outros usuários. Só vai o que você escrever aqui: seus compromissos, notas e dados do app não são enviados.')}</p></div>`+hh}
+/* ---- comentários públicos: qualquer pessoa lê (sem login) os comentários mais recentes que tenham texto ---- */
+function comPubSt(){return window._comPub||(window._comPub={itens:[],busy:false,err:false,t:0})}
+function comPubHtml(){
+ const P=comPubSt(),den=S.comDen||[],ls=P.itens.filter(x=>!den.includes(x.id)).slice(0,30);
+ if(P.busy&&!P.itens.length)return `<p class="hint" style="margin:0">${_t('Carregando comentários…')}</p>`;
+ if(P.err&&!P.itens.length)return `<p class="hint" style="margin:0 0 10px">${_t('Não foi possível carregar os comentários agora.')}</p><button type="button" class="sec" onclick="comPubCarregar(true)">${_t('Tentar de novo')}</button>`;
+ if(!ls.length)return `<p class="hint" style="margin:0">${_t('Ainda não há comentários. Seja o primeiro!')}</p>`;
+ return ls.map(x=>{const d=x.at?new Date(x.at).toLocaleDateString(LOC(),{day:'2-digit',month:'short'}):'',face=(COM_NOTAS.find(a=>a[0]===x.nota)||[0,'💬'])[1];
+  return `<div class="item"><span class="hora" style="min-width:28px;font-size:22px">${face}</span><span class="t"><b>${esc((x.nome||'').trim().slice(0,60)||_t('Anônimo'))}</b> <small style="color:var(--mute)">${esc(d)}</small>${x.gostou?`<br>💜 ${esc(x.gostou)}`:''}${x.melhorar?`<br>🛠️ ${esc(x.melhorar)}`:''}</span><button type="button" class="ghost" onclick="comDenunciar('${esc(x.id)}')" aria-label="${esc(_t('Denunciar'))}" title="${esc(_t('Denunciar'))}">⚑</button></div>`}).join('')}
+function comPubDraw(){const e=document.getElementById('com-pub');if(e)e.innerHTML=comPubHtml()}
+async function comPubCarregar(force){
+ const P=comPubSt();if(P.busy)return;
+ if(!force&&P.t&&Date.now()-P.t<60000){comPubDraw();return}
+ P.busy=true;P.err=false;comPubDraw();
+ try{
+  const r=await fetch(FS_B+':runQuery?key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:'comentarios'}],orderBy:[{field:{fieldPath:'criadoEm'},direction:'DESCENDING'}],limit:40}})});
+  if(!r.ok)throw new Error('http '+r.status);
+  const j=await r.json();
+  P.itens=(Array.isArray(j)?j:[]).filter(x=>x&&x.document).map(x=>{const f=x.document.fields||{},g=k=>(f[k]&&f[k].stringValue)||'';
+   return{id:String(x.document.name).split('/').pop(),nota:+((f.nota&&f.nota.integerValue)||0),gostou:g('gostou'),melhorar:g('melhorar'),nome:g('nome'),at:(f.criadoEm&&f.criadoEm.timestampValue)||''}}).filter(x=>x.gostou||x.melhorar);
+  P.t=Date.now()}catch(e){P.err=true}
+ P.busy=false;comPubDraw()}
+function comDenunciar(id){
+ ask('Denunciar este comentário? Ele some para você e o responsável do app será avisado.',async()=>{
+  S.comDen=(S.comDen||[]).concat(id).slice(-100);save();comPubDraw();info('Obrigado. O comentário foi denunciado.');
+  try{await fetch(FS_B+'/denuncias?documentId='+encodeURIComponent(id+'_'+uid())+'&key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{comentario:fsv(id),criadoEm:{timestampValue:new Date().toISOString()}}})})}catch(e){}},'Denunciar')}
+function vComentarios(){
+ const h=vComentarios0();setTimeout(()=>comPubCarregar(false),30);
+ return h+`<h3>${_t('Comentários de outros usuários')}</h3><div class="card" id="com-pub">${comPubHtml()}</div>`}
+/* cartão em destaque no Início (some por 3 dias ao tocar no ✕, e por 30 dias depois de enviar um comentário) */
+function comBanner(){try{
+ if(!S.user||!S.user.name||!TABS.some(t=>t[0]==='comentarios'))return '';
+ if(+S.comBanX&&Date.now()<+S.comBanX)return '';
+ if((S.coment||[]).some(x=>x.ok&&Date.now()-x.at<30*864e5))return '';
+ return `<div class="com-ban" role="region" aria-label="${esc(_t('Comentários'))}"><button type="button" class="com-bm" onclick="go('comentarios')"><span class="com-bi">💬</span><span class="com-bt"><b>${_t('Está gostando do app?')}</b><small>${_t('Deixe sua opinião ou sugestão. Pode ser anônimo!')}</small></span><span class="com-bg">${_t('Comentar')}</span></button><button type="button" class="com-bx" onclick="comBanX()" aria-label="${esc(_t('Fechar'))}">✕</button></div>`}catch(e){return ''}}
+function comBanX(){S.comBanX=Date.now()+3*864e5;save();render()}
+(function(){const _v=vInicio;vInicio=function(){const h=_v.apply(this,arguments),b=comBanner();if(!b)return h;
+ const k='</p></div></div>',i=h.indexOf(k);
+ return (h.indexOf('<div class="pn-h">')===0&&i>-1)?h.slice(0,i+k.length)+b+h.slice(i+k.length):b+h}})();
+window.addEventListener('online',()=>setTimeout(comReenviar,1500));
+setTimeout(comReenviar,9000);
 
 guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();radioInit();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(recadoNovidQuandoLivre,6200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}

@@ -30,6 +30,25 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 - Quando aparece: na próxima abertura do app (já com nome/conta) e logo depois de entrar com uma conta, sempre depois da senha e das outras caixas (não empilha). Usuário novo não vê (já recebe a de boas-vindas). Não precisa mudar o `VERSION` do `sw.js`.
 - Para mostrar de novo a todos (com a lista atualizada), troque `novid7-v2` por `novid7-v3` em `RECADO_NOVID_TAG`.
 
+## Menu Comentários (versão 3.5.6)
+
+- **Menu 💬 Comentários**, em destaque logo depois de Início (botão com cor de realce e bolinha rosa até a pessoa abrir pela primeira vez; no layout novo é o 5º grupo da barra de baixo; no menu lateral aparece colorido). A tela Início também mostra um cartão “Está gostando do app?” (o ✕ esconde por 3 dias; some por 30 dias depois que a pessoa envia um comentário).
+- **Não precisa se identificar**: a pessoa escolhe uma carinha (Não estou gostando, Mais ou menos, Gostei, Adorei!), escreve **o que mais gosta** e **o que precisa melhorar**. Nome e e-mail/telefone são **opcionais**; sem o nome o comentário aparece como anônimo (nenhum uid, e-mail da conta ou dado do app é enviado).
+- **Comentários públicos (3.5.7)**: no fim da tela Comentários aparece a lista “Comentários de outros usuários” (os 30 mais recentes que tenham texto). Quem não informa o nome aparece como **Anônimo**. O **contato (e-mail/telefone) nunca é público**: vai para a coleção `comentarios_contatos`, que ninguém lê pelo app. Cada comentário tem o botão **⚑ Denunciar**: ele some para quem denunciou e entra na coleção `denuncias`.
+- **Para onde vai**: coleção `comentarios` do Firestore, pela API REST, sem login. **É preciso publicar as regras novas**: Firebase Console › Firestore Database › Regras › cole o conteúdo de `firestore.rules` › Publicar. As regras deixam qualquer pessoa *ler* e *criar* comentários (com limite de tamanho); ninguém altera ou apaga pelo app.
+- **Moderação**: para apagar um comentário impróprio, abra Firebase Console › Firestore Database › `comentarios` e exclua o documento. Veja as denúncias em `denuncias` (campo `comentario` = id do comentário) e o contato de quem pediu resposta em `comentarios_contatos` (mesmo id). Se você já tinha coletado comentários com o campo `contato` na versão 3.5.6, apague esse campo dos documentos antigos, porque agora a coleção é pública.
+- **Onde você lê**: Firebase Console › Firestore Database › `comentarios`. Campos: `nota` (1 a 4; 0 = sem carinha), `gostou`, `melhorar`, `nome`, `anonimo`, `versao`, `plataforma` (apk ou web), `idioma`, `criadoEm`.
+- **Sem internet** (ou antes de publicar as regras): o comentário fica guardado no aparelho (`S.coment`, os últimos 20) como “⏳ Aguardando envio” e é reenviado sozinho quando o app abre ou a conexão volta. Há também o botão **Reenviar**. Espera de 30 segundos entre um comentário e outro.
+- No `index.html`: bloco “Menu Comentários” antes da linha final de inicialização (`vComentarios`, `comEnviar`, `comPost`, `comBanner`), `TABS_ALL` (aba `comentarios`), `GR` (grupo `op`) e `hlCls()` (classe `chl`). Traduzido para inglês, espanhol e alemão.
+- Quem quiser esconder o menu usa Configurações › Menus do app.
+
+## Aviso: Quadro de avisos sobre Comentários (não é uma atualização)
+
+- O **Quadro de avisos** agora é o `quadro-v2` (`RECADO_QUADRO_TAG`) e traz o item **💬 Comentários** (com o botão “Abrir Comentários”) no topo.
+- **Uma única vez por usuário**, como antes. Quem **já tinha visto o quadro v1** vê só a novidade (itens marcados com `n:2`); quem **nunca viu** vê o quadro inteiro. A marca v1 antiga (`ma-recado-quadro-v1:<usuário>` e `S.user.avisos['quadro-v1']`) é respeitada.
+- Para mostrar de novo a todos: troque `quadro-v2` por `quadro-v3`, mova a tag antiga para `RECADO_QUADRO_TAG_V1` e marque os itens novos com `n:2`.
+- A caixa de boas-vindas (`GUIA_APP`) e a lista de Novidades (`NOVIDADES['3.5.6']`) também citam o menu Comentários. Para lançar: `VERSION` do `sw.js` já está em **3.5.7**.
+
 ## Promoções: ofertas vencidas saem sozinhas
 
 - **Regra:** a oferta que termina no dia `fim` **sai do app às 23:59 desse mesmo dia** (não espera a meia-noite). Até 23:58 ela aparece com a etiqueta “Último dia · até 05/11 às 23:59”; às 23:59:00 o encarte inteiro, com todos os produtos, é removido de Assaí, Atacadão, Novo Atacarejo e do **Comparar preços**.
