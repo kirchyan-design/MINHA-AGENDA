@@ -5555,6 +5555,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.5.8':[
+  '✏️ Comentários: agora você pode editar ou excluir os seus próprios comentários (botões ✏️ e 🗑️ ao lado deles). Também corrigimos o envio dos comentários.'
+ ],
  '3.5.7':[
   '👥 Comentários agora são públicos: na tela Comentários você lê o que os outros usuários escreveram. Quem não informa o nome aparece como Anônimo, e o e-mail ou telefone nunca é mostrado. Dá para denunciar um comentário pelo ⚑.'
  ],
@@ -8059,9 +8062,23 @@ setTimeout(()=>{try{if(S.user&&S.user.name&&!S.avisoV4&&!document.getElementById
 ["Denunciar este comentário? Ele some para você e o responsável do app será avisado.","Report this comment? It will be hidden for you and the app owner will be notified.","¿Denunciar este comentario? Se oculta para ti y se avisa al responsable de la app.","Diesen Kommentar melden? Er wird für Sie ausgeblendet und der Verantwortliche informiert."],
 ["Obrigado. O comentário foi denunciado.","Thanks. The comment was reported.","Gracias. El comentario fue denunciado.","Danke. Der Kommentar wurde gemeldet."]
 ].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
-var COM_VER='3.5.7',COM_MAX=700;
+[["Editar comentário","Edit comment","Editar comentario","Kommentar bearbeiten"],
+["Salvar alterações","Save changes","Guardar cambios","Änderungen speichern"],
+["Cancelar edição","Cancel editing","Cancelar edición","Bearbeitung abbrechen"],
+["Comentário atualizado.","Comment updated.","Comentario actualizado.","Kommentar aktualisiert."],
+["Comentário excluído.","Comment deleted.","Comentario eliminado.","Kommentar gelöscht."],
+["Editar","Edit","Editar","Bearbeiten"],
+["Excluir","Delete","Eliminar","Löschen"],
+["Excluir este comentário? Ele será apagado para todos e não dá para desfazer.","Delete this comment? It will be removed for everyone and cannot be undone.","¿Eliminar este comentario? Se borrará para todos y no se puede deshacer.","Diesen Kommentar löschen? Er wird für alle entfernt und kann nicht rückgängig gemacht werden."],
+["O servidor recusou o envio (código {c}). Se você é o dono do app, publique as regras do Firestore.","The server refused the send (code {c}). If you own the app, publish the Firestore rules.","El servidor rechazó el envío (código {c}). Si eres el dueño de la app, publica las reglas de Firestore.","Der Server hat das Senden abgelehnt (Code {c}). Als App-Inhaber veröffentlichen Sie die Firestore-Regeln."],
+["O servidor recusou a alteração. Confira se as regras do Firestore foram publicadas.","The server refused the change. Check that the Firestore rules were published.","El servidor rechazó el cambio. Comprueba que las reglas de Firestore estén publicadas.","Der Server hat die Änderung abgelehnt. Prüfen Sie, ob die Firestore-Regeln veröffentlicht sind."],
+["O servidor recusou a exclusão. Confira se as regras do Firestore foram publicadas.","The server refused the deletion. Check that the Firestore rules were published.","El servidor rechazó la eliminación. Comprueba que las reglas de Firestore estén publicadas.","Der Server hat das Löschen abgelehnt. Prüfen Sie, ob die Firestore-Regeln veröffentlicht sind."],
+["Não foi possível salvar agora. Verifique a internet e tente de novo.","Could not save right now. Check your internet and try again.","No se pudo guardar ahora. Revisa tu internet e inténtalo de nuevo.","Speichern gerade nicht möglich. Prüfen Sie das Internet und versuchen Sie es erneut."],
+["Não foi possível excluir agora. Verifique a internet e tente de novo.","Could not delete right now. Check your internet and try again.","No se pudo eliminar ahora. Revisa tu internet e inténtalo de nuevo.","Löschen gerade nicht möglich. Prüfen Sie das Internet und versuchen Sie es erneut."]
+].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
+var COM_VER='3.5.8',COM_MAX=700;
 var COM_NOTAS=[[1,'😞','Não estou gostando'],[2,'😐','Mais ou menos'],[3,'🙂','Gostei'],[4,'😍','Adorei!']];
-function comSt(){return window._comSt||(window._comSt={nota:0,gostou:'',melhorar:'',nome:'',contato:'',busy:false,fim:''})}
+function comSt(){return window._comSt||(window._comSt={nota:0,gostou:'',melhorar:'',nome:'',contato:'',busy:false,fim:'',edit:''})}
 /* classe de destaque do menu: "chl" sempre; "cnw" (bolinha e pulso) até a pessoa abrir o menu pela primeira vez */
 function hlCls(k){return k==='comentarios'?' chl'+(S.comVisto?'':' cnw'):''}
 function comVer(){return new Promise(res=>{try{
@@ -8072,14 +8089,63 @@ function comVer(){return new Promise(res=>{try{
 async function comPost(it){
  const v=await comVer();
  const campos={nota:{integerValue:String(it.nota||0)},gostou:fsv(it.gostou),melhorar:fsv(it.melhorar),nome:fsv(it.nome),anonimo:{booleanValue:!it.nome},versao:fsv(v),plataforma:fsv(nat()?'apk':'web'),idioma:fsv(LANG),criadoEm:{timestampValue:new Date(it.at).toISOString()}};
+ const au=await comAnon();if(au)campos.uid=fsv(au.uid);
+ const hd={'Content-Type':'application/json'};if(au)hd.Authorization='Bearer '+au.tk;
  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
  try{
-  const r=await fetch(FS_B+'/comentarios?documentId='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:campos}),signal:ctl.signal});
+  const r=await fetch(FS_B+'/comentarios?documentId='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:hd,body:JSON.stringify({fields:campos}),signal:ctl.signal});
   clearTimeout(to);const ok=r.ok||r.status===409; /* 409 = já tinha chegado antes */
+  if(ok&&au&&!it.uid)it.uid=au.uid;it.err=ok?0:r.status;
   if(ok&&it.contato&&!it.ctOk){ /* contato fica numa coleção à parte, que ninguém lê pelo app (nunca é público) */
    try{const r2=await fetch(FS_B+'/comentarios_contatos?documentId='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(K_FB.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{contato:fsv(it.contato)}})});if(r2.ok||r2.status===409)it.ctOk=true}catch(e){}}
   return ok}
- catch(e){clearTimeout(to);return false}}
+ catch(e){clearTimeout(to);it.err=0;return false}}
+/* ---- identidade anônima do comentário: o Firebase dá um id aleatório a este aparelho (Authentication › Anônimo).
+   É ele que prova que o comentário é seu, para poder editar ou excluir. Não tem nome, e-mail nem telefone. ---- */
+async function comAnon(){
+ const K=encodeURIComponent(K_FB.apiKey);let a=null;
+ try{a=JSON.parse(localStorage.getItem('ma-com-anon')||'null')}catch(e){}
+ if(a&&a.tk&&a.exp>Date.now()+60000)return a;
+ try{
+  let j=null;
+  if(a&&a.rt){
+   const r=await fetch('https://securetoken.googleapis.com/v1/token?key='+K,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(a.rt)});
+   if(r.ok){const x=await r.json();j={tk:x.id_token,rt:x.refresh_token,uid:x.user_id,exp:Date.now()+(+x.expires_in||3600)*1000}}}
+  if(!j&&!(a&&a.rt&&navigator.onLine===false)){
+   const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+K,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"returnSecureToken":true}'});
+   if(r.ok){const x=await r.json();j={tk:x.idToken,rt:x.refreshToken,uid:x.localId,exp:Date.now()+(+x.expiresIn||3600)*1000}}}
+  if(!j||!j.tk||!j.uid)return null;
+  try{localStorage.setItem('ma-com-anon',JSON.stringify(j))}catch(e){}
+  return j}
+ catch(e){return null}}
+function comMeuUid(){try{return (JSON.parse(localStorage.getItem('ma-com-anon')||'null')||{}).uid||''}catch(e){return ''}}
+async function comPatch(id,d){
+ const au=await comAnon();if(!au)return{ok:false,st:401};
+ const campos={nota:{integerValue:String(d.nota||0)},gostou:fsv(d.gostou),melhorar:fsv(d.melhorar),nome:fsv(d.nome),anonimo:{booleanValue:!d.nome},editadoEm:{timestampValue:new Date().toISOString()}};
+ const m=Object.keys(campos).map(k=>'updateMask.fieldPaths='+k).join('&');
+ try{const r=await fetch(FS_B+'/comentarios/'+encodeURIComponent(id)+'?'+m+'&key='+encodeURIComponent(K_FB.apiKey),{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+au.tk},body:JSON.stringify({fields:campos})});return{ok:r.ok,st:r.status}}
+ catch(e){return{ok:false,st:0}}}
+async function comDel(id){
+ const au=await comAnon();if(!au)return{ok:false,st:401};
+ try{const r=await fetch(FS_B+'/comentarios/'+encodeURIComponent(id)+'?key='+encodeURIComponent(K_FB.apiKey),{method:'DELETE',headers:{'Authorization':'Bearer '+au.tk}});return{ok:r.ok||r.status===404,st:r.status}}
+ catch(e){return{ok:false,st:0}}}
+function comBtns(id){const e=esc(id);return `<span style="white-space:nowrap"><button type="button" class="ghost" onclick="comEditar('${e}')" aria-label="${esc(_t('Editar'))}" title="${esc(_t('Editar'))}">✏️</button><button type="button" class="ghost" onclick="comExcluir('${e}')" aria-label="${esc(_t('Excluir'))}" title="${esc(_t('Excluir'))}">🗑️</button></span>`}
+function comEditar(id){
+ let src=(S.coment||[]).find(x=>x.id===id);
+ if(!src){const q=comPubSt().itens.find(x=>x.id===id);if(q)src={nota:q.nota,gostou:q.gostou,melhorar:q.melhorar,nome:q.nome}}
+ if(!src)return;
+ Object.assign(comSt(),{nota:src.nota||0,gostou:src.gostou||'',melhorar:src.melhorar||'',nome:src.nome||'',contato:'',edit:id,fim:'',busy:false});
+ render();try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}
+function comCancelarEd(){Object.assign(comSt(),{edit:'',nota:0,gostou:'',melhorar:'',nome:'',contato:''});render()}
+function comExcluir(id){
+ ask('Excluir este comentário? Ele será apagado para todos e não dá para desfazer.',async()=>{
+  const it=(S.coment||[]).find(x=>x.id===id);let ok=true,st=0;
+  if(!it||it.ok){const r=await comDel(id);ok=r.ok;st=r.st}
+  if(!ok){info(st===401||st===403?'O servidor recusou a exclusão. Confira se as regras do Firestore foram publicadas.':'Não foi possível excluir agora. Verifique a internet e tente de novo.');return}
+  S.coment=(S.coment||[]).filter(x=>x.id!==id);save();
+  const P=comPubSt();P.itens=P.itens.filter(x=>x.id!==id);
+  if(comSt().edit===id)Object.assign(comSt(),{edit:'',nota:0,gostou:'',melhorar:'',nome:'',contato:''});
+  info('Comentário excluído.');if(tab==='comentarios')render()},'Excluir')}
 function comAnTxt(){const c=comSt();return !c.nome.trim()?'🕶️ '+_t('Seu comentário aparecerá como Anônimo.'):'👤 '+_t('Seu comentário aparecerá com o seu nome. O contato nunca é mostrado.')}
 function comNota(n){const c=comSt();c.nota=c.nota===n?0:n;
  document.querySelectorAll('.com-f').forEach(b=>{const on=+b.dataset.n===c.nota;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
@@ -8089,6 +8155,15 @@ async function comEnviar(){
  const c=comSt();if(c.busy)return;
  const gostou=c.gostou.trim().slice(0,COM_MAX),melhorar=c.melhorar.trim().slice(0,COM_MAX),nome=c.nome.trim().slice(0,60),contato=c.contato.trim().slice(0,100);
  if(!c.nota&&!gostou&&!melhorar){info('Escolha uma carinha ou escreva algo para enviar.');return}
+ if(c.edit){
+  const id=c.edit,it=(S.coment||[]).find(x=>x.id===id),novo={nota:c.nota,gostou,melhorar,nome};
+  c.busy=true;render();let ok=true,st=0;
+  if(!it||it.ok){const r=await comPatch(id,novo);ok=r.ok;st=r.st}
+  c.busy=false;
+  if(ok){if(it)Object.assign(it,novo);const q=comPubSt().itens.find(x=>x.id===id);if(q)Object.assign(q,novo);save();
+   Object.assign(c,{nota:0,gostou:'',melhorar:'',nome:'',contato:'',edit:'',fim:'edit'})}
+  else info(st===401||st===403?'O servidor recusou a alteração. Confira se as regras do Firestore foram publicadas.':'Não foi possível salvar agora. Verifique a internet e tente de novo.');
+  if(tab==='comentarios')render();return}
  const ult=(S.coment||[])[0];if(ult&&Date.now()-ult.at<30000){info('Aguarde alguns segundos antes de enviar outro comentário.');return}
  const it={id:uid()+uid(),at:Date.now(),nota:c.nota,gostou,melhorar,nome,contato,ok:false};
  S.coment=[it].concat(S.coment||[]).slice(0,20);save(); /* guarda antes de enviar: não perde se a conexão cair */
@@ -8106,21 +8181,21 @@ async function comReenviar(manual){
  if(tab==='comentarios'&&!comSt().busy&&document.activeElement&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='INPUT')render()}
 function vComentarios0(){
  try{if(!S.comVisto){S.comVisto=1;save();nav()}}catch(e){}
- const c=comSt(),cab='<h2>💬 '+_t('Comentários')+'</h2>';
+ const c=comSt(),cab=c.edit?'<h2>✏️ '+_t('Editar comentário')+'</h2>':'<h2>💬 '+_t('Comentários')+'</h2>';
  const hist=(S.coment||[]).slice(0,5);
  const hh=hist.length?`<h3>${_t('Seus comentários')}</h3><div class="card">${hist.map(x=>{
   const d=new Date(x.at).toLocaleDateString(LOC(),{day:'2-digit',month:'short'}),face=(COM_NOTAS.find(a=>a[0]===x.nota)||[0,'💬'])[1],txt=(x.melhorar||x.gostou||'').slice(0,80);
-  return `<div class="item"><span class="hora" style="min-width:28px;font-size:20px">${face}</span><span class="t"><b>${txt?esc(txt):_t('Sem texto')}</b><br><small style="color:var(--mute)">${esc(d)} · ${_t(x.ok?'✓ Enviado':'⏳ Aguardando envio')}</small></span>${x.ok?'':`<button type="button" class="sec" onclick="comReenviar(true)">${_t('Reenviar')}</button>`}</div>`}).join('')}</div>`:'';
- if(c.fim)return cab+`<div class="card com-ok"><div class="com-oki">${c.fim==='ok'?'💜':'⏳'}</div><b>${_t(c.fim==='ok'?'Obrigado! Seu comentário foi enviado.':'Sem conexão agora. Guardei seu comentário e envio assim que a internet voltar.')}</b><button type="button" onclick="comNovo()" style="width:100%;margin-top:14px">${_t('Escrever outro comentário')}</button></div>`+hh;
+  return `<div class="item"><span class="hora" style="min-width:28px;font-size:20px">${face}</span><span class="t"><b>${txt?esc(txt):_t('Sem texto')}</b><br><small style="color:var(--mute)">${esc(d)} · ${_t(x.ok?'✓ Enviado':'⏳ Aguardando envio')}</small></span>${x.ok?'':`<button type="button" class="sec" onclick="comReenviar(true)">${_t('Reenviar')}</button>`}${(x.ok&&!x.uid)?'':comBtns(x.id)}</div>`}).join('')}</div>`:'';
+ if(c.fim)return cab+`<div class="card com-ok"><div class="com-oki">${c.fim==='fila'?'⏳':'💜'}</div><b>${_t(c.fim==='ok'?'Obrigado! Seu comentário foi enviado.':c.fim==='edit'?'Comentário atualizado.':'Sem conexão agora. Guardei seu comentário e envio assim que a internet voltar.')}</b>${(c.fim==='fila'&&((S.coment||[])[0]||{}).err>0)?`<p class="hint">${esc(_t('O servidor recusou o envio (código {c}). Se você é o dono do app, publique as regras do Firestore.',{c:S.coment[0].err}))}</p>`:''}<button type="button" onclick="comNovo()" style="width:100%;margin-top:14px">${_t('Escrever outro comentário')}</button></div>`+hh;
  const faces=COM_NOTAS.map(a=>`<button type="button" class="com-f${c.nota===a[0]?' on':''}" data-n="${a[0]}" aria-pressed="${c.nota===a[0]}" onclick="comNota(${a[0]})"><span>${a[1]}</span><small>${esc(_t(a[2]))}</small></button>`).join('');
  return cab+`<div class="com-hero"><b>${_t('Sua opinião ajuda o app a melhorar')}</b><p>${_t('Você não precisa se identificar: pode enviar sem nome e sem contato.')}</p></div>`
   +`<div class="card"><label class="fl">${_t('Está gostando do app?')}</label><div class="com-faces" role="group" aria-label="${esc(_t('Está gostando do app?'))}">${faces}</div>`
   +`<label class="fl" for="com-g">💜 ${_t('O que você mais gosta?')}</label><textarea id="com-g" class="com-ta" maxlength="${COM_MAX}" oninput="comTxt('gostou',this.value)">${esc(c.gostou)}</textarea>`
   +`<label class="fl" for="com-m" style="margin-top:12px;display:block">🛠️ ${_t('O que precisa melhorar?')}</label><textarea id="com-m" class="com-ta" maxlength="${COM_MAX}" oninput="comTxt('melhorar',this.value)">${esc(c.melhorar)}</textarea>`
   +`<label class="fl" for="com-n" style="margin-top:12px;display:block">${_t('Seu nome (opcional)')}</label><input id="com-n" maxlength="60" autocomplete="off" value="${esc(c.nome)}" oninput="comTxt('nome',this.value)">`
-  +`<label class="fl" for="com-c" style="margin-top:12px;display:block">${_t('E-mail ou telefone, se quiser resposta (opcional, nunca é mostrado)')}</label><input id="com-c" maxlength="100" autocomplete="off" value="${esc(c.contato)}" oninput="comTxt('contato',this.value)">`
+  +(c.edit?'':`<label class="fl" for="com-c" style="margin-top:12px;display:block">${_t('E-mail ou telefone, se quiser resposta (opcional, nunca é mostrado)')}</label><input id="com-c" maxlength="100" autocomplete="off" value="${esc(c.contato)}" oninput="comTxt('contato',this.value)">`)
   +`<p class="com-an" id="com-an" style="margin-top:12px">${comAnTxt()}</p>`
-  +`<button type="button" style="width:100%" onclick="comEnviar()"${c.busy?' disabled':''}>${_t(c.busy?'Enviando…':'Enviar comentário')}</button>`
+  +`<button type="button" style="width:100%" onclick="comEnviar()"${c.busy?' disabled':''}>${_t(c.busy?'Enviando…':c.edit?'Salvar alterações':'Enviar comentário')}</button>${c.edit?`<button type="button" class="sec" style="width:100%;margin-top:8px" onclick="comCancelarEd()">${_t('Cancelar edição')}</button>`:''}`
   +`<p class="hint">${_t('Seu comentário fica visível para os outros usuários. Só vai o que você escrever aqui: seus compromissos, notas e dados do app não são enviados.')}</p></div>`+hh}
 /* ---- comentários públicos: qualquer pessoa lê (sem login) os comentários mais recentes que tenham texto ---- */
 function comPubSt(){return window._comPub||(window._comPub={itens:[],busy:false,err:false,t:0})}
@@ -8130,7 +8205,7 @@ function comPubHtml(){
  if(P.err&&!P.itens.length)return `<p class="hint" style="margin:0 0 10px">${_t('Não foi possível carregar os comentários agora.')}</p><button type="button" class="sec" onclick="comPubCarregar(true)">${_t('Tentar de novo')}</button>`;
  if(!ls.length)return `<p class="hint" style="margin:0">${_t('Ainda não há comentários. Seja o primeiro!')}</p>`;
  return ls.map(x=>{const d=x.at?new Date(x.at).toLocaleDateString(LOC(),{day:'2-digit',month:'short'}):'',face=(COM_NOTAS.find(a=>a[0]===x.nota)||[0,'💬'])[1];
-  return `<div class="item"><span class="hora" style="min-width:28px;font-size:22px">${face}</span><span class="t"><b>${esc((x.nome||'').trim().slice(0,60)||_t('Anônimo'))}</b> <small style="color:var(--mute)">${esc(d)}</small>${x.gostou?`<br>💜 ${esc(x.gostou)}`:''}${x.melhorar?`<br>🛠️ ${esc(x.melhorar)}`:''}</span><button type="button" class="ghost" onclick="comDenunciar('${esc(x.id)}')" aria-label="${esc(_t('Denunciar'))}" title="${esc(_t('Denunciar'))}">⚑</button></div>`}).join('')}
+  return `<div class="item"><span class="hora" style="min-width:28px;font-size:22px">${face}</span><span class="t"><b>${esc((x.nome||'').trim().slice(0,60)||_t('Anônimo'))}</b> <small style="color:var(--mute)">${esc(d)}</small>${x.gostou?`<br>💜 ${esc(x.gostou)}`:''}${x.melhorar?`<br>🛠️ ${esc(x.melhorar)}`:''}</span>${(x.uid&&x.uid===comMeuUid())?comBtns(x.id):`<button type="button" class="ghost" onclick="comDenunciar('${esc(x.id)}')" aria-label="${esc(_t('Denunciar'))}" title="${esc(_t('Denunciar'))}">⚑</button>`}</div>`}).join('')}
 function comPubDraw(){const e=document.getElementById('com-pub');if(e)e.innerHTML=comPubHtml()}
 async function comPubCarregar(force){
  const P=comPubSt();if(P.busy)return;
@@ -8141,7 +8216,7 @@ async function comPubCarregar(force){
   if(!r.ok)throw new Error('http '+r.status);
   const j=await r.json();
   P.itens=(Array.isArray(j)?j:[]).filter(x=>x&&x.document).map(x=>{const f=x.document.fields||{},g=k=>(f[k]&&f[k].stringValue)||'';
-   return{id:String(x.document.name).split('/').pop(),nota:+((f.nota&&f.nota.integerValue)||0),gostou:g('gostou'),melhorar:g('melhorar'),nome:g('nome'),at:(f.criadoEm&&f.criadoEm.timestampValue)||''}}).filter(x=>x.gostou||x.melhorar);
+   return{id:String(x.document.name).split('/').pop(),nota:+((f.nota&&f.nota.integerValue)||0),gostou:g('gostou'),melhorar:g('melhorar'),nome:g('nome'),uid:g('uid'),at:(f.criadoEm&&f.criadoEm.timestampValue)||''}}).filter(x=>x.gostou||x.melhorar);
   P.t=Date.now()}catch(e){P.err=true}
  P.busy=false;comPubDraw()}
 function comDenunciar(id){

@@ -9,29 +9,39 @@ service cloud.firestore {
       }
     }
 
-    // Menu Comentários (públicos): qualquer pessoa pode LER os comentários e ENVIAR um novo (com ou sem login,
-    // anônimo ou não), mas ninguém consegue alterar ou apagar pelo app. Para apagar um comentário impróprio,
-    // use o console do Firebase (Firestore Database › comentarios), que não passa por estas regras.
-    // O contato (e-mail/telefone) NÃO fica aqui: vai para comentarios_contatos, que ninguém lê pelo app.
+    // Menu Comentários (públicos): qualquer pessoa LÊ os comentários e ENVIA um novo.
+    // Cada comentário guarda o campo "uid": o id ANÔNIMO e aleatório do aparelho de quem escreveu (sem nome, e-mail ou
+    // telefone). Só esse mesmo uid pode EDITAR ou EXCLUIR o comentário. Comentários antigos (sem uid) só se apagam
+    // pelo console do Firebase (Firestore Database › comentarios), que não passa por estas regras.
+    // Pré-requisito: Firebase › Authentication › Método de login › Anônimo = ATIVADO.
+    function comValido(d) {
+      return d.keys().hasOnly(
+            ['nota','gostou','melhorar','nome','anonimo','versao','plataforma','idioma','criadoEm','uid','editadoEm'])
+        && d.nota is int && d.nota >= 0 && d.nota <= 4
+        && d.gostou is string && d.gostou.size() <= 700
+        && d.melhorar is string && d.melhorar.size() <= 700
+        && d.nome is string && d.nome.size() <= 60
+        && d.anonimo is bool
+        && d.versao is string && d.versao.size() <= 20
+        && d.plataforma is string && d.plataforma.size() <= 20
+        && d.idioma is string && d.idioma.size() <= 5
+        && d.criadoEm is timestamp
+        && (d.nota > 0 || d.gostou.size() > 0 || d.melhorar.size() > 0);
+    }
+
     match /comentarios/{id} {
       allow get: if true;
       allow list: if request.query.limit <= 50;
-      allow create: if request.resource.data.keys().hasOnly(
-            ['nota','gostou','melhorar','nome','anonimo','versao','plataforma','idioma','criadoEm'])
-        && request.resource.data.nota is int
-        && request.resource.data.nota >= 0 && request.resource.data.nota <= 4
-        && request.resource.data.gostou is string && request.resource.data.gostou.size() <= 700
-        && request.resource.data.melhorar is string && request.resource.data.melhorar.size() <= 700
-        && request.resource.data.nome is string && request.resource.data.nome.size() <= 60
-        && request.resource.data.anonimo is bool
-        && request.resource.data.versao is string && request.resource.data.versao.size() <= 20
-        && request.resource.data.plataforma is string && request.resource.data.plataforma.size() <= 20
-        && request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5
-        && request.resource.data.criadoEm is timestamp
-        && (request.resource.data.nota > 0
-            || request.resource.data.gostou.size() > 0
-            || request.resource.data.melhorar.size() > 0);
-      allow update, delete: if false;
+      // com login anônimo: uid obrigatório e igual ao do usuário; sem login (ex.: Anônimo desativado): sem uid
+      allow create: if comValido(request.resource.data)
+        && ((request.auth != null && request.resource.data.uid == request.auth.uid)
+            || (request.auth == null && !('uid' in request.resource.data)));
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.criadoEm == resource.data.criadoEm
+        && comValido(request.resource.data);
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
     }
 
     // Contato opcional de quem quer resposta: só o dono do projeto lê (pelo console).
