@@ -1,0 +1,53 @@
+name: Atualizar vagas CLT
+
+# Roda sozinho de 3 em 3 horas, busca vagas novas (Recife, Olinda, Paulista e Jaboatão)
+# e grava vagas/clt.json, que o app lê no menu CLT. Também roda pelo botão Run workflow.
+# Opcional: cadastre os secrets ADZUNA_ID e ADZUNA_KEY (grátis em developer.adzuna.com) para trazer salário.
+on:
+  schedule:
+    - cron: '20 */3 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scripts/vagas.py']
+
+concurrency:
+  group: vagas
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Buscar vagas
+        env:
+          ADZUNA_ID: ${{ secrets.ADZUNA_ID }}
+          ADZUNA_KEY: ${{ secrets.ADZUNA_KEY }}
+        run: python scripts/vagas.py
+      - name: Guardar relatório (para conferir o que cada fonte entregou)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-vagas
+          path: debug-vagas/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Publicar se mudou
+        run: |
+          rm -rf debug-vagas
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add vagas
+          if git diff --cached --quiet; then
+            echo "Sem novidade."
+          else
+            git commit -m "Vagas CLT atualizadas pelo robô"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi

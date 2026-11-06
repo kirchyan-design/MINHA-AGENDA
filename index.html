@@ -2908,7 +2908,37 @@ const CLT_RAW=[
 ["J","Auxiliar financeiro","RHF Talentos","fin","M","Até R$ 2.000,00","1 vaga","","cat",""]
 ];
 const cltHash=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return (h>>>0).toString(36)};
-const CLT_DATA=CLT_RAW.map((r,i)=>({id:"v"+cltHash(r[0]+"|"+r[1]+"|"+r[2]+"|"+r[8]+"|"+i),cid:r[0],c:r[1],e:r[2],a:r[3],n:r[4],s:r[5],q:r[6],d:r[7],f:r[8],o:r[9]}));
+/* campos extras (todos opcionais, só aparecem quando existem): b benefícios, h jornada/horário, m modalidade, r requisitos, l local/bairro, u link direto da vaga.
+   Nas linhas de CLT_RAW podem vir nas posições 10 a 14: [..., benefícios, jornada, requisitos, link, local] */
+function cltDeriva(v){
+ const o=v.o||"",x={};
+ let m=o.match(/\b(presencial|h[ií]brido|remoto|home office)\b/i);if(m)x.m=m[1][0].toUpperCase()+m[1].slice(1).toLowerCase();
+ const h=[];[/\d{1,2}h(?:\d{2})?\s*(?:às|as|a|-|–)\s*\d{1,2}h(?:\d{2})?/i,/segunda a (?:sexta|sábado|sabado)[^.;,]{0,25}/i,/escala\s*\d+\s*[x×]\s*\d+/i,/\d{2}\s*h(?:oras)?\s*semanais/i].forEach(r=>{const k=o.match(r);if(k)h.push(k[0].trim())});if(h.length)x.h=h.join(" · ");
+ const b=[];(o.match(/vale[- ](?:transporte|refeição|alimentação)|plano (?:de saúde|odontológico)|seguro de vida|cesta básica|comiss(?:ão|ões)|premiação|PLR|auxílio[- ][a-zçã]+/gi)||[]).forEach(s=>{s=s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();if(!b.includes(s))b.push(s)});if(b.length)x.b=b.join(", ");
+ m=o.match(/[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+/);if(m)x.em=m[0].toLowerCase();
+ return x}
+function cltMk(o){const v={id:o.id||"v"+cltHash([o.cid,o.c,o.e,o.f,o.u||"",o.d||""].join("|")),cid:o.cid,c:o.c||"",e:o.e||"",a:o.a||"adm",n:o.n||"F",s:o.s||"",q:o.q||"",d:o.d||"",f:o.f||"",o:o.o||"",b:o.b||"",h:o.h||"",m:o.m||"",r:o.r||"",l:o.l||"",u:o.u||"",em:o.em||""};const x=cltDeriva(v);["b","h","m","em"].forEach(k=>{if(!v[k]&&x[k])v[k]=x[k]});return v}
+const CLT_BASE=CLT_RAW.map((r,i)=>{const v=cltMk({cid:r[0],c:r[1],e:r[2],a:r[3],n:r[4],s:r[5],q:r[6],d:r[7],f:r[8],o:r[9],b:r[10],h:r[11],r:r[12],u:r[13],l:r[14],em:r[15]});v.id="v"+cltHash(r[0]+"|"+r[1]+"|"+r[2]+"|"+r[8]+"|"+i);return v});
+let CLT_DATA=CLT_BASE,CLT_QUANDO=CLT_ATUAL,CLT_REMOTO=false,cltUlt=0,cltNovas=new Set();
+const cltIdade=s=>{const m=String(s||"").match(/(\d{2})\/(\d{2})\/(\d{4})/);return m?(Date.now()-new Date(+m[3],m[2]-1,+m[1]))/864e5:0};
+function cltCalcNovas(){try{const s=localStorage.getItem("ma-clt-vistas");if(!s){cltNovas=new Set();return}const vis=new Set(JSON.parse(s));cltNovas=new Set(CLT_DATA.filter(v=>!vis.has(v.id)).map(v=>v.id))}catch(e){}}
+function cltVistas(){try{localStorage.setItem("ma-clt-vistas",JSON.stringify(CLT_DATA.map(v=>v.id).slice(-3000)))}catch(e){}}
+/* atualização automática: o robô (.github/workflows/atualizar-vagas.yml) grava vagas/clt.json; a lista de CLT_RAW some sozinha 14 dias depois de CLT_ATUAL */
+function cltAplicar(d){
+ if(!d||!Array.isArray(d.vagas))return false;
+ const r=d.vagas.filter(o=>o&&CLT_CID[o.cid]&&o.c&&cltIdade(o.d)<=30).map(cltMk);
+ if(!r.length)return false;
+ const ids=new Set(r.map(v=>v.id)),base=cltIdade(CLT_ATUAL)>14?[]:CLT_BASE.filter(v=>!ids.has(v.id));
+ CLT_DATA=base.concat(r);CLT_REMOTO=true;CLT_QUANDO=d.atualizado||CLT_ATUAL;cltCalcNovas();return true}
+function cltCarregar(forcar){const ag=Date.now();if(!forcar&&ag-cltUlt<60000)return Promise.resolve();cltUlt=ag;
+ return fetch("vagas/clt.json?x="+ag,{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{if(!d)return;
+  try{localStorage.setItem("ma-clt-json",JSON.stringify(d))}catch(e){}
+  if(cltAplicar(d)&&tab==="clt")render()}).catch(()=>{})}
+function cltQuandoTxt(){return CLT_REMOTO?"🔄 Atualização automática · última: "+esc(CLT_QUANDO)+" · "+CLT_DATA.length+" vagas":"📋 Lista de "+esc(CLT_ATUAL)+". A atualização automática começa quando o robô de vagas rodar."}
+function cltManual(b){b.disabled=true;b.textContent="Buscando…";cltCarregar(true).then(()=>{render();info(CLT_REMOTO?"Lista de vagas atualizada.":"Ainda não há lista automática publicada. O robô roda a cada 3 horas.")})}
+try{cltAplicar(JSON.parse(localStorage.getItem("ma-clt-json")||"null"))}catch(e){}
+setTimeout(cltCarregar,2500);setInterval(()=>{if(!document.hidden)cltCarregar()},30*60*1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)cltCarregar()});
 let cltCid="",cltNv="all",cltAr="",cltQ="",cltFav=false;
 const cltIni=()=>{S.clt=S.clt||{};S.clt.fav=Array.isArray(S.clt.fav)?S.clt.fav:[];return S.clt};
 function cltUrlFonte(v){const f=CLT_SRC[v.f];if(!f)return "";return f[1][v.cid]||f[1].d||""}
@@ -2920,16 +2950,16 @@ function cltFiltrar(ignoraCid){
   if(cltNv!=="all"&&v.n!==cltNv)return false;
   if(cltAr&&v.a!==cltAr)return false;
   if(cltFav&&!fav.includes(v.id))return false;
-  if(q&&!((v.c+" "+v.e+" "+v.o+" "+CLT_NOME[v.cid]+" "+(CLT_AR[v.a]||[,""])[1]).toLowerCase().includes(q)))return false;
+  if(q&&!((v.c+" "+v.e+" "+v.o+" "+v.b+" "+v.l+" "+CLT_NOME[v.cid]+" "+(CLT_AR[v.a]||[,""])[1]).toLowerCase().includes(q)))return false;
   return true})}
 function cltCard(v){
- const ci=CLT_CID[v.cid],ar=CLT_AR[v.a],fav=cltIni().fav.includes(v.id),src=CLT_SRC[v.f],fu=cltUrlFonte(v);
- const row=(k,x)=>x?`<div class="cn-r"><span>${k}</span><b>${esc(x)}</b></div>`:"";
+ const ci=CLT_CID[v.cid],ar=CLT_AR[v.a],fav=cltIni().fav.includes(v.id),src=CLT_SRC[v.f],fu=v.u||cltUrlFonte(v);
+ const row=(k,x)=>x?`<div class="cn-r"><span>${k}</span><b>${esc(x)}</b></div>`:"",rn=(k,x)=>`<div class="cn-r"><span>${k}</span><b${x?"":` style="opacity:.55;font-weight:400"`}>${x?esc(x):"Não informado no anúncio"}</b></div>`;
  return `<div class="cn-card" style="--cc:${ar[2]}"><div class="cn-top"><span class="cn-b" style="background:${ci[1]}22;color:${ci[1]}">📍 ${esc(ci[0])}</span><span class="cn-uf">${ar[0]} ${esc(ar[1])}</span><button class="cn-fv" onclick="cltFavT('${v.id}')" aria-label="Favoritar" aria-pressed="${fav}">${fav?"⭐":"☆"}</button></div>
- <h4>${esc(v.c)}</h4>${v.e?`<div class="cn-pz">🏢 ${esc(v.e)}</div>`:""}${(cltIni().sent||{})[v.id]?`<div class="cn-pz" style="color:#2f9e6b">✅ Currículo enviado em ${esc(cltIni().sent[v.id])}</div>`:""}
- <div class="cn-g">${row("Vagas",v.q)}${row("Salário",v.s)}${row("Publicada",v.d)}${row("Contrato","CLT")}${row("Fonte",src?src[0]:"")}</div>
+ <h4>${esc(v.c)}${cltNovas.has(v.id)?` <span class="cn-b" style="background:#2f9e6b22;color:#2f9e6b">🆕 Nova</span>`:""}</h4>${v.e?`<div class="cn-pz">🏢 ${esc(v.e)}</div>`:""}${(cltIni().sent||{})[v.id]?`<div class="cn-pz" style="color:#2f9e6b">✅ Currículo enviado em ${esc(cltIni().sent[v.id])}</div>`:""}
+ <div class="cn-g">${row("Vagas",v.q)}${rn("Salário",v.s)}${rn("Benefícios",v.b)}${rn("Jornada / horário",v.h)}${rn("Modalidade",v.m)}${row("Local",v.l)}${row("Requisitos",v.r)}${row("E-mail p/ currículo",v.em)}${row("Publicada",v.d)}${row("Contrato","CLT")}${row("Fonte",src?src[0]:v.f)}</div>
  ${v.o?`<p class="cn-nv" style="margin:8px 0 0">${esc(v.o)}</p>`:""}
- <div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="cltEnviar('${v.id}');return false">📨 Enviar currículo</a><a class="cn-lk" href="${esc(cltBusca(v))}" target="_blank" rel="noopener">🔎 Buscar vaga</a>${fu?`<a class="cn-lk" href="${esc(fu)}" target="_blank" rel="noopener">Abrir ${esc(src[0].split(" (")[0])} ↗</a>`:""}</div></div>`}
+ <div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="cltEnviar('${v.id}');return false">📨 Enviar currículo${v.em?" (e-mail pronto)":""}</a><a class="cn-lk" href="${esc(cltBusca(v))}" target="_blank" rel="noopener">🔎 Buscar vaga</a>${fu?`<a class="cn-lk" href="${esc(fu)}" target="_blank" rel="noopener">Abrir ${esc((src?src[0]:(v.f||"vaga")).split(" (")[0])} ↗</a>`:""}</div></div>`}
 function cltRes(){
  const l=cltFiltrar(false);
  if(!l.length)return `<div class="vazio">Nenhuma vaga encontrada com esses filtros.<br>Tente outra cidade, nível ou área.</div>`;
@@ -2953,11 +2983,12 @@ function cltLive(){
  const cs=cltCid?[cltCid]:Object.keys(CLT_CID);
  return `<p class="cn-nv" style="margin:8px 0 4px">As listas dos portais mudam toda hora. Toque para abrir e ver as vagas mais novas.</p>`+cs.map(c=>`<div class="cn-act" style="margin:4px 0"><b style="min-width:84px;font-size:13px">📍 ${esc(CLT_CID[c][0])}</b>${CLT_LIVE[c].map(a=>{const u=(CLT_SRC[a[1]][1][c])||CLT_SRC[a[1]][1].d;return `<a class="cn-lk" href="${esc(u)}" target="_blank" rel="noopener">${esc(a[0])} ↗</a>`}).join("")}</div>`).join("")}
 function cltFavT(id){const c=cltIni(),i=c.fav.indexOf(id);if(i<0)c.fav.push(id);else c.fav.splice(i,1);save();const y=window.scrollY;render();window.scrollTo(0,y)}
-function vClt(){cltIni();
+function vClt(){cltIni();setTimeout(cltVistas,4000);
  const nvb=[["all","Todos"],["S","🎓 Superior"],["M","📘 Médio"],["F","🧰 Fundam."]];
  return `<h2>${_t("CLT")}</h2>
- <p class="hint" style="margin:0 0 10px">Vagas de emprego com carteira assinada em Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE). Levantamento de ${CLT_ATUAL} em portais públicos. Vagas fecham rápido: confirme sempre no site da fonte. O nível de escolaridade é estimado pelo cargo quando o anúncio não informa.</p>
+ <p class="hint" style="margin:0 0 10px">Vagas de emprego com carteira assinada em Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE). Lista de ${esc(CLT_QUANDO)} em portais públicos. Vagas fecham rápido: confirme sempre no site da fonte. O nível de escolaridade é estimado pelo cargo quando o anúncio não informa.</p>
  ${cvCard()}
+ <div class="card" style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="cn-nv" style="margin:0" id="clquando">${cltQuandoTxt()}</span><button class="sec" onclick="cltManual(this)">🔄 Atualizar</button></div>
  <div class="seg s5" id="clchips">${cltChips()}</div>
  <div class="card"><div class="seg s4" style="margin-bottom:8px">${nvb.map(a=>`<button class="${cltNv===a[0]?"on":""}" onclick="cltNv='${a[0]}';render()">${a[1]}</button>`).join("")}</div>
  <select id="clar" class="cn-sel" onchange="cltAr=this.value;cltRefresh()" aria-label="Área">${cltAreas()}</select>
@@ -3024,13 +3055,13 @@ function cvMonta(x){
 let cvEnv=null;
 function cltEnviar(id){
  const c=cltIni(),livre=!id,v=livre?{id:"",cid:"",c:"",e:""}:CLT_DATA.find(z=>z.id===id);if(!v)return;
- cvEnv=v;const m=cvMonta(v),mail=livre?"":(c.mail&&c.mail[id])||"",sent=!livre&&c.sent&&c.sent[id];
+ cvEnv=v;const m=cvMonta(v),mail=livre?"":(c.mail&&c.mail[id])||v.em||"",sent=!livre&&c.sent&&c.sent[id];
  const o=document.createElement("div");o.className="ov";o.id="cvov";
  o.innerHTML=`<div class="dlg" role="dialog" aria-label="Enviar currículo" style="max-height:90vh;overflow:auto;text-align:left">
  <b style="font-size:16px">📨 Enviar currículo</b>
  ${livre?`<input id="cve-c" class="cn-q" style="margin-top:8px" placeholder="Cargo da vaga" oninput="cvRefaz()"><input id="cve-e" class="cn-q" style="margin-top:6px" placeholder="Empresa (opcional)" oninput="cvRefaz()">`:`<p style="margin:6px 0 0"><b>${esc(v.c)}</b>${v.e?`<br><small>🏢 ${esc(v.e)}</small>`:""}</p>`}
  ${sent?`<p class="cn-nv" style="margin:6px 0 0">✅ Você marcou como enviado em ${esc(sent)}.</p>`:""}
- <p class="cn-nv" style="margin:10px 0 4px">E-mail da empresa (o de RH ou o do anúncio)</p>
+ <p class="cn-nv" style="margin:10px 0 4px">E-mail da empresa ${!livre&&v.em&&!(c.mail&&c.mail[id])?"<b style=\"color:#2f9e6b\">· já preenchido com o e-mail do anúncio</b>":"(o de RH ou o do anúncio)"}</p>
  <input id="cve-m" class="cn-q" type="email" inputmode="email" autocomplete="off" placeholder="rh@empresa.com.br" value="${esc(mail)}">
  <p class="cn-nv" style="margin:6px 0 0">Os portais costumam receber a candidatura pelo próprio site (botão “Abrir fonte”). Use o e-mail quando a empresa divulgar um. O app não inventa endereços.</p>
  <p class="cn-nv" style="margin:10px 0 4px">Assunto</p><input id="cve-s" class="cn-q" value="${esc(m.subj)}">
