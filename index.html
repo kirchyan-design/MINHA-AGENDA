@@ -1508,77 +1508,74 @@ function calcCmp(){const el=$('#cres');if(!el)return;const A=side(cmp.a),B=side(
 function mmBusca(v){v=nrm(v);document.querySelectorAll('#v .mm-i').forEach(e=>{e.style.display=!v||e.dataset.t.includes(v)?'':'none'});
  document.querySelectorAll('#v .mm-c').forEach(c=>{const any=[...c.querySelectorAll('.mm-i')].some(e=>e.style.display!=='none');c.style.display=any?'':'none';const h=c.previousElementSibling;if(h&&h.tagName==='H3')h.style.display=any?'':'none'})}
 /* ---------- Promoções: Assaí Atacadista (encartes de Pernambuco) ---------- */
-const AS_LEVA=`
-Açúcar refinado Olho d'Água|1kg|3.40|3.19
-Farinha de trigo tipo 1 Rosa Branca|1kg|4.19|3.89
-Biscoito Mamma Mia Capricche (original ou integral)|301g|5.39|3.59
-Biscoito Maria ou Maizena Pilar|307g|4.90|3.79
-Macarrão espaguete fino Vitarella|400g/500g|2.79|2.29
-Molho de tomate Predilecta sachê|300g|1.79|1.19
-Leite condensado semidesnatado Italac|395g|6.65|5.99
-Café solúvel Melitta sachê|40g|5.25|4.49
-Cerveja sem glúten Ultimate Heineken|lata 350ml|6.29|5.99
-Cerveja Pilsen Itaipava|lata 550ml|4.39|3.59
-Vodka Intencion|900ml|24.90|21.90
-Suco misto 100% OQ Mais+|1,35L|12.90|9.90
-Refrigerante Coca-Cola original|3L|12.99|11.49
-Feijão carioca tipo 1 Pai Heleno|1kg|7.79|6.99
-Café Melitta tradicional ou extraforte|250g|14.15|12.99
-Flocão de milho Vitamilho|500g|1.49|1.25
-Coxão mole bovino resfriado a vácuo Masterboi|kg|48.90|39.50
-Sobrecoxas de frango congeladas Sadia|1kg|15.90|13.89
-Filé de peito de frango congelado Mauricéa|1kg|22.50|18.79
+const AS_SAUDE=`
+Iogurte natural Danone sabores|copo 160g|3.99|3.19
+Iogurte líquido YoPro Danone sabores|PET 250g|9.99|8.79
+Iogurte líquido zero sabor morango ou batido Danone|PET 1,2kg|18.45|15.90
+Leite fermentado Activia zero sabores|PET 1kg|18.45|16.90
+Iogurte natural Nestlé sabores|copo 160g/170g|4.25|2.89
+Iogurte líquido zero Nestlé sabores|PET 170g|3.89|2.99
+Iogurte natural Nestlé sabores|bandeja 340g|9.85|7.90
+Iogurte líquido zero Nestlé sabores|PET 1,15kg|17.75|14.90
+Iogurte natural Itambé sabores|copo 170g|3.39|2.89
+Iogurte com polpa zero Itambé sabores|bandeja 510g|8.35|5.99
+Iogurte natural integral Milk Itambé|pote 450g|12.25|9.90
+Iogurte líquido zero Itambé sabores|PET 1,15kg|16.29|13.90
+Requeijão cremoso zero lactose Nolac Itambé|pote 200g|9.35|8.69
+Manteiga com sal zero lactose Itacolomy|pote 200g|13.45|12.90
+Ricota fresca Valelac|preço do quilo, na peça|31.50|27.90
+Queijo tipo prato Lacfree Verde Campo|preço do quilo, na peça|89.90|79.90
+`;
+const AS_SAUDE_APP=`
+Bebida láctea Power Whey 3 Corações sabores|TP 250ml|8.09|6.49|5 un.
+Creatine Black Skull sabores|pote 300g|35.90|29.90|6 un.
+Whey 100% HD Black Skull sabores|pacote 900g|119.90|99.90|6 un.
 `;
 const AS_APP=`
-Macarrão espaguete Galo|400g|2.59|2.19|10 un.
-Molho de tomate Stella D'oro|300g|1.49|1.29|10 un.
-Leite condensado semidesnatado Sabe|395g|5.89|5.29|10 un.
-Vodka nacional Slova|970ml|13.90|10.90|6 un.
-Cerveja Amstel Ultra Lager|lata 269ml|4.39|3.79|12 un.
-Papel higiênico folha dupla Supra|12 rolos de 30m|24.99|19.49|10 un.
-Desodorante aerossol Above|150ml|9.79|6.85|10 un.
-Kit Above shampoo 325ml + condicionador 200ml|kit|15.85|14.60|10 un.
-Gel dental Closeup (Remove Manchas ou Ação Imediata)|tubo|9.19|7.99|10 un.
-Sabonete Francis fragrâncias|90g|4.45|3.99|10 un.
-Amaciante Coala concentrado|1L|17.89|15.90|10 un.
-Sabão em barra Bem-te-vi|160g|2.49|1.99|10 un.
-Desinfetante Guarani|2L|5.99|4.49|10 un.
-Detergente líquido Absoluto|2L|5.65|4.79|10 un.
-Limpador multiuso Becker|500ml|4.85|2.79|10 un.
-Farinha de trigo com fermento Rosa Branca|1kg|4.39|3.99|10 un.
-Mistura de creme de leite Mococa|200g|1.99|1.79|10 un.
-Biscoito cream cracker Vitarella|350g/400g|4.89|3.79|10 un.
-Contrafilé bovino resfriado a vácuo Masterboi|kg|48.90|43.90|5 kg
-Queijo mussarela fatiado Président|150g|10.50|9.49|10 un.
-Coxas de frango temperadas congeladas Perdigão|1,2kg|26.90|24.19|6 un.
+Biscoito cream cracker Vitarella (tradicional ou água e sal)|350g/400g|4.89|3.79|10 un.
+Ketchup ou maionese Hellmann's sabores|garrafa 380g ou 335g|15.29|10.90|10 un.
+Mistura de creme de leite Mococa|TP 200g|1.99|1.79|10 un.
+Vinho frisante Pink Moon tipos|garrafa 275ml|5.89|4.79|10 un.
+Cerveja Pure Gold Stella Artois|lata 473ml|6.99|5.99|10 un.
+Papel higiênico folha dupla Personal VIP (leve 12 e pague 11)|11 rolos de 30m|24.50|18.99|10 un.
+Creme dental carvão ativado Sorriso|caixeta 90g|7.25|5.99|10 un.
+Sabonete vegetal leite de aveia Davene fragrâncias|embalagem 90g|3.55|3.19|10 un.
+Desodorante aerossol 72h Giovanna Baby fragrâncias|frasco 150ml|13.39|10.70|10 un.
+Shampoo Naturals Palmolive tipos|frasco 650ml|15.69|12.55|10 un.
+Amaciante de roupas concentrado Comfort fragrâncias|frasco 500ml|11.49|8.90|10 un.
+Tira-manchas em pó Vanish tipos|pacote 400g|20.99|16.90|10 un.
+Água sanitária Dragão|frasco 2L|5.65|3.89|10 un.
+Limpador perfumado Casa & Perfume fragrâncias|frasco 2L|15.90|12.90|10 un.
+Odorizador de ambientes aerossol Chá Branco Secar|frasco 360ml|15.09|12.99|10 un.
+Feijão de corda tipo 1 Pai Heleno|pacote 1kg|6.99|6.09|10 un.
+Leite condensado semidesnatado Sabe|TP 395g|5.89|5.29|10 un.
+Macarrão Vitamassa tipos (argola)|pacote 300g|3.55|2.99|10 un.
+Carne moída resfriada Masterboi|bandeja 1kg|24.90|21.90|5 un.
+Queijo tipo mussarela fatiado Président|embalagem 150g|10.90|9.49|10 un.
+Sobrecoxas de frango temperadas e congeladas Assa Fácil no forno Sadia|pacote 800g|16.80|14.99|6 un.
 `;
-const AS_FEIRA=`
-Couve-manteiga|maço|3.89|0.89
-Cebolinha|maço|3.49|0.89
-Manga-Palmer|kg|4.89|2.49
-Melão-português|kg|6.89|2.89
-Manga-Tommy|kg|3.65|2.89
-Melão-amarelo|kg|3.90|2.89
-Abacate|kg|4.89|3.89
-Uva-branca sem semente|bandeja 500g|6.99|4.89
-Mamão-formosa|kg|6.85|4.89
-Alho a granel|kg|18.75|15.49
-Goma de mandioca para tapioca Norte Goma|pacote 1kg|6.19|4.99
-Tangerina-murcote|kg|7.89|6.49
-Tangerina Pick & Nicky|bandeja 500g|8.95|6.89
-Pera importada|kg|16.15|9.89
-Kiwi Sungold Zespri|caixeta 440g|23.89|18.89
-Laranja-pera|kg|2.39|1.49
-Abacaxi|unidade|3.95|2.49
-Banana-prata|kg|5.89|2.89
-Batata lavada|kg|6.85|4.89
-Maçã-gala|kg|6.99|5.89
-Melancia|unidade|8.99|6.89
+const AS_LEVA=`
+Panettone com frutas cristalizadas ou gotas de chocolate Tommy|caixeta 400g|14.99|12.99
+Panettone com frutas cristalizadas ou gotas de chocolate Romanato|pacote 300g|9.90|6.99
+Whey Balance Protein Health Labs sabores|pacote 455g|69.90|59.90
+Espumante Lunar tipos|garrafa 750ml|37.90|27.90
+Espumante moscatel branco ou rosé Verse|garrafa 660ml|32.90|22.90
+Papel sulfite A4 Report|pacote com 500 folhas|29.90|23.50
+Lâmpada de LED bulbo Elgin|unidade 12W bivolt|6.19|3.99
+Liquidificador 60Hz LM-400 Master Mondial|unidade 220V|79.90|69.90
+Churrasqueira elétrica CH07 Mondial|unidade 127V ou 220V|189.00|139.90
+Forno elétrico FR-42 Mondial|unidade 42L 127V ou 220V|399.90|299.90
+Ventilador de coluna Turbo Mondial|unidade 40cm 127V ou 220V|299.90|259.90
+Caixa amplificadora CM-300-N Mondial|unidade bivolt|319.90|279.90
+Pneu aro 13 175/75 A5 84T Xbri Fastway|unidade · preço promocional a partir de 4 un.|279.90|259.90
+Pneu aro 15 185/60 Xbri Fastway|unidade · preço promocional a partir de 4 un.|289.90|259.90
+Pneu aro 14 175/65 86H Direction 2 Touring Goodyear|unidade · preço promocional a partir de 4 un.|379.90|359.90
 `;
 const AS_ENC=[
- {id:'leva',t:'Leva o Assaí com você · Economia Arretada',ini:'2026-11-02',fim:'2026-11-05',txt:AS_LEVA,app:false},
- {id:'app',t:'Especial App Meu Assaí',ini:'2026-10-29',fim:'2026-11-04',txt:AS_APP,app:true},
- {id:'feira',t:'4ª e 5ª Feirassaí · Hortifrúti',ini:'2026-11-04',fim:'2026-11-05',txt:AS_FEIRA,app:false}
+ {id:'saude',t:'Especial Saúde & Bem-Estar · iogurtes e laticínios',ini:'2026-11-06',fim:'2026-11-08',txt:AS_SAUDE,app:false},
+ {id:'saudeapp',t:'Saúde & Bem-Estar · exclusivos do app Meu Assaí',ini:'2026-11-06',fim:'2026-11-08',txt:AS_SAUDE_APP,app:true},
+ {id:'app',t:'Especial App Meu Assaí · ofertas com descontos imperdíveis',ini:'2026-11-06',fim:'2026-11-08',txt:AS_APP,app:true},
+ {id:'leva',t:'Leva o Assaí com você · aqui o seu dinheiro vale mais',ini:'2026-11-06',fim:'2026-11-08',txt:AS_LEVA,app:false}
 ];
 function asLista(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const a=l.split('|');return{n:a[0],d:a[1],de:+a[2],por:+a[3],lim:a[4]||''}})}
 const dm=iso=>iso.slice(8,10)+'/'+iso.slice(5,7);
@@ -1760,20 +1757,89 @@ Molho de Tomate Tarantella Tradicional|Pouch 1,7kg|11.90
 Óleo de Milho Mazola|PET 900ml|16.90
 Polpa de Tomate Pomodoro|TP 520g|5.60
 `},
-{t:'Lista de ofertas · Linha Apti',ini:'2026-11-02',fim:'2026-11-09',txt:`
-Fermento em Pó Apti|Pote 100g|2.29
-Achocolatado em Pó Apti Power|Pacote 1kg|15.89
-Amido de Milho Apti|Caixeta 500g|5.69
-Aveia Apti Flocos/Flocos Finos|Caixeta 150g|2.39
-Caldo Apti Galinha/Carne|Pacote 1,05kg|9.99
-Chocolate em Pó Apti 50% Cacau|Caixeta 200g|17.90
-Gelatina em Pó Apti (vários sabores)|Caixeta 20g|1.19
-Mistura para Bolo Apti (vários sabores)|Pouch 400g|3.79
+{t:'Apti · linha de mercearia',ini:'2026-11-02',fim:'2026-11-09',txt:`
+Fermento em Pó Apti|Pote 100g|2.29|3.94
+Achocolatado em Pó Apti Power|Pacote 1kg|15.89|18.49
+Amido de Milho Apti|Caixeta 500g|5.69|7.99
+Aveia Apti Flocos/Flocos Finos|Caixeta 150g|2.39|3.59
+Caldo Apti Galinha/Carne|Pacote 1,05kg|9.99|12.90
+Chocolate em Pó Apti 50% Cacau|Caixeta 200g|17.90|21.48
+Gelatina em Pó Apti (vários sabores)|Caixeta 20g|1.19|1.59
+Mistura para Bolo Apti (vários sabores)|Pouch 400g|3.79|4.99
+`},
+{t:'Jucurutu · queijos, manteiga e requeijão',ini:'2026-11-05',fim:'2026-11-10',txt:`
+Queijo de Coalho Jucurutu Resfriado|preço por quilo na peça|39.90|56.90
+Queijo de Coalho Jucurutu Resfriado Zero Lactose|preço por quilo na peça|54.90|65.90
+Queijo de Manteiga Jucurutu Resfriada|preço por quilo na peça|46.90|56.90
+Queijo Mussarela Jucurutu Resfriado Lanche|preço por quilo na peça|49.90|56.90
+Manteiga Sertão Jucurutu Resfriada com Sal|pote, 500 g|25.90|29.90
+Requeijão Sertão Jucurutu Resfriada Tradicional|pote, 400 g|15.90|17.90
+`},
+{t:'Danone · iogurtes e sobremesas',ini:'2026-11-05',fim:'2026-11-10',txt:`
+Bebida Láctea YoPro|vários sabores, TP, 250 ml|7.49|9.49
+Iogurte Danone YoPro Resfriado Morango|unidade, 160 g|8.49|9.49
+Iogurte Danone Resfriado|vários sabores, garrafa, 1,25 kg|14.90|19.90
+Iogurte Danone Resfriado 5x Zero Morango/5x Zero Batido||15.90|19.90
+Leite Fermentado Activia Resfriado Morango/Ameixa|garrafa, 800 g|14.49|15.90
+Leite Fermentado Activia Resfriado Ameixa Zero/Morango Zero|garrafa, 800 g|14.90|16.90
+Iogurte Danoninho Resfriado Morango e Banana/Morango||2.99|3.89
+Iogurte Danone Resfriado|vários sabores, unidade, 170 g|3.29|3.89
+Iogurte Natural Danone Resfriado|vários sabores, copo, 160 g|3.69|4.49
+Iogurte Natural Danone Resfriado Integral/Desnatado|bandeja, 340 g|7.49|8.89
+Petit Suisse Danoninho Resfriado|vários sabores|11.90|14.90
+Sobremesa Danone Danette Resfriado Chocolate Branco/Chocolate||14.90|17.90
+`},
+{t:'Hortifrúti',ini:'2026-11-06',fim:'2026-11-09',txt:`
+Alface Americana|unidade|2.99|3.79
+Cebola Branca|quilo|6.99|8.98
+Cenoura|quilo|4.99|5.99
+Abacaxi Tropical|unidade|2.99|3.59
+Banana Pacovan|quilo|1.45|3.99
+Banana-da-terra|quilo|5.99|6.99
+Limão-taiti|quilo|7.99|12.69
+Maçã Nacional Gala|quilo|6.89|8.99
+Manga Tommy|quilo|2.99|3.99
+Uva Sweet Jubille|bandeja com 500g|3.99|5.99
+Goma Peneirada Sinhá Maria|pacote com 1kg|3.99|4.89
+Ovo Branco Grande PVC|bandeja com 30 unidades|12.99|16.99
+`},
+{t:'3 Corações e Santa Clara · cafés e mercearia',ini:'2026-11-05',fim:'2026-11-08',txt:`
+Café 3 Corações Tradicional/Extra Forte|vácuo/almofada, 250 g|13.99|14.19
+Café Cappuccino Santa Clara Clássico|pote, 200 g|14.99|17.98
+Café em Cápsulas 3 Corações|café com leite/cappuccino, caixeta 10x9g/10x11g|16.99|22.89
+Café Solúvel Santa Clara Clássico|sachê, 40 g|4.69|4.99
+Milho de Pipoca Dona Clara|pacote, 400 g|2.99|3.69
+Amido de Milho Kimimo|caixeta, 200 g|2.99|4.39
+Refresco em Pó Frisco Uva/Laranja|envelope, 18 g|0.59|0.89
+Bebida Láctea 3 Corações Power Whey|frasco, 260 ml|6.99|8.99
+Bebida Láctea 3 Corações Cappuccino e Chocolate/Cappuccino|frasco, 260 ml|6.89|8.99
+Café Gourmet 3 Corações|vários tipos, pacote, 250 g|24.98|27.98
+Achocolatado em Pó 3 Corações Chocolatto|pacote, 900 g|19.98|22.98
+Café Santa Clara Descafeinado|vácuo, pacote, 250 g|22.90|28.90
+`},
+{t:'Açougue, frios e fatiados e padaria',ini:'2026-11-06',fim:'2026-11-09',txt:`
+Asa de Frango Resfriada Natto|preço por quilo|18.99|22.50
+Coxa com Sobrecoxa de Frango Resfriada Natto|preço por quilo|11.90|14.90
+Filé de Peito de Frango Resfriado Natto|preço por quilo|21.50|26.90
+Carne Bovina Acém sem Osso Reserva Resfriada|preço por quilo|39.90|48.90
+Carne Bovina Coxão Mole Reserva Resfriada|preço por quilo|43.90|55.90
+Fígado Bovino Reserva Resfriado|preço por quilo|12.90|18.90
+Jerked Beef Ponta de Agulha|preço por quilo · a cada 100g: R$ 3,89|38.90|47.90
+Queijo Prato Tirolez Resfriado Fatiado|preço por quilo · a cada 100g: R$ 4,99|49.90|59.90
+Salsicha Hot Dog Natto Resfriada|preço por quilo · a cada 100g: R$ 0,89|8.90|12.90
+Pão Francês Pancristal|preço por quilo · a cada 100g: R$ 1,09|10.90|14.90
+Pão de Hot Dog Pancristal|preço por quilo · a cada 100g: R$ 1,69|16.90|22.50
+Pão Recife Pancristal|preço por quilo · a cada 100g: R$ 1,99|19.90|26.90
 `}];
 /* Atualização automática (robô do GitHub): promocoes/atacadao.json é gerado por scripts/atacadao.py a partir dos folhetos.
    Aqui o app lê o arquivo, guarda a última cópia no aparelho (funciona sem internet) e junta com as listas fixas acima. */
 let AT_AUTO=[],AT_ATU='',atUlt=0;
-function atTodas(){return AT_LISTAS.concat(AT_AUTO).filter(e=>mmVal(e.fim).k!=='off')}
+/* Folhetos fixos (acima) + folhetos lidos pelo robô. Se o robô trouxe o mesmo folheto (mesma validade e preços iguais), mostra só um. */
+function atTodas(){const fx=AT_LISTAS.filter(e=>mmVal(e.fim).k!=='off'),pr=new Set();
+ fx.forEach(e=>e.txt.trim().split('\n').forEach(l=>{const a=l.split('|');pr.add(e.fim+'|'+(+a[2]).toFixed(2))}));
+ const au=AT_AUTO.filter(e=>{if(mmVal(e.fim).k==='off')return false;const L=e.txt.trim().split('\n').map(l=>l.split('|'));if(!L.length)return false;
+  return L.filter(a=>pr.has(e.fim+'|'+(+a[2]).toFixed(2))).length/L.length<0.6});
+ return fx.concat(au)}
 function atAplicar(d){if(!d||!Array.isArray(d.listas))return false;
  const novo=d.listas.filter(l=>l&&l.fim&&Array.isArray(l.itens)&&mmVal(l.fim).k!=='off').map(l=>({t:'Folheto · '+l.t,ini:l.ini||l.fim,fim:l.fim,
   txt:l.itens.filter(a=>a&&a[0]&&+a[2]>0).map(a=>[String(a[0]).replace(/\|/g,'/'),String(a[1]||'').replace(/\|/g,'/'),+a[2]].join('|')).join('\n')})).filter(e=>e.txt);
@@ -1781,20 +1847,147 @@ function atAplicar(d){if(!d||!Array.isArray(d.listas))return false;
 function atCarregar(){const ag=Date.now();if(ag-atUlt<60000)return;atUlt=ag;
  fetch('promocoes/atacadao.json?x='+ag,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(!d)return;
   try{localStorage.setItem('ma-at-json',JSON.stringify(d))}catch(e){}
-  if(atAplicar(d)&&tab==='mercado')render()}).catch(()=>{})}
+  if(atAplicar(d)){try{schedSoon()}catch(e){}if(tab==='mercado')render()}}).catch(()=>{})}
 try{atAplicar(JSON.parse(localStorage.getItem('ma-at-json')||'null'))}catch(e){}
 setTimeout(atCarregar,1500);setInterval(atCarregar,30*60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)atCarregar()});
 function atListas(){return atTodas().map(e=>{const L=e.txt.trim().split('\n').map(l=>l.split('|')),v=mmVal(e.fim);
- return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${L.map(a=>`<div class="item mm-i" data-t="${esc(nrm(a[0]+' '+a[1]))}"><span class="t">${esc(a[0])}<br><small style="color:var(--mute)">${esc(a[1])}</small></span><span style="text-align:right;flex:none"><strong>${brl(+a[2])}</strong><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('')}
+ return `<h3>${esc(e.t)}</h3><div class="card mm-c"><div style="margin-bottom:6px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>${L.map(a=>`<div class="item mm-i" data-t="${esc(nrm(a[0]+' '+a[1]))}"><span class="t">${esc(a[0])}<br><small style="color:var(--mute)">${esc(a[1])}</small></span><span style="text-align:right;flex:none"><strong>${brl(+a[2])}</strong><br>${+a[3]>+a[2]?`<small style="color:var(--mute);text-decoration:line-through">${brl(+a[3])}</small> <small style="color:var(--ac);font-weight:700">-${Math.floor((a[3]-a[2])/a[3]*100+1e-9)}%</small><br>`:''}<small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('')}
 function vMercadoAtac(){
  promoLimpar();const vivoAt=mmVal(AT_FIM).k!=='off',sec=vivoAt?atParse(AT_TXT):[],v=mmVal(AT_FIM);let tot=0;sec.forEach(s=>tot+=s.it.length);
  const blocos=sec.map(s=>`<h3>${esc(s.t)}</h3><div class="card mm-c">${s.it.map(i=>{const pc=i.de?Math.floor((i.de-i.at)/i.de*100+1e-9):0;
   return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.at)}</strong><br><small style="color:var(--ac)">App <b>${brl(i.app)}</b></small> · <small style="color:var(--ac)">Cartão <b>${brl(i.car)}</b></small><br>${i.de?`<small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small> `:''}<small style="color:var(--mute)">até ${dm(AT_FIM)}</small></span></div>`}).join('')}</div>`).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot+atTodas().reduce((a,e)=>a+e.txt.trim().split('\n').length,0)} produtos${AT_ATU?' · folhetos atualizados em '+new Date(AT_ATU).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}</small></div></div>${vivoAt?`<div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div>`:''}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Confirme os valores na loja.</p></div>`+((vivoAt||atTodas().length)?blocos+atListas():mmVazio('Atacadão'))}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot+atTodas().reduce((a,e)=>a+e.txt.trim().split('\n').length,0)} produtos${AT_ATU?' · folhetos atualizados em '+new Date(AT_ATU).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}</small></div></div>${vivoAt?`<div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div>`:''}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Nos folhetos em PDF, a loja garante 10 unidades ou 10 kg de cada produto enquanto durarem os estoques. Confirme os valores na loja.</p></div>`+((vivoAt||atTodas().length)?blocos+atListas():mmVazio('Atacadão'))}
 /* ---------- Promoções: Novo Atacarejo (encartes de Pernambuco) ---------- */
-const NV_ENC={sup:{t:'Super Ofertas',ini:'2026-11-03',fim:'2026-11-06'},lat:{t:'Semana dos Laticínios',ini:'2026-11-03',fim:'2026-11-07'},fei:{t:'Dia de Feira',ini:'2026-11-04',fim:'2026-11-05'}};
+const NV_ENC={fds:{t:'Findi com Despensa Cheia',ini:'2026-11-06',fim:'2026-11-08'},lim:{t:'Mania de Limpeza',ini:'2026-11-05',fim:'2026-11-08'},lat:{t:'Semana dos Laticínios',ini:'2026-11-03',fim:'2026-11-07'},sup:{t:'Super Ofertas',ini:'2026-11-03',fim:'2026-11-06'}};
 const NV_TXT=`
+#fds|Mercearia e despensa
+Açúcar Demerara Ipojuca|1kg|3.18|un|1|
+Farinha de Trigo Finna|Embalagem papel, tradicional tipo 1, 1kg|3.68|un|1|
+Sardinha Ralada 88|Óleo ou tomate, 110g|4.18|un|1|
+Feijão Preto Turquesa|Tipo 1, 1kg|6.98|un|1|
+Café Clássico Santa Clara|Almofada a vácuo, 250g|11.48|un|1|
+Extrato de Tomate Palmeiron|TP 270g|2.28|un||
+Leite em Pó Betânia|Integral, sachê 200g|5.98|un||
+Leite Condensado Italac|395g|5.98|un||
+Massa para Lasanha Vitarella|500g|7.98|un||
+Azeite Extravirgem Camponês|Vidro 250ml|17.98|un||
+Macarrão Instantâneo Nissin Lámen|Diversos sabores, 85g|1.88|un||
+Biscoito Maizena, Cream Cracker ou Maria Vitarella|Tradicional, leite, baunilha ou chocolate, 350g|3.98|un||
+Leite UHT Camponesa Origem ou Proteínas|Desnatado ou integral, 1L|8.98|un||
+Panettone Nille|Frutas cristalizadas ou gotas de chocolate, 400g|18.98|un||
+Panettone Casa Suíça|Chocolate ou frutas cristalizadas, 400g|22.98|un||
+Biscoito Wafer Vitarella|Diversos sabores, 80g|1.38|un||
+Salgadinho Cheetos|33g, 35g ou 40g|2.98|un||
+Biscoito Matutinha|Cebola e salsa ou manteiga de garrafa, 250g|4.98|un||
+Mistura para Bolo Dona Benta|Diversos sabores, 450g|5.98|un||
+Doce de Leite La Serenissima|Pote 400g|9.98|un|1|
+#fds|Higiene e limpeza
+Guardanapo Tinilo|Premium, 20 x 22cm, leve 100 pague 90|1.98|un||
+Sabonete Albany|Diversas fragrâncias, 80g|1.58|un||
+Kit Skala Shampoo 325ml + Condicionador 200ml|Diversas fragrâncias|13.98|un||
+Absorvente Intimus Noturno|Com abas, suave, 45 unidades|23.98|un||
+Inseticida Aerossol SBP|Diversos tipos, 450ml, embalagem promocional|16.98|un||
+Limpador Multiuso Brilux|Diversas fragrâncias, leve 750ml pague 500ml|3.78|un||
+Sabão em Barra Ypê|Neutro, 5 x 160g · Clube Novo: receba R$ 1,65 de volta, preço final R$ 7,25|8.90|un||6 unidades
+Amaciante Diluído Sonho|Diversas fragrâncias, 2L|8.98|un||
+Desinfetante Pinho Sol|Diversas fragrâncias, 1,75L|19.98|un||
+Sacos para Lixo Brilhus Rolo Mega|30L ou 50L|19.98|un||
+#fds|Perecíveis: carnes, frios e laticínios
+Filé de Merluza Alasca|Congelado|27.98|kg||
+Filé de Tilápia Netuno|Congelado, 800g|36.98|un||
+Linguiça Toscana Natto|Frango, resfriada|14.98|kg||
+Costela Bovina Ponta de Agulha|Resfriado|24.98|kg||
+Fraldinha Bovina|Resfriada, preço do kg na peça ou no pedaço|42.98|kg||
+Bananinha do Contra Filé|Congelada|46.98|kg||
+Frango Inteiro Formoso|Congelado|10.98|kg||
+Coxa e Sobrecoxa de Frango|Resfriado, a granel|12.98|kg||
+Filé de Peito de Frango Lar|Bandeja congelada, 1kg|19.80|un||
+Massa Pastel Mazza Foods Fest|200g|2.48|un||
+Pão Bisnaguinha Bauducco|Tradicional, 260g|6.98|un||
+Pão de Forma PlusVita|Original, 480g|8.48|un||
+Iogurte Grego Vigor|Diversos sabores, 90g|3.48|un||
+Bebida Láctea Betânia|Morango, bandeja 680g|6.98|un||
+Iogurte Polpa Ninho|Diversos sabores, bandeja 540g|7.98|un||
+Requeijão Cremoso Vigor|Tradicional ou light, 200g|7.98|un||
+Cobertura Culinária Natural da Vaca|Sabor requeijão, bisnaga 1,8kg|10.98|un||
+Iogurte Líquido Vigor Zero|Batido ou morango, 1100g|17.98|un||
+#fds|Bebidas
+Cerveja Skol|Super latão, 550ml|4.38|un||
+Cerveja Antarctica Original|473ml|4.58|un||
+Cerveja Heineken Pilsen|473ml|5.98|un||
+Cerveja Brahma Chopp|Pack com 12 latões de 473ml (nesta embalagem, a unidade sai por R$ 3,98)|47.76|un||
+Frisante Pink Moon|Rosé e pêssego, 750ml|15.98|un||
+Rum Montilla|Carta cristal, 1L|24.98|un||
+Vinho Tinto Quinta do Morgado|Suave, 750ml|15.98|un||
+Vinho Tinto Pérgola|Suave ou seco, 1L|22.98|un||
+Whisky Black & White|1L|59.80|un||
+Whisky White Horse|1L|69.80|un||
+Whisky Chivas|12 anos, 1L|109.80|un||
+Gin Tanqueray London Dry|750ml|119.80|un||
+Refrigerante Guaraná Antarctica|Tradicional, pet 200ml|1.78|un||
+Bebida H2OH!|Limão ou limoneto, pet 500ml|3.98|un||
+Refrigerante Sukita|Pet 2L|4.98|un||
+Refrigerante Coca-Cola Color Pack|6 latas tradicionais de 350ml (nesta embalagem, a unidade sai por R$ 3,33)|19.98|un||
+Bebida Alcoólica Mista Smirnoff Ice|Diversos sabores, 269ml|4.98|un||
+Vodka Smirnoff|Red, 998ml|36.98|un||
+Água Mineral Sterbom|Sem gás, pet 510ml|0.88|un||
+Água Mineral Nille|Com gás, 500ml|1.28|un||
+Refresco Dafruta|Diversos tipos, 200ml|1.28|un||
+Suco de Uva Integral OQ|1,5L|14.98|un||
+Energético Baly|Diversos sabores, 473ml|6.98|un||
+Energético Flying Horse|Diversos tipos, 2L|8.98|un||
+#lim|Mania de Limpeza · com cashback Clube Novo
+Detergente em Pó Bem-te-vi|Diversas fragrâncias, sachê 800g · receba R$ 1,22 de volta, preço final R$ 4,56|5.78|un||4
+Alvejante Sem Cloro Vanish|Multiuso white ou pink, sachê 500ml · receba R$ 0,48 de volta, preço final R$ 9,50|9.98|un||5
+Amaciante Concentrado Comfort Intense|Diversas fragrâncias, 1,5L · receba R$ 3,00 de volta, preço final R$ 18,98|21.98|un||3
+Lava Roupas Líquido Omo|3L, diversas fragrâncias · receba R$ 5,00 de volta, preço final R$ 24,98|29.98|un||2
+Lava-Louças Invicto|Diversas fragrâncias, 500ml · receba R$ 0,48 de volta, preço final R$ 1,00|1.48|un||6
+Limpador Multiuso Veja Gold|Original, 750ml · receba R$ 0,28 de volta, preço final R$ 5,50|5.78|un||5
+Sabão em Barra Glicerinado Minuano|Neutro, 5 x 160g · receba R$ 1,78 de volta, preço final R$ 7,20|8.98|un||
+Papel Higiênico Alpino|Folha dupla, 30m, leve 12 pague 11 · receba R$ 2,00 de volta, preço final R$ 12,98|14.98|un||
+Sabão em Pó Omo|Lavagem perfeita, bag 1,6kg · receba R$ 1,98 de volta, preço final R$ 21,00|22.98|un||
+Alvejante Vanish|Multi ou white, 1,5L · receba R$ 1,48 de volta, preço final R$ 27,50|28.98|un||
+Papel Higiênico Supra|Folha tripla, 20m, 12 rolos · receba R$ 2,00 de volta, preço final R$ 17,98|19.98|un||
+#lim|Mania de Limpeza · limpeza da casa
+Água Sanitária Brilux|Leve 1L pague 900ml|2.18|un||
+Papel Toalha Caprice|50 folhas|3.78|un||
+Amaciante Bem-te-vi|Diversas fragrâncias, 1,8L|6.48|un||
+Limpador Cif Cremoso|Diversos tipos, squeeze 450ml|17.98|un||
+Inseticida Aerossol Mat Inset|Diversas fragrâncias, 360ml|10.90|un||
+Saco para Lixo Esfrebom|Rolo 30L ou rolo 50L (BT306 e BT307)|10.98|un||
+Vassoura Noviça Original|Com cabo (BT167215)|12.98|un||
+Papel Higiênico Max Pure|Folha dupla, leve 24 pague 21|24.98|un||
+Detergente em Pó Ala 800g|Diversas fragrâncias, 800g|5.98|un||
+Sabão em Barra Bem-te-vi|Fragrâncias exceto coco, 5 x 160g|8.98|un||
+Lava-Roupas Líquido Bem-te-vi|Perfumes de flores ou lavanda, 5L|22.98|un||
+Desinfetante Minuano|Vários tipos, 500ml|2.38|un||
+Amaciante Diluído Minuano|Fragrâncias, 2L|8.98|un||
+Passa Roupas Fácil Becker|500ml|8.98|un||
+Lava-Roupas Líquido Mais Ekonomico|3L|11.98|un||
+Tira Manchas Líquido Assim|1,5L|21.98|un||
+Kit Multiuso Azulim|Original, 3 x 500ml (nesta embalagem, a unidade sai por R$ 3,99)|11.98|un||
+Limpador Ual Perfume Concentrado|Fragrâncias, 130ml|12.98|un||
+Desinfetante Becker|Diversas fragrâncias, 5L|12.98|un||
+Detergente Líquido Toplin 3L|Maçã ou neutro, 3L|15.98|un||
+Kit Limpadores Perfumados Azulim|Alegria ou carinho, 1L|21.90|un||
+Álcool Líquido Azulim Start|46° INPM, 1L|9.98|un||
+Pano Multiuso Condor Azul|Antibacteriano, leve 7 pague 5|9.98|un||
+Pano Multiuso Limppano Toalex|44 unidades|11.98|un||
+Lustra Móveis Poliflor|Jasmim ou lavanda, 200ml|13.68|un||
+Limpa Vidros Veja Vidrex|500ml|21.98|un||
+Limpador de Casa e Perfumado|Sensualidade ou agradable, 5L|29.98|un||
+Saco para Lixo Dia a Dia|30L ou 50L, 10 unidades|3.98|un||
+Papel Toalha Familiar|2 x 50 folhas|4.18|un||
+Papel Toalha Scala Plus|3 x 120 folhas|16.98|un||
+Papel Higiênico Mimmo|12 rolos, 20m, folha tripla|17.98|un||
+Bloco para Caixa Acoplada Limppano Marine|2 unidades de 45g|21.98|un||
+Esponja Brilhus Multiúso|Leve 6 pague 4|3.98|un||
+Rodinho de Pia Betthavale 21,5cm ou Bompack 15cm||8.98|un||
+Evita Mofo Inspira|Diversas fragrâncias, 180g|12.98|un||
+Rodo Multiuso Condor|30cm (1124)|12.98|un||
+Pá Condor|Cabo articulado|19.98|un||
+Mop Noviça Compacto|Com balde e cabo|59.80|un||
 #sup|Mercearia
 Farinha de Milho Flocada Flokão|400g|0.95|un|1|
 Açúcar Olho D'Água|Granulado, 1kg|2.98|un|1|
@@ -1861,48 +2054,6 @@ Iogurte Natural Betânia|Diversos sabores, 170g|2.98|un||
 Iogurte Yobem Triplo Zero|Diversos sabores, 170g|2.98|un||
 Bebida Láctea Betânia|Diversos sabores, 540g|4.98|un||
 Iogurte Yobem Triplo Zero|Diversos sabores, 1150g|15.98|un||
-#fei|Hortifrúti
-Brócolis Ninja Peterfrut|Unidade|4.98|un||
-Couve Flor Nobre Peterfrut|300g|4.98|un||
-Alface Americana|Bola|2.98|un||
-Repolho Verde||2.78|kg||
-Cenoura||2.78|kg||
-Jerimum Leite||1.78|kg||
-Batata Doce|Roxa|3.98|kg||
-Alho|A granel (pague a cada 100g: R$ 1,49)|14.98|kg||
-Batata Inglesa||3.98|kg||
-Cará São Tomé||3.98|kg||
-Manga Keitt ou Banana Pacovan||1.48|kg||
-Melão Amarelo||1.75|kg||
-Uva Verde Da Roça, Seleta ou Delly Fruit|Sem semente, 500g|3.85|un||
-Abacaxi Pérola|Unidade|2.48|un||
-Abacate||3.78|kg||
-Coco Verde|Unidade|1.75|un||
-Limão Taiti ou Maçã Nacional||6.98|kg||
-Melancia|Comum|1.48|kg||
-Morango Congelado Mazza Foods|Pacote 1kg|9.98|un||
-Goma de Tapioca Dona Ceci|1kg|4.95|un||
-#fei|Laticínios, Frios e Congelados
-Iogurte Grego Vigor|Diversos sabores, 90g|2.98|un||
-Iogurte Danone Mais Proteína|Diversos sabores, copo 160g|4.98|un||
-Iogurte Mix Vigor|Diversos sabores, 140g|5.18|un||
-Petit Suisse Betânia Kids|Morango, bandeja 320g|7.98|un||
-Iogurte Betânia|Morango ou salada de frutas, embalagem econômica, garrafa 1,25L|15.48|un||
-Sobremesa Danette Cremosão|Doce de leite ou chocolate com avelã, 90g|2.98|un||
-Iogurte Danone Polpa Natural|Integral ou desnatado, 340g|7.98|un||
-Manteiga Camponesa|Com sal, 200g|8.98|un||
-Iogurte Líquido YoPro|Morango ou doce de leite, 250g|9.98|un||
-Queijo Coalho Santa Tereza||37.98|kg||
-Hambúrguer Misto Jundiaí|56g|0.68|un||
-Açaí Mazza Foods Tradicional|1L|13.98|un||
-Sorvete Mazza|Morango ou chocolate, pote 1,5L|14.98|un||
-Pão de Queijo Forno de Minas|Coquetel ou tradicional, 400g|14.98|un||
-Batata Congelada McCain|Fina, 1,5kg|25.98|un||
-Margarina Vegetal Cremosa Qualy|Com sal ou sem sal, 500g|9.78|un||
-Steak de Frango Sadia ou Perdigão|Congelado, 100g|1.68|un||
-Sanduíche Hot Pocket Sadia|Diversos sabores, 145g|7.48|un||
-Nuggets Sadia|Diversos tipos, 300g|8.98|un||
-Lasanha Sadia|Diversos sabores, congelada, 600g|15.98|un||
 `;
 function nvParse(txt){const out=[];let c=null;txt.split('\n').map(l=>l.trim()).filter(Boolean).forEach(l=>{if(l[0]==='#'){const a=l.slice(1).split('|');c={e:a[0],t:a[1],it:[]};out.push(c);return}
  const a=l.split('|');c.it.push({n:a[0],d:a[1],p:+a[2],u:a[3],s:a[4]==='1',x:a[5]||''})});return out}
@@ -1911,7 +2062,7 @@ function vMercadoNovo(){
  const chips=Object.keys(NV_ENC).map(k=>{const e=NV_ENC[k];return `<div style="margin-top:8px"><strong style="font-size:14px">${esc(e.t)}</strong><br>${mmChip(mmVal(e.fim))} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>`}).join('');
  const blocos=sec.map(s=>{const e=NV_ENC[s.e];return `<h3>${esc(e.t)} · ${esc(s.t)}</h3><div class="card mm-c">${s.it.map(i=>
   `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.x?(i.d?' · ':'')+'limite '+esc(i.x)+' por cliente':''}</small>${i.s?'<br><small style="color:var(--ac);font-weight:700">★ Super oferta</small>':''}</span><span style="text-align:right;flex:none"><strong>${brl(i.p)}</strong><small style="color:var(--mute)"> ${i.u==='kg'?'/kg':'cada'}</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. No Dia de Feira, em Olinda, a oferta não vale na loja da Casa Caiada. Confirme os valores na loja.</p></div>`+(sec.length?blocos:mmVazio('Novo Atacarejo'))}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. Nos itens com cashback, o valor volta para quem é do Clube Novo e o preço final já mostra o desconto. Compras de bazar e eletro: até 10x sem juros no Cartão Novo Atacarejo e até 6x sem juros nos demais cartões, com parcela mínima de R$ 15; alimentos em 1x sem juros e 2x ou 3x com juros no Cartão Novo Atacarejo. Confirme os valores na loja.</p></div>`+(sec.length?blocos:mmVazio('Novo Atacarejo'))}
 let mmMk='assai';
 function mmSet(k){mmMk=k;render();window.scrollTo(0,0)}
 /* ---------- Promoções: comparador de preços entre mercados ---------- */
@@ -2048,7 +2199,8 @@ function vMeuMercado(){
  const top=`<div class="seg">${[['lista','🏷️ Ofertas'],['comp','⚖️ Comparar preços']].map(m=>`<button class="${mmView===m[0]?'on':''}" onclick="mmVw('${m[0]}')">${m[1]}</button>`).join('')}</div>`;
  if(mmView==='comp')return `<h2>${_t('Promoções')}</h2>`+top+vCompMerc();
  const seg=`<div class="seg">${[['assai','Assaí'],['atacadao','Atacadão'],['novo','Novo Atacarejo']].map(m=>`<button class="${mmMk===m[0]?'on':''}" onclick="mmSet('${m[0]}')">${m[1]}</button>`).join('')}</div>`;
- return `<h2>${_t('Promoções')}</h2>`+top+seg+(mmMk==='atacadao'?vMercadoAtac():mmMk==='novo'?vMercadoNovo():vMeuMercadoAssai())}
+ const pav=(S.notif||{}).promoAv!==false;
+ return `<h2>${_t('Promoções')}</h2>`+top+seg+`<button class="${pav?'sec':''}" style="width:100%;margin:6px 0" onclick="setPromoAv(${!pav})">${pav?'🔔 Aviso 1 dia antes do fim das promoções: ligado':'🔕 Aviso 1 dia antes do fim das promoções: desligado'}</button>`+(mmMk==='atacadao'?vMercadoAtac():mmMk==='novo'?vMercadoNovo():vMeuMercadoAssai())}
 
 
 /* ---------- Mercados ---------- */
@@ -3423,7 +3575,32 @@ function gatilhos(){const N=S.notif,out=[];if(!N.on)return out;
  if(N.plOn)S.pl.forEach(p=>{const t=new Date(p.date+'T'+p.ent).getTime();if(isNaN(t))return;
   out.push({key:'p'+p.id,at:t-N.plLead*60000,title:'🩺 Plantão '+p.ent+' → '+p.sai,body:'Começa às '+p.ent+(hospBy(p.hosp)?' · '+hospBy(p.hosp).name:'')+(p.obs?' · '+p.obs:'')})});
  if(N.cwOn!==false){cwGatilhos(N).forEach(x=>out.push(x));salGatilhos(N).forEach(x=>out.push(x))}
+ try{promoGatilhos(N).forEach(x=>out.push(x))}catch(e){}
   return out.sort((a,b)=>a.at-b.at)}
+/* ---------- Aviso 1 dia antes do fim das promoções (Assaí, Atacadão e Novo Atacarejo) ----------
+   Para cada mercado e data de término, o app avisa no dia anterior, às 9h: "as promoções acabam amanhã".
+   Se o app só soube da promoção depois das 9h do dia anterior, avisa na hora (uma vez). Respeita o botão de lembretes
+   e o botão de aviso de promoções na tela Promoções. Depois das 23:59 do último dia, a promoção sai do app. */
+function promoGrupos(){const G={};
+ const add=(mk,nome,fim,t)=>{if(!fim||mmVal(fim).k==='off')return;const k=mk+'|'+fim;(G[k]=G[k]||{mk,nome,fim,ts:[]}).ts.push(t)};
+ AS_ENC.forEach(e=>add('assai','Assaí',e.fim,e.t));
+ atTodas().forEach(e=>add('atacadao','Atacadão',e.fim,String(e.t).replace(/^(Lista de ofertas|Folheto) · /,'')));
+ add('atacadao','Atacadão',AT_FIM,'ofertas do app e do cartão');
+ Object.keys(NV_ENC).forEach(k=>add('novo','Novo Atacarejo',NV_ENC[k].fim,NV_ENC[k].t));
+ return Object.keys(G).map(k=>G[k])}
+function promoGatilhos(N){
+ if(N.promoAv===false)return [];
+ let st={};try{st=JSON.parse(localStorage.getItem('ma-promo-at')||'{}')||{}}catch(e){}
+ const agora=Date.now(),out=[];let mud=false;
+ promoGrupos().forEach(g=>{const key='promo-'+g.mk+'-'+g.fim,y=+g.fim.slice(0,4),m=+g.fim.slice(5,7)-1,d=+g.fim.slice(8,10),
+  base=new Date(y,m,d-1,9,0,0).getTime(),limite=new Date(y,m,d-1,23,59,0).getTime();
+  let at=st[key];
+  if(!at){if(agora>=limite)return;at=agora>=base?agora+60000:base;st[key]=at;mud=true}
+  const tt=g.ts.slice(0,3).join(', ')+(g.ts.length>3?' e mais':'');
+  out.push({key,at,title:'🛒 Promoções do '+g.nome+' acabam amanhã',body:'Terminam amanhã, '+dm(g.fim)+', às 23:59: '+tt+'. Depois disso saem do app.'})});
+ if(mud){try{localStorage.setItem('ma-promo-at',JSON.stringify(st))}catch(e){}}
+ return out}
+function setPromoAv(v){S.notif=S.notif||{};S.notif.promoAv=!!v;save();agendarNotifs(true);render()}
 function schedSoon(){clearTimeout(_st);_st=setTimeout(()=>{agendarNotifs().catch(()=>{})},700)}
 let _agQ=Promise.resolve();
 function agendarNotifs(force){return _agQ=_agQ.then(()=>agendarNotifsRun(force)).catch(()=>{})}
@@ -5320,6 +5497,16 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+ '3.5.4':[
+  '🛒 Promoções › Atacadão: entraram os folhetos Apti, Jucurutu (queijos), Danone, Hortifrúti, cafés 3 Corações e Santa Clara e Açougue/Frios/Padaria, com preço “de” e “por” e validade.',
+  '🔔 Aviso um dia antes: o app avisa às 9h do dia anterior que as promoções do Assaí, do Atacadão e do Novo Atacarejo acabam amanhã. Dá para ligar e desligar na tela Promoções. Às 23:59 do último dia, as ofertas saem do app.'
+ ],
+ '3.5.3':[
+  '🛒 Promoções › Novo Atacarejo: entraram os encartes Mania de Limpeza (05 a 08/11) e Findi com Despensa Cheia (06 a 08/11), com preços, limites por cliente, cashback do Clube Novo e validade. O encarte Dia de Feira, já vencido, saiu.'
+ ],
+ '3.5.2':[
+  '🛒 Promoções › Assaí: entraram os 3 encartes novos (válidos de 06/11 a 08/11/2026): Saúde & Bem-Estar, Especial App Meu Assaí e Leva o Assaí com você, com todos os produtos, preços de/por, limites do app e validade.'
+ ],
  '3.5.1':[
   '🎭 Novo menu “Espaço Cultural”: shows, peças de teatro, humor, espetáculos infantis, festivais, festas e exposições em Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE), pagos e gratuitos, com mais de 170 eventos organizados por data.',
   '🔎 Filtre por cidade, categoria (shows, teatro, infantil, festivais, festas, artes e Carnaval 2027), preço (gratuitos ou pagos) e período (hoje, fim de semana, 7 dias, este mês), busque por artista ou local e favorite com ⭐. Cada evento tem botões para pôr na Agenda, abrir o mapa e comprar o ingresso.'
