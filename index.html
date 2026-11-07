@@ -1314,6 +1314,77 @@ nav div#nav.n5 button .ni{width:100%;max-width:46px}
 #v .ag-late button{padding:7px 14px;border-radius:999px;font-size:13px;background:var(--rd);color:#fff;box-shadow:none}
 #v .ag-more{width:100%;background:var(--acs);color:var(--ac);box-shadow:none}
 #v .ag-edit{margin:0 0 8px}
+/* ---- Calendário v2 ---- */
+.cx-mode{display:grid;grid-template-columns:1fr 1fr;padding:3px;margin:0 0 18px;border-radius:999px;background:var(--fld,rgba(127,127,127,.14))}
+.cx-mode button{background:transparent;color:var(--mute);border-radius:999px;padding:9px 8px;font-size:14px;font-weight:700;display:flex;gap:6px;justify-content:center;align-items:center;box-shadow:none}
+.cx-mode button.on{background:var(--ink);color:var(--bg)}
+.cx-hd{margin:0 2px 6px}
+.cx-big{display:block;font:800 clamp(44px,15vw,66px)/.9 "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.055em;text-transform:capitalize}
+.cx-big.s{font-size:clamp(40px,13vw,56px)}
+.cx-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+.cx-sm{color:var(--ac);font-weight:800;font-size:16px}
+.cx-nav{display:flex;gap:6px;flex:none}
+.cx-nav button{min-width:42px;height:42px;padding:0 12px;border-radius:14px;background:var(--fld,rgba(127,127,127,.14));color:var(--ink);font-size:21px;font-weight:700;box-shadow:none}
+.cx-nav .hj{font-size:13px}
+.cx-tabs{display:flex;gap:24px;margin:10px 2px 14px;border-bottom:1px solid var(--ln)}
+.cx-tabs button{background:none;border-radius:0;box-shadow:none;padding:8px 0 10px;color:var(--mute);font-weight:700;font-size:14px;position:relative}
+.cx-tabs button.on{color:var(--ink)}
+.cx-tabs button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--ac)}
+.cx-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cx-w{text-align:center;color:var(--mute);font-weight:700;font-size:12px;padding:2px 0 6px}
+.cx-w.we{color:var(--ac)}
+.cx .cx-d{all:unset;box-sizing:border-box;cursor:pointer;height:60px;border-radius:14px;padding:6px 5px 5px;display:flex;flex-direction:column;justify-content:space-between;background:var(--sf);border:1px solid var(--ln);color:var(--ink);position:relative;-webkit-tap-highlight-color:transparent}
+.cx .cx-d b{font:700 14px/1 Figtree,system-ui,sans-serif}
+.cx .cx-d.we{background:color-mix(in srgb,var(--ac) 7%,var(--sf))}
+.cx .cx-d.hj b{background:var(--ac);color:var(--onac);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;margin:-3px 0 0 -3px}
+.cx .cx-d.sel,.cx .cx-wr.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cx-bar{display:flex;flex-direction:column;gap:2px}
+.cx-bar u{display:block;height:4px;border-radius:2px;background:var(--ac)}
+.cx-bar u.r{background:var(--rd)}.cx-bar u.p{background:var(--ok)}.cx-bar u.x{opacity:.35}
+.cx-more{position:absolute;right:5px;top:6px;font-size:10px;font-weight:800;color:var(--mute)}
+.cx-ic{font-size:12px;line-height:1;letter-spacing:-1px}
+.cx-hs{display:flex;gap:2px;position:absolute;right:4px;top:5px}
+.cx .cx-d.plt{background:color-mix(in srgb,var(--ok) 26%,var(--sf))}
+.cx .cx-d.plt[data-c]{background:color-mix(in srgb,var(--nc) 34%,var(--sf))}
+.cx-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:12px 2px 0;font-size:12.5px;color:var(--mute)}
+.cx-lg span{display:inline-flex;align-items:center;gap:6px}
+.cx-lg u{display:block;width:14px;height:4px;border-radius:2px;background:var(--ac)}
+.cx-lg u.p{background:var(--ok)}.cx-lg u.r{background:var(--rd)}
+.cx-week{display:grid;gap:6px}
+.cx .cx-wr{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:16px;background:var(--sf);border:1px solid var(--ln)}
+.cx-wd{flex:none;width:44px;text-align:center}
+.cx-wd small{display:block;color:var(--mute);font-weight:700;font-size:11px;text-transform:capitalize}
+.cx-wd b{display:block;font:800 25px/1.1 "Bricolage Grotesque",system-ui,sans-serif}
+.cx-wr.hj .cx-wd b{color:var(--ac)}
+.cx-wl{flex:1;min-width:0;display:grid;gap:3px;padding-top:2px}
+.cx-r{display:flex;gap:8px;font-size:14px}
+.cx-r>span{flex:none;min-width:42px;color:var(--mute);font-weight:700;font-size:12px;padding-top:1px}
+.cx-r.x{opacity:.45;text-decoration:line-through}
+.cx-wl em{color:var(--mute);font-size:13px}
+.cx-year{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cx .cx-ym{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:10px 8px 8px;border-radius:16px;background:var(--sf);border:1px solid var(--ln)}
+.cx .cx-ym.hj{border-color:var(--ac)}
+.cx-ym>b{display:block;font:800 15px/1 "Bricolage Grotesque",system-ui,sans-serif;margin-bottom:6px}
+.cx-ym.hj>b{color:var(--ac)}
+.cx-yg{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.cx-yg s{text-decoration:none;font-size:8px;line-height:13px;text-align:center;border-radius:3px;color:var(--mute)}
+.cx-yg s.h1{background:color-mix(in srgb,var(--ac) 25%,transparent);color:var(--ink)}
+.cx-yg s.h2{background:color-mix(in srgb,var(--ac) 50%,transparent);color:var(--ink)}
+.cx-yg s.h3{background:var(--ac);color:var(--onac)}
+.cx-yg s.hj{outline:1.5px solid var(--ink)}
+.cx-sheet{margin-top:18px;padding:14px 14px 12px;border-radius:26px 26px 18px 18px;background:var(--sf);border:1px solid var(--ln)}
+.cx-sh{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.cx-num{flex:none;width:58px;border-radius:14px;overflow:hidden;text-align:center;background:var(--bg);border:1px solid var(--ln)}
+.cx-num small{display:block;background:var(--ac);color:var(--onac);font-size:11px;font-weight:800;padding:3px 0;text-transform:capitalize}
+.cx-num b{display:block;font:800 28px/1.25 "Bricolage Grotesque",system-ui,sans-serif}
+.cx-sh strong{display:block;font-size:17px}
+.cx-sh div>span{color:var(--mute);font-size:13px}
+.cx-add{display:flex;gap:8px;margin-top:12px}
+.cx-add input[type=time]{width:112px;flex:none}
+.cx-add input:not([type=time]){flex:1;min-width:0}
+.cx-dr{width:100%;margin-top:10px;background:var(--fld,rgba(127,127,127,.14));color:var(--ink);box-shadow:none}
+.cx-pl{margin-bottom:12px}
+.cx button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 </style>
 
 </head>
@@ -1598,25 +1669,67 @@ function durMin(p){const a=mins(p.ent),b=mins(p.sai);if(a==null||b==null)return 
 const fmtDur=m=>{const h=Math.floor(m/60),r=m%60;return h+'h'+(r?String(r).padStart(2,'0'):'')};
 const cruza=p=>{const a=mins(p.ent),b=mins(p.sai);return a!=null&&b!=null&&b<=a};
 const plSort=(a,b)=>(a.date+a.ent).localeCompare(b.date+b.ent);
+/* ---------- Calendário v2: mês em blocos, semana, ano e folha do dia (ideias de Fantastical, Google Agenda, Apple Calendário e Structured) ---------- */
+var cv='mes',cxT=null;
+const cxCap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const cxV=()=>calSub==='pl'?'mes':cv;
+const cxWk=()=>agAdd(sel,-new Date(sel+'T12:00').getDay());
+function cxSet(v){cv=v;render()}
+function cxHoje(){sel=HOJE;mes=new Date();edPl=null;render()}
+function cxSel(k){sel=k;if(cv==='sem')mes=new Date(k+'T12:00');edPl=null;agKeep()}
+function cxNav(n){const v=cxV();
+ if(v==='sem'){sel=agAdd(sel,7*n);mes=new Date(sel+'T12:00')}
+ else if(v==='ano'){mes=new Date(mes.getFullYear()+n,mes.getMonth(),1)}
+ else{mes=new Date(mes.getFullYear(),mes.getMonth()+n,1);const k=iso(mes).slice(0,7);if(!sel.startsWith(k))sel=HOJE.startsWith(k)?HOJE:k+'-01'}
+ edPl=null;render()}
+function cxTs(e){const t=e.touches[0];cxT=[t.clientX,t.clientY]}
+function cxTe(e){if(!cxT)return;const t=e.changedTouches[0],dx=t.clientX-cxT[0],dy=t.clientY-cxT[1];cxT=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.8)cxNav(dx<0?1:-1)}
 function calGrid(kind){
  const y=mes.getFullYear(),m=mes.getMonth(),off=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();
- let h=[0,1,2,3,4,5,6].map(i=>new Date(2024,0,7+i).toLocaleDateString(LOC(),{weekday:'narrow'})).map(d=>`<div class="dw">${d}</div>`).join('');
+ let h=[0,1,2,3,4,5,6].map(i=>`<div class="cx-w${i%6?'':' we'}">${new Date(2024,0,7+i).toLocaleDateString(LOC(),{weekday:'narrow'})}</div>`).join('');
  for(let i=0;i<off+n;i++){
-  if(i<off){h+='<div></div>';continue}
-  const d=i-off+1,k=iso(new Date(y,m,d)),pls=S.pl.filter(p=>p.date===k),hs=kind==='pl'?[...new Set(pls.map(p=>p.hosp).filter(Boolean))].map(hospBy).filter(Boolean):[];
-  const inner=kind==='pl'?(pls.length?`<span class="pmk">${pls.slice(0,2).map(shiftIco).join('')}</span>`+(hs.length?`<span class="hds">${hs.slice(0,3).map(hd).join('')}</span>`:''):''):`<span class="dots">${S.ev.some(e=>e.date===k)?'<i></i>':''}${S.diary[k]?'<i class="dr"></i>':''}${pls.length?'<i class="pl"></i>':''}</span>`;
-  h+=`<button class="d ${k===HOJE?'hj':''} ${k===sel?'sel':''} ${kind==='pl'&&pls.length?'plt':''}" ${hs[0]?`data-c="${hs[0].cor}"`:''} onclick="${kind==='pl'?`tapPl('${k}')`:`sel='${k}';edPl=null;render()`}" aria-label="Dia ${d}">${d}${inner}</button>`}
+  if(i<off){h+='<i></i>';continue}
+  const d=i-off+1,k=iso(new Date(y,m,d)),pls=S.pl.filter(p=>p.date===k),evs=S.ev.filter(e=>e.date===k),we=i%7===0||i%7===6;
+  const hs=[...new Set(pls.map(p=>p.hosp).filter(Boolean))].map(hospBy).filter(Boolean);
+  let inner='';
+  if(kind==='pl')inner=pls.length?`<span class="cx-ic">${pls.slice(0,2).map(shiftIco).join('')}</span>`+(hs.length?`<span class="cx-hs">${hs.slice(0,3).map(hd).join('')}</span>`:''):'';
+  else{const b=[];if(pls.length)b.push('<u class="p"></u>');if(S.diary[k])b.push('<u class="r"></u>');evs.forEach(e=>b.push(`<u${e.done?' class="x"':''}></u>`));
+   inner=`<span class="cx-bar">${b.slice(0,3).join('')}</span>`+(b.length>3?`<span class="cx-more">+${b.length-3}</span>`:'')}
+  h+=`<button class="cx-d${k===HOJE?' hj':''}${k===sel?' sel':''}${we?' we':''}${kind==='pl'&&pls.length?' plt':''}" ${hs[0]?`data-c="${hs[0].cor}"`:''} onclick="${kind==='pl'?`tapPl('${k}')`:`cxSel('${k}')`}" aria-label="${esc(fmt(k,{weekday:'long',day:'numeric',month:'long'}))}"><b>${d}</b>${inner}</button>`}
  return h}
-const calHead=()=>{const y=mes.getFullYear(),m=mes.getMonth();return `<div class="cal-h"><button class="sec" onclick="mes=new Date(${y},${m-1},1);render()" aria-label="Mês anterior">‹</button><strong>${mes.toLocaleDateString(LOC(),{month:'long',year:'numeric'})}</strong><button class="sec" onclick="mes=new Date(${y},${m+1},1);render()" aria-label="Próximo mês">›</button></div>`};
-const calSeg=()=>`<div class="seg">${[['cal','📅 Calendário'],['pl','🩺 Meus Plantões']].map(a=>`<button class="${calSub===a[0]?'on':''}" onclick="calSub='${a[0]}';edPl=null;render()">${a[1]}</button>`).join('')}</div>`;
+const calHead=()=>{const v=cxV(),y=mes.getFullYear(),ml=d=>d.toLocaleDateString(LOC(),{month:'long'});let big,sm,cl='';
+ if(v==='ano'){big=String(y);sm='Ano inteiro'}
+ else if(v==='sem'){const a=cxWk(),b=agAdd(a,6),da=new Date(a+'T12:00'),db=new Date(b+'T12:00');big=(+a.slice(8))+' – '+(+b.slice(8));cl=' s';sm=cxCap(da.getMonth()===db.getMonth()?ml(da):da.toLocaleDateString(LOC(),{month:'short'}).replace('.','')+' / '+db.toLocaleDateString(LOC(),{month:'short'}).replace('.',''))+' '+db.getFullYear()}
+ else{big=ml(mes);sm=String(y)}
+ return `<div class="cx-hd"><b class="cx-big${cl}">${esc(big)}</b><div class="cx-row"><span class="cx-sm">${esc(sm)}</span><div class="cx-nav"><button onclick="cxNav(-1)" aria-label="Anterior">‹</button><button class="hj" onclick="cxHoje()">Hoje</button><button onclick="cxNav(1)" aria-label="Próximo">›</button></div></div></div>`};
+const calSeg=()=>`<div class="cx-mode" role="tablist">${[['cal','📅','Calendário'],['pl','🩺','Plantões']].map(a=>`<button role="tab" aria-selected="${calSub===a[0]}" class="${calSub===a[0]?'on':''}" onclick="calSub='${a[0]}';edPl=null;render()"><span>${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
+const cxTabs=()=>`<div class="cx-tabs" role="tablist">${[['mes','Mês'],['sem','Semana'],['ano','Ano']].map(a=>`<button role="tab" aria-selected="${cv===a[0]}" class="${cv===a[0]?'on':''}" onclick="cxSet('${a[0]}')">${a[1]}</button>`).join('')}</div>`;
+const cxLegend=()=>{const key=iso(mes).slice(0,7),ne=S.ev.filter(e=>e.date.startsWith(key)).length,np=S.pl.filter(p=>p.date.startsWith(key)).length,nd=Object.keys(S.diary).filter(k=>k.startsWith(key)&&S.diary[k]).length;
+ return `<p class="cx-lg"><span><u></u>${agPl(ne,'compromisso','compromissos')}</span><span><u class="p"></u>${agPl(np,'plantão','plantões')}</span><span><u class="r"></u>${agPl(nd,'diário','diários')}</span></p>`};
+function cxWeek(){const a=cxWk();let h='';
+ for(let i=0;i<7;i++){const k=agAdd(a,i),evs=sortEv(S.ev.filter(e=>e.date===k)),pls=S.pl.filter(p=>p.date===k).sort(plSort),dr=S.diary[k];
+  const rows=pls.map(p=>`<span class="cx-r"><span>${shiftIco(p)}</span>Plantão ${esc(p.ent)}–${esc(p.sai)}${hospBy(p.hosp)?' · '+esc(hospBy(p.hosp).name):''}</span>`).join('')+evs.map(e=>`<span class="cx-r${e.done?' x':''}"><span>${esc(e.time||'•')}</span>${esc(e.title)}</span>`).join('')+(dr?`<span class="cx-r"><span>${dr.mood||'📖'}</span>Diário</span>`:'');
+  h+=`<button class="cx-wr${k===HOJE?' hj':''}${k===sel?' sel':''}" onclick="cxSel('${k}')" aria-label="${esc(fmt(k,{weekday:'long',day:'numeric',month:'long'}))}"><span class="cx-wd"><small>${esc(fmt(k,{weekday:'short'}).replace('.',''))}</small><b>${+k.slice(8)}</b></span><span class="cx-wl">${rows||'<em>livre</em>'}</span></button>`}
+ return `<div class="cx-week">${h}</div>`}
+function cxYear(){const y=mes.getFullYear(),now=new Date();let h='';
+ for(let m=0;m<12;m++){const off=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),key=y+'-'+String(m+1).padStart(2,'0');let c='';
+  for(let i=0;i<off;i++)c+='<i></i>';
+  for(let d=1;d<=n;d++){const k=key+'-'+String(d).padStart(2,'0'),q=S.ev.filter(e=>e.date===k).length+S.pl.filter(p=>p.date===k).length+(S.diary[k]?1:0);c+=`<s class="${q>2?'h3':q?'h'+q:''}${k===HOJE?' hj':''}">${d}</s>`}
+  h+=`<button class="cx-ym${m===now.getMonth()&&y===now.getFullYear()?' hj':''}" onclick="mes=new Date(${y},${m},1);sel=HOJE.startsWith('${key}')?HOJE:'${key}-01';cv='mes';render()"><b>${cxCap(new Date(y,m,1).toLocaleDateString(LOC(),{month:'short'}).replace('.',''))}</b><span class="cx-yg">${c}</span></button>`}
+ return `<div class="cx-year">${h}</div>`}
+function cxSheet(){
+ const evs=sortEv(S.ev.filter(e=>e.date===sel)),pls=S.pl.filter(p=>p.date===sel).sort(plSort),dr=S.diary[sel];
+ const rel=sel===HOJE?'Hoje':sel===agAdd(HOJE,1)?'Amanhã':sel===agAdd(HOJE,-1)?'Ontem':'';
+ const cnt=[evs.length?agPl(evs.length,'compromisso','compromissos'):'',pls.length?agPl(pls.length,'plantão','plantões'):'',dr?'diário escrito':''].filter(Boolean).join(' · ')||'Nada marcado';
+ return `<section class="cx-sheet" aria-label="Dia selecionado"><div class="cx-sh"><span class="cx-num"><small>${esc(fmt(sel,{month:'short'}).replace('.',''))}</small><b>${+sel.slice(8)}</b></span><div><strong>${esc(cxCap((rel?rel+', ':'')+fmt(sel,{weekday:'long'})))}</strong><span>${cnt}</span></div></div>`
+ +pls.map(p=>`<div class="item"><span class="hora">${shiftIco(p)}</span><span class="t">Plantão ${esc(p.ent)} → ${esc(p.sai)}${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';render()" aria-label="Ver plantão">›</button></div>`).join('')
+ +evs.map(evItem).join('')
+ +`<div class="cx-add"><input id="ct" placeholder="Novo compromisso" onkeydown="if(event.key==='Enter')addEv('','ct','ch')"><input type="time" id="ch" aria-label="Hora"><button onclick="addEv('','ct','ch')" aria-label="Adicionar">＋</button></div>`
+ +(dr?`<button class="cx-dr" onclick="dsel=sel;go('diario')">${dr.mood||'📖'} Ver o diário deste dia</button>`:'')+`</section>`}
 function vCal(){
  if(calSub==='pl')return vPlantoes();
- const evs=sortEv(S.ev.filter(e=>e.date===sel)),pls=S.pl.filter(p=>p.date===sel).sort(plSort);
- return `<h2>${_t('Calendário')}</h2>${calSeg()}<div class="card">${calHead()}<div class="grid">${calGrid('cal')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">Ponto azul: compromisso. Vermelho: diário. Verde: plantão.</p></div>
- <h3 style="text-transform:capitalize">${fmt(sel,{weekday:'long',day:'numeric',month:'long'})}</h3>
- <div class="card">${pls.length?pls.map(p=>`<div class="item"><span class="hora">${shiftIco(p)}</span><span class="t">Plantão ${p.ent} → ${p.sai}${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';render()" aria-label="Ver plantão">›</button></div>`).join(''):''}${evs.length?evs.map(evItem).join(''):(pls.length?'':'<div class="vazio" style="padding:10px">Nada marcado neste dia.</div>')}
- <div class="row" style="margin-top:10px"><input id="ct" placeholder="Novo compromisso" onkeydown="if(event.key==='Enter')addEv('','ct','ch')"><input type="time" id="ch" style="width:120px"><button onclick="addEv('','ct','ch')">＋</button></div>
- ${S.diary[sel]?`<button class="sec" style="margin-top:10px" onclick="dsel=sel;go('diario')">Ver diário deste dia ${S.diary[sel].mood||''}</button>`:''}</div>`}
+ const body=cv==='ano'?cxYear():cv==='sem'?cxWeek():`<div class="cx-g">${calGrid('cal')}</div>${cxLegend()}`;
+ return `<h2>${_t('Calendário')}</h2>${calSeg()}<div class="cx" ontouchstart="cxTs(event)" ontouchend="cxTe(event)">${calHead()}${cxTabs()}${body}</div>${cv==='ano'?'':cxSheet()}`}
 
 /* ---------- Meus Plantões ---------- */
 function plItem(p,sd){
@@ -1662,7 +1775,7 @@ function vPlantoes(){
  if(plSub==='hosp')return vPlHosp();
  const y=mes.getFullYear(),m=mes.getMonth(),key=y+'-'+String(m+1).padStart(2,'0');
  const dia=S.pl.filter(p=>p.date===sel).sort(plSort),mp=S.pl.filter(p=>p.date.startsWith(key)).sort(plSort),tm=mp.reduce((s,p)=>s+durMin(p),0);
- return `<h2>${_t('Calendário')}</h2>${calSeg()}${plSeg()}${quickBar()}<div class="card">${calHead()}<div class="grid">${calGrid('pl')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">${plQuick?'Dias coloridos já têm plantão; a cor indica o hospital. ':'Toque em um dia para ver os plantões dele. '}☀️ diurno · 🌙 noturno.</p>${S.hosp.length?`<div class="hleg">${S.hosp.map(h=>`<span>${hd(h)} ${esc(h.name)}</span>`).join('')}</div>`:''}</div>
+ return `<h2>${_t('Calendário')}</h2>${calSeg()}${plSeg()}${quickBar()}<div class="cx cx-pl">${calHead()}<div class="cx-g">${calGrid('pl')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">${plQuick?'Dias coloridos já têm plantão; a cor indica o hospital. ':'Toque em um dia para ver os plantões dele. '}☀️ diurno · 🌙 noturno.</p>${S.hosp.length?`<div class="hleg">${S.hosp.map(h=>`<span>${hd(h)} ${esc(h.name)}</span>`).join('')}</div>`:''}</div>
  <h3 style="text-transform:capitalize">${fmt(sel,{weekday:'long',day:'numeric',month:'long'})}</h3>
  <div class="card">${dia.length?dia.map(plItem).join(''):'<div class="vazio" style="padding:10px">Nenhum plantão registrado neste dia.'+(plQuick?'':' Escolha o tipo de plantão acima e toque no dia para registrar.')+'</div>'}
 </div>
