@@ -1488,6 +1488,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ biblioteca:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H11v16H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H13v16h5.5a1.5 1.5 0 0 1 1.5 1.5z"/><path d="M4 20.5V21h16v-.5"/>',
  filmes:'<rect x="3" y="9" width="18" height="11" rx="2"/><path d="M3 9l2.5-4.5h3L6 9M9.5 9l2.5-4.5h3L12.5 9M16 9l2.5-4.5H21V9"/><path d="m10.5 12.5 4 2.5-4 2.5z"/>',
  clt:'<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18M10.5 13v1.5h3V13"/>',
  mulher:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>',
@@ -1529,7 +1530,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural'],['filmes','🎬','Filmes']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural'],['filmes','🎬','Filmes'],['biblioteca','📚','Biblioteca']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -4439,12 +4440,108 @@ function vFilmes(){setTimeout(fiCarregar,1200);
  document.head.appendChild(s)})();
 
 
+/* ---------- BIBLIOTECA: 50 livros em português (PDF), lidos dentro do app ----------
+   Os PDFs ficam em biblioteca/<id>.pdf e o catálogo em biblioteca/livros.json (gerados por biblioteca/gerar-livros.py).
+   O leitor usa o PDF.js; depois da primeira leitura o livro fica guardado no aparelho e abre sem internet. */
+const BI_EMB=[["dom-casmurro","Dom Casmurro","Machado de Assis","Romance",1899],["memorias-postumas-bras-cubas","Memórias Póstumas de Brás Cubas","Machado de Assis","Romance",1881],["quincas-borba","Quincas Borba","Machado de Assis","Romance",1891],["esau-e-jaco","Esaú e Jacó","Machado de Assis","Romance",1904],["memorial-de-aires","Memorial de Aires","Machado de Assis","Romance",1908],["helena","Helena","Machado de Assis","Romance",1876],["a-mao-e-a-luva","A Mão e a Luva","Machado de Assis","Romance",1874],["iaia-garcia","Iaiá Garcia","Machado de Assis","Romance",1878],["o-alienista","O Alienista","Machado de Assis","Contos",1882],["ressurreicao","Ressurreição","Machado de Assis","Romance",1872],["o-primo-basilio","O Primo Basílio","Eça de Queirós","Romance",1878],["o-crime-do-padre-amaro","O Crime do Padre Amaro","Eça de Queirós","Romance",1875],["os-maias","Os Maias","Eça de Queirós","Romance",1888],["a-reliquia","A Relíquia","Eça de Queirós","Romance",1887],["a-cidade-e-as-serras","A Cidade e as Serras","Eça de Queirós","Romance",1901],["a-ilustre-casa-de-ramires","A Ilustre Casa de Ramires","Eça de Queirós","Romance",1900],["o-guarani","O Guarani","José de Alencar","Romance",1857],["iracema","Iracema","José de Alencar","Romance",1865],["senhora","Senhora","José de Alencar","Romance",1875],["luciola","Lucíola","José de Alencar","Romance",1862],["ubirajara","Ubirajara","José de Alencar","Romance",1874],["o-sertanejo","O Sertanejo","José de Alencar","Romance",1875],["o-cortico","O Cortiço","Aluísio Azevedo","Romance",1890],["o-mulato","O Mulato","Aluísio Azevedo","Romance",1881],["casa-de-pensao","Casa de Pensão","Aluísio Azevedo","Romance",1884],["triste-fim-de-policarpo-quaresma","Triste Fim de Policarpo Quaresma","Lima Barreto","Romance",1915],["recordacoes-do-escrivao-isaias-caminha","Recordações do Escrivão Isaías Caminha","Lima Barreto","Romance",1909],["clara-dos-anjos","Clara dos Anjos","Lima Barreto","Romance",1922],["o-ateneu","O Ateneu","Raul Pompeia","Romance",1888],["os-sertoes","Os Sertões","Euclides da Cunha","Clássico",1902],["os-lusiadas","Os Lusíadas","Luís de Camões","Poesia",1572],["amor-de-perdicao","Amor de Perdição","Camilo Castelo Branco","Romance",1862],["a-moreninha","A Moreninha","Joaquim Manuel de Macedo","Romance",1844],["a-escrava-isaura","A Escrava Isaura","Bernardo Guimarães","Romance",1875],["o-seminarista","O Seminarista","Bernardo Guimarães","Romance",1872],["memorias-de-um-sargento-de-milicias","Memórias de um Sargento de Milícias","Manuel Antônio de Almeida","Romance",1854],["inocencia","Inocência","Visconde de Taunay","Romance",1872],["canaa","Canaã","Graça Aranha","Romance",1902],["a-carne","A Carne","Júlio Ribeiro","Romance",1888],["bom-crioulo","Bom-Crioulo","Adolfo Caminha","Romance",1895],["auto-da-barca-do-inferno","Auto da Barca do Inferno","Gil Vicente","Teatro",1517],["lira-dos-vinte-anos","Lira dos Vinte Anos","Álvares de Azevedo","Poesia",1853],["broqueis","Broquéis","Cruz e Sousa","Poesia",1893],["mensagem","Mensagem","Fernando Pessoa","Poesia",1934],["viagens-na-minha-terra","Viagens na Minha Terra","Almeida Garrett","Clássico",1846],["as-pupilas-do-senhor-reitor","As Pupilas do Senhor Reitor","Júlio Dinis","Romance",1867],["eurico-o-presbitero","Eurico, o Presbítero","Alexandre Herculano","Romance",1844],["urupes","Urupês","Monteiro Lobato","Contos",1918],["poesias-olavo-bilac","Poesias","Olavo Bilac","Poesia",1888],["primeiros-cantos","Primeiros Cantos","Gonçalves Dias","Poesia",1846]];
+let BI_L=BI_EMB.map(x=>({id:x[0],titulo:x[1],autor:x[2],genero:x[3],ano:x[4]})),biQ='',biG='todos';
+let BI_P={},biNoite=false;try{BI_P=JSON.parse(localStorage.getItem('ma-biblioteca')||'{}')||{};biNoite=localStorage.getItem('ma-bib-noite')==='1'}catch(e){}
+const biSalvar=()=>{try{localStorage.setItem('ma-biblioteca',JSON.stringify(BI_P))}catch(e){}};
+const biNorm=t=>String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const biCor=id=>{let n=0;for(const c of id)n=(n*31+c.charCodeAt(0))%360;return n};
+function biCat(){if(biCat.f)return;biCat.f=1;
+ fetch('biblioteca/livros.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{
+  if(!d||!Array.isArray(d.livros)||!d.livros.length)return;
+  BI_L=d.livros.filter(x=>x&&x.id&&x.titulo);if(tab==='biblioteca')render()}).catch(()=>{})}
+function biLista(ret){
+ const q=biNorm(biQ.trim()),l=BI_L.filter(b=>(biG==='todos'||b.genero===biG)&&(!q||biNorm(b.titulo+' '+b.autor).includes(q)));
+ const h=l.length?l.map(b=>{const p=BI_P[b.id],pc=p&&p.t?Math.min(100,Math.round(p.p/p.t*100)):0;
+  return '<div class="bi-c"><div class="bi-lo" style="--h:'+biCor(b.id)+'">'+esc(b.titulo.charAt(0))+'</div><div class="bi-t"><b>'+esc(b.titulo)+'</b><small>'+esc(b.autor)+' · '+esc(b.genero)+' · '+esc(b.ano)+'</small>'
+   +(pc?'<div class="bi-pg"><i style="width:'+pc+'%"></i></div><small>'+(pc>=98?'Lido ✓':'Parou na página '+p.p+' de '+p.t)+'</small>':'')+'</div>'
+   +'<button onclick="biAbrir(\''+esc(b.id)+'\')">'+(pc&&pc<98?'Continuar':'Ler')+'</button></div>'}).join(''):'<div class="vazio">Nenhum livro encontrado.</div>';
+ if(ret)return h;const e=$('#bi-l');if(e)e.innerHTML=h}
+function vBiblioteca(){setTimeout(biCat,300);
+ const gs=['todos'].concat([...new Set(BI_L.map(b=>b.genero))]);
+ return '<h2>'+_t('Biblioteca')+'</h2><p class="hint" style="margin:0 0 10px">'+BI_L.length+' livros em português, de domínio público. Toque em Ler para abrir o PDF aqui mesmo, no app. O app guarda a página onde você parou.</p>'
+  +'<div style="display:flex;gap:8px;margin-bottom:6px"><input id="bi-q" type="search" placeholder="Buscar título ou autor" value="'+esc(biQ)+'" oninput="biQ=this.value;biLista()" style="flex:1;min-width:0">'
+  +'<select id="bi-g" onchange="biG=this.value;biLista()" aria-label="Gênero">'+gs.map(g=>'<option value="'+esc(g)+'"'+(g===biG?' selected':'')+'>'+(g==='todos'?'Todos':esc(g))+'</option>').join('')+'</select></div>'
+  +'<div id="bi-l">'+biLista(true)+'</div>'}
+/* leitor de PDF */
+let biDoc=null,biId=null,biPag=1,biEsc=1,biGen=0,biRen=0,biTask=null,biUlt=0;
+const BI_JS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+function biLib(ok,erro){
+ if(window.pdfjsLib){ok();return}
+ const s=document.createElement('script');s.src=BI_JS+'pdf.min.js';
+ s.onload=()=>{try{pdfjsLib.GlobalWorkerOptions.workerSrc=BI_JS+'pdf.worker.min.js';ok()}catch(e){erro()}};
+ s.onerror=erro;document.head.appendChild(s)}
+function biAbrir(id){
+ const b=BI_L.find(x=>x.id===id);if(!b)return;
+ biFechar(true);biId=id;biDoc=null;biGen++;biEsc=1;biUlt=0;
+ const o=document.createElement('div');o.id='bi-rd';o.className='bi-rd'+(biNoite?' noite':'');
+ o.innerHTML='<div class="bi-top"><button onclick="biFechar()" aria-label="Voltar à biblioteca">←</button><div class="bi-tt"><b>'+esc(b.titulo)+'</b><small>'+esc(b.autor)+'</small></div><button onclick="biNoiteTog()" aria-label="Modo noturno">🌙</button></div>'
+  +'<div class="bi-ar" id="bi-ar"><div class="bi-ms" id="bi-ms">Abrindo o livro…</div><canvas id="bi-cv" hidden></canvas></div>'
+  +'<div class="bi-bt"><button onclick="biMais(-1)" aria-label="Diminuir a letra">A−</button><button onclick="biPg(-1)" aria-label="Página anterior">◀</button>'
+  +'<span class="bi-pn"><input id="bi-n" type="number" min="1" inputmode="numeric" aria-label="Ir para a página" onchange="biIr(this.value)"><small id="bi-tot"></small></span>'
+  +'<button onclick="biPg(1)" aria-label="Próxima página">▶</button><button onclick="biMais(1)" aria-label="Aumentar a letra">A+</button></div>';
+ document.body.appendChild(o);document.body.style.overflow='hidden';
+ let x0=0,y0=0;const ar=$('#bi-ar');
+ ar.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+ ar.addEventListener('touchend',e=>{if(biEsc>1.05)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>70&&Math.abs(dy)<45)biPg(dx<0?1:-1)},{passive:true});
+ biLib(()=>biCarregar(b),()=>biErro('Não foi possível carregar o leitor de PDF. Na primeira vez é preciso estar com internet.',b))}
+function biErro(msg,b){const m=$('#bi-ms'),c=$('#bi-cv');if(!m)return;if(c)c.hidden=true;m.hidden=false;
+ m.innerHTML=esc(msg)+'<br><button class="sec" style="margin-top:12px" onclick="biAbrir(\''+esc(b.id)+'\')">Tentar de novo</button>'}
+function biCarregar(b){
+ const g=biGen;
+ pdfjsLib.getDocument({url:'biblioteca/'+encodeURIComponent(b.id)+'.pdf',disableRange:true,disableStream:true}).promise.then(d=>{
+  if(g!==biGen){try{d.destroy()}catch(e){}return}
+  biDoc=d;const p=BI_P[b.id];biPag=p&&p.p>=1&&p.p<=d.numPages?p.p:1;
+  $('#bi-tot').textContent='de '+d.numPages;$('#bi-n').max=d.numPages;biDesenhar()
+ }).catch(e=>{if(g!==biGen)return;const t=String(e&&(e.name+' '+e.message)||e);
+  biErro(/Missing|404|Unexpected server response \(404\)/i.test(t)?'Este livro ainda não foi adicionado à pasta biblioteca/ do app. Rode o “Gerar Biblioteca” no GitHub para criar os PDFs.':'Não foi possível abrir este livro. Verifique a internet e tente de novo.',b)})}
+function biDesenhar(){
+ if(!biDoc||!$('#bi-cv'))return;const g=++biRen,prev=biTask;
+ if(prev){try{prev.cancel()}catch(e){}}
+ Promise.resolve(prev&&prev.promise).catch(()=>{}).then(()=>g===biRen?biDoc.getPage(biPag):null).then(pg=>{
+  if(!pg||g!==biRen)return;const ar=$('#bi-ar'),cv=$('#bi-cv');if(!ar||!cv)return;
+  const v0=pg.getViewport({scale:1}),dpr=Math.min(window.devicePixelRatio||1,2.5),w=Math.max(200,(ar.clientWidth-16)*biEsc),v=pg.getViewport({scale:w/v0.width*dpr});
+  cv.width=v.width;cv.height=v.height;cv.style.width=(v.width/dpr)+'px';cv.style.height=(v.height/dpr)+'px';
+  biTask=pg.render({canvasContext:cv.getContext('2d'),viewport:v});
+  return biTask.promise.then(()=>{if(g!==biRen)return;cv.hidden=false;$('#bi-ms').hidden=true;if(biUlt!==biPag){ar.scrollTop=0;biUlt=biPag}})
+ }).catch(()=>{});
+ const n=$('#bi-n');if(n)n.value=biPag;biGravar()}
+function biGravar(){if(!biDoc||!biId)return;BI_P[biId]={p:biPag,t:biDoc.numPages,d:Date.now()};biSalvar()}
+function biPg(d){if(!biDoc)return;const n=Math.min(biDoc.numPages,Math.max(1,biPag+d));if(n===biPag)return;biPag=n;biDesenhar()}
+function biIr(v){if(!biDoc)return;const n=Math.min(biDoc.numPages,Math.max(1,parseInt(v,10)||biPag));biPag=n;biDesenhar()}
+function biMais(d){biEsc=Math.min(3,Math.max(.6,+(biEsc+d*.2).toFixed(2)));biDesenhar()}
+function biNoiteTog(){biNoite=!biNoite;try{localStorage.setItem('ma-bib-noite',biNoite?'1':'0')}catch(e){}const o=$('#bi-rd');if(o)o.classList.toggle('noite',biNoite)}
+function biFechar(quieto){const o=$('#bi-rd');if(o)o.remove();biGen++;biRen++;
+ try{if(biTask)biTask.cancel()}catch(e){}biTask=null;try{if(biDoc)biDoc.destroy()}catch(e){}biDoc=null;
+ document.body.style.overflow='';if(!quieto&&tab==='biblioteca')render()}
+window.addEventListener('resize',()=>{if($('#bi-rd'))biDesenhar()});
+(function(){const s=document.createElement('style');s.textContent=
+'.bi-c{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln)}'
++'.bi-lo{flex:none;width:44px;height:58px;border-radius:4px 8px 8px 4px;background:hsl(var(--h),45%,38%);color:#fff;font:700 22px Georgia,serif;display:flex;align-items:center;justify-content:center;box-shadow:inset 4px 0 0 rgba(0,0,0,.25)}'
++'.bi-t{flex:1;min-width:0}.bi-t b{display:block;font-size:15px;line-height:1.25}.bi-t small{display:block;color:var(--mute);font-size:12px;margin-top:2px}'
++'.bi-pg{height:4px;border-radius:2px;background:var(--ln);margin-top:6px;overflow:hidden}.bi-pg i{display:block;height:100%;background:var(--ac)}'
++'.bi-c>button{flex:none;padding:8px 14px;border-radius:10px;border:0;background:var(--ac);color:var(--onac);font-weight:700}'
++'.bi-rd{position:fixed;inset:0;z-index:70;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}'
++'.bi-top,.bi-bt{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sf);border-bottom:1px solid var(--ln)}'
++'.bi-bt{border-bottom:0;border-top:1px solid var(--ln);justify-content:space-between;padding-bottom:calc(8px + env(safe-area-inset-bottom))}'
++'.bi-top button,.bi-bt button{min-width:44px;height:40px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);font-size:16px}'
++'.bi-tt{flex:1;min-width:0}.bi-tt b,.bi-tt small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bi-tt small{color:var(--mute);font-size:12px}'
++'.bi-ar{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px;text-align:center;background:#cfd6da}'
++'.bi-ar canvas{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);max-width:none}.bi-ar canvas[hidden]{display:none}'
++'.bi-rd.noite .bi-ar{background:#0b0f12}.bi-rd.noite canvas{filter:invert(1) hue-rotate(180deg)}'
++'.bi-ms{padding:30px 14px;color:#41505a}.bi-ms[hidden]{display:none}.bi-rd.noite .bi-ms{color:#9fb0ba}'
++'.bi-pn{display:flex;align-items:center;gap:6px}.bi-pn small{color:var(--mute);white-space:nowrap}.bi-pn input{width:60px;text-align:center;padding:8px 4px}';
+ document.head.appendChild(s)})();
+
 function vMulher(){
  const seg='<div class="seg">'+[['ciclo','🌸 Ciclo'],['saude','🩺 Saúde'],['care','💧 Autocuidado'],['seg','🛡️ Segurança'],['mais','✨ Mais']].map(function(a){return '<button class="'+(muTab===a[0]?'on':'')+'" onclick="muGo(\''+a[0]+'\')">'+a[1]+'</button>'}).join('')+'</div>';
  return '<h2>Espaço Mulher</h2>'+seg+({ciclo:muCiclo,saude:muSaude,care:muCare,seg:muSeg,mais:muMais}[muTab]||muCiclo)()}
 
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,filmes:vFilmes,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,filmes:vFilmes,biblioteca:vBiblioteca,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -6448,6 +6545,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.0':[
+   '📚 Novo menu Biblioteca, com 50 livros em português (Machado de Assis, Eça de Queirós, José de Alencar, Camões e outros) em PDF. Você lê dentro do próprio app: vira as páginas, aumenta a letra, usa o modo noturno e o app guarda a página onde você parou. Depois da primeira leitura o livro abre sem internet.'
+  ],
   '3.5.9':[
    '🎬 Novo menu Filmes. Aba Cinema: filmes em cartaz, estreias e os shoppings de Recife, Olinda, Paulista e Jaboatão, com os filmes de cada cinema e a sinopse. Aba Streaming: filmes e séries que estão chegando na Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com a data e a sinopse. A lista se atualiza sozinha.'
   ],
@@ -6630,7 +6730,7 @@ const RECADO_CFG=[
  ['📖','Tela inicial','Ativar ou desativar o versículo bíblico do dia.'],
  ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
  ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
- ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções, Concursos, CLT, Espaço Mulher, Espaço Cultural) para ele aparecer ou sumir da navegação.'],
+ ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções, Concursos, CLT, Espaço Mulher, Espaço Cultural, Filmes, Biblioteca) para ele aparecer ou sumir da navegação.'],
  ['🎨','Aparência','Modo automático, claro, escuro ou preto e a cor do tema.'],
  ['🔒','Segurança','Criar uma senha de 4 dígitos, alterar, remover e escolher quando o app bloqueia de novo.'],
  ['🛡️','Permissões','Arquivos, fotos e vídeos, música e áudio, notificações, câmera e microfone. Tem o botão “Permitir tudo” e o atalho para os ajustes do celular.'],
@@ -7288,7 +7388,7 @@ function kParse(txt,now){now=now||new Date();txt=kFalaHora(txt);const n=kNorm(tx
   .replace(/^\s*(?:de|do|da|para|pra|que|um|uma|o|a|às|as|em|no|na)(?=\s)\s*/i,' ').replace(/\s+(em|no|na|às|as|para|pra|de|do|da)\s*$/i,'').replace(/\s+/g,' ').trim();
  if(t)t=t[0].toUpperCase()+t.slice(1);
  return {title:t,date:date,time:time}}
-const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['filmes',/\b(filmes?|cinemas?|streaming|series?|netflix)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
+const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['filmes',/\b(filmes?|cinemas?|streaming|series?|netflix)\b/],['biblioteca',/\b(biblioteca|livros?|leitura|ler um livro)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
 const kFaq=[
  [/lembret|alarme|notifica/,'Para ter lembretes, ative em Configurações › Lembretes e alarme. Depois, todo compromisso com hora avisa antes de começar. Quer que eu ative agora? Digite “ativar lembretes”.'],
  [/backup|restaurar|exportar/,'Em Configurações › Backup no celular você salva, compartilha e restaura seus dados. Se conectar uma conta, também há sincronização na nuvem.'],
@@ -7774,7 +7874,7 @@ function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||nu
   return say(out.length?'Agenda dos próximos 7 dias:\n'+out.join('\n'):'Nenhum compromisso '+(prox?'na semana que vem.':'nos próximos 7 dias.'))}
  return false}
 /* ---- 6. traduz o jeito de falar para os comandos do app ---- */
-const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['filmes','filmes?|cinemas?|streaming|series?|netflix|prime video|disney|hbo|paramount|apple tv'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
+const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['filmes','filmes?|cinemas?|streaming|series?|netflix|prime video|disney|hbo|paramount|apple tv'],['biblioteca','biblioteca|livros?|leitura|romances?|ler um livro|machado de assis|eca de queiros'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
 const tabDe=n=>{for(const [t,r] of TABAL)if(new RegExp('(?:^|\\s)(?:'+r+')(?:\\s|$)').test(n))return t;return null};
 const TABOUT={cal:'calendario',config:'configuracoes'};
 const DICT=['agendar','agende','marcar','marque','lembrar','lembre','anotar','anote','comprar','compre','apagar','apague','excluir','exclua','remover','remova','concluir','conclua','finalizar','abrir','abra','desfazer','ativar','desativar','esconder','mostrar','adicionar','adicione','incluir','inclua','colocar','coloque','criar','crie','cancelar','cancele','deletar','limpar','tirar','escrever','guardar','salvar','registrar','cadastrar','reservar','programar'];
@@ -8972,7 +9072,7 @@ let _naRun=false;
 /* ===== v4: skin Tropicália + menu em grupos + painel inicial ===== */
 (function(){
 COR.push(['tropical','Tropicália','#3b4cf0']);
-const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','filmes','mulher','concursos','clt']]];
+const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','filmes','biblioteca','mulher','concursos','clt']]];
 const NG=()=>S.layout==='novo',HP=NG;
 const act=g=>g[2].filter(k=>TABS.some(t=>t[0]===k)),grOf=k=>GR.find(g=>g[2].includes(k));
 const nome=k=>{const t=TABS_ALL.find(x=>x[0]===k);return t?_t(t[2]):k};
@@ -9023,7 +9123,7 @@ function vPainel(){
   notas:['#d9a10f',S.notes.length+(S.notes.length===1?' nota':' notas'),"go('notas')"],
   compras:['#f08a24',faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop)),"go('compras')",'w2'],
   carteira:['#3fa66b',kc.renda>0?(kc.sobra<0?'Faltam '+BRL(-kc.sobra):'Sobram '+BRL(kc.sobra))+' este mês':'Controle seus gastos',"go('carteira')",'w2'],
-  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],cultural:['#c2410c',CU_DATA.filter(cuVivo).length+' shows, peças e eventos',"go('cultural')"],filmes:['#7c3aed','Cinema e streaming',"go('filmes')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
+  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],cultural:['#c2410c',CU_DATA.filter(cuVivo).length+' shows, peças e eventos',"go('cultural')"],filmes:['#7c3aed','Cinema e streaming',"go('filmes')"],biblioteca:['#8a5a2b','50 livros em PDF',"go('biblioteca')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
  const tiles=TABS.map(t=>t[0]).filter(k=>T[k]).map(k=>{const x=T[k];return `<button class="stat tl ${x[3]||''}" style="--h:${x[0]}" onclick="${x[2]}"><span class="si">${svg(k)}</span><b>${esc(nome(k))}</b><small>${x[1]}</small></button>`}).join('');
  const plHtml=plh.map(p=>`<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><span class="t"><b>Plantão ${p.ent} → ${p.sai}</b>${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';sel=HOJE;mes=new Date();go('cal')" aria-label="Abrir plantões">›</button></div>`).join('');
  const busca=`<form class="gsearch" action="https://chatgpt.com/" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pergunte ao ChatGPT" aria-label="Pergunte ao ChatGPT" enterkeyhint="search" autocomplete="off"><button type="submit">Perguntar</button></form>`;

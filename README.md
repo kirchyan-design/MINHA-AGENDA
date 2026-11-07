@@ -200,3 +200,12 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 
 
 - **Tema Natal** (`data-color="natal"`): árvore de Natal no fundo e no canto da tela, neve caindo, bolas penduradas, luzes piscando no topo, azevinho nos cartões e fonte natalina. Vem ligado automaticamente na primeira abertura (`natalAuto()` no `index.html`) e o usuário troca em Configurações › Aparência › Cor do tema. A imagem da árvore fica dentro do `index.html` (constante `NT_IMG`). Também põe um gorrinho de Papai Noel em cima do ícone do app (cabeçalho e tela de entrada), só enquanto o tema Natal estiver ativo (`ntHats()` no `index.html`).
+
+## Biblioteca (menu 📚)
+
+Menu **Biblioteca** com 50 livros em português (domínio público) lidos dentro do app, com leitor de PDF (páginas, tamanho da letra, modo noturno e "parou na página X").
+
+- Catálogo: `biblioteca/livros.json` (o app também tem uma cópia embutida) e fontes em `biblioteca/fontes.json`.
+- Para criar os PDFs: GitHub > Actions > **Gerar Biblioteca (50 livros em PDF)** > Run workflow. Ele baixa os textos do Projeto Gutenberg, gera `biblioteca/<id>.pdf` e salva no repositório.
+- Local: `pip install reportlab && python3 biblioteca/gerar-livros.py`.
+- Depois da primeira leitura de cada livro, ele fica no aparelho e abre sem internet.
