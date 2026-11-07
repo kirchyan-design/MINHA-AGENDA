@@ -1,1 +1,355 @@
-
+{
+ "atualizado": "2026-11-07",
+ "livros": [
+  {
+   "id": "dom-casmurro",
+   "titulo": "Dom Casmurro",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1899
+  },
+  {
+   "id": "memorias-postumas-bras-cubas",
+   "titulo": "Memórias Póstumas de Brás Cubas",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1881
+  },
+  {
+   "id": "quincas-borba",
+   "titulo": "Quincas Borba",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1891
+  },
+  {
+   "id": "esau-e-jaco",
+   "titulo": "Esaú e Jacó",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1904
+  },
+  {
+   "id": "memorial-de-aires",
+   "titulo": "Memorial de Aires",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1908
+  },
+  {
+   "id": "helena",
+   "titulo": "Helena",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1876
+  },
+  {
+   "id": "a-mao-e-a-luva",
+   "titulo": "A Mão e a Luva",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1874
+  },
+  {
+   "id": "iaia-garcia",
+   "titulo": "Iaiá Garcia",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1878
+  },
+  {
+   "id": "o-alienista",
+   "titulo": "O Alienista",
+   "autor": "Machado de Assis",
+   "genero": "Contos",
+   "ano": 1882
+  },
+  {
+   "id": "ressurreicao",
+   "titulo": "Ressurreição",
+   "autor": "Machado de Assis",
+   "genero": "Romance",
+   "ano": 1872
+  },
+  {
+   "id": "o-primo-basilio",
+   "titulo": "O Primo Basílio",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1878
+  },
+  {
+   "id": "o-crime-do-padre-amaro",
+   "titulo": "O Crime do Padre Amaro",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1875
+  },
+  {
+   "id": "os-maias",
+   "titulo": "Os Maias",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1888
+  },
+  {
+   "id": "a-reliquia",
+   "titulo": "A Relíquia",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1887
+  },
+  {
+   "id": "a-cidade-e-as-serras",
+   "titulo": "A Cidade e as Serras",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1901
+  },
+  {
+   "id": "a-ilustre-casa-de-ramires",
+   "titulo": "A Ilustre Casa de Ramires",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1900
+  },
+  {
+   "id": "o-guarani",
+   "titulo": "O Guarani",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1857
+  },
+  {
+   "id": "iracema",
+   "titulo": "Iracema",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1865
+  },
+  {
+   "id": "senhora",
+   "titulo": "Senhora",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1875
+  },
+  {
+   "id": "luciola",
+   "titulo": "Lucíola",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1862
+  },
+  {
+   "id": "ubirajara",
+   "titulo": "Ubirajara",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1874
+  },
+  {
+   "id": "o-sertanejo",
+   "titulo": "O Sertanejo",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1875
+  },
+  {
+   "id": "o-cortico",
+   "titulo": "O Cortiço",
+   "autor": "Aluísio Azevedo",
+   "genero": "Romance",
+   "ano": 1890
+  },
+  {
+   "id": "o-mulato",
+   "titulo": "O Mulato",
+   "autor": "Aluísio Azevedo",
+   "genero": "Romance",
+   "ano": 1881
+  },
+  {
+   "id": "casa-de-pensao",
+   "titulo": "Casa de Pensão",
+   "autor": "Aluísio Azevedo",
+   "genero": "Romance",
+   "ano": 1884
+  },
+  {
+   "id": "triste-fim-de-policarpo-quaresma",
+   "titulo": "Triste Fim de Policarpo Quaresma",
+   "autor": "Lima Barreto",
+   "genero": "Romance",
+   "ano": 1915
+  },
+  {
+   "id": "recordacoes-do-escrivao-isaias-caminha",
+   "titulo": "Recordações do Escrivão Isaías Caminha",
+   "autor": "Lima Barreto",
+   "genero": "Romance",
+   "ano": 1909
+  },
+  {
+   "id": "clara-dos-anjos",
+   "titulo": "Clara dos Anjos",
+   "autor": "Lima Barreto",
+   "genero": "Romance",
+   "ano": 1922
+  },
+  {
+   "id": "o-ateneu",
+   "titulo": "O Ateneu",
+   "autor": "Raul Pompeia",
+   "genero": "Romance",
+   "ano": 1888
+  },
+  {
+   "id": "os-sertoes",
+   "titulo": "Os Sertões",
+   "autor": "Euclides da Cunha",
+   "genero": "Clássico",
+   "ano": 1902
+  },
+  {
+   "id": "os-lusiadas",
+   "titulo": "Os Lusíadas",
+   "autor": "Luís de Camões",
+   "genero": "Poesia",
+   "ano": 1572
+  },
+  {
+   "id": "amor-de-perdicao",
+   "titulo": "Amor de Perdição",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1862
+  },
+  {
+   "id": "a-moreninha",
+   "titulo": "A Moreninha",
+   "autor": "Joaquim Manuel de Macedo",
+   "genero": "Romance",
+   "ano": 1844
+  },
+  {
+   "id": "a-escrava-isaura",
+   "titulo": "A Escrava Isaura",
+   "autor": "Bernardo Guimarães",
+   "genero": "Romance",
+   "ano": 1875
+  },
+  {
+   "id": "o-seminarista",
+   "titulo": "O Seminarista",
+   "autor": "Bernardo Guimarães",
+   "genero": "Romance",
+   "ano": 1872
+  },
+  {
+   "id": "memorias-de-um-sargento-de-milicias",
+   "titulo": "Memórias de um Sargento de Milícias",
+   "autor": "Manuel Antônio de Almeida",
+   "genero": "Romance",
+   "ano": 1854
+  },
+  {
+   "id": "inocencia",
+   "titulo": "Inocência",
+   "autor": "Visconde de Taunay",
+   "genero": "Romance",
+   "ano": 1872
+  },
+  {
+   "id": "canaa",
+   "titulo": "Canaã",
+   "autor": "Graça Aranha",
+   "genero": "Romance",
+   "ano": 1902
+  },
+  {
+   "id": "a-carne",
+   "titulo": "A Carne",
+   "autor": "Júlio Ribeiro",
+   "genero": "Romance",
+   "ano": 1888
+  },
+  {
+   "id": "bom-crioulo",
+   "titulo": "Bom-Crioulo",
+   "autor": "Adolfo Caminha",
+   "genero": "Romance",
+   "ano": 1895
+  },
+  {
+   "id": "auto-da-barca-do-inferno",
+   "titulo": "Auto da Barca do Inferno",
+   "autor": "Gil Vicente",
+   "genero": "Teatro",
+   "ano": 1517
+  },
+  {
+   "id": "lira-dos-vinte-anos",
+   "titulo": "Lira dos Vinte Anos",
+   "autor": "Álvares de Azevedo",
+   "genero": "Poesia",
+   "ano": 1853
+  },
+  {
+   "id": "broqueis",
+   "titulo": "Broquéis",
+   "autor": "Cruz e Sousa",
+   "genero": "Poesia",
+   "ano": 1893
+  },
+  {
+   "id": "mensagem",
+   "titulo": "Mensagem",
+   "autor": "Fernando Pessoa",
+   "genero": "Poesia",
+   "ano": 1934
+  },
+  {
+   "id": "viagens-na-minha-terra",
+   "titulo": "Viagens na Minha Terra",
+   "autor": "Almeida Garrett",
+   "genero": "Clássico",
+   "ano": 1846
+  },
+  {
+   "id": "as-pupilas-do-senhor-reitor",
+   "titulo": "As Pupilas do Senhor Reitor",
+   "autor": "Júlio Dinis",
+   "genero": "Romance",
+   "ano": 1867
+  },
+  {
+   "id": "eurico-o-presbitero",
+   "titulo": "Eurico, o Presbítero",
+   "autor": "Alexandre Herculano",
+   "genero": "Romance",
+   "ano": 1844
+  },
+  {
+   "id": "urupes",
+   "titulo": "Urupês",
+   "autor": "Monteiro Lobato",
+   "genero": "Contos",
+   "ano": 1918
+  },
+  {
+   "id": "poesias-olavo-bilac",
+   "titulo": "Poesias",
+   "autor": "Olavo Bilac",
+   "genero": "Poesia",
+   "ano": 1888
+  },
+  {
+   "id": "primeiros-cantos",
+   "titulo": "Primeiros Cantos",
+   "autor": "Gonçalves Dias",
+   "genero": "Poesia",
+   "ano": 1846
+  }
+ ]
+}
