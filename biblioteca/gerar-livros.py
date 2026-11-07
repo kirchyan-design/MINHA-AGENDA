@@ -17,28 +17,57 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib.units import mm
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, PageBreak, NextPageTemplate
 
+def log(*a):
+    print(*a, flush=True)
+
 AQUI = os.path.dirname(os.path.abspath(__file__))
 API = "https://gutendex.com/books/"
 META = 50
 
-def baixar(url, tent=3):
+RAW = {}
+INICIO = time.time()
+LIMITE_MIN = 40   # para sozinho depois disso e salva o que já ficou pronto
+
+def baixar(url, tent=2):
     for i in range(tent):
         try:
             rq = urllib.request.Request(url, headers={"User-Agent": "JC-ORGANIZA-biblioteca/1.0"})
-            with urllib.request.urlopen(rq, timeout=60) as r:
+            with urllib.request.urlopen(rq, timeout=25) as r:
                 return r.read()
         except Exception as e:
             if i == tent - 1: raise
-            time.sleep(2 + 3 * i)
+            time.sleep(2)
 
 def sem_acento(s):
     import unicodedata
     return "".join(c for c in unicodedata.normalize("NFD", s.lower()) if unicodedata.category(c) != "Mn")
 
+def achar_html(item):
+    """Plano B: busca no site do Gutenberg e confere idioma, título e autor no próprio texto."""
+    q = urllib.parse.urlencode({"query": item["busca"] + " " + item["sobrenome"], "submit_search": "Go!"})
+    h = baixar("https://www.gutenberg.org/ebooks/search/?" + q).decode("utf-8", "replace")
+    ids = []
+    for m in re.finditer(r'href="/ebooks/(\d+)"', h):
+        if m.group(1) not in ids: ids.append(m.group(1))
+    tit = sem_acento(item["busca"]); sob = sem_acento(item["sobrenome"])
+    for gid in ids[:5]:
+        url = "https://www.gutenberg.org/cache/epub/%s/pg%s.txt" % (gid, gid)
+        try: raw = baixar(url)
+        except Exception: continue
+        cab = sem_acento(raw[:4000].decode("utf-8", "replace"))
+        if "language: portuguese" in cab and tit in cab and sob in cab:
+            RAW[url] = raw
+            return gid, url
+    return None
+
 def achar(item):
     """Procura o livro no Gutenberg (idioma pt) e devolve (id, url do texto)."""
     q = urllib.parse.urlencode({"languages": "pt", "search": item["busca"] + " " + item["sobrenome"]})
-    d = json.loads(baixar(API + "?" + q))
+    try:
+        d = json.loads(baixar(API + "?" + q))
+    except Exception as e:
+        log("   gutendex não respondeu (%s); tentando o site do Gutenberg" % type(e).__name__)
+        return achar_html(item)
     tit = sem_acento(item["busca"]); sob = sem_acento(item["sobrenome"])
     melhor = None
     for b in d.get("results", []):
@@ -49,7 +78,7 @@ def achar(item):
         fm = b.get("formats", {})
         url = next((fm[k] for k in fm if k.startswith("text/plain")), None)
         if url and (melhor is None or len(t) < melhor[2]): melhor = (b["id"], url, len(t))
-    return melhor[:2] if melhor else None
+    return melhor[:2] if melhor else achar_html(item)
 
 def limpar_gutenberg(txt):
     txt = txt.replace("\r\n", "\n").replace("\ufeff", "")
@@ -118,36 +147,43 @@ def main():
         it = fontes[0]
         txt = "CAPÍTULO I\n\n" + "\n\n".join("Este é o parágrafo %d do livro de teste, com acentuação: ação, coração, órgão, é, à, ü." % i * 6 for i in range(1, 60))
         n = gerar_pdf(it, txt, os.path.join(AQUI, "teste.pdf"), "PDF de teste do gerador")
-        print("teste.pdf com", n, "páginas"); return
-    feitos, falhas = [], []
+        log("teste.pdf com", n, "páginas"); return
+    feitos, falhas, seguidas = [], [], 0
     fila = list(fontes)
+    log("Começando: %d livros, com limite de %d minutos." % (META, LIMITE_MIN))
     for it in fila:
         if len(feitos) >= META: break
+        if time.time() - INICIO > LIMITE_MIN * 60:
+            log("Tempo limite atingido; salvando o que ficou pronto."); break
+        if seguidas >= 5:
+            log("5 falhas seguidas: parece não haver acesso ao Gutenberg. Parando."); break
+        log("-> " + it["titulo"])
         # os 50 primeiros sempre são tentados; as reservas só entram se faltar livro
         saida = os.path.join(AQUI, it["id"] + ".pdf")
         try:
             if os.path.exists(saida) and os.path.getsize(saida) > 20000:
-                print("já existe:", it["titulo"]); tam = os.path.getsize(saida)
+                log("já existe:", it["titulo"]); tam = os.path.getsize(saida)
                 feitos.append(dict(it, paginas=it.get("paginas", 0), mb=round(tam/1048576, 1))); continue
             ach = achar(it)
             if not ach: raise RuntimeError("não encontrado no Gutenberg")
             gid, url = ach
-            raw = baixar(url)
+            raw = RAW.pop(url, None) or baixar(url)
             try: txt = raw.decode("utf-8")
             except UnicodeDecodeError: txt = raw.decode("latin-1")
             txt = limpar_gutenberg(txt)
             if len(txt) < 8000: raise RuntimeError("texto muito curto")
             pg = gerar_pdf(it, txt, saida, "Texto em domínio público · Projeto Gutenberg nº %s" % gid)
             tam = os.path.getsize(saida)
-            print("ok: %-45s %4d páginas  %.1f MB" % (it["titulo"], pg, tam / 1048576))
-            feitos.append(dict(it, paginas=pg, mb=round(tam / 1048576, 1)))
+            log("ok: %-45s %4d páginas  %.1f MB" % (it["titulo"], pg, tam / 1048576))
+            feitos.append(dict(it, paginas=pg, mb=round(tam / 1048576, 1))); seguidas = 0
             time.sleep(1)
         except Exception as e:
-            print("FALHOU:", it["titulo"], "->", e); falhas.append(it["titulo"])
+            log("FALHOU:", it["titulo"], "->", e); falhas.append(it["titulo"]); seguidas += 1
     cat = {"atualizado": time.strftime("%Y-%m-%d"),
            "livros": [{k: l[k] for k in ("id", "titulo", "autor", "genero", "ano", "paginas", "mb") if k in l} for l in feitos[:META]]}
-    json.dump(cat, open(os.path.join(AQUI, "livros.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print("\n%d livros prontos. Falharam: %s" % (len(cat["livros"]), ", ".join(falhas) or "nenhum"))
+    if feitos:   # nunca apaga o catálogo se nada deu certo
+            json.dump(cat, open(os.path.join(AQUI, "livros.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    log("\n%d livros prontos. Falharam: %s" % (len(cat["livros"]), ", ".join(falhas) or "nenhum"))
     if len(cat["livros"]) < META: sys.exit("Atenção: só %d de %d livros." % (len(cat["livros"]), META))
 
 if __name__ == "__main__":
