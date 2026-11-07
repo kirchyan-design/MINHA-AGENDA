@@ -2802,6 +2802,10 @@ const FA=()=>plug('FirebaseAuthentication');
 if(S.user&&S.user.google&&!S.user.conta){S.user.conta=Object.assign({prov:'google'},S.user.google);delete S.user.google}
 const ct=()=>S.user&&S.user.conta;
 const PROV={google:'Google',email:'e-mail e senha',fone:'celular (SMS)'};
+/* Fim do login e da inscrição por e-mail: depois de LOGIN_AVISO_FIM (10/11/2026, 23:59, hora do aparelho) o app só aceita Google, sozinho, sem precisar publicar nada de novo.
+   Para adiar ou antecipar, mude a data abaixo (mês começa em 0: 10 = novembro). */
+const LOGIN_AVISO_FIM=new Date(2026,10,10,23,59,59).getTime();
+const emailLoginOff=()=>Date.now()>LOGIN_AVISO_FIM;
 const ctRot=c=>c?(c.email||c.phone||c.name||''):'';
 const GLOGO='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" style="vertical-align:-3px;margin-right:8px"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
 function erroAuth(e){
@@ -2834,6 +2838,8 @@ async function criarOuEntrar(A,em,pw){
 async function autenticar(m,modo){
  const A=FA(),ver=modo==='verificar',c=ct()||{};
  if(m==='google')return A.signInWithGoogle();
+ /* depois do prazo: sem login e sem inscrição por e-mail (só 'verificar' de conta já conectada, para ninguém ficar sem recuperar a senha do app) */
+ if((m==='email'||m==='cadastro')&&emailLoginOff()&&!ver){info('O login e a inscrição por e-mail foram encerrados em '+new Date(LOGIN_AVISO_FIM).toLocaleDateString('pt-BR')+'. Entre com o Google (Gmail).');return null}
  if(m==='email'){
   const d=await formDlg({title:ver?'Confirme sua conta':'Entrar com e-mail',sub:ver?'Digite a senha da sua conta (não é a senha de 4 dígitos do app).':'',
    fields:[{id:'em',label:'E-mail',type:'email',ph:'voce@email.com',val:ver?c.email:'',ex:'autocomplete="email"'},{id:'pw',label:'Senha da conta',type:'password',ph:'mínimo 6 caracteres',ex:'autocomplete="current-password"'}],
@@ -2855,7 +2861,7 @@ async function autenticar(m,modo){
   if(d.link==='rec'){await A.sendPasswordResetEmail({email:em});info('Enviamos um e-mail para '+em+' com o link para criar uma nova senha da conta. Depois de criar, volte ao app e entre.');return null}
   if(!pw){info('Digite a senha.');return null}
   return criarOuEntrar(A,em,pw)}
- if(m==='fone'){info('O login por celular (SMS) foi desativado. Entre com o Google ou com e-mail e senha.');return null}
+ if(m==='fone'){info(emailLoginOff()?'O login por celular (SMS) foi desativado. Entre com o Google (Gmail).':'O login por celular (SMS) foi desativado. Entre com o Google ou com e-mail e senha.');return null}
  return null}
 /* ---------- v2.6: troca de conta ---------- */
 const acctId=u=>String((u&&(u.email||u.phoneNumber||u.uid))||'').trim().toLowerCase();
@@ -2928,8 +2934,9 @@ async function contaSair(quiet){
  if(own&&trocarDados(own,'',null,quiet?'':'Conta desconectada. Os dados dela ficam guardados e voltam quando você entrar de novo com ela.'))return;
  delete S.user.conta;save();if(!quiet){render();info('Conta desconectada. Seus dados continuam salvos neste aparelho.')}}
 function btnsConta(){const b='width:100%;padding:13px;font-size:15px';
- return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button><button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button>`}
+ return `<button class="sec" style="${b}" onclick="conectar('google')">${GLOGO}Entrar com o Google</button>`+(emailLoginOff()?`<p class="hint" style="text-align:center;margin-top:10px">O login por e-mail foi encerrado. Use o Google (Gmail).</p>`:`<button class="sec" style="${b};margin-top:8px" onclick="conectar('email')">✉️ Entrar com e-mail e senha</button>`)}
 function btnsInscrever(){const b='width:100%;padding:13px;font-size:15px';
+ if(emailLoginOff())return `<p style="margin:0 0 10px;text-align:center;font-weight:800;letter-spacing:.06em">${_t('INSCREVA-SE')}</p><button style="${b}" onclick="conectar('google')">${GLOGO}${_t('Inscrever-se com o Google')}</button><p class="hint" style="text-align:center;margin-top:10px">O login e a inscrição por e-mail foram encerrados. Use o Google (Gmail).</p>`;
  return `<p style="margin:0 0 10px;text-align:center;font-weight:800;letter-spacing:.06em">${_t('INSCREVA-SE')}</p><button style="${b}" onclick="conectar('google')">${GLOGO}${_t('Inscrever-se com o Google')}</button><button style="${b};margin-top:8px" onclick="conectar('cadastro')">✉️ ${_t('Inscrever-se com e-mail')}</button><p style="color:var(--mute);font-size:13px;margin:16px 0 8px;text-align:center">${_t('Já tem conta? Entre:')}</p>${btnsConta()}`}
 function cfgConta(){const c=ct();
  return `<h3>Conta</h3><div class="card">`
@@ -6795,6 +6802,83 @@ function recadoQuadroQuandoLivre(n){n=n||0;
  if(!S.user||!S.user.name||PIN_LK||permAsking||document.querySelector('.ov')||document.getElementById('qks')){setTimeout(()=>recadoQuadroQuandoLivre(n+1),1000);return}
  recadoQuadro()}
 setTimeout(recadoQuadroQuandoLivre,8000);
+
+/* ---------- AVISO FORMAL DE 3 DIAS: fim do login por e-mail que não seja Gmail (todos os usuários) ----------
+   Vale até o fim do dia LOGIN_AVISO_FIM (definido junto de PROV: 10/11/2026, 23:59). Depois dessa data o app fecha sozinho o login e a inscrição por e-mail;
+   o aviso passa a aparecer só para quem ainda está conectado por e-mail (pedindo backup e migração para o Gmail).
+   Aparece uma vez por dia para cada usuário (lembrete diário durante os 3 dias): a marca fica no aparelho (localStorage) e nos dados do usuário (S.user.avisos).
+   Quem entra com e-mail que não é Gmail (Hotmail, Outlook, Yahoo etc.) vê também um destaque pedindo a migração para o Gmail.
+   Para mudar o prazo, altere LOGIN_AVISO_FIM (mês começa em 0: 10 = novembro). Para mudar o texto, edite recadoLogin(). */
+const LOGIN_AVISO_KEY='ma-recado-loginmail-v1';
+const loginDia=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};
+const loginUsuario=()=>{const c=S.user&&S.user.conta;return String((c&&(c.email||c.phone||c.uid))||ownerId()||(S.user&&S.user.name)||'local').trim().toLowerCase()};
+function loginAvisoVisto(){const t='loginmail-'+loginDia();
+ try{if(localStorage.getItem(LOGIN_AVISO_KEY+':'+loginUsuario()+':'+loginDia()))return true}catch(e){}
+ return !!(S.user&&S.user.avisos&&S.user.avisos[t])}
+function loginAvisoMarca(){const t='loginmail-'+loginDia();
+ try{localStorage.setItem(LOGIN_AVISO_KEY+':'+loginUsuario()+':'+loginDia(),'1')}catch(e){}
+ try{S.user.avisos=S.user.avisos||{};S.user.avisos[t]=1;save()}catch(e){}}
+function loginNaoGmail(){const c=S.user&&S.user.conta;
+ if(!c||c.prov==='google')return '';
+ const em=String(c.email||'').trim();
+ return (em&&!/@(gmail|googlemail)\.com$/i.test(em))?em:''}
+function recadoLogin(){
+ if(!S.user||!S.user.name)return;
+ const off=emailLoginOff(),ctx=S.user.conta,usaEmail=!!(ctx&&ctx.prov==='email');
+ if(off&&!usaEmail)return; /* depois do prazo só avisa quem ainda está conectado por e-mail */
+ if(document.querySelector('.rc-ov')||loginAvisoVisto())return;
+ loginAvisoMarca(); /* marca antes de mostrar: só uma vez por dia */
+ const dias=Math.max(1,Math.ceil((LOGIN_AVISO_FIM-Date.now())/864e5)),
+  fim=new Date(LOGIN_AVISO_FIM).toLocaleDateString('pt-BR'),
+  em=loginNaoGmail(),
+  prazo=dias===1?'Falta 1 dia':'Faltam '+dias+' dias',
+  P=t=>'<div class="nv-t">'+esc(t)+'</div>';
+ const alvo=em?'<div class="nv-it nv-new"><div class="nv-h"><b>⚠️ Atenção: sua conta utiliza um e-mail que não é Gmail</b></div>'
+  +P('Identificamos que o seu acesso atual é feito com o e-mail '+em+'. Solicitamos, com urgência, que migre para uma conta Gmail e faça o backup dos seus dados antes de '+fim+'. Se utiliza Hotmail ou Outlook, pedimos que realize a migração para o Gmail o quanto antes.')+'</div>':'';
+ const it=alvo
+  +'<div class="nv-it'+(em?'':' nv-new')+'"><div class="nv-h"><b>📢 Comunicado oficial: encerramento do login por e-mail</b><span class="nv-tag">'+prazo+'</span></div>'
+  +P('Prezado(a) usuário(a),')
+  +P('Informamos que, no prazo de 3 (três) dias, a partir de hoje, o acesso ao JC ORGANIZA por meio de e-mail que não seja do Google (Gmail) será cancelado. Isso inclui contas Hotmail, Outlook, Yahoo e quaisquer outros provedores de e-mail diferentes do Gmail. O método de login será mantido somente com o Google.')
+  +P('Data-limite: '+fim+'.')
+  +P('Para que você não perca nenhuma informação, solicitamos que todos os usuários realizem o backup de seus dados e, quem utiliza Hotmail ou outro e-mail que não seja Gmail, migre para uma conta Gmail.')
+  +'</div>'
+  +'<div class="nv-it"><div class="nv-h"><b>✅ Como se preparar</b></div>'
+  +P('1. Faça o backup: abra Configurações › Backup no celular e toque em “Salvar / compartilhar backup” (ou “Salvar em Documentos”). Guarde o arquivo em local seguro, de preferência no seu Drive.')
+  +P('2. Se você usa Hotmail ou outro e-mail que não seja Gmail, crie ou utilize uma conta Gmail.')
+  +P('3. Em Configurações › Conta, desconecte a conta atual e entre com o Google, escolhendo a sua conta Gmail.')
+  +P('4. Confira se os seus compromissos, notas e demais dados estão no app. Caso não apareçam, restaure o backup em Configurações › Backup no celular.')
+  +'</div>'
+  +'<div class="nv-it"><div class="nv-t">Agradecemos a compreensão e a colaboração de todos. Em caso de dúvida, procure a Kayla, a assistente do app.</div></div>';
+ const itFim='<div class="nv-it nv-new"><div class="nv-h"><b>⛔ Login e inscrição por e-mail encerrados</b></div>'
+  +P('Prezado(a) usuário(a),')
+  +P('Conforme comunicado anterior, o login e a inscrição por e-mail foram encerrados em '+fim+'. O acesso ao JC ORGANIZA passa a ser feito somente com o Google (Gmail).')
+  +P('A sua conta atual'+(em?' ('+em+')':'')+' continua conectada neste aparelho apenas para que você não perca seus dados. Solicitamos que faça o backup agora e migre para uma conta Gmail.')
+  +'</div>'
+  +'<div class="nv-it"><div class="nv-h"><b>✅ Como migrar</b></div>'
+  +P('1. Abra Configurações › Backup no celular e toque em “Salvar / compartilhar backup”. Guarde o arquivo em local seguro.')
+  +P('2. Em Configurações › Conta, desconecte a conta atual e entre com o Google (Gmail).')
+  +P('3. Se os seus dados não aparecerem, restaure o backup em Configurações › Backup no celular.')
+  +'</div>';
+ const o=document.createElement('div');o.className='ov rc-ov';
+ o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Aviso importante sobre o login"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
+  +(off?'<div class="rc-h"><p>🔔 Login por e-mail encerrado</p><small>Este aviso será exibido uma vez por dia enquanto a sua conta estiver conectada por e-mail.</small></div>'
+   :'<div class="rc-h"><p>🔔 Aviso importante: login por e-mail</p><small>'+prazo+' para o encerramento do login por e-mail que não seja Gmail (até '+fim+'). Este aviso será exibido uma vez por dia até essa data.</small></div>')
+  +'<div class="rc-b">'+(off?itFim:it)+'</div>'
+  +'<div class="rc-f"><button type="button" class="sec" id="rc-cfg">💾 Abrir Backup e Conta</button><button type="button" id="rc-ok">Entendi</button></div></div>';
+ document.body.appendChild(o);
+ const fecha=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
+ const kd=e=>{if(e.key==='Escape')fecha()};
+ document.addEventListener('keydown',kd,true);
+ o.querySelector('.dev-x').onclick=fecha;o.querySelector('#rc-ok').onclick=fecha;
+ o.querySelector('#rc-cfg').onclick=()=>{fecha();try{go('config')}catch(e){}};
+ setTimeout(()=>{try{o.querySelector('#rc-ok').focus()}catch(e){}},50)}
+function recadoLoginQuandoLivre(n){n=n||0;
+ if(n>600)return;
+ if(emailLoginOff()&&S.user&&S.user.name&&!(S.user.conta&&S.user.conta.prov==='email'))return;
+ if(S.user&&S.user.name&&loginAvisoVisto())return;
+ if(!S.user||!S.user.name||PIN_LK||permAsking||document.querySelector('.ov')||document.getElementById('qks')){setTimeout(()=>recadoLoginQuandoLivre(n+1),1000);return}
+ recadoLogin()}
+setTimeout(recadoLoginQuandoLivre,3500);
 
 /* ---------- aviso para NOVOS usuários: tudo o que o app oferece (só uma caixa de informação, aparece uma única vez) ----------
    Novo = abriu o app sem nome e sem dados (tela de boas-vindas). Quem já usava o app nunca vê esta caixa.
