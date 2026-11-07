@@ -252,6 +252,240 @@
    "ano": 1882,
    "paginas": 0,
    "mb": 0.4
+  },
+  {
+   "id": "historias-sem-data",
+   "titulo": "Histórias sem Data",
+   "autor": "Machado de Assis",
+   "genero": "Contos",
+   "ano": 1884,
+   "paginas": 176,
+   "mb": 0.4
+  },
+  {
+   "id": "reliquias-de-casa-velha",
+   "titulo": "Relíquias de Casa Velha",
+   "autor": "Machado de Assis",
+   "genero": "Contos",
+   "ano": 1906,
+   "paginas": 258,
+   "mb": 0.5
+  },
+  {
+   "id": "poesias-completas",
+   "titulo": "Poesias Completas",
+   "autor": "Machado de Assis",
+   "genero": "Poesia",
+   "ano": 1901,
+   "paginas": 336,
+   "mb": 0.5
+  },
+  {
+   "id": "o-mandarim",
+   "titulo": "O Mandarim",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1880,
+   "paginas": 74,
+   "mb": 0.2
+  },
+  {
+   "id": "a-correspondencia-de-fradique-mendes",
+   "titulo": "A Correspondência de Fradique Mendes",
+   "autor": "Eça de Queirós",
+   "genero": "Romance",
+   "ano": 1900,
+   "paginas": 182,
+   "mb": 0.4
+  },
+  {
+   "id": "contos",
+   "titulo": "Contos",
+   "autor": "Eça de Queirós",
+   "genero": "Contos",
+   "ano": 1902,
+   "paginas": 236,
+   "mb": 0.5
+  },
+  {
+   "id": "prosas-barbaras",
+   "titulo": "Prosas Bárbaras",
+   "autor": "Eça de Queirós",
+   "genero": "Contos",
+   "ano": 1903,
+   "paginas": 227,
+   "mb": 0.4
+  },
+  {
+   "id": "cartas-de-inglaterra",
+   "titulo": "Cartas de Inglaterra",
+   "autor": "Eça de Queirós",
+   "genero": "Crônicas",
+   "ano": 1905,
+   "paginas": 157,
+   "mb": 0.3
+  },
+  {
+   "id": "amor-de-salvacao",
+   "titulo": "Amor de Salvação",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1864,
+   "paginas": 174,
+   "mb": 0.4
+  },
+  {
+   "id": "a-queda-dum-anjo",
+   "titulo": "A Queda dum Anjo",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1866,
+   "paginas": 189,
+   "mb": 0.4
+  },
+  {
+   "id": "o-que-fazem-mulheres",
+   "titulo": "O Que Fazem Mulheres",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1858,
+   "paginas": 165,
+   "mb": 0.3
+  },
+  {
+   "id": "a-filha-do-arcediago",
+   "titulo": "A Filha do Arcediago",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1854,
+   "paginas": 303,
+   "mb": 0.6
+  },
+  {
+   "id": "novelas-do-minho",
+   "titulo": "Novelas do Minho",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Contos",
+   "ano": 1875,
+   "paginas": 176,
+   "mb": 0.3
+  },
+  {
+   "id": "o-regicida",
+   "titulo": "O Regicida",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1874,
+   "paginas": 193,
+   "mb": 0.4
+  },
+  {
+   "id": "agulha-em-palheiro",
+   "titulo": "Agulha em Palheiro",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1863,
+   "paginas": 165,
+   "mb": 0.3
+  },
+  {
+   "id": "carlota-angela",
+   "titulo": "Carlota Ângela",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1858,
+   "paginas": 175,
+   "mb": 0.3
+  },
+  {
+   "id": "uma-familia-inglesa",
+   "titulo": "Uma Família Inglesa",
+   "autor": "Júlio Dinis",
+   "genero": "Romance",
+   "ano": 1868,
+   "paginas": 501,
+   "mb": 0.9
+  },
+  {
+   "id": "a-morgadinha-dos-canaviais",
+   "titulo": "A Morgadinha dos Canaviais",
+   "autor": "Júlio Dinis",
+   "genero": "Romance",
+   "ano": 1868,
+   "paginas": 582,
+   "mb": 1.1
+  },
+  {
+   "id": "os-fidalgos-da-casa-mourisca",
+   "titulo": "Os Fidalgos da Casa Mourisca",
+   "autor": "Júlio Dinis",
+   "genero": "Romance",
+   "ano": 1871,
+   "paginas": 543,
+   "mb": 1.0
+  },
+  {
+   "id": "a-pata-da-gazela",
+   "titulo": "A Pata da Gazela",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1870,
+   "paginas": 138,
+   "mb": 0.3
+  },
+  {
+   "id": "cinco-minutos",
+   "titulo": "Cinco Minutos",
+   "autor": "José de Alencar",
+   "genero": "Romance",
+   "ano": 1856,
+   "paginas": 60,
+   "mb": 0.1
+  },
+  {
+   "id": "como-e-porque-sou-romancista",
+   "titulo": "Como e Porque Sou Romancista",
+   "autor": "José de Alencar",
+   "genero": "Ensaio",
+   "ano": 1893,
+   "paginas": 37,
+   "mb": 0.1
+  },
+  {
+   "id": "historias-brasileiras",
+   "titulo": "Histórias Brasileiras",
+   "autor": "Visconde de Taunay",
+   "genero": "Contos",
+   "ano": 1874,
+   "paginas": 187,
+   "mb": 0.4
+  },
+  {
+   "id": "no-pais-dos-yankees",
+   "titulo": "No País dos Yankees",
+   "autor": "Adolfo Caminha",
+   "genero": "Crônicas",
+   "ano": 1894,
+   "paginas": 97,
+   "mb": 0.2
+  },
+  {
+   "id": "marilia-de-dirceu",
+   "titulo": "Marília de Dirceu",
+   "autor": "Tomás Antônio Gonzaga",
+   "genero": "Poesia",
+   "ano": 1792,
+   "paginas": 177,
+   "mb": 0.2
+  },
+  {
+   "id": "minha-formacao",
+   "titulo": "Minha Formação",
+   "autor": "Joaquim Nabuco",
+   "genero": "Ensaio",
+   "ano": 1900,
+   "paginas": 226,
+   "mb": 0.5
   }
  ]
 }
