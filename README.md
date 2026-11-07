@@ -203,9 +203,9 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 
 ## Biblioteca (menu 📚)
 
-Menu **Biblioteca** com 50 livros em português (domínio público) lidos dentro do app, com leitor de PDF (páginas, tamanho da letra, modo noturno e "parou na página X").
+Menu **Biblioteca** com mais de 150 livros em português (domínio público) lidos dentro do app, com leitor de PDF (páginas, tamanho da letra, modo noturno e "parou na página X").
 
 - Catálogo: `biblioteca/livros.json` (o app também tem uma cópia embutida) e fontes em `biblioteca/fontes.json`.
-- Para criar os PDFs: GitHub > Actions > **Gerar Biblioteca (50 livros em PDF)** > Run workflow. Ele baixa os textos do Projeto Gutenberg, gera `biblioteca/<id>.pdf` e salva no repositório.
+- Para criar os PDFs: GitHub > Actions > **Gerar Biblioteca (livros em PDF)** > Run workflow. Ele baixa os textos do Projeto Gutenberg, gera `biblioteca/<id>.pdf` e salva no repositório.
 - Local: `pip install reportlab && python3 biblioteca/gerar-livros.py`.
 - Depois da primeira leitura de cada livro, ele fica no aparelho e abre sem internet.
