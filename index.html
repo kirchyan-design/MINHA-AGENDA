@@ -1488,6 +1488,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ biblia:'<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v16H6.5A1.5 1.5 0 0 0 5 20.5z"/><path d="M5 20.5V21h14"/><path d="M12 6.5v8M9 9.5h6"/>',
  biblioteca:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H11v16H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H13v16h5.5a1.5 1.5 0 0 1 1.5 1.5z"/><path d="M4 20.5V21h16v-.5"/>',
  filmes:'<rect x="3" y="9" width="18" height="11" rx="2"/><path d="M3 9l2.5-4.5h3L6 9M9.5 9l2.5-4.5h3L12.5 9M16 9l2.5-4.5H21V9"/><path d="m10.5 12.5 4 2.5-4 2.5z"/>',
  clt:'<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18M10.5 13v1.5h3V13"/>',
@@ -1530,7 +1531,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural'],['filmes','🎬','Filmes'],['biblioteca','📚','Biblioteca']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural'],['filmes','🎬','Filmes'],['biblioteca','📚','Biblioteca'],['biblia','✝️','Bíblia']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -4545,13 +4546,450 @@ window.addEventListener('resize',()=>{if($('#bi-rd'))biDesenhar()});
 +'.bi-ms{padding:30px 14px;color:#41505a}.bi-ms[hidden]{display:none}.bi-rd.noite .bi-ms{color:#9fb0ba}'
 +'.bi-pn{display:flex;align-items:center;gap:6px}.bi-pn small{color:var(--mute);white-space:nowrap}.bi-pn input{width:60px;text-align:center;padding:8px 4px}';
  document.head.appendChild(s)})();
+/* ---------- BÍBLIA: protestante e católica (leitura, anotações, histórias e cânticos) ----------
+   Texto: 1) pasta biblia/ do app (biblia/arc.json, biblia/catolica.json…)  2) internet (repositórios públicos no GitHub)
+   3) cópia guardada no aparelho (IndexedDB), que permite ler sem internet depois da primeira vez.
+   Anotações, marcações, estudos e hinos ficam em S.biblia, então entram no backup e na sincronização do app. */
+const BB_P=[['gn','Gênesis',50],['ex','Êxodo',40],['lv','Levítico',27],['nm','Números',36],['dt','Deuteronômio',34],['js','Josué',24],['jud','Juízes',21],['rt','Rute',4],['1sm','1 Samuel',31],['2sm','2 Samuel',24],['1kgs','1 Reis',22],['2kgs','2 Reis',25],['1ch','1 Crônicas',29],['2ch','2 Crônicas',36],['ezr','Esdras',10],['ne','Neemias',13],['et','Ester',10],['job','Jó',42],['ps','Salmos',150],['prv','Provérbios',31],['ec','Eclesiastes',12],['so','Cantares',8],['is','Isaías',66],['jr','Jeremias',52],['lm','Lamentações',5],['ez','Ezequiel',48],['dn','Daniel',12],['ho','Oseias',14],['jl','Joel',3],['am','Amós',9],['ob','Obadias',1],['jn','Jonas',4],['mi','Miqueias',7],['na','Naum',3],['hk','Habacuque',3],['zp','Sofonias',3],['hg','Ageu',2],['zc','Zacarias',14],['ml','Malaquias',4],
+ ['mt','Mateus',28],['mk','Marcos',16],['lk','Lucas',24],['jo','João',21],['act','Atos',28],['rm','Romanos',16],['1co','1 Coríntios',16],['2co','2 Coríntios',13],['gl','Gálatas',6],['eph','Efésios',6],['ph','Filipenses',4],['cl','Colossenses',4],['1ts','1 Tessalonicenses',5],['2ts','2 Tessalonicenses',3],['1tm','1 Timóteo',6],['2tm','2 Timóteo',4],['tt','Tito',3],['phm','Filemom',1],['hb','Hebreus',13],['jm','Tiago',5],['1pe','1 Pedro',5],['2pe','2 Pedro',3],['1jo','1 João',5],['2jo','2 João',1],['3jo','3 João',1],['jd','Judas',1],['re','Apocalipse',22]];
+const BB_DC=[['tb','Tobias',14],['jdt','Judite',16],['1mc','1 Macabeus',16],['2mc','2 Macabeus',15],['wis','Sabedoria',19],['sir','Eclesiástico',51],['bar','Baruc',6]];
+const BB_CN={so:'Cântico dos Cânticos',ob:'Abdias',hk:'Habacuc'};
+const bbIdx={};BB_P.forEach((b,i)=>{bbIdx[b[0]]=i});
+const BB_NT=BB_P.slice(39).map(b=>b[0]),BB_AT_P=BB_P.slice(0,39).map(b=>b[0]);
+const BB_AT_C=['gn','ex','lv','nm','dt','js','jud','rt','1sm','2sm','1kgs','2kgs','1ch','2ch','ezr','ne','tb','jdt','et','1mc','2mc','job','ps','prv','ec','so','wis','sir','is','jr','lm','bar','ez','dn','ho','jl','am','ob','jn','mi','na','hk','zp','hg','zc','ml'];
+const BB_CAT_ALL=BB_AT_C.concat(BB_NT);
+const bbOrdem=a=>a==='cat'?BB_CAT_ALL:BB_AT_P.concat(BB_NT);
+const BB_PAUL=['rm','1co','2co','gl','eph','ph','cl','1ts','2ts','1tm','2tm','tt','phm'],BB_GERAL=['hb','jm','1pe','2pe','1jo','2jo','3jo','jd','re'];
+const BB_GR={
+ prot:[['Antigo Testamento · Lei',['gn','ex','lv','nm','dt']],['Históricos',['js','jud','rt','1sm','2sm','1kgs','2kgs','1ch','2ch','ezr','ne','et']],['Poéticos e sabedoria',['job','ps','prv','ec','so']],['Profetas',['is','jr','lm','ez','dn','ho','jl','am','ob','jn','mi','na','hk','zp','hg','zc','ml']],['Novo Testamento · Evangelhos e Atos',['mt','mk','lk','jo','act']],['Cartas de Paulo',BB_PAUL],['Cartas gerais e Apocalipse',BB_GERAL]],
+ cat:[['Antigo Testamento · Pentateuco',['gn','ex','lv','nm','dt']],['Livros históricos',['js','jud','rt','1sm','2sm','1kgs','2kgs','1ch','2ch','ezr','ne','tb','jdt','et','1mc','2mc']],['Sapienciais e poéticos',['job','ps','prv','ec','so','wis','sir']],['Proféticos',['is','jr','lm','bar','ez','dn','ho','jl','am','ob','jn','mi','na','hk','zp','hg','zc','ml']],['Novo Testamento · Evangelhos e Atos',['mt','mk','lk','jo','act']],['Cartas de Paulo',BB_PAUL],['Cartas gerais e Apocalipse',BB_GERAL]]};
+const BB_AB={jz:'jud','1rs':'1kgs','2rs':'2kgs','1cr':'1ch','2cr':'2ch',ed:'ezr',sl:'ps',pv:'prv',ct:'so',os:'ho',mq:'mi',hc:'hk',sf:'zp',ag:'hg',mc:'mk',lc:'lk',at:'act',ef:'eph',fp:'ph',fm:'phm',tg:'jm',ap:'re',jt:'jdt',sb:'wis',eclo:'sir',br:'bar',ecl:'ec',cant:'so'};
+const BB_RAW='https://raw.githubusercontent.com/';
+const BB_FONTES={
+ prot:[
+  {id:'arc',sg:'ARC',nome:'Almeida Revista e Corrigida (ARC)',loc:'biblia/arc.json',u:[BB_RAW+'maatheusgois/bible/main/versions/pt-br/arc.json']},
+  {id:'acf',sg:'ACF',nome:'Almeida Corrigida Fiel (ACF)',loc:'biblia/acf.json',u:[BB_RAW+'thiagobodruk/biblia/master/json/acf.json',BB_RAW+'maatheusgois/bible/main/versions/pt-br/acf.json']},
+  {id:'aa',sg:'AA',nome:'Almeida Revisada Imprensa Bíblica (AA)',loc:'biblia/aa.json',u:[BB_RAW+'thiagobodruk/biblia/master/json/aa.json',BB_RAW+'maatheusgois/bible/main/versions/pt-br/aa.json']},
+  {id:'nvi',sg:'NVI',nome:'Nova Versão Internacional (NVI)',loc:'biblia/nvi.json',u:[BB_RAW+'thiagobodruk/biblia/master/json/nvi.json',BB_RAW+'maatheusgois/bible/main/versions/pt-br/nvi.json']},
+  {id:'kja',sg:'KJA',nome:'King James Atualizada (KJA)',loc:'biblia/kja.json',u:[BB_RAW+'maatheusgois/bible/main/versions/pt-br/kja.json']}],
+ cat:[
+  {id:'cat',sg:'Católica',nome:'Bíblia Católica · 73 livros (arquivo seu)',loc:'biblia/catolica.json',u:[]},
+  {id:'cat-arc',sg:'ARC',nome:'Almeida ARC · só os 66 livros em comum',base:'arc',loc:'biblia/arc.json',u:[BB_RAW+'maatheusgois/bible/main/versions/pt-br/arc.json']}]};
+let bbR=null,bbGen=0,bbQ='',bbHQ='',bbHF=0,bbAF='est',bbHiF='todas',bbHiQ='',bbWL=null,bbCT=null;
+const BB_MEM={},BB_PEND={};
+function bbS(){const B=S.biblia=S.biblia&&typeof S.biblia==='object'?S.biblia:{};
+ B.aba=B.aba==='cat'?'cat':'prot';B.sub=['ler','anot','hist','harpa'].indexOf(B.sub)>=0?B.sub:'ler';
+ B.fonte=B.fonte||{};B.ult=B.ult||{};B.marc=B.marc||{};B.est=Array.isArray(B.est)?B.est:[];B.hist=B.hist||{};
+ B.harpa=B.harpa||{};['prot','cat'].forEach(k=>{if(!Array.isArray(B.harpa[k]))B.harpa[k]=[]});
+ B.fs=B.fs||19;B.hfs=B.hfs||24;return B}
+const bbN=s=>String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+const bbId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function bbInfo(a,id){let b=BB_P[bbIdx[id]],dc=false;
+ if(!b){b=BB_DC.find(x=>x[0]===id);dc=true}
+ if(!b)return {id:id,nome:String(id),caps:1,dc:false};
+ let n=b[1],k=b[2];if(a==='cat'){if(BB_CN[id])n=BB_CN[id];if(id==='dn')k=14}
+ return {id:id,nome:n,caps:k,dc:dc}}
+function bbFonte(a){const B=bbS(),l=BB_FONTES[a];let id=B.fonte[a];
+ if(!id||!l.some(x=>x.id===id))id=l[a==='cat'&&B.temCat?0:a==='cat'?1:0].id;
+ return l.find(x=>x.id===id)}
+const bbChave=f=>f.base||f.id;
+function bbRef(a,l,c,v1,v2){const n=bbInfo(a,l).nome+' '+c;return v1?n+':'+v1+(v2&&v2!==v1?'-'+v2:''):n}
+const bbK=(a,l,c,v)=>a+'|'+l+'|'+c+'|'+v;
+function bbToast(m){let t=$('#bb-toast');if(!t){t=document.createElement('div');t.id='bb-toast';document.body.appendChild(t)}
+ t.textContent=m;t.className='on';clearTimeout(bbToast.t);bbToast.t=setTimeout(()=>{t.className=''},2300)}
+function bbModal(h){const o=document.createElement('div');o.className='ov bbo';o.innerHTML='<div class="dlg">'+h+'</div>';document.body.appendChild(o);o.onclick=e=>{if(e.target===o)o.remove()};return o}
+function bbAsk(msg,fn,label){const o=bbModal('<p>'+esc(msg)+'</p><div class="row"><button id="bb-ok">'+esc(label||'Excluir')+'</button><button class="sec" id="bb-no">Cancelar</button></div>');
+ o.querySelector('#bb-ok').onclick=()=>{o.remove();fn()};o.querySelector('#bb-no').onclick=()=>o.remove()}
+function bbCopia(t,msg){const fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}x.remove();bbToast(ok?msg:'Não foi possível copiar neste aparelho.')};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>bbToast(msg),fb);else fb()}
+function bbRefresh(){if(typeof tab!=='undefined'&&tab==='biblia')render()}
+
+/* ----- armazenamento do texto (IndexedDB) ----- */
+function bbDB(){return bbDB.p||(bbDB.p=new Promise((ok,no)=>{try{const r=indexedDB.open('ma-biblia',1);r.onupgradeneeded=()=>{r.result.createObjectStore('t')};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}}))}
+const bbGet=k=>bbDB().then(d=>new Promise((ok,no)=>{const q=d.transaction('t').objectStore('t').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)}));
+const bbPut=(k,v)=>bbDB().then(d=>new Promise((ok,no)=>{const t=d.transaction('t','readwrite');t.objectStore('t').put(v,k);t.oncomplete=()=>ok();t.onerror=()=>no(t.error)}));
+
+/* ----- leitura de arquivos de Bíblia em vários formatos JSON ----- */
+const bbTxt=s=>String(s==null?'':s).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
+function bbVs(v){if(Array.isArray(v))return v.map(x=>x&&typeof x==='object'?bbTxt(x.text||x.texto||x.verse||''):bbTxt(x));
+ if(v&&typeof v==='object')return Object.keys(v).filter(k=>/^\d+$/.test(k)).sort((a,b)=>a-b).map(k=>bbTxt(v[k]));return[]}
+function bbCs(c){if(Array.isArray(c))return c.map(bbVs);
+ if(c&&typeof c==='object')return Object.keys(c).filter(k=>/^\d+$/.test(k)).sort((a,b)=>a-b).map(k=>bbVs(c[k]));return[]}
+function bbParse(j){
+ if(typeof j==='string')j=JSON.parse(j.replace(/^\uFEFF/,''));
+ if(j&&!Array.isArray(j)&&Array.isArray(j.books||j.livros))j=j.books||j.livros;
+ let L=[];const f0=Array.isArray(j)&&j.length&&j[0]&&typeof j[0]==='object'?j[0]:null;
+ if(f0&&('chapters' in f0||'capitulos' in f0)){
+  L=j.map(b=>{const ab=b.abbrev;return {a:String(ab&&typeof ab==='object'?(ab.pt||ab.en||''):(ab||'')).toLowerCase(),n:String(b.name||b.book||b.title||b.nome||''),c:bbCs(b.chapters||b.capitulos)}})
+ }else if(f0&&'verse' in f0&&'text' in f0){
+  const m={};j.forEach(r=>{const b=r.book,c=+r.chapter,v=+r.verse;const x=m[b]||(m[b]={a:'',n:String(b),k:b,c:[]});(x.c[c-1]=x.c[c-1]||[])[v-1]=bbTxt(r.text)});
+  L=Object.keys(m).map(k=>m[k]);if(L.every(x=>/^\d+$/.test(String(x.k))))L.sort((x,y)=>x.k-y.k);
+  L.forEach(x=>{x.c=Array.from(x.c,ch=>Array.from(ch||[],t=>t||''))})
+ }else if(j&&typeof j==='object'&&!Array.isArray(j)){
+  L=Object.keys(j).map(k=>({a:k.toLowerCase(),n:k,c:bbCs(j[k])}))}
+ L=L.filter(b=>b.c.length);
+ if(L.length<39)throw new Error('formato');
+ return L}
+function bbAcha(L,a,id){const n=L.length;
+ if(n===66){const i=bbIdx[id];return i==null?null:L[i]}
+ if(n===73){const i=BB_CAT_ALL.indexOf(id);return i<0?null:L[i]}
+ const al=bbN(bbInfo(a,id).nome);
+ return L.find(b=>b.a===id)||L.find(b=>bbN(b.n)===al)||null}
+function bbBaixar(f){const us=[f.loc].concat(f.u||[]).filter(Boolean);let i=0;
+ const prox=()=>{if(i>=us.length)return Promise.reject(new Error('fontes'));const u=us[i++];
+  return fetch(u,{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>bbParse(t)).then(L=>{bbPut(bbChave(f),{v:1,L:L}).catch(()=>{});return L}).catch(()=>prox())};
+ return prox()}
+function bbCarregar(a){const f=bbFonte(a),k=bbChave(f);
+ if(BB_MEM[k])return Promise.resolve(BB_MEM[k]);
+ if(BB_PEND[k])return BB_PEND[k];
+ const p=bbGet(k).catch(()=>null).then(s=>s&&s.L&&s.L.length?s.L:bbBaixar(f)).then(L=>{BB_MEM[k]=L;delete BB_PEND[k];return L},e=>{delete BB_PEND[k];throw e});
+ BB_PEND[k]=p;return p}
+function bbNCaps(a,id){const k=bbChave(bbFonte(a)),L=BB_MEM[k];if(L){const b=bbAcha(L,a,id);if(b)return b.c.length}return bbInfo(a,id).caps}
+function bbDetecta(){const B=bbS();if(B.fonte.cat||B.temCat||bbDetecta.f)return;bbDetecta.f=1;
+ bbGet('cat').catch(()=>null).then(s=>{if(s&&s.L&&s.L.length)return 1;return fetch('biblia/catolica.json',{method:'HEAD',cache:'no-store'}).then(r=>r.ok?1:0).catch(()=>0)}).then(ok=>{if(ok){B.temCat=1;save();bbRefresh()}})}
+function bbImportar(a){const i=document.createElement('input');i.type='file';i.accept='.json,application/json,text/plain';
+ i.onchange=()=>{const fl=i.files&&i.files[0];if(!fl)return;const r=new FileReader();
+  r.onload=()=>{try{const L=bbParse(String(r.result)),f=bbFonte(a),B=bbS();let k=bbChave(f);
+    if(a==='cat'&&L.length>=70){k='cat';B.fonte.cat='cat';B.temCat=1}
+    bbPut(k,{v:1,L:L}).catch(()=>{});BB_MEM[k]=L;save();
+    bbToast('Texto importado: '+L.length+' livros.');bbRefresh();if(bbR)bbDesenhar()
+   }catch(e){info('Não consegui ler esse arquivo. Ele precisa ser um JSON de Bíblia no formato [{"abbrev":"gn","name":"Gênesis","chapters":[["versículo 1","versículo 2"]]}].')}};
+  r.readAsText(fl)};i.click()}
+function bbFonteSet(id){const B=bbS();B.fonte[B.aba]=id;save();bbRefresh()}
+
+/* ----- referências (João 3:16) e busca ----- */
+function bbAchaLivro(a,s){const raw=String(s).trim().toLowerCase(),n=bbN(s);if(!n)return null;
+ if(raw==='jó')return 'job';
+ const ids=bbOrdem(a);let x;
+ if(BB_AB[n]&&ids.indexOf(BB_AB[n])>=0)return BB_AB[n];
+ if(ids.indexOf(n)>=0)return n;
+ x=ids.find(id=>bbN(bbInfo(a,id).nome)===n);if(x)return x;
+ if(n.length>=3){x=ids.find(id=>bbN(bbInfo(a,id).nome).indexOf(n)===0);if(x)return x}
+ return null}
+function bbRefParse(a,t){const m=String(t).match(/^\s*((?:[1-3]\s*)?[^\d:.,\-–]+?)\s*(\d+)(?:\s*[:.,]\s*(\d+)(?:\s*[-–]\s*(\d+))?)?\s*$/);if(!m)return null;
+ const l=bbAchaLivro(a,m[1]);if(!l)return null;
+ return {l:l,c:Math.max(1,+m[2]),v1:m[3]?+m[3]:0,v2:m[4]?+m[4]:0}}
+function bbBusca(){const el=$('#bb-q'),q=el?el.value:'',B=bbS(),a=B.aba,t=q.trim();bbQ=q;if(!t)return;
+ const r=bbRefParse(a,t);if(r){bbAbrir(a,r.l,r.c,r.v1?[r.v1,r.v2||r.v1]:null);return}
+ const box=$('#bb-res');if(!box)return;box.innerHTML='<div class="vazio">Buscando…</div>';
+ const ws=t.split(/\s+/).map(bbN).filter(Boolean);if(!ws.length){box.innerHTML='';return}
+ bbCarregar(a).then(L=>{const out=[];let mais=false;
+  const nm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  loop:for(const id of bbOrdem(a)){const b=bbAcha(L,a,id);if(!b)continue;
+   for(let c=0;c<b.c.length;c++)for(let v=0;v<b.c[c].length;v++){const x=nm(b.c[c][v]);
+    if(ws.every(w=>x.indexOf(w)>=0)){if(out.length>=60){mais=true;break loop}out.push([id,c+1,v+1,b.c[c][v]])}}}
+  if(!$('#bb-res'))return;
+  box.innerHTML=out.length?'<h3 class="bb-gh">'+out.length+(mais?'+':'')+' resultado'+(out.length>1?'s':'')+'</h3>'+out.map(x=>'<div class="bb-rs" onclick="bbAbrir(\''+a+'\',\''+x[0]+'\','+x[1]+',['+x[2]+','+x[2]+'])"><b>'+esc(bbRef(a,x[0],x[1],x[2]))+'</b><span>'+esc(x[3])+'</span></div>').join('')+(mais?'<p class="hint">Mostrando os 60 primeiros. Refine a busca para ver outros.</p>':''):'<div class="vazio">Nada encontrado para “'+esc(t)+'”.</div>'
+ }).catch(()=>{if($('#bb-res'))box.innerHTML=bbErroHtml(a)})}
+function bbErroHtml(a){return '<div class="bb-ms">Não consegui carregar o texto desta versão. Na primeira vez é preciso internet; depois ele fica guardado no aparelho.'+(a==='cat'?'<br><br>Para a Bíblia Católica com 73 livros, toque em <b>Importar</b> e escolha um arquivo JSON, ou coloque <b>biblia/catolica.json</b> no GitHub do app.':'')
+ +'<div class="row" style="justify-content:center;margin-top:12px"><button onclick="bbRecarrega()">Tentar de novo</button><button class="sec" onclick="bbImportar(\''+a+'\')">⬆ Importar</button></div></div>'}
+function bbRecarrega(){if(bbR)bbDesenhar();else bbRefresh()}
+
+/* ----- histórias bíblicas (resumos escritos para o app) ----- */
+const BB_H=[
+['criacao','🌍','A criação do mundo','AT','gn',1,1,31,'Deus cria a luz, o céu, a terra, o mar, as plantas, os animais e, por fim, o ser humano. Ao terminar, vê que tudo é muito bom e descansa no sétimo dia.','A vida é dom de Deus e tem valor desde o começo.'],
+['eden','🍎','Adão e Eva no Éden','AT','gn',3,1,24,'O primeiro casal vive no jardim, mas desobedece à única ordem recebida. As consequências chegam, e mesmo assim Deus continua cuidando deles.','Escolhas têm consequências, e Deus não abandona quem erra.'],
+['caim','🌾','Caim e Abel','AT','gn',4,1,16,'Dois irmãos oferecem sacrifícios a Deus. A inveja toma conta de Caim, que comete o primeiro assassinato, e Deus o confronta.','A inveja, quando não é cuidada, vira violência.'],
+['noe','🌈','Noé e a arca','AT','gn',6,9,22,'Noé constrói uma enorme arca por ordem de Deus, protege sua família e os animais durante o dilúvio e recebe o arco-íris como sinal de aliança.','Confiar e obedecer protege, mesmo quando ninguém entende.'],
+['babel','🏗️','A torre de Babel','AT','gn',11,1,9,'Os homens querem uma torre que alcance o céu para ficarem famosos. Deus confunde as línguas, e o povo se espalha pela terra.','O orgulho constrói torres que não param em pé.'],
+['abraao','⭐','O chamado de Abraão','AT','gn',12,1,9,'Deus manda Abrão deixar sua terra e promete fazer dele uma grande nação. Ele parte sem saber exatamente para onde vai.','Fé é dar o primeiro passo sem ver o caminho inteiro.'],
+['isaque','⛰️','Abraão e Isaque no monte','AT','gn',22,1,19,'Deus põe Abraão à prova pedindo o filho Isaque. No último instante, um anjo o detém e Deus providencia um cordeiro para o sacrifício.','Deus provê justamente quando mais precisamos.'],
+['jaco','🪜','Jacó e a escada','AT','gn',28,10,22,'Fugindo do irmão Esaú, Jacó dorme ao relento e sonha com uma escada entre a terra e o céu. Deus promete estar com ele.','Deus está presente até nos lugares inesperados.'],
+['jose','🧥','José e seus irmãos','AT','gn',37,1,36,'Vendido pelos irmãos por inveja, José vai para o Egito, enfrenta escravidão e prisão e chega a governador (capítulos seguintes). Anos depois, perdoa a família.','O que foi feito para o mal pode virar bem, e perdoar liberta.'],
+['sarca','🔥','Moisés e a sarça ardente','AT','ex',3,1,15,'Pastoreando ovelhas, Moisés vê uma sarça que queima sem se consumir. Deus o chama para libertar o povo hebreu da escravidão no Egito.','Deus chama pessoas comuns para missões grandes.'],
+['pascoa','🍞','A Páscoa e a saída do Egito','AT','ex',12,1,14,'Depois das pragas, o povo é orientado a marcar as casas e comer a ceia às pressas. Naquela noite começa a saída da escravidão.','Deus liberta o seu povo.'],
+['mar','🌊','A travessia do Mar Vermelho','AT','ex',14,10,31,'Com o exército do faraó atrás e o mar à frente, o povo se desespera. Deus abre um caminho no meio das águas, e todos passam em segurança.','Quando não há saída, Deus pode abrir caminho.'],
+['mandamentos','📜','Os Dez Mandamentos','AT','ex',20,1,17,'No monte Sinai, Deus entrega ao povo as dez palavras que orientam a relação com Ele e com o próximo.','Limites claros protegem a vida em comunidade.'],
+['jerico','🎺','A queda de Jericó','AT','js',6,1,27,'Seguindo uma ordem incomum, o povo marcha em volta da cidade durante sete dias. No sétimo, as muralhas caem.','Obedecer ao plano de Deus pode parecer estranho, mas funciona.'],
+['gideao','🏺','Gideão e os 300','AT','jud',7,1,25,'Gideão reduz seu exército de milhares para apenas trezentos homens. Com trombetas e jarros com tochas, vencem os inimigos.','A força de Deus aparece na nossa fraqueza.'],
+['sansao','💪','Sansão','AT','jud',16,4,31,'Dotado de força extraordinária, Sansão tem suas fraquezas exploradas por Dalila e perde a liberdade. No fim, volta a clamar a Deus.','Dons sem cuidado e caráter se perdem.'],
+['rute','🌾','Rute e Noemi','AT','rt',1,1,22,'Viúva e estrangeira, Rute decide ficar ao lado da sogra Noemi e voltar com ela a Belém. Sua lealdade muda a história das duas.','Lealdade e amor fiel são lembrados por Deus.'],
+['davi','🪨','Davi e Golias','AT','1sm',17,1,58,'O jovem pastor Davi enfrenta o gigante Golias com uma funda e cinco pedras, confiando em Deus, e derrota o inimigo.','Coragem nasce da confiança, não do tamanho.'],
+['salomao','👑','Salomão pede sabedoria','AT','1kgs',3,3,28,'Ao se tornar rei, Salomão pede a Deus um coração sábio para governar. Mostra essa sabedoria ao resolver o caso de duas mães.','Sabedoria vale mais do que riqueza e poder.'],
+['elias','🔥','Elias no monte Carmelo','AT','1kgs',18,20,40,'O profeta Elias desafia os profetas de Baal diante do povo. Só o fogo que cai sobre o seu altar mostra quem é o Deus verdadeiro.','Não dá para servir a dois senhores.'],
+['ester','👸','Ester, a rainha corajosa','AT','et',4,1,17,'Ester arrisca a vida ao se apresentar ao rei sem ser chamada para salvar seu povo da destruição.','Coragem no momento certo salva muitas vidas.'],
+['fornalha','🔥','Os três jovens na fornalha','AT','dn',3,0,0,'Sadraque, Mesaque e Abede-Nego se recusam a adorar a estátua do rei e são lançados na fornalha. Saem ilesos.','Fidelidade não depende das circunstâncias.'],
+['leoes','🦁','Daniel na cova dos leões','AT','dn',6,1,28,'Por continuar orando a Deus, Daniel é lançado aos leões. Deus fecha a boca dos animais, e ele sai sem ferimentos.','Quem permanece fiel é guardado por Deus.'],
+['jonas','🐋','Jonas e o grande peixe','AT','jn',1,1,17,'Jonas foge da missão de avisar a cidade de Nínive, é lançado ao mar e engolido por um grande peixe. Depois, obedece.','Fugir de Deus só adia o chamado.'],
+['anuncio','👼','O anúncio a Maria','NT','lk',1,26,38,'O anjo Gabriel visita Maria em Nazaré e anuncia que ela será mãe de Jesus. Ela aceita com fé.','Dizer sim a Deus muda a história.'],
+['natal','⭐','O nascimento de Jesus','NT','lk',2,1,20,'Em Belém, Jesus nasce e é colocado numa manjedoura. Anjos anunciam a notícia a pastores, que vão adorá-lo.','Deus escolhe a simplicidade para se revelar.'],
+['magos','🌟','Os magos do Oriente','NT','mt',2,1,12,'Sábios do Oriente seguem uma estrela até Jesus, adoram o menino e oferecem ouro, incenso e mirra.','Quem procura de coração encontra.'],
+['batismo','🕊️','O batismo de Jesus','NT','mt',3,13,17,'Jesus é batizado por João no rio Jordão. O céu se abre, o Espírito desce como pomba e uma voz o declara Filho amado.','Antes da missão, Jesus recebe a aprovação do Pai.'],
+['tentacao','🏜️','As tentações no deserto','NT','mt',4,1,11,'Depois de quarenta dias de jejum, Jesus é tentado e responde a cada tentação com a Palavra de Deus.','A Palavra de Deus sustenta nas tentações.'],
+['cana','🍷','As bodas de Caná','NT','jo',2,1,11,'Numa festa de casamento acaba o vinho. A pedido de Maria, Jesus transforma água em vinho, no primeiro sinal de seu ministério.','Jesus se importa até com as nossas necessidades simples.'],
+['bemav','⛰️','As bem-aventuranças','NT','mt',5,1,12,'No Sermão do Monte, Jesus declara felizes os humildes, os misericordiosos, os pacificadores e os que têm fome de justiça.','A felicidade do Reino vai além do que o mundo valoriza.'],
+['tempestade','⛵','A tempestade acalmada','NT','mk',4,35,41,'Durante uma tempestade no lago, os discípulos temem afundar enquanto Jesus dorme. Ele acalma o vento e o mar com uma palavra.','Com Jesus no barco, a tempestade não tem a última palavra.'],
+['paes','🍞','A multiplicação dos pães','NT','jo',6,1,14,'Com cinco pães e dois peixes oferecidos por um menino, Jesus alimenta uma multidão de mais de cinco mil pessoas.','Pouco entregue a Deus se torna suficiente.'],
+['aguas','🌊','Jesus anda sobre as águas','NT','mt',14,22,33,'Jesus caminha sobre o lago ao encontro dos discípulos. Pedro tenta ir até Ele, mas afunda ao desviar o olhar.','Manter os olhos em Jesus vence o medo.'],
+['samaritano','🤝','O bom samaritano','NT','lk',10,25,37,'Jesus conta de um viajante ferido que é ignorado por dois religiosos e socorrido por um samaritano. Pergunta: quem foi o próximo?','Amar é agir em favor de quem precisa.'],
+['prodigo','🏠','O filho pródigo','NT','lk',15,11,32,'Um filho desperdiça a herança e volta arrependido. O pai corre ao seu encontro e faz uma festa, enquanto o irmão mais velho resiste.','O amor do Pai sempre espera a volta.'],
+['zaqueu','🌳','Zaqueu','NT','lk',19,1,10,'O cobrador de impostos Zaqueu sobe numa árvore para ver Jesus. Jesus se convida para a casa dele, e sua vida muda.','Jesus procura quem muita gente descarta.'],
+['lazaro','⚰️','A ressurreição de Lázaro','NT','jo',11,1,44,'Quando Jesus chega, Lázaro já está morto há quatro dias. Jesus chora com as irmãs e o chama para fora do túmulo.','Jesus tem poder sobre a morte e se importa com a nossa dor.'],
+['ceia','🍷','A última ceia','NT','lk',22,7,20,'Na véspera de sua paixão, Jesus reúne os discípulos, parte o pão e reparte o cálice, pedindo que o façam em memória dele.','Jesus se entrega por amor.'],
+['cruz','✝️','A morte de Jesus na cruz','NT','lk',23,32,49,'Jesus é crucificado entre dois malfeitores, perdoa seus algozes e entrega o espírito ao Pai.','O amor de Jesus chegou até o fim.'],
+['ressurreicao','🌅','A ressurreição','NT','mt',28,1,10,'No primeiro dia da semana, mulheres vão ao túmulo e o encontram vazio. Um anjo anuncia que Jesus ressuscitou.','A morte foi vencida, e a esperança é viva.'],
+['pentecostes','🔥','Pentecostes','NT','act',2,1,13,'Os discípulos estão reunidos quando o Espírito Santo vem sobre eles. Começam a falar em outras línguas e a anunciar as maravilhas de Deus.','O Espírito Santo dá coragem para testemunhar.'],
+['saulo','💡','A conversão de Paulo','NT','act',9,1,19,'Saulo persegue os cristãos, mas é cegado por uma luz no caminho de Damasco. Transformado, torna-se o apóstolo Paulo.','Ninguém está longe demais para ser alcançado.'],
+['prisao','⛓️','Paulo e Silas na prisão','NT','act',16,16,34,'Presos em Filipos, Paulo e Silas cantam hinos à meia-noite. Um terremoto abre as portas, e o carcereiro e sua família creem.','Louvor também é possível na dificuldade.'],
+['tobias','🐟','Tobias e o anjo Rafael','DC','tb',6,1,9,'Tobias viaja com um guia desconhecido, o anjo Rafael, e aprende a usar um peixe para ajudar seu pai cego e sua futura esposa Sara.','Deus cuida de quem caminha em obediência.'],
+['judite','⚔️','Judite e Holofernes','DC','jdt',13,1,10,'A viúva Judite, com fé e coragem, entra no acampamento inimigo e livra sua cidade de Betúlia do cerco do general Holofernes.','Fé e coragem derrubam gigantes.'],
+['susana','⚖️','Susana e os anciãos','DC','dn',13,1,23,'Susana é acusada falsamente por dois anciãos. O jovem Daniel interroga os acusadores separadamente e revela a mentira.','A verdade vem à luz, e Deus defende o inocente.'],
+['macabeus','🛡️','A mãe e os sete irmãos','DC','2mc',7,1,14,'Uma mãe e seus sete filhos preferem a morte a trair a lei de Deus, sustentados pela esperança da ressurreição.','A fidelidade vale mais do que a própria vida.']];
+
+/* ----- tela principal do menu Bíblia ----- */
+function vBiblia(){const B=bbS(),a=B.aba,P=a==='prot';bbDetecta();
+ const subs=[['ler','📖','Ler'],['anot','✍️','Anotações'],['hist','📜','Histórias'],['harpa','🎵',P?'Harpa':'Cânticos']];
+ return '<h2>'+_t('Bíblia')+'</h2>'
+  +'<div class="seg bb-ab"><button class="'+(P?'on':'')+'" onclick="bbAba(\'prot\')">✝️ Protestante</button><button class="'+(P?'':'on')+'" onclick="bbAba(\'cat\')">⛪ Católica</button></div>'
+  +'<div class="bb-sn">'+subs.map(s=>'<button class="'+(B.sub===s[0]?'on':'')+'" onclick="bbSub(\''+s[0]+'\')"><span>'+s[1]+'</span>'+s[2]+'</button>').join('')+'</div>'
+  +({ler:bbVLer,anot:bbVAnot,hist:bbVHist,harpa:bbVHarpa}[B.sub]||bbVLer)()}
+function bbAba(a){const B=bbS();if(B.aba===a)return;B.aba=a;save();render()}
+function bbSub(s){const B=bbS();B.sub=s;save();render();window.scrollTo(0,0)}
+
+/* ----- LER ----- */
+function bbVLer(){const B=bbS(),a=B.aba,f=bbFonte(a),u=B.ult[a];let h='';
+ if(u&&u.l)h+='<div class="card bb-cont"><div><small>Continuar lendo</small><b>'+esc(bbRef(a,u.l,u.c))+'</b></div><button onclick="bbAbrir(\''+a+'\',\''+u.l+'\','+u.c+')">Continuar</button></div>';
+ h+='<div class="row bb-bus"><input id="bb-q" type="search" placeholder="Buscar palavra ou ir para (ex.: João 3:16)" value="'+esc(bbQ)+'" onkeydown="if(event.key===\'Enter\')bbBusca()"><button onclick="bbBusca()" aria-label="Buscar">🔍</button></div><div id="bb-res"></div>'
+  +'<div class="bb-ver"><select aria-label="Versão" onchange="bbFonteSet(this.value)">'+BB_FONTES[a].map(x=>'<option value="'+x.id+'"'+(x.id===f.id?' selected':'')+'>'+esc(x.nome)+'</option>').join('')+'</select><button class="sec" onclick="bbImportar(\''+a+'\')">⬆ Importar</button></div>'
+  +'<p class="hint">'+(a==='cat'?'Bíblia Católica: 73 livros, com os deuterocanônicos (Tobias, Judite, 1 e 2 Macabeus, Sabedoria, Eclesiástico e Baruc).':'Bíblia Protestante: 66 livros, 39 do Antigo e 27 do Novo Testamento.')+'</p>';
+ BB_GR[a].forEach(g=>{h+='<h3 class="bb-gh">'+esc(g[0])+'</h3><div class="bb-bk">'+g[1].map(id=>{const i=bbInfo(a,id);return '<button class="bb-b'+(i.dc?' dc':'')+'" onclick="bbAbrir(\''+a+'\',\''+id+'\',1)">'+esc(i.nome)+'</button>'}).join('')+'</div>'});
+ if(a==='cat')h+='<p class="hint">Os livros em destaque são os deuterocanônicos. Para lê-los, selecione a versão “Bíblia Católica” e importe o arquivo com os 73 livros.</p>';
+ return h}
+
+/* ----- ANOTAÇÕES ----- */
+function bbVAnot(){const B=bbS(),a=B.aba,ch=[['est','📒 Estudos'],['nota','📝 Notas'],['fav','⭐ Favoritos'],['marc','🖍 Marcados']];
+ let h='<div class="bb-chips">'+ch.map(c=>'<button class="'+(bbAF===c[0]?'on':'')+'" onclick="bbAFil(\''+c[0]+'\')">'+c[1]+'</button>').join('')+'</div>';
+ if(bbAF==='est'){const l=B.est.filter(x=>x.a===a).sort((x,y)=>y.d-x.d);
+  h+='<button class="bb-add" onclick="bbEEd()">＋ Novo estudo</button>';
+  h+=l.length?l.map(x=>'<div class="card bb-es" onclick="bbEEd(\''+x.id+'\')"><b>'+esc(x.t||'Sem título')+'</b>'+(x.r?'<small>'+esc(x.r)+'</small>':'')+'<p>'+esc(x.x||'')+'</p><small class="bb-dt">'+new Date(x.d).toLocaleDateString('pt-BR')+'</small></div>').join(''):'<div class="vazio">Nenhum estudo ainda. Toque em “Novo estudo” para escrever suas reflexões, esboços de pregação ou resumos de leitura.</div>';
+  return h}
+ const it=[];Object.keys(B.marc).forEach(k=>{const p=k.split('|');if(p[0]!==a)return;const m=B.marc[k];
+  if((bbAF==='nota'&&m.n)||(bbAF==='fav'&&m.f)||(bbAF==='marc'&&m.c))it.push({k:k,l:p[1],c:+p[2],v:+p[3],m:m})});
+ it.sort((x,y)=>(y.m.d||0)-(x.m.d||0));
+ h+=it.length?it.map(x=>'<div class="card bb-an"><div class="bb-ah"><b>'+(x.m.c?'<i class="bb-dot c-'+x.m.c+'"></i>':'')+esc(bbRef(a,x.l,x.c,x.v))+(x.m.f?' ⭐':'')+'</b></div>'
+   +(x.m.t?'<p class="bb-vt">'+esc(x.m.t)+'</p>':'')+(bbAF==='nota'&&x.m.n?'<p class="bb-nt2">'+esc(x.m.n)+'</p>':(x.m.n?'<p class="bb-nt2">📝 '+esc(x.m.n)+'</p>':''))
+   +'<div class="row"><button onclick="bbAbrir(\''+a+'\',\''+x.l+'\','+x.c+',['+x.v+','+x.v+'])">Abrir</button><button class="sec" onclick="bbAnotDel(\''+esc(x.k)+'\')">Remover</button></div></div>').join(''):'<div class="vazio">'+({nota:'Nenhuma nota nos versículos. Na leitura, toque num versículo e escolha “Anotar”.',fav:'Nenhum favorito. Na leitura, toque num versículo e escolha “Favoritar”.',marc:'Nenhum versículo marcado. Na leitura, toque num versículo e escolha uma cor.'}[bbAF])+'</div>';
+ return h}
+function bbAFil(f){bbAF=f;render()}
+function bbAnotDel(k){const m=S.biblia.marc[k];if(!m)return;bbAsk('Remover esta '+(bbAF==='nota'?'nota':bbAF==='fav'?'marca de favorito':'marcação')+'?',()=>{if(bbAF==='nota')delete m.n;else if(bbAF==='fav')delete m.f;else delete m.c;if(!m.n&&!m.f&&!m.c)delete S.biblia.marc[k];save();render()},'Remover')}
+function bbEEd(id){const B=bbS(),a=B.aba,x=id?B.est.find(e=>e.id===id):null;
+ const o=bbModal('<h3 style="margin:0 0 10px">'+(x?'Estudo':'Novo estudo')+'</h3><input id="bb-et" placeholder="Título" value="'+esc(x?x.t:'')+'" style="margin-bottom:8px"><div class="row" style="margin-bottom:8px;flex-wrap:nowrap"><input id="bb-er" placeholder="Referência (ex.: João 3:16-21)" value="'+esc(x?x.r:'')+'" style="flex:1"><button class="sec" id="bb-eo" type="button">Abrir</button></div><textarea id="bb-ex" rows="10" placeholder="Escreva aqui…">'+esc(x?x.x:'')+'</textarea><div class="row" style="margin-top:12px"><button id="bb-ok">Salvar</button>'+(x?'<button class="sec" id="bb-del">Excluir</button>':'')+'<button class="sec" id="bb-no">Fechar</button></div>');
+ o.querySelector('.dlg').classList.add('bbw');
+ o.querySelector('#bb-no').onclick=()=>o.remove();
+ o.querySelector('#bb-eo').onclick=()=>{const r=bbRefParse(a,o.querySelector('#bb-er').value);if(!r){bbToast('Não entendi a referência. Exemplo: João 3:16');return}o.remove();bbAbrir(a,r.l,r.c,r.v1?[r.v1,r.v2||r.v1]:null)};
+ o.querySelector('#bb-ok').onclick=()=>{const t=o.querySelector('#bb-et').value.trim(),r=o.querySelector('#bb-er').value.trim(),tx=o.querySelector('#bb-ex').value.trim();
+  if(!t&&!tx&&!r){o.remove();return}
+  if(x){x.t=t;x.r=r;x.x=tx;x.d=Date.now()}else B.est.push({id:bbId(),a:a,t:t,r:r,x:tx,d:Date.now()});
+  save();o.remove();render()};
+ const dl=o.querySelector('#bb-del');if(dl)dl.onclick=()=>bbAsk('Excluir este estudo?',()=>{B.est=B.est.filter(e=>e.id!==id);save();o.remove();render()})}
+
+/* ----- HISTÓRIAS ----- */
+function bbVHist(){const B=bbS(),a=B.aba,q=bbN(bbHiQ);
+ const base=BB_H.filter(x=>a==='cat'||x[3]!=='DC'),lidas=base.filter(x=>B.hist[x[0]]).length;
+ const l=base.filter(x=>(bbHiF==='todas'||x[3]===bbHiF)&&(!q||bbN(x[2]+' '+x[8]).indexOf(q)>=0));
+ const ch=[['todas','Todas'],['AT','Antigo Testamento'],['NT','Novo Testamento']];if(a==='cat')ch.push(['DC','Deuterocanônicas']);
+ let h='<div class="card bb-pr"><b>'+lidas+' de '+base.length+' histórias lidas</b><div class="bi-pg" style="margin-top:8px"><i style="width:'+Math.round(lidas/base.length*100)+'%"></i></div></div>'
+  +'<input id="bb-hiq" type="search" placeholder="Buscar história" value="'+esc(bbHiQ)+'" oninput="bbHiQ=this.value;bbHiLista()" style="margin-bottom:8px">'
+  +'<div class="bb-chips">'+ch.map(c=>'<button class="'+(bbHiF===c[0]?'on':'')+'" onclick="bbHiFil(\''+c[0]+'\')">'+c[1]+'</button>').join('')+'</div><div id="bb-hil">'+bbHiCards(l,a)+'</div>';
+ return h}
+function bbHiCards(l,a){const B=bbS();if(!l.length)return '<div class="vazio">Nenhuma história encontrada.</div>';
+ return l.map(x=>{const ok=B.hist[x[0]];
+  return '<div class="card bb-hc'+(ok?' ok':'')+'"><div class="bb-hh"><span class="bb-em">'+x[1]+'</span><div><b>'+esc(x[2])+'</b><small>'+esc(bbRef(a,x[4],x[5],x[6]||0,x[7]||0))+' · '+(x[3]==='AT'?'Antigo Testamento':x[3]==='NT'?'Novo Testamento':'Deuterocanônica')+'</small></div></div>'
+   +'<p>'+esc(x[8])+'</p><p class="bb-lc">💡 '+esc(x[9])+'</p>'
+   +'<div class="row"><button onclick="bbAbrir(\''+a+'\',\''+x[4]+'\','+x[5]+(x[6]?',['+x[6]+','+x[7]+']':'')+')">📖 Ler na Bíblia</button><button class="sec" onclick="bbHiLida(\''+x[0]+'\')">'+(ok?'✓ Lida':'Marcar como lida')+'</button></div></div>'}).join('')}
+function bbHiLista(){const B=bbS(),q=bbN(bbHiQ),a=B.aba;const e=$('#bb-hil');if(!e)return;
+ e.innerHTML=bbHiCards(BB_H.filter(x=>(a==='cat'||x[3]!=='DC')&&(bbHiF==='todas'||x[3]===bbHiF)&&(!q||bbN(x[2]+' '+x[8]).indexOf(q)>=0)),a)}
+function bbHiFil(f){bbHiF=f;render()}
+function bbHiLida(id){const B=bbS();if(B.hist[id])delete B.hist[id];else B.hist[id]=1;save();render()}
+
+/* ----- LEITOR DE CAPÍTULOS ----- */
+function bbAbrir(a,id,cap,hl){bbS();bbFechar(true);bbGen++;
+ bbR={aba:a,l:id,c:Math.max(1,cap||1),hl:hl||null,sel:[],vs:[]};
+ const o=document.createElement('div');o.id='bb-rd';o.className='bb-rd';
+ o.innerHTML='<div class="bb-top"><button onclick="bbFechar()" aria-label="Voltar">←</button><button class="bb-tt" onclick="bbPicker()" aria-label="Escolher livro e capítulo"><b id="bb-tit"></b><small id="bb-sub"></small></button><button onclick="bbFs(-1)" aria-label="Diminuir a letra">A−</button><button onclick="bbFs(1)" aria-label="Aumentar a letra">A+</button></div>'
+  +'<div class="bb-ar" id="bb-ar"></div>'
+  +'<div class="bb-bt"><button onclick="bbCap(-1)" aria-label="Capítulo anterior">◀</button><button class="bb-pk" onclick="bbPicker()" id="bb-pk">Capítulos</button><button onclick="bbCap(1)" aria-label="Próximo capítulo">▶</button></div>';
+ document.body.appendChild(o);document.body.style.overflow='hidden';
+ let x0=0,y0=0;const ar=o.querySelector('#bb-ar');
+ ar.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+ ar.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>90&&Math.abs(dy)<40)bbCap(dx<0?1:-1)},{passive:true});
+ bbDesenhar()}
+function bbFechar(quieto){const o=$('#bb-rd');if(o)o.remove();const s=$('#bb-ac');if(s)s.remove();bbR=null;bbGen++;
+ document.body.style.overflow='';if(!quieto)bbRefresh()}
+function bbFs(d){const B=bbS();B.fs=Math.min(34,Math.max(13,B.fs+d*2));save();const ar=$('#bb-ar');if(ar)ar.style.fontSize=B.fs+'px'}
+function bbFalta(a,i){return '<div class="bb-ms">'+(i.dc?'“'+esc(i.nome)+'” é um livro deuterocanônico e não está no texto desta versão (66 livros).':'Este livro não foi encontrado no texto desta versão.')
+ +'<br><br>Importe um arquivo JSON com os 73 livros da Bíblia Católica para ler este livro.<div class="row" style="justify-content:center;margin-top:12px"><button onclick="bbImportar(\''+a+'\')">⬆ Importar texto</button><button class="sec" onclick="bbFechar()">Voltar</button></div></div>'}
+function bbVHtml(n,t,m){return '<p class="bb-v'+(m&&m.c?' c-'+m.c:'')+'" id="bbv-'+n+'" data-v="'+n+'" onclick="bbVers('+n+')"><sup>'+n+'</sup>'+esc(t)+'<span class="bb-i">'+(m&&m.f?' ⭐':'')+(m&&m.n?' 📝':'')+'</span>'+(m&&m.n?'<span class="bb-nt">'+esc(m.n)+'</span>':'')+'</p>'}
+function bbDesenhar(){const r=bbR;if(!r)return;const B=bbS(),i=bbInfo(r.aba,r.l),ar=$('#bb-ar');if(!ar)return;
+ r.sel=[];const ac=$('#bb-ac');if(ac)ac.remove();
+ $('#bb-tit').textContent=i.nome+' '+r.c;$('#bb-sub').textContent=bbFonte(r.aba).sg;$('#bb-pk').textContent=i.nome+' '+r.c+' ▾';
+ ar.style.fontSize=B.fs+'px';ar.innerHTML='<div class="bb-ms">Carregando…</div>';
+ const g=++bbGen;
+ bbCarregar(r.aba).then(L=>{if(g!==bbGen||!bbR)return;
+  const b=bbAcha(L,r.aba,r.l);if(!b){ar.innerHTML=bbFalta(r.aba,i);return}
+  if(r.c>b.c.length)r.c=b.c.length;
+  r.vs=b.c[r.c-1]||[];
+  $('#bb-tit').textContent=i.nome+' '+r.c;$('#bb-pk').textContent=i.nome+' '+r.c+' ▾';
+  B.ult[r.aba]={l:r.l,c:r.c};save();
+  ar.innerHTML='<h2 class="bb-h2">'+esc(i.nome)+' '+r.c+'</h2>'+r.vs.map((t,k)=>bbVHtml(k+1,t,B.marc[bbK(r.aba,r.l,r.c,k+1)])).join('')+'<div class="bb-fim"><button class="sec" onclick="bbCap(-1)">◀ Anterior</button><button onclick="bbCap(1)">Próximo ▶</button></div>';
+  ar.scrollTop=0;
+  if(r.hl){const a1=r.hl[0],a2=r.hl[1]||a1;for(let v=a1;v<=a2;v++){const e=$('#bbv-'+v);if(e)e.classList.add('hl')}
+   const e=$('#bbv-'+a1);if(e)setTimeout(()=>{try{e.scrollIntoView({block:'center'})}catch(x){}},60);
+   const hh=r.hl;setTimeout(()=>{document.querySelectorAll('#bb-ar .bb-v.hl').forEach(z=>z.classList.remove('hl'))},4500);r.hl=null}
+ }).catch(()=>{if(g===bbGen&&$('#bb-ar'))$('#bb-ar').innerHTML=bbErroHtml(r.aba)})}
+function bbCap(d){const r=bbR;if(!r)return;const ord=bbOrdem(r.aba);let ix=ord.indexOf(r.l),c=r.c+d;
+ if(c<1){if(ix<=0)return;ix--;r.l=ord[ix];c=bbNCaps(r.aba,r.l)}
+ else if(c>bbNCaps(r.aba,r.l)){if(ix>=ord.length-1)return;ix++;r.l=ord[ix];c=1}
+ r.c=c;r.hl=null;bbDesenhar()}
+function bbPicker(){const r=bbR;if(!r)return;const a=r.aba;
+ const o=bbModal('<h3 style="margin:0 0 10px">Ir para</h3><select id="bb-pl" style="width:100%;margin-bottom:10px">'+bbOrdem(a).map(id=>'<option value="'+id+'"'+(id===r.l?' selected':'')+'>'+esc(bbInfo(a,id).nome)+'</option>').join('')+'</select><div class="bb-cg" id="bb-cg"></div><div class="row" style="margin-top:12px"><button class="sec" id="bb-no">Fechar</button></div>');
+ o.querySelector('.dlg').classList.add('bbw');
+ const grade=()=>{const id=o.querySelector('#bb-pl').value,n=bbNCaps(a,id);let h='';for(let c=1;c<=n;c++)h+='<button class="'+(id===r.l&&c===r.c?'on':'')+'" data-c="'+c+'">'+c+'</button>';o.querySelector('#bb-cg').innerHTML=h};
+ grade();o.querySelector('#bb-pl').onchange=grade;
+ o.querySelector('#bb-cg').onclick=e=>{const b=e.target.closest('button');if(!b)return;r.l=o.querySelector('#bb-pl').value;r.c=+b.dataset.c;r.hl=null;o.remove();bbDesenhar()};
+ o.querySelector('#bb-no').onclick=()=>o.remove()}
+
+/* ----- seleção de versículos e ações ----- */
+function bbVers(n){const r=bbR;if(!r)return;const i=r.sel.indexOf(n);if(i>=0)r.sel.splice(i,1);else r.sel.push(n);r.sel.sort((x,y)=>x-y);bbSelUI()}
+function bbSelLabel(){const r=bbR,s=r.sel;let ok=s.length>1;for(let i=1;i<s.length;i++)if(s[i]!==s[i-1]+1)ok=false;
+ return bbRef(r.aba,r.l,r.c)+':'+(ok?s[0]+'-'+s[s.length-1]:s.join(', '))}
+function bbSelUI(){const r=bbR;if(!r)return;
+ document.querySelectorAll('#bb-ar .bb-v').forEach(e=>e.classList.toggle('sel',r.sel.indexOf(+e.dataset.v)>=0));
+ let s=$('#bb-ac');if(!r.sel.length){if(s)s.remove();return}
+ if(!s){s=document.createElement('div');s.id='bb-ac';$('#bb-rd').appendChild(s)}
+ s.innerHTML='<div class="bb-act">'+esc(bbSelLabel())+'</div><div class="bb-ar2"><button class="bb-cor c-y" onclick="bbCor(\'y\')" aria-label="Amarelo"></button><button class="bb-cor c-g" onclick="bbCor(\'g\')" aria-label="Verde"></button><button class="bb-cor c-b" onclick="bbCor(\'b\')" aria-label="Azul"></button><button class="bb-cor c-p" onclick="bbCor(\'p\')" aria-label="Rosa"></button><button class="bb-cor c-n" onclick="bbCor(\'\')" aria-label="Tirar a cor">✕</button></div>'
+  +'<div class="bb-ar2"><button onclick="bbFav()">⭐ Favoritar</button><button onclick="bbNota()">📝 Anotar</button><button onclick="bbCopiar()">📋 Copiar</button><button onclick="bbComp()">📤 Enviar</button><button class="sec" onclick="bbSelLimpa()">Fechar</button></div>'}
+function bbSelLimpa(){if(bbR){bbR.sel=[];bbSelUI()}}
+function bbMarc(n,criar){const B=bbS(),r=bbR,k=bbK(r.aba,r.l,r.c,n);let m=B.marc[k];if(!m&&criar)m=B.marc[k]={d:Date.now()};if(m&&criar){m.d=Date.now();m.t=String(r.vs[n-1]||'').slice(0,180)}return m}
+function bbLimpa(n){const B=bbS(),r=bbR,k=bbK(r.aba,r.l,r.c,n),m=B.marc[k];if(m&&!m.c&&!m.f&&!m.n)delete B.marc[k]}
+function bbPinta(n){const r=bbR,e=$('#bbv-'+n);if(!e)return;const sel=e.classList.contains('sel'),m=bbS().marc[bbK(r.aba,r.l,r.c,n)];
+ const t=document.createElement('div');t.innerHTML=bbVHtml(n,r.vs[n-1]||'',m);const x=t.firstChild;if(sel)x.classList.add('sel');e.replaceWith(x)}
+function bbCor(c){const r=bbR;if(!r||!r.sel.length)return;
+ r.sel.forEach(n=>{const m=bbMarc(n,true);if(c)m.c=c;else delete m.c;bbLimpa(n);bbPinta(n)});save();bbToast(c?'Versículo marcado.':'Cor removida.')}
+function bbFav(){const r=bbR;if(!r||!r.sel.length)return;
+ const todos=r.sel.every(n=>{const m=bbMarc(n);return m&&m.f});
+ r.sel.forEach(n=>{const m=bbMarc(n,true);if(todos)delete m.f;else m.f=1;bbLimpa(n);bbPinta(n)});save();bbToast(todos?'Removido dos favoritos.':'Adicionado aos favoritos.')}
+function bbTextoSel(){const r=bbR;return r.sel.map(n=>r.vs[n-1]).join(' ')+'\n— '+bbSelLabel()+' ('+bbFonte(r.aba).sg+')'}
+function bbCopiar(){if(!bbR||!bbR.sel.length)return;bbCopia(bbTextoSel(),'Versículo copiado.')}
+function bbComp(){if(!bbR||!bbR.sel.length)return;const t=bbTextoSel();
+ if(navigator.share){navigator.share({text:t}).catch(()=>{})}else bbCopia(t,'Versículo copiado.')}
+function bbNota(){const r=bbR;if(!r)return;if(r.sel.length!==1){bbToast('Selecione um único versículo para anotar.');return}
+ const n=r.sel[0],m=bbMarc(n)||{};
+ const o=bbModal('<h3 style="margin:0 0 4px">'+esc(bbRef(r.aba,r.l,r.c,n))+'</h3><p class="hint" style="margin:0 0 10px">'+esc(r.vs[n-1]||'')+'</p><textarea id="bb-nt-t" rows="6" placeholder="Escreva sua anotação…">'+esc(m.n||'')+'</textarea><div class="row" style="margin-top:12px"><button id="bb-ok">Salvar</button><button class="sec" id="bb-no">Cancelar</button></div>');
+ o.querySelector('#bb-nt-t').focus();
+ o.querySelector('#bb-no').onclick=()=>o.remove();
+ o.querySelector('#bb-ok').onclick=()=>{const t=o.querySelector('#bb-nt-t').value.trim();const mm=bbMarc(n,true);if(t)mm.n=t;else delete mm.n;bbLimpa(n);save();bbPinta(n);o.remove();bbToast(t?'Anotação salva.':'Anotação removida.')}}
+
+/* ----- HARPA CRISTÃ / CÂNTICOS (hinos que o próprio usuário adiciona ou importa) ----- */
+const bbHinos=()=>{const B=bbS();return B.harpa[B.aba]};
+function bbVHarpa(){const B=bbS(),P=B.aba==='prot',l=bbHinos();
+ return '<p class="hint" style="margin:0 0 10px">'+(P?'Sua Harpa Cristã: ':'Seus cânticos: ')+'adicione os hinos com número, título e letra, ou importe vários de uma vez. Eles ficam no seu aparelho e entram no backup do app.</p>'
+  +'<div class="row bb-bus"><input id="bb-hq" type="search" placeholder="Buscar por número, título ou trecho" value="'+esc(bbHQ)+'" oninput="bbHQ=this.value;bbHLista()"><button onclick="bbHEd()" aria-label="Adicionar hino">＋</button></div>'
+  +'<div class="bb-chips"><button class="'+(bbHF?'':'on')+'" onclick="bbHFil(0)">Todos ('+l.length+')</button><button class="'+(bbHF?'on':'')+'" onclick="bbHFil(1)">⭐ Favoritos</button><button onclick="bbHImp()">⬆ Importar</button><button onclick="bbHExp()">⬇ Exportar</button></div>'
+  +'<div id="bb-hl">'+bbHLista(true)+'</div>'}
+function bbHLista(ret){const l=bbHinos(),q=bbN(bbHQ),qn=/^\d+$/.test(bbHQ.trim())?+bbHQ.trim():0;
+ let f=l.filter(x=>(!bbHF||x.f)&&(!q||(qn?x.n===qn:(bbN(x.t+' '+(x.a||'')).indexOf(q)>=0||bbN(x.l).indexOf(q)>=0))));
+ f.sort((x,y)=>(x.n||99999)-(y.n||99999)||String(x.t).localeCompare(y.t));
+ const tot=f.length;f=f.slice(0,150);
+ const h=f.length?f.map(x=>'<div class="bb-h" onclick="bbCantar(\''+x.id+'\')"><span class="bb-hn">'+(x.n||'·')+'</span><div class="bb-ht"><b>'+esc(x.t)+'</b><small>'+esc(x.a||String(x.l).split('\n')[0].slice(0,60))+'</small></div><button class="bb-fv" onclick="event.stopPropagation();bbHFav(\''+x.id+'\')" aria-label="Favoritar">'+(x.f?'⭐':'☆')+'</button></div>').join('')+(tot>150?'<p class="hint">Mostrando 150 de '+tot+'. Use a busca para achar os demais.</p>':'')
+  :'<div class="vazio">'+(l.length?'Nenhum hino encontrado.':'Nenhum hino ainda.<br>Toque no <b>＋</b> para adicionar um hino, ou em <b>Importar</b> para trazer vários de um arquivo .json ou .txt.')+'</div>';
+ if(ret)return h;const e=$('#bb-hl');if(e)e.innerHTML=h}
+function bbHFil(f){bbHF=f;render()}
+function bbHFav(id){const h=bbHinos().find(x=>x.id===id);if(!h)return;h.f=h.f?0:1;save();bbHLista()}
+function bbHEd(id){const B=bbS(),l=bbHinos(),x=id?l.find(h=>h.id===id):null;
+ const o=bbModal('<h3 style="margin:0 0 10px">'+(x?'Editar hino':'Novo hino')+'</h3><div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><input id="bb-hn" type="number" inputmode="numeric" min="0" placeholder="Nº" value="'+(x&&x.n?x.n:'')+'" style="width:84px;flex:none"><input id="bb-ht" placeholder="Título" value="'+esc(x?x.t:'')+'" style="flex:1"></div><input id="bb-ha" placeholder="Autor (opcional)" value="'+esc(x?x.a||'':'')+'" style="margin-bottom:8px"><textarea id="bb-hl2" rows="12" placeholder="Letra do hino. Use uma linha em branco entre as estrofes.">'+esc(x?x.l:'')+'</textarea><div class="row" style="margin-top:12px"><button id="bb-ok">Salvar</button>'+(x?'<button class="sec" id="bb-del">Excluir</button>':'')+'<button class="sec" id="bb-no">Cancelar</button></div>');
+ o.querySelector('.dlg').classList.add('bbw');
+ o.querySelector('#bb-no').onclick=()=>o.remove();
+ o.querySelector('#bb-ok').onclick=()=>{const n=Math.max(0,parseInt(o.querySelector('#bb-hn').value,10)||0),t=o.querySelector('#bb-ht').value.trim(),au=o.querySelector('#bb-ha').value.trim(),lt=o.querySelector('#bb-hl2').value.replace(/\r/g,'').trim();
+  if(!t||!lt){bbToast('Preencha o título e a letra.');return}
+  if(x){x.n=n;x.t=t;x.a=au;x.l=lt}else l.push({id:bbId(),n:n,t:t,a:au,l:lt,f:0});
+  const eraC=!!$('#bb-ct'),hid=x?x.id:l[l.length-1].id;save();o.remove();if(eraC){bbCFecha(true);bbCantar(hid)}render();bbToast('Hino salvo.')};
+ const dl=o.querySelector('#bb-del');if(dl)dl.onclick=()=>bbAsk('Excluir este hino?',()=>{B.harpa[B.aba]=l.filter(h=>h.id!==id);save();o.remove();bbCFecha(true);render()})}
+function bbHParse(t){t=String(t).replace(/^\uFEFF/,'');const s=t.trim();let L=[];
+ if(s[0]==='['||s[0]==='{'){let j;try{j=JSON.parse(s)}catch(e){return[]}
+  if(!Array.isArray(j))j=Object.keys(j).map(k=>{const v=j[k];return typeof v==='string'?{n:k,l:v}:Object.assign({n:k},v)});
+  L=j.map(x=>({n:parseInt(x.numero||x.n||x.number||x.num||0,10)||0,t:String(x.titulo||x.title||x.t||x.nome||'').trim(),a:String(x.autor||x.author||x.a||'').trim(),l:String(x.letra||x.lyrics||x.l||x.texto||'').replace(/\r/g,'').trim()}))
+ }else{let cur=null;s.replace(/\r/g,'').split('\n').forEach(ln=>{const m=ln.match(/^\s*#\s*(\d{1,4})?\s*[-–.:)]*\s*(.*)$/);
+   if(m){cur={n:+m[1]||0,t:m[2].trim(),a:'',l:''};L.push(cur)}else if(cur)cur.l+=(cur.l?'\n':'')+ln});
+  L.forEach(x=>{x.l=x.l.trim()})}
+ L.forEach(x=>{if(!x.t&&x.n)x.t='Hino '+x.n});
+ return L.filter(x=>x.t&&x.l)}
+function bbHImp(){const o=bbModal('<h3 style="margin:0 0 8px">Importar hinos</h3><p class="hint" style="margin:0 0 8px">Escolha um arquivo <b>.json</b> ou <b>.txt</b>.</p><details class="bb-fmt"><summary>Como montar o arquivo</summary><p><b>JSON:</b></p><pre>[{"numero":1,"titulo":"Título","letra":"Linha 1\\nLinha 2"}]</pre><p><b>TXT</b> (cada hino começa com # e o número):</p><pre># 1 - Título\nLinha 1\nLinha 2\n\n# 2 - Outro título\nLinha 1</pre></details><div class="row" style="margin-top:12px"><button id="bb-ok">Escolher arquivo</button><button class="sec" id="bb-no">Fechar</button></div>');
+ o.querySelector('#bb-no').onclick=()=>o.remove();
+ o.querySelector('#bb-ok').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='.json,.txt,application/json,text/plain';
+  i.onchange=()=>{const fl=i.files&&i.files[0];if(!fl)return;const r=new FileReader();
+   r.onload=()=>{const L=bbHParse(r.result);if(!L.length){bbToast('Não encontrei hinos nesse arquivo.');return}
+    const l=bbHinos();let nov=0,atu=0;
+    L.forEach(x=>{const ex=x.n?l.find(h=>h.n===x.n):null;if(ex){ex.t=x.t;ex.l=x.l;if(x.a)ex.a=x.a;atu++}else{l.push({id:bbId(),n:x.n,t:x.t,a:x.a,l:x.l,f:0});nov++}});
+    save();o.remove();render();bbToast(nov+' novo(s) e '+atu+' atualizado(s).')};
+   r.readAsText(fl)};i.click()}}
+function bbHExp(){const l=bbHinos();if(!l.length){bbToast('Não há hinos para exportar.');return}
+ bbCopia(JSON.stringify(l.map(x=>({numero:x.n,titulo:x.t,autor:x.a||'',letra:x.l})),null,1),'Hinos copiados em JSON. Cole num arquivo para guardar.')}
+/* modo cantar: letra grande, rolagem automática e tela acesa */
+function bbCantar(id){const B=bbS(),h=bbHinos().find(x=>x.id===id);if(!h)return;bbCFecha(true);
+ const o=document.createElement('div');o.id='bb-ct';o.className='bb-rd';
+ o.innerHTML='<div class="bb-top"><button onclick="bbCFecha()" aria-label="Voltar">←</button><div class="bb-tt"><b>'+(h.n?h.n+' · ':'')+esc(h.t)+'</b><small>'+esc(h.a||'')+'</small></div><button onclick="bbHFav(\''+id+'\');bbCFav(\''+id+'\')" id="bb-cf" aria-label="Favoritar">'+(h.f?'⭐':'☆')+'</button><button onclick="bbHEd(\''+id+'\')" aria-label="Editar">✏️</button></div>'
+  +'<div class="bb-ar bb-cant" id="bb-car"><div id="bb-cl" style="font-size:'+B.hfs+'px">'+esc(h.l)+'</div></div>'
+  +'<div class="bb-bt"><button onclick="bbCFs(-1)" aria-label="Diminuir a letra">A−</button><button onclick="bbCRola()" id="bb-cr">▶ Rolar</button><select id="bb-cv" aria-label="Velocidade"><option value="1">Lenta</option><option value="2" selected>Média</option><option value="3">Rápida</option></select><button onclick="bbCFs(1)" aria-label="Aumentar a letra">A+</button></div>';
+ document.body.appendChild(o);document.body.style.overflow='hidden';
+ try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(w=>{bbWL=w}).catch(()=>{})}catch(e){}
+ const ar=o.querySelector('#bb-car');ar.addEventListener('touchstart',()=>bbCPara(),{passive:true})}
+function bbCFav(id){const h=bbHinos().find(x=>x.id===id),b=$('#bb-cf');if(h&&b)b.textContent=h.f?'⭐':'☆'}
+function bbCFs(d){const B=bbS();B.hfs=Math.min(48,Math.max(14,B.hfs+d*2));save();const e=$('#bb-cl');if(e)e.style.fontSize=B.hfs+'px'}
+function bbCPara(){if(bbCT){clearInterval(bbCT);bbCT=null}const b=$('#bb-cr');if(b)b.textContent='▶ Rolar'}
+function bbCRola(){if(bbCT){bbCPara();return}const ar=$('#bb-car'),b=$('#bb-cr');if(!ar)return;b.textContent='⏸ Parar';let pos=ar.scrollTop;
+ bbCT=setInterval(()=>{const v=+(($('#bb-cv')||{}).value||2),p=[0,.35,.7,1.3][v];pos=Math.max(pos,ar.scrollTop)+p;ar.scrollTop=pos;
+  if(ar.scrollTop+ar.clientHeight>=ar.scrollHeight-2)bbCPara()},50)}
+function bbCFecha(quieto){bbCPara();const o=$('#bb-ct');if(o)o.remove();if(bbWL){try{bbWL.release()}catch(e){}bbWL=null}
+ if(!$('#bb-rd'))document.body.style.overflow='';if(!quieto)bbRefresh()}
+
+/* ----- estilos do menu Bíblia ----- */
+(function(){const s=document.createElement('style');s.textContent=
+'.bb-ab{margin-bottom:10px}.bb-ab button{font-size:15px;padding:12px 6px}'
++'.bb-sn{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}.bb-sn button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;font-size:12.5px;font-weight:700;background:var(--sf);color:var(--mute);border:1px solid var(--ln);border-radius:12px;box-shadow:none}.bb-sn button span{font-size:19px;line-height:1}.bb-sn button.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}'
++'.bb-cont{display:flex;align-items:center;justify-content:space-between;gap:10px}.bb-cont small{display:block;color:var(--mute);font-size:12px}.bb-cont b{font-size:17px}'
++'.bb-bus{flex-wrap:nowrap;margin-bottom:8px}.bb-bus input{flex:1}.bb-bus button{flex:none;min-width:46px}'
++'.bb-ver{display:flex;gap:8px;margin:8px 0 4px}.bb-ver select{flex:1;min-width:0}.bb-ver button{flex:none}'
++'.bb-gh{margin:18px 0 8px;font-size:15px;color:var(--ac)}'
++'.bb-bk{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:7px}.bb-b{background:var(--sf);color:var(--ink);border:1px solid var(--ln);box-shadow:none;font-weight:600;font-size:13.5px;padding:10px 6px;border-radius:10px}.bb-b.dc{border-color:var(--ac);background:var(--acs);color:var(--ac)}'
++'.bb-rs{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}.bb-rs b{display:block;color:var(--ac);font-size:13px;margin-bottom:2px}.bb-rs span{font-size:14px}'
++'.bb-ms{padding:30px 14px;color:var(--mute);text-align:center;line-height:1.5}'
++'.bb-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px}.bb-chips button{flex:none;width:auto;background:var(--acs);color:var(--ac);border:1px solid transparent;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:none;white-space:nowrap}.bb-chips button.on{background:var(--ac);color:var(--onac)}'
++'.bb-add{width:100%;margin-bottom:10px}'
++'.bb-es{cursor:pointer}.bb-es b{display:block;font-size:16px}.bb-es small{display:block;color:var(--ac);font-weight:600;margin-top:2px}.bb-es p{margin:6px 0 4px;color:var(--mute);font-size:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap}.bb-es .bb-dt{color:var(--mute);font-weight:400;font-size:11.5px}'
++'.bb-an .bb-ah b{font-size:15px;display:flex;align-items:center;gap:6px}.bb-vt{margin:6px 0;font-size:14.5px;line-height:1.5}.bb-nt2{margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:var(--acs);font-size:14px;white-space:pre-wrap}.bb-an .row{margin-top:8px}.bb-an .row button{flex:1}'
++'.bb-dot{display:inline-block;width:12px;height:12px;border-radius:50%}'
++'.c-y{--bbc:#f6dc6a}.c-g{--bbc:#9fdc8e}.c-b{--bbc:#8fc5f2}.c-p{--bbc:#f3a8c8}.bb-dot[class*=c-]{background:var(--bbc)}'
++'.bb-pr b{font-size:14px}.bb-hc.ok{border-color:var(--ok)}.bb-hh{display:flex;gap:10px;align-items:center}.bb-hh b{display:block;font-size:16px;line-height:1.2}.bb-hh small{display:block;color:var(--mute);font-size:12px;margin-top:2px}.bb-em{flex:none;width:46px;height:46px;border-radius:14px;background:var(--acs);display:grid;place-items:center;font-size:25px}'
++'.bb-hc p{margin:10px 0 0;font-size:14.5px;line-height:1.5}.bb-lc{color:var(--ac);font-weight:600}.bb-hc .row{margin-top:12px}.bb-hc .row button{flex:1;padding:10px 6px;font-size:13.5px}'
++'.bb-h{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--ln);cursor:pointer}.bb-hn{flex:none;min-width:46px;height:40px;padding:0 6px;border-radius:12px;background:var(--acs);color:var(--ac);display:grid;place-items:center;font-weight:800;font-size:15px}.bb-ht{flex:1;min-width:0}.bb-ht b{display:block;font-size:15px;line-height:1.25}.bb-ht small{display:block;color:var(--mute);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bb-fv{flex:none;min-width:40px;height:40px;padding:0;background:none;box-shadow:none;color:var(--ink);font-size:20px}'
++'.bb-fmt{font-size:13px}.bb-fmt summary{cursor:pointer;color:var(--ac);font-weight:600}.bb-fmt pre{background:var(--bg);border-radius:8px;padding:8px;overflow:auto;font-size:12px;white-space:pre}'
++'.ov.bbo{z-index:90}.dlg.bbw{max-width:560px;max-height:88vh;overflow:auto}.dlg.bbw textarea{font:inherit}'
++'.bb-rd{position:fixed;inset:0;z-index:70;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}'
++'.bb-top,.bb-bt{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sf);border-bottom:1px solid var(--ln)}.bb-bt{border-bottom:0;border-top:1px solid var(--ln);justify-content:space-between;padding-bottom:calc(8px + env(safe-area-inset-bottom))}'
++'.bb-top button,.bb-bt button,.bb-bt select{min-width:44px;height:40px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);font-size:15px;box-shadow:none;padding:0 10px}'
++'.bb-tt{flex:1;min-width:0;text-align:left;border:0!important;background:none!important;padding:0!important;display:block;color:var(--ink)}.bb-tt b,.bb-tt small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bb-tt small{color:var(--mute);font-size:12px;font-weight:500}'
++'.bb-bt .bb-pk{flex:1;font-weight:700}'
++'.bb-ar{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 150px;line-height:1.65;font-family:Georgia,"Times New Roman",serif}'
++'.bb-h2{font:700 1.15em Georgia,serif;margin:4px 0 12px;color:var(--ac)}'
++'.bb-v{margin:0 0 .55em;padding:3px 6px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}.bb-v sup{color:var(--ac);font:700 .62em Figtree,system-ui,sans-serif;margin-right:4px}'
++'.bb-v[class*=" c-"]{background:color-mix(in srgb,var(--bbc) 55%,transparent)}.bb-v.sel{outline:2px solid var(--ac);outline-offset:1px}.bb-v.hl{background:color-mix(in srgb,var(--ac) 22%,transparent)}'
++'.bb-nt{display:block;margin:4px 0 2px;padding:6px 9px;border-left:3px solid var(--ac);background:var(--acs);border-radius:0 8px 8px 0;font:italic .82em/1.45 Figtree,system-ui,sans-serif;white-space:pre-wrap}'
++'.bb-fim{display:flex;gap:8px;margin-top:20px}.bb-fim button{flex:1}'
++'#bb-ac{position:absolute;left:0;right:0;bottom:0;z-index:3;background:var(--sf);border-top:1px solid var(--ln);box-shadow:0 -8px 24px -10px rgba(0,0,0,.35);padding:10px 10px calc(10px + env(safe-area-inset-bottom));font-family:Figtree,system-ui,sans-serif}'
++'.bb-act{font-weight:700;font-size:13px;color:var(--ac);margin-bottom:8px;text-align:center}.bb-ar2{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;justify-content:center}.bb-ar2 button{flex:1 1 auto;min-width:0;padding:9px 8px;font-size:13px;border-radius:10px}'
++'.bb-cor{flex:0 0 44px!important;height:36px;border:2px solid var(--ln)!important;background:var(--bbc,var(--bg))!important;color:var(--ink)!important;box-shadow:none!important}.bb-cor.c-n{background:var(--bg)!important}'
++'.bb-cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px;max-height:44vh;overflow:auto}.bb-cg button{padding:10px 0;background:var(--bg);color:var(--ink);border:1px solid var(--ln);box-shadow:none;font-weight:700}.bb-cg button.on{background:var(--ac);color:var(--onac)}'
++'.bb-cant{padding:18px 18px 120px;font-family:Figtree,system-ui,sans-serif;text-align:center}#bb-cl{white-space:pre-wrap;line-height:1.6}'
++'#bb-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:95;max-width:86vw;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;text-align:center}#bb-toast.on{opacity:1;transform:translate(-50%,0)}';
+ document.head.appendChild(s)})();
 
 function vMulher(){
  const seg='<div class="seg">'+[['ciclo','🌸 Ciclo'],['saude','🩺 Saúde'],['care','💧 Autocuidado'],['seg','🛡️ Segurança'],['mais','✨ Mais']].map(function(a){return '<button class="'+(muTab===a[0]?'on':'')+'" onclick="muGo(\''+a[0]+'\')">'+a[1]+'</button>'}).join('')+'</div>';
  return '<h2>Espaço Mulher</h2>'+seg+({ciclo:muCiclo,saude:muSaude,care:muCare,seg:muSeg,mais:muMais}[muTab]||muCiclo)()}
 
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,filmes:vFilmes,biblioteca:vBiblioteca,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,filmes:vFilmes,biblioteca:vBiblioteca,biblia:vBiblia,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -6555,6 +6993,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.2':[
+   '✝️ Novo menu Bíblia, dividido em duas abas: Protestante (66 livros) e Católica (73 livros). Em cada uma você lê por livro e capítulo, busca palavras ou vai direto a uma referência (João 3:16), marca versículos com cores, favorita, anota, copia e compartilha. Também tem Anotações (estudos, notas, favoritos e marcados), Histórias bíblicas com resumo e botão para ler na Bíblia, e a Harpa Cristã / Cânticos com modo cantar (letra grande e rolagem automática).'
+  ],
   '3.6.1':[
    '📚 Biblioteca: todos os livros agora têm capa, com cor, moldura e símbolo de acordo com o gênero (romance, poesia, contos, teatro e clássicos).'
   ],
@@ -6743,7 +7184,7 @@ const RECADO_CFG=[
  ['📖','Tela inicial','Ativar ou desativar o versículo bíblico do dia.'],
  ['🌐','Idioma','Português, English, Español ou Deutsch. Seus dados não mudam.'],
  ['☰','Menu de navegação','Escolher o menu embaixo da tela ou em um painel lateral.'],
- ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções, Concursos, CLT, Espaço Mulher, Espaço Cultural, Filmes, Biblioteca) para ele aparecer ou sumir da navegação.'],
+ ['🧩','Menus do app','Ativar ou desativar cada menu (Início, Agenda, Calendário, Notas, Diário, Compras, Carteira, Promoções, Concursos, CLT, Espaço Mulher, Espaço Cultural, Filmes, Biblioteca, Bíblia) para ele aparecer ou sumir da navegação.'],
  ['🎨','Aparência','Modo automático, claro, escuro ou preto e a cor do tema.'],
  ['🔒','Segurança','Criar uma senha de 4 dígitos, alterar, remover e escolher quando o app bloqueia de novo.'],
  ['🛡️','Permissões','Arquivos, fotos e vídeos, música e áudio, notificações, câmera e microfone. Tem o botão “Permitir tudo” e o atalho para os ajustes do celular.'],
@@ -7401,7 +7842,7 @@ function kParse(txt,now){now=now||new Date();txt=kFalaHora(txt);const n=kNorm(tx
   .replace(/^\s*(?:de|do|da|para|pra|que|um|uma|o|a|às|as|em|no|na)(?=\s)\s*/i,' ').replace(/\s+(em|no|na|às|as|para|pra|de|do|da)\s*$/i,'').replace(/\s+/g,' ').trim();
  if(t)t=t[0].toUpperCase()+t.slice(1);
  return {title:t,date:date,time:time}}
-const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['filmes',/\b(filmes?|cinemas?|streaming|series?|netflix)\b/],['biblioteca',/\b(biblioteca|livros?|leitura|ler um livro)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
+const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['filmes',/\b(filmes?|cinemas?|streaming|series?|netflix)\b/],['biblia',/\b(biblia|biblias|versiculos?|salmos?|harpa|canticos?|evangelica|protestante|catolica)\b/],['biblioteca',/\b(biblioteca|livros?|leitura|ler um livro)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
 const kFaq=[
  [/lembret|alarme|notifica/,'Para ter lembretes, ative em Configurações › Lembretes e alarme. Depois, todo compromisso com hora avisa antes de começar. Quer que eu ative agora? Digite “ativar lembretes”.'],
  [/backup|restaurar|exportar/,'Em Configurações › Backup no celular você salva, compartilha e restaura seus dados. Se conectar uma conta, também há sincronização na nuvem.'],
@@ -7887,7 +8328,7 @@ function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||nu
   return say(out.length?'Agenda dos próximos 7 dias:\n'+out.join('\n'):'Nenhum compromisso '+(prox?'na semana que vem.':'nos próximos 7 dias.'))}
  return false}
 /* ---- 6. traduz o jeito de falar para os comandos do app ---- */
-const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['filmes','filmes?|cinemas?|streaming|series?|netflix|prime video|disney|hbo|paramount|apple tv'],['biblioteca','biblioteca|livros?|leitura|romances?|ler um livro|machado de assis|eca de queiros'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
+const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['filmes','filmes?|cinemas?|streaming|series?|netflix|prime video|disney|hbo|paramount|apple tv'],['biblia','biblia|biblias|versiculos?|salmos?|harpa|canticos?|evangelica|protestante|catolica'],['biblioteca','biblioteca|livros?|leitura|romances?|ler um livro|machado de assis|eca de queiros'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
 const tabDe=n=>{for(const [t,r] of TABAL)if(new RegExp('(?:^|\\s)(?:'+r+')(?:\\s|$)').test(n))return t;return null};
 const TABOUT={cal:'calendario',config:'configuracoes'};
 const DICT=['agendar','agende','marcar','marque','lembrar','lembre','anotar','anote','comprar','compre','apagar','apague','excluir','exclua','remover','remova','concluir','conclua','finalizar','abrir','abra','desfazer','ativar','desativar','esconder','mostrar','adicionar','adicione','incluir','inclua','colocar','coloque','criar','crie','cancelar','cancele','deletar','limpar','tirar','escrever','guardar','salvar','registrar','cadastrar','reservar','programar'];
@@ -9085,7 +9526,7 @@ let _naRun=false;
 /* ===== v4: skin Tropicália + menu em grupos + painel inicial ===== */
 (function(){
 COR.push(['tropical','Tropicália','#3b4cf0']);
-const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','filmes','biblioteca','mulher','concursos','clt']]];
+const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','filmes','biblioteca','biblia','mulher','concursos','clt']]];
 const NG=()=>S.layout==='novo',HP=NG;
 const act=g=>g[2].filter(k=>TABS.some(t=>t[0]===k)),grOf=k=>GR.find(g=>g[2].includes(k));
 const nome=k=>{const t=TABS_ALL.find(x=>x[0]===k);return t?_t(t[2]):k};
@@ -9136,7 +9577,7 @@ function vPainel(){
   notas:['#d9a10f',S.notes.length+(S.notes.length===1?' nota':' notas'),"go('notas')"],
   compras:['#f08a24',faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop)),"go('compras')",'w2'],
   carteira:['#3fa66b',kc.renda>0?(kc.sobra<0?'Faltam '+BRL(-kc.sobra):'Sobram '+BRL(kc.sobra))+' este mês':'Controle seus gastos',"go('carteira')",'w2'],
-  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],cultural:['#c2410c',CU_DATA.filter(cuVivo).length+' shows, peças e eventos',"go('cultural')"],filmes:['#7c3aed','Cinema e streaming',"go('filmes')"],biblioteca:['#8a5a2b',(BI_L.length||'Vários')+' livros em PDF',"go('biblioteca')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
+  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],cultural:['#c2410c',CU_DATA.filter(cuVivo).length+' shows, peças e eventos',"go('cultural')"],filmes:['#7c3aed','Cinema e streaming',"go('filmes')"],biblioteca:['#8a5a2b',(BI_L.length||'Vários')+' livros em PDF',"go('biblioteca')"],biblia:['#7a4b1e','Protestante e católica',"go('biblia')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
  const tiles=TABS.map(t=>t[0]).filter(k=>T[k]).map(k=>{const x=T[k];return `<button class="stat tl ${x[3]||''}" style="--h:${x[0]}" onclick="${x[2]}"><span class="si">${svg(k)}</span><b>${esc(nome(k))}</b><small>${x[1]}</small></button>`}).join('');
  const plHtml=plh.map(p=>`<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><span class="t"><b>Plantão ${p.ent} → ${p.sai}</b>${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';sel=HOJE;mes=new Date();go('cal')" aria-label="Abrir plantões">›</button></div>`).join('');
  const busca=`<form class="gsearch" action="https://chatgpt.com/" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pergunte ao ChatGPT" aria-label="Pergunte ao ChatGPT" enterkeyhint="search" autocomplete="off"><button type="submit">Perguntar</button></form>`;

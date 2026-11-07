@@ -209,3 +209,12 @@ Menu **Biblioteca** com mais de 150 livros em português (domínio público) lid
 - Para criar os PDFs: GitHub > Actions > **Gerar Biblioteca (livros em PDF)** > Run workflow. Ele baixa os textos do Projeto Gutenberg, gera `biblioteca/<id>.pdf` e salva no repositório.
 - Local: `pip install reportlab && python3 biblioteca/gerar-livros.py`.
 - Depois da primeira leitura de cada livro, ele fica no aparelho e abre sem internet.
+
+## Menu Bíblia
+
+- **Duas abas**: Bíblia Protestante (66 livros) e Bíblia Católica (73 livros). Dentro de cada uma: **Ler**, **Anotações**, **Histórias** e **Harpa** (na aba Católica aparece como **Cânticos**).
+- **Texto da Bíblia**: o app procura primeiro na pasta `biblia/` (por exemplo `biblia/arc.json`, `biblia/catolica.json`), depois na internet (repositórios públicos no GitHub). Depois da primeira leitura o texto fica guardado no aparelho e abre sem internet.
+- **Bíblia Católica com os 7 livros deuterocanônicos** (Tobias, Judite, 1 e 2 Macabeus, Sabedoria, Eclesiástico e Baruc): coloque um arquivo `biblia/catolica.json` (73 livros) no GitHub, ou use o botão **Importar** na tela Ler. Formato: `[{"abbrev":"gn","name":"Gênesis","chapters":[["versículo 1","versículo 2"]]}]`, com os livros na ordem da Bíblia católica. Sem esse arquivo, a aba Católica usa a Almeida (ARC) nos 66 livros em comum.
+- **Anotações, marcações, estudos, favoritos e hinos** ficam em `S.biblia`, então entram no backup e na sincronização do app.
+- **Harpa / Cânticos**: as letras não vêm prontas. Adicione pelo botão **＋** ou use **Importar** com um arquivo `.json` (`[{"numero":1,"titulo":"…","letra":"…"}]`) ou `.txt` (cada hino começa com `# 1 - Título`).
+- Como lançar: publique `index.html` e `sw.js` (a versão do `sw.js` já foi aumentada para 3.6.2). O botão **Atualizar** aparece para todos.
