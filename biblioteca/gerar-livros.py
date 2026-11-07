@@ -24,7 +24,7 @@ def log(*a):
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 API = "https://gutendex.com/books/"
-META = 250   # teto; entram todos os livros que forem encontrados
+META = 356   # teto: 56 livros originais + 300 novos; os candidatos que passam disso são reservas e só entram se algum livro não for encontrado
 
 RAW = {}
 REFAZER = os.environ.get("REFAZER") == "1" or "--refazer" in sys.argv   # recria também os PDFs que já existem (para ganharem capa)
@@ -64,7 +64,7 @@ def desenhar_capa(c, item, W, H):
     c.setLineWidth(0.6); c.line(cx - 25 * mm, cy - 17 * mm, cx + 25 * mm, cy - 17 * mm)
     c.restoreState()
 INICIO = time.time()
-LIMITE_MIN = 70   # para sozinho depois disso e salva o que já ficou pronto
+LIMITE_MIN = 200   # para sozinho depois disso e salva o que já ficou pronto (rode de novo para continuar)
 
 def baixar(url, tent=2):
     for i in range(tent):

@@ -502,5 +502,3839 @@
   "ano": 1873,
   "busca": "Histórias da Meia-Noite",
   "sobrenome": "Machado"
+ },
+ {
+  "id": "crisalidas",
+  "titulo": "Crisálidas",
+  "autor": "Machado de Assis",
+  "genero": "Poesia",
+  "ano": 1864,
+  "busca": "Crisálidas",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "falenas",
+  "titulo": "Falenas",
+  "autor": "Machado de Assis",
+  "genero": "Poesia",
+  "ano": 1870,
+  "busca": "Falenas",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "americanas",
+  "titulo": "Americanas",
+  "autor": "Machado de Assis",
+  "genero": "Poesia",
+  "ano": 1875,
+  "busca": "Americanas",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "ocidentais",
+  "titulo": "Ocidentais",
+  "autor": "Machado de Assis",
+  "genero": "Poesia",
+  "ano": 1901,
+  "busca": "Ocidentais",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "historias-sem-data",
+  "titulo": "Histórias sem Data",
+  "autor": "Machado de Assis",
+  "genero": "Contos",
+  "ano": 1884,
+  "busca": "Histórias sem Data",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "paginas-recolhidas",
+  "titulo": "Páginas Recolhidas",
+  "autor": "Machado de Assis",
+  "genero": "Contos",
+  "ano": 1899,
+  "busca": "Páginas Recolhidas",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "reliquias-de-casa-velha",
+  "titulo": "Relíquias de Casa Velha",
+  "autor": "Machado de Assis",
+  "genero": "Contos",
+  "ano": 1906,
+  "busca": "Relíquias de Casa Velha",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "a-semana",
+  "titulo": "A Semana",
+  "autor": "Machado de Assis",
+  "genero": "Crônicas",
+  "ano": 1914,
+  "busca": "A Semana",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "bons-dias",
+  "titulo": "Bons Dias!",
+  "autor": "Machado de Assis",
+  "genero": "Crônicas",
+  "ano": 1888,
+  "busca": "Bons Dias!",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "quase-ministro",
+  "titulo": "Quase Ministro",
+  "autor": "Machado de Assis",
+  "genero": "Teatro",
+  "ano": 1864,
+  "busca": "Quase Ministro",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "o-caminho-da-porta",
+  "titulo": "O Caminho da Porta",
+  "autor": "Machado de Assis",
+  "genero": "Teatro",
+  "ano": 1863,
+  "busca": "O Caminho da Porta",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "licao-de-botanica",
+  "titulo": "Lição de Botânica",
+  "autor": "Machado de Assis",
+  "genero": "Teatro",
+  "ano": 1906,
+  "busca": "Lição de Botânica",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "os-deuses-de-casaca",
+  "titulo": "Os Deuses de Casaca",
+  "autor": "Machado de Assis",
+  "genero": "Teatro",
+  "ano": 1866,
+  "busca": "Os Deuses de Casaca",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "poesias-completas",
+  "titulo": "Poesias Completas",
+  "autor": "Machado de Assis",
+  "genero": "Poesia",
+  "ano": 1901,
+  "busca": "Poesias Completas",
+  "sobrenome": "Machado"
+ },
+ {
+  "id": "a-capital",
+  "titulo": "A Capital",
+  "autor": "Eça de Queirós",
+  "genero": "Romance",
+  "ano": 1925,
+  "busca": "A Capital",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "o-mandarim",
+  "titulo": "O Mandarim",
+  "autor": "Eça de Queirós",
+  "genero": "Romance",
+  "ano": 1880,
+  "busca": "O Mandarim",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "a-correspondencia-de-fradique-mendes",
+  "titulo": "A Correspondência de Fradique Mendes",
+  "autor": "Eça de Queirós",
+  "genero": "Romance",
+  "ano": 1900,
+  "busca": "A Correspondência de Fradique Mendes",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "o-conde-d-abranhos",
+  "titulo": "O Conde d'Abranhos",
+  "autor": "Eça de Queirós",
+  "genero": "Romance",
+  "ano": 1925,
+  "busca": "O Conde d'Abranhos",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "a-tragedia-da-rua-das-flores",
+  "titulo": "A Tragédia da Rua das Flores",
+  "autor": "Eça de Queirós",
+  "genero": "Romance",
+  "ano": 1980,
+  "busca": "A Tragédia da Rua das Flores",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "alves-cia",
+  "titulo": "Alves & Cia.",
+  "autor": "Eça de Queirós",
+  "genero": "Romance",
+  "ano": 1925,
+  "busca": "Alves & Cia.",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "contos",
+  "titulo": "Contos",
+  "autor": "Eça de Queirós",
+  "genero": "Contos",
+  "ano": 1902,
+  "busca": "Contos",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "prosas-barbaras",
+  "titulo": "Prosas Bárbaras",
+  "autor": "Eça de Queirós",
+  "genero": "Contos",
+  "ano": 1903,
+  "busca": "Prosas Bárbaras",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "cartas-de-inglaterra",
+  "titulo": "Cartas de Inglaterra",
+  "autor": "Eça de Queirós",
+  "genero": "Crônicas",
+  "ano": 1905,
+  "busca": "Cartas de Inglaterra",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "cronicas-de-londres",
+  "titulo": "Crônicas de Londres",
+  "autor": "Eça de Queirós",
+  "genero": "Crônicas",
+  "ano": 1944,
+  "busca": "Crônicas de Londres",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "uma-campanha-alegre",
+  "titulo": "Uma Campanha Alegre",
+  "autor": "Eça de Queirós",
+  "genero": "Crônicas",
+  "ano": 1890,
+  "busca": "Uma Campanha Alegre",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "o-egito",
+  "titulo": "O Egito",
+  "autor": "Eça de Queirós",
+  "genero": "Crônicas",
+  "ano": 1926,
+  "busca": "O Egito",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "ultimas-paginas",
+  "titulo": "Últimas Páginas",
+  "autor": "Eça de Queirós",
+  "genero": "Contos",
+  "ano": 1912,
+  "busca": "Últimas Páginas",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "notas-contemporaneas",
+  "titulo": "Notas Contemporâneas",
+  "autor": "Eça de Queirós",
+  "genero": "Crônicas",
+  "ano": 1909,
+  "busca": "Notas Contemporâneas",
+  "sobrenome": "Eça"
+ },
+ {
+  "id": "amor-de-salvacao",
+  "titulo": "Amor de Salvação",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1864,
+  "busca": "Amor de Salvação",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-queda-dum-anjo",
+  "titulo": "A Queda dum Anjo",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1866,
+  "busca": "A Queda dum Anjo",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "o-que-fazem-mulheres",
+  "titulo": "O Que Fazem Mulheres",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1858,
+  "busca": "O Que Fazem Mulheres",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "coracao-cabeca-e-estomago",
+  "titulo": "Coração, Cabeça e Estômago",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1862,
+  "busca": "Coração, Cabeça e Estômago",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "memorias-do-carcere",
+  "titulo": "Memórias do Cárcere",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1862,
+  "busca": "Memórias do Cárcere",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-mulher-fatal",
+  "titulo": "A Mulher Fatal",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1870,
+  "busca": "A Mulher Fatal",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "os-misterios-de-lisboa",
+  "titulo": "Os Mistérios de Lisboa",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1854,
+  "busca": "Os Mistérios de Lisboa",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "o-livro-negro-do-padre-dinis",
+  "titulo": "O Livro Negro do Padre Dinis",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1855,
+  "busca": "O Livro Negro do Padre Dinis",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-filha-do-arcediago",
+  "titulo": "A Filha do Arcediago",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1854,
+  "busca": "A Filha do Arcediago",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "onde-esta-a-felicidade",
+  "titulo": "Onde Está a Felicidade?",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1856,
+  "busca": "Onde Está a Felicidade?",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-bruxa-de-monte-cordova",
+  "titulo": "A Bruxa de Monte-Córdova",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1867,
+  "busca": "A Bruxa de Monte-Córdova",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "anatema",
+  "titulo": "Anátema",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1851,
+  "busca": "Anátema",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-doida-do-candal",
+  "titulo": "A Doida do Candal",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1867,
+  "busca": "A Doida do Candal",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-sereia",
+  "titulo": "A Sereia",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1865,
+  "busca": "A Sereia",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "eusebio-macario",
+  "titulo": "Eusébio Macário",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1879,
+  "busca": "Eusébio Macário",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-corja",
+  "titulo": "A Corja",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1880,
+  "busca": "A Corja",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "novelas-do-minho",
+  "titulo": "Novelas do Minho",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Contos",
+  "ano": 1875,
+  "busca": "Novelas do Minho",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "noites-de-insonia",
+  "titulo": "Noites de Insónia",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Contos",
+  "ano": 1873,
+  "busca": "Noites de Insónia",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "vulcoes-de-lama",
+  "titulo": "Vulcões de Lama",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1886,
+  "busca": "Vulcões de Lama",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "o-santo-da-montanha",
+  "titulo": "O Santo da Montanha",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1866,
+  "busca": "O Santo da Montanha",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "a-enjeitada",
+  "titulo": "A Enjeitada",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1866,
+  "busca": "A Enjeitada",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "maria-moises",
+  "titulo": "Maria Moisés",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1876,
+  "busca": "Maria Moisés",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "o-judeu",
+  "titulo": "O Judeu",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1866,
+  "busca": "O Judeu",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "cenas-da-foz",
+  "titulo": "Cenas da Foz",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1857,
+  "busca": "Cenas da Foz",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "o-regicida",
+  "titulo": "O Regicida",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1874,
+  "busca": "O Regicida",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "agulha-em-palheiro",
+  "titulo": "Agulha em Palheiro",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1863,
+  "busca": "Agulha em Palheiro",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "carlota-angela",
+  "titulo": "Carlota Ângela",
+  "autor": "Camilo Castelo Branco",
+  "genero": "Romance",
+  "ano": 1858,
+  "busca": "Carlota Ângela",
+  "sobrenome": "Camilo"
+ },
+ {
+  "id": "uma-familia-inglesa",
+  "titulo": "Uma Família Inglesa",
+  "autor": "Júlio Dinis",
+  "genero": "Romance",
+  "ano": 1868,
+  "busca": "Uma Família Inglesa",
+  "sobrenome": "Dinis"
+ },
+ {
+  "id": "a-morgadinha-dos-canaviais",
+  "titulo": "A Morgadinha dos Canaviais",
+  "autor": "Júlio Dinis",
+  "genero": "Romance",
+  "ano": 1868,
+  "busca": "A Morgadinha dos Canaviais",
+  "sobrenome": "Dinis"
+ },
+ {
+  "id": "os-fidalgos-da-casa-mourisca",
+  "titulo": "Os Fidalgos da Casa Mourisca",
+  "autor": "Júlio Dinis",
+  "genero": "Romance",
+  "ano": 1871,
+  "busca": "Os Fidalgos da Casa Mourisca",
+  "sobrenome": "Dinis"
+ },
+ {
+  "id": "seroes-da-provincia",
+  "titulo": "Serões da Província",
+  "autor": "Júlio Dinis",
+  "genero": "Contos",
+  "ano": 1870,
+  "busca": "Serões da Província",
+  "sobrenome": "Dinis"
+ },
+ {
+  "id": "poesias",
+  "titulo": "Poesias",
+  "autor": "Júlio Dinis",
+  "genero": "Poesia",
+  "ano": 1873,
+  "busca": "Poesias",
+  "sobrenome": "Dinis"
+ },
+ {
+  "id": "diva",
+  "titulo": "Diva",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1864,
+  "busca": "Diva",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "a-pata-da-gazela",
+  "titulo": "A Pata da Gazela",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1870,
+  "busca": "A Pata da Gazela",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "o-gaucho",
+  "titulo": "O Gaúcho",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1870,
+  "busca": "O Gaúcho",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "as-minas-de-prata",
+  "titulo": "As Minas de Prata",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1865,
+  "busca": "As Minas de Prata",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "o-tronco-do-ipe",
+  "titulo": "O Tronco do Ipê",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1871,
+  "busca": "O Tronco do Ipê",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "til",
+  "titulo": "Til",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1872,
+  "busca": "Til",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "sonhos-d-ouro",
+  "titulo": "Sonhos d'Ouro",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1872,
+  "busca": "Sonhos d'Ouro",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "a-guerra-dos-mascates",
+  "titulo": "A Guerra dos Mascates",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1873,
+  "busca": "A Guerra dos Mascates",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "encarnacao",
+  "titulo": "Encarnação",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1893,
+  "busca": "Encarnação",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "cinco-minutos",
+  "titulo": "Cinco Minutos",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1856,
+  "busca": "Cinco Minutos",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "a-viuvinha",
+  "titulo": "A Viuvinha",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1860,
+  "busca": "A Viuvinha",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "o-demonio-familiar",
+  "titulo": "O Demônio Familiar",
+  "autor": "José de Alencar",
+  "genero": "Teatro",
+  "ano": 1857,
+  "busca": "O Demônio Familiar",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "mae",
+  "titulo": "Mãe",
+  "autor": "José de Alencar",
+  "genero": "Teatro",
+  "ano": 1862,
+  "busca": "Mãe",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "o-jesuita",
+  "titulo": "O Jesuíta",
+  "autor": "José de Alencar",
+  "genero": "Teatro",
+  "ano": 1875,
+  "busca": "O Jesuíta",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "como-e-porque-sou-romancista",
+  "titulo": "Como e Porque Sou Romancista",
+  "autor": "José de Alencar",
+  "genero": "Ensaio",
+  "ano": 1893,
+  "busca": "Como e Porque Sou Romancista",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "ao-correr-da-pena",
+  "titulo": "Ao Correr da Pena",
+  "autor": "José de Alencar",
+  "genero": "Crônicas",
+  "ano": 1874,
+  "busca": "Ao Correr da Pena",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "alfarrabios",
+  "titulo": "Alfarrábios",
+  "autor": "José de Alencar",
+  "genero": "Romance",
+  "ano": 1873,
+  "busca": "Alfarrábios",
+  "sobrenome": "Alencar"
+ },
+ {
+  "id": "o-coruja",
+  "titulo": "O Coruja",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1890,
+  "busca": "O Coruja",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "o-homem",
+  "titulo": "O Homem",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1887,
+  "busca": "O Homem",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "livro-de-uma-sogra",
+  "titulo": "Livro de uma Sogra",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1895,
+  "busca": "Livro de uma Sogra",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "filomena-borges",
+  "titulo": "Filomena Borges",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1884,
+  "busca": "Filomena Borges",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "uma-lagrima-de-mulher",
+  "titulo": "Uma Lágrima de Mulher",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1880,
+  "busca": "Uma Lágrima de Mulher",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "a-mortalha-de-alzira",
+  "titulo": "A Mortalha de Alzira",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1894,
+  "busca": "A Mortalha de Alzira",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "memorias-de-um-condenado",
+  "titulo": "Memórias de um Condenado",
+  "autor": "Aluísio Azevedo",
+  "genero": "Romance",
+  "ano": 1882,
+  "busca": "Memórias de um Condenado",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "demonios",
+  "titulo": "Demônios",
+  "autor": "Aluísio Azevedo",
+  "genero": "Contos",
+  "ano": 1893,
+  "busca": "Demônios",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "numa-e-a-ninfa",
+  "titulo": "Numa e a Ninfa",
+  "autor": "Lima Barreto",
+  "genero": "Romance",
+  "ano": 1915,
+  "busca": "Numa e a Ninfa",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "vida-e-morte-de-m-j-gonzaga-de-sa",
+  "titulo": "Vida e Morte de M. J. Gonzaga de Sá",
+  "autor": "Lima Barreto",
+  "genero": "Romance",
+  "ano": 1919,
+  "busca": "Vida e Morte de M. J. Gonzaga de Sá",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "os-bruzundangas",
+  "titulo": "Os Bruzundangas",
+  "autor": "Lima Barreto",
+  "genero": "Romance",
+  "ano": 1922,
+  "busca": "Os Bruzundangas",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "historias-e-sonhos",
+  "titulo": "Histórias e Sonhos",
+  "autor": "Lima Barreto",
+  "genero": "Contos",
+  "ano": 1920,
+  "busca": "Histórias e Sonhos",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "bagatelas",
+  "titulo": "Bagatelas",
+  "autor": "Lima Barreto",
+  "genero": "Crônicas",
+  "ano": 1923,
+  "busca": "Bagatelas",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "feiras-e-mafuas",
+  "titulo": "Feiras e Mafuás",
+  "autor": "Lima Barreto",
+  "genero": "Crônicas",
+  "ano": 1953,
+  "busca": "Feiras e Mafuás",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "marginalia",
+  "titulo": "Marginália",
+  "autor": "Lima Barreto",
+  "genero": "Crônicas",
+  "ano": 1953,
+  "busca": "Marginália",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "diario-intimo",
+  "titulo": "Diário Íntimo",
+  "autor": "Lima Barreto",
+  "genero": "Ensaio",
+  "ano": 1953,
+  "busca": "Diário Íntimo",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "coisas-do-reino-do-jambon",
+  "titulo": "Coisas do Reino do Jambon",
+  "autor": "Lima Barreto",
+  "genero": "Contos",
+  "ano": 1953,
+  "busca": "Coisas do Reino do Jambon",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "vida-urbana",
+  "titulo": "Vida Urbana",
+  "autor": "Lima Barreto",
+  "genero": "Crônicas",
+  "ano": 1956,
+  "busca": "Vida Urbana",
+  "sobrenome": "Barreto"
+ },
+ {
+  "id": "cancoes-sem-metro",
+  "titulo": "Canções sem Metro",
+  "autor": "Raul Pompeia",
+  "genero": "Poesia",
+  "ano": 1900,
+  "busca": "Canções sem Metro",
+  "sobrenome": "Pompeia"
+ },
+ {
+  "id": "uma-tragedia-no-amazonas",
+  "titulo": "Uma Tragédia no Amazonas",
+  "autor": "Raul Pompeia",
+  "genero": "Romance",
+  "ano": 1880,
+  "busca": "Uma Tragédia no Amazonas",
+  "sobrenome": "Pompeia"
+ },
+ {
+  "id": "as-joias-da-coroa",
+  "titulo": "As Joias da Coroa",
+  "autor": "Raul Pompeia",
+  "genero": "Romance",
+  "ano": 1882,
+  "busca": "As Joias da Coroa",
+  "sobrenome": "Pompeia"
+ },
+ {
+  "id": "a-margem-da-historia",
+  "titulo": "À Margem da História",
+  "autor": "Euclides da Cunha",
+  "genero": "Ensaio",
+  "ano": 1909,
+  "busca": "À Margem da História",
+  "sobrenome": "Cunha"
+ },
+ {
+  "id": "contrastes-e-confrontos",
+  "titulo": "Contrastes e Confrontos",
+  "autor": "Euclides da Cunha",
+  "genero": "Ensaio",
+  "ano": 1907,
+  "busca": "Contrastes e Confrontos",
+  "sobrenome": "Cunha"
+ },
+ {
+  "id": "peru-versus-bolivia",
+  "titulo": "Peru versus Bolívia",
+  "autor": "Euclides da Cunha",
+  "genero": "Ensaio",
+  "ano": 1907,
+  "busca": "Peru versus Bolívia",
+  "sobrenome": "Cunha"
+ },
+ {
+  "id": "o-garimpeiro",
+  "titulo": "O Garimpeiro",
+  "autor": "Bernardo Guimarães",
+  "genero": "Romance",
+  "ano": 1872,
+  "busca": "O Garimpeiro",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "o-ermitao-de-muquem",
+  "titulo": "O Ermitão de Muquém",
+  "autor": "Bernardo Guimarães",
+  "genero": "Romance",
+  "ano": 1869,
+  "busca": "O Ermitão de Muquém",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "lendas-e-romances",
+  "titulo": "Lendas e Romances",
+  "autor": "Bernardo Guimarães",
+  "genero": "Contos",
+  "ano": 1871,
+  "busca": "Lendas e Romances",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "mauricio",
+  "titulo": "Maurício",
+  "autor": "Bernardo Guimarães",
+  "genero": "Romance",
+  "ano": 1877,
+  "busca": "Maurício",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "a-ilha-maldita",
+  "titulo": "A Ilha Maldita",
+  "autor": "Bernardo Guimarães",
+  "genero": "Romance",
+  "ano": 1879,
+  "busca": "A Ilha Maldita",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "rosaura-a-enjeitada",
+  "titulo": "Rosaura, a Enjeitada",
+  "autor": "Bernardo Guimarães",
+  "genero": "Romance",
+  "ano": 1883,
+  "busca": "Rosaura, a Enjeitada",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "o-indio-afonso",
+  "titulo": "O Índio Afonso",
+  "autor": "Bernardo Guimarães",
+  "genero": "Romance",
+  "ano": 1873,
+  "busca": "O Índio Afonso",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "historia-e-tradicoes-da-provincia-de-minas-gerais",
+  "titulo": "História e Tradições da Província de Minas Gerais",
+  "autor": "Bernardo Guimarães",
+  "genero": "Contos",
+  "ano": 1858,
+  "busca": "História e Tradições da Província de Minas Gerais",
+  "sobrenome": "Guimarães"
+ },
+ {
+  "id": "o-moco-loiro",
+  "titulo": "O Moço Loiro",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1845,
+  "busca": "O Moço Loiro",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "os-dois-amores",
+  "titulo": "Os Dois Amores",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1848,
+  "busca": "Os Dois Amores",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "rosa",
+  "titulo": "Rosa",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1849,
+  "busca": "Rosa",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "a-luneta-magica",
+  "titulo": "A Luneta Mágica",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1869,
+  "busca": "A Luneta Mágica",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "o-forasteiro",
+  "titulo": "O Forasteiro",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1855,
+  "busca": "O Forasteiro",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "memorias-do-sobrinho-de-meu-tio",
+  "titulo": "Memórias do Sobrinho de Meu Tio",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1867,
+  "busca": "Memórias do Sobrinho de Meu Tio",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "as-vitimas-algozes",
+  "titulo": "As Vítimas-Algozes",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1869,
+  "busca": "As Vítimas-Algozes",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "vicentina",
+  "titulo": "Vicentina",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1853,
+  "busca": "Vicentina",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "um-noivo-e-duas-noivas",
+  "titulo": "Um Noivo e Duas Noivas",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1871,
+  "busca": "Um Noivo e Duas Noivas",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "a-carteira-de-meu-tio",
+  "titulo": "A Carteira de Meu Tio",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Romance",
+  "ano": 1855,
+  "busca": "A Carteira de Meu Tio",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "memorias-da-rua-do-ouvidor",
+  "titulo": "Memórias da Rua do Ouvidor",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Crônicas",
+  "ano": 1878,
+  "busca": "Memórias da Rua do Ouvidor",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "o-primo-da-california",
+  "titulo": "O Primo da Califórnia",
+  "autor": "Joaquim Manuel de Macedo",
+  "genero": "Teatro",
+  "ano": 1858,
+  "busca": "O Primo da Califórnia",
+  "sobrenome": "Macedo"
+ },
+ {
+  "id": "a-retirada-da-laguna",
+  "titulo": "A Retirada da Laguna",
+  "autor": "Visconde de Taunay",
+  "genero": "Romance",
+  "ano": 1871,
+  "busca": "A Retirada da Laguna",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "dias-de-guerra-e-de-sertao",
+  "titulo": "Dias de Guerra e de Sertão",
+  "autor": "Visconde de Taunay",
+  "genero": "Crônicas",
+  "ano": 1920,
+  "busca": "Dias de Guerra e de Sertão",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "ouro-sobre-azul",
+  "titulo": "Ouro sobre Azul",
+  "autor": "Visconde de Taunay",
+  "genero": "Romance",
+  "ano": 1875,
+  "busca": "Ouro sobre Azul",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "o-encilhamento",
+  "titulo": "O Encilhamento",
+  "autor": "Visconde de Taunay",
+  "genero": "Romance",
+  "ano": 1893,
+  "busca": "O Encilhamento",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "narrativas-militares",
+  "titulo": "Narrativas Militares",
+  "autor": "Visconde de Taunay",
+  "genero": "Crônicas",
+  "ano": 1878,
+  "busca": "Narrativas Militares",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "ceus-e-terras-do-brasil",
+  "titulo": "Céus e Terras do Brasil",
+  "autor": "Visconde de Taunay",
+  "genero": "Crônicas",
+  "ano": 1882,
+  "busca": "Céus e Terras do Brasil",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "historias-brasileiras",
+  "titulo": "Histórias Brasileiras",
+  "autor": "Visconde de Taunay",
+  "genero": "Contos",
+  "ano": 1874,
+  "busca": "Histórias Brasileiras",
+  "sobrenome": "Taunay"
+ },
+ {
+  "id": "malazarte",
+  "titulo": "Malazarte",
+  "autor": "Graça Aranha",
+  "genero": "Teatro",
+  "ano": 1911,
+  "busca": "Malazarte",
+  "sobrenome": "Aranha"
+ },
+ {
+  "id": "a-estetica-da-vida",
+  "titulo": "A Estética da Vida",
+  "autor": "Graça Aranha",
+  "genero": "Ensaio",
+  "ano": 1921,
+  "busca": "A Estética da Vida",
+  "sobrenome": "Aranha"
+ },
+ {
+  "id": "a-normalista",
+  "titulo": "A Normalista",
+  "autor": "Adolfo Caminha",
+  "genero": "Romance",
+  "ano": 1893,
+  "busca": "A Normalista",
+  "sobrenome": "Caminha"
+ },
+ {
+  "id": "tentacao",
+  "titulo": "Tentação",
+  "autor": "Adolfo Caminha",
+  "genero": "Romance",
+  "ano": 1896,
+  "busca": "Tentação",
+  "sobrenome": "Caminha"
+ },
+ {
+  "id": "no-pais-dos-yankees",
+  "titulo": "No País dos Yankees",
+  "autor": "Adolfo Caminha",
+  "genero": "Crônicas",
+  "ano": 1894,
+  "busca": "No País dos Yankees",
+  "sobrenome": "Caminha"
+ },
+ {
+  "id": "cartas-literarias",
+  "titulo": "Cartas Literárias",
+  "autor": "Adolfo Caminha",
+  "genero": "Ensaio",
+  "ano": 1895,
+  "busca": "Cartas Literárias",
+  "sobrenome": "Caminha"
+ },
+ {
+  "id": "voos-incertos",
+  "titulo": "Vôos Incertos",
+  "autor": "Adolfo Caminha",
+  "genero": "Poesia",
+  "ano": 1887,
+  "busca": "Vôos Incertos",
+  "sobrenome": "Caminha"
+ },
+ {
+  "id": "o-missionario",
+  "titulo": "O Missionário",
+  "autor": "Inglês de Sousa",
+  "genero": "Romance",
+  "ano": 1891,
+  "busca": "O Missionário",
+  "sobrenome": "Inglês"
+ },
+ {
+  "id": "o-coronel-sangrado",
+  "titulo": "O Coronel Sangrado",
+  "autor": "Inglês de Sousa",
+  "genero": "Romance",
+  "ano": 1877,
+  "busca": "O Coronel Sangrado",
+  "sobrenome": "Inglês"
+ },
+ {
+  "id": "contos-amazonicos",
+  "titulo": "Contos Amazônicos",
+  "autor": "Inglês de Sousa",
+  "genero": "Contos",
+  "ano": 1893,
+  "busca": "Contos Amazônicos",
+  "sobrenome": "Inglês"
+ },
+ {
+  "id": "historia-de-um-pescador",
+  "titulo": "História de um Pescador",
+  "autor": "Inglês de Sousa",
+  "genero": "Romance",
+  "ano": 1876,
+  "busca": "História de um Pescador",
+  "sobrenome": "Inglês"
+ },
+ {
+  "id": "o-cacaulista",
+  "titulo": "O Cacaulista",
+  "autor": "Inglês de Sousa",
+  "genero": "Romance",
+  "ano": 1876,
+  "busca": "O Cacaulista",
+  "sobrenome": "Inglês"
+ },
+ {
+  "id": "o-cabeleira",
+  "titulo": "O Cabeleira",
+  "autor": "Franklin Távora",
+  "genero": "Romance",
+  "ano": 1876,
+  "busca": "O Cabeleira",
+  "sobrenome": "Távora"
+ },
+ {
+  "id": "o-matuto",
+  "titulo": "O Matuto",
+  "autor": "Franklin Távora",
+  "genero": "Romance",
+  "ano": 1878,
+  "busca": "O Matuto",
+  "sobrenome": "Távora"
+ },
+ {
+  "id": "lourenco",
+  "titulo": "Lourenço",
+  "autor": "Franklin Távora",
+  "genero": "Romance",
+  "ano": 1881,
+  "busca": "Lourenço",
+  "sobrenome": "Távora"
+ },
+ {
+  "id": "um-casamento-no-arrabalde",
+  "titulo": "Um Casamento no Arrabalde",
+  "autor": "Franklin Távora",
+  "genero": "Romance",
+  "ano": 1869,
+  "busca": "Um Casamento no Arrabalde",
+  "sobrenome": "Távora"
+ },
+ {
+  "id": "a-fome",
+  "titulo": "A Fome",
+  "autor": "Rodolfo Teófilo",
+  "genero": "Romance",
+  "ano": 1890,
+  "busca": "A Fome",
+  "sobrenome": "Teófilo"
+ },
+ {
+  "id": "o-paroara",
+  "titulo": "O Paroara",
+  "autor": "Rodolfo Teófilo",
+  "genero": "Romance",
+  "ano": 1899,
+  "busca": "O Paroara",
+  "sobrenome": "Teófilo"
+ },
+ {
+  "id": "os-brilhantes",
+  "titulo": "Os Brilhantes",
+  "autor": "Rodolfo Teófilo",
+  "genero": "Romance",
+  "ano": 1895,
+  "busca": "Os Brilhantes",
+  "sobrenome": "Teófilo"
+ },
+ {
+  "id": "violacao",
+  "titulo": "Violação",
+  "autor": "Rodolfo Teófilo",
+  "genero": "Romance",
+  "ano": 1898,
+  "busca": "Violação",
+  "sobrenome": "Teófilo"
+ },
+ {
+  "id": "maria-rita",
+  "titulo": "Maria Rita",
+  "autor": "Rodolfo Teófilo",
+  "genero": "Romance",
+  "ano": 1897,
+  "busca": "Maria Rita",
+  "sobrenome": "Teófilo"
+ },
+ {
+  "id": "pelo-sertao",
+  "titulo": "Pelo Sertão",
+  "autor": "Afonso Arinos",
+  "genero": "Contos",
+  "ano": 1898,
+  "busca": "Pelo Sertão",
+  "sobrenome": "Arinos"
+ },
+ {
+  "id": "os-jaguncos",
+  "titulo": "Os Jagunços",
+  "autor": "Afonso Arinos",
+  "genero": "Romance",
+  "ano": 1898,
+  "busca": "Os Jagunços",
+  "sobrenome": "Arinos"
+ },
+ {
+  "id": "lendas-e-tradicoes-brasileiras",
+  "titulo": "Lendas e Tradições Brasileiras",
+  "autor": "Afonso Arinos",
+  "genero": "Contos",
+  "ano": 1917,
+  "busca": "Lendas e Tradições Brasileiras",
+  "sobrenome": "Arinos"
+ },
+ {
+  "id": "historias-e-paisagens",
+  "titulo": "Histórias e Paisagens",
+  "autor": "Afonso Arinos",
+  "genero": "Contos",
+  "ano": 1921,
+  "busca": "Histórias e Paisagens",
+  "sobrenome": "Arinos"
+ },
+ {
+  "id": "a-conquista",
+  "titulo": "A Conquista",
+  "autor": "Coelho Neto",
+  "genero": "Romance",
+  "ano": 1899,
+  "busca": "A Conquista",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "inverno-em-flor",
+  "titulo": "Inverno em Flor",
+  "autor": "Coelho Neto",
+  "genero": "Romance",
+  "ano": 1897,
+  "busca": "Inverno em Flor",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "o-rei-fantasma",
+  "titulo": "O Rei Fantasma",
+  "autor": "Coelho Neto",
+  "genero": "Romance",
+  "ano": 1895,
+  "busca": "O Rei Fantasma",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "fogo-fatuo",
+  "titulo": "Fogo Fátuo",
+  "autor": "Coelho Neto",
+  "genero": "Romance",
+  "ano": 1929,
+  "busca": "Fogo Fátuo",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "sertao",
+  "titulo": "Sertão",
+  "autor": "Coelho Neto",
+  "genero": "Contos",
+  "ano": 1896,
+  "busca": "Sertão",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "miragem",
+  "titulo": "Miragem",
+  "autor": "Coelho Neto",
+  "genero": "Romance",
+  "ano": 1895,
+  "busca": "Miragem",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "tormenta",
+  "titulo": "Tormenta",
+  "autor": "Coelho Neto",
+  "genero": "Romance",
+  "ano": 1901,
+  "busca": "Tormenta",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "rapsodias",
+  "titulo": "Rapsódias",
+  "autor": "Coelho Neto",
+  "genero": "Contos",
+  "ano": 1891,
+  "busca": "Rapsódias",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "banzo",
+  "titulo": "Banzo",
+  "autor": "Coelho Neto",
+  "genero": "Contos",
+  "ano": 1913,
+  "busca": "Banzo",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "treva",
+  "titulo": "Treva",
+  "autor": "Coelho Neto",
+  "genero": "Contos",
+  "ano": 1905,
+  "busca": "Treva",
+  "sobrenome": "Neto"
+ },
+ {
+  "id": "cidades-mortas",
+  "titulo": "Cidades Mortas",
+  "autor": "Monteiro Lobato",
+  "genero": "Contos",
+  "ano": 1919,
+  "busca": "Cidades Mortas",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "negrinha",
+  "titulo": "Negrinha",
+  "autor": "Monteiro Lobato",
+  "genero": "Contos",
+  "ano": 1920,
+  "busca": "Negrinha",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "ideias-de-jeca-tatu",
+  "titulo": "Ideias de Jeca Tatu",
+  "autor": "Monteiro Lobato",
+  "genero": "Ensaio",
+  "ano": 1919,
+  "busca": "Ideias de Jeca Tatu",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "o-presidente-negro",
+  "titulo": "O Presidente Negro",
+  "autor": "Monteiro Lobato",
+  "genero": "Romance",
+  "ano": 1926,
+  "busca": "O Presidente Negro",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "jeca-tatuzinho",
+  "titulo": "Jeca Tatuzinho",
+  "autor": "Monteiro Lobato",
+  "genero": "Contos",
+  "ano": 1924,
+  "busca": "Jeca Tatuzinho",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "fabulas",
+  "titulo": "Fábulas",
+  "autor": "Monteiro Lobato",
+  "genero": "Contos",
+  "ano": 1922,
+  "busca": "Fábulas",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "a-onda-verde",
+  "titulo": "A Onda Verde",
+  "autor": "Monteiro Lobato",
+  "genero": "Crônicas",
+  "ano": 1921,
+  "busca": "A Onda Verde",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "mundo-da-lua",
+  "titulo": "Mundo da Lua",
+  "autor": "Monteiro Lobato",
+  "genero": "Crônicas",
+  "ano": 1923,
+  "busca": "Mundo da Lua",
+  "sobrenome": "Lobato"
+ },
+ {
+  "id": "cronicas-e-novelas",
+  "titulo": "Crônicas e Novelas",
+  "autor": "Olavo Bilac",
+  "genero": "Crônicas",
+  "ano": 1894,
+  "busca": "Crônicas e Novelas",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "conferencias-literarias",
+  "titulo": "Conferências Literárias",
+  "autor": "Olavo Bilac",
+  "genero": "Ensaio",
+  "ano": 1906,
+  "busca": "Conferências Literárias",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "tarde",
+  "titulo": "Tarde",
+  "autor": "Olavo Bilac",
+  "genero": "Poesia",
+  "ano": 1919,
+  "busca": "Tarde",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "panoplias",
+  "titulo": "Panóplias",
+  "autor": "Olavo Bilac",
+  "genero": "Poesia",
+  "ano": 1888,
+  "busca": "Panóplias",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "alma-inquieta",
+  "titulo": "Alma Inquieta",
+  "autor": "Olavo Bilac",
+  "genero": "Poesia",
+  "ano": 1902,
+  "busca": "Alma Inquieta",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "contos-patrios",
+  "titulo": "Contos Pátrios",
+  "autor": "Olavo Bilac",
+  "genero": "Contos",
+  "ano": 1904,
+  "busca": "Contos Pátrios",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "poesias-infantis",
+  "titulo": "Poesias Infantis",
+  "autor": "Olavo Bilac",
+  "genero": "Poesia",
+  "ano": 1904,
+  "busca": "Poesias Infantis",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "critica-e-fantasia",
+  "titulo": "Crítica e Fantasia",
+  "autor": "Olavo Bilac",
+  "genero": "Ensaio",
+  "ano": 1904,
+  "busca": "Crítica e Fantasia",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "ironia-e-piedade",
+  "titulo": "Ironia e Piedade",
+  "autor": "Olavo Bilac",
+  "genero": "Crônicas",
+  "ano": 1916,
+  "busca": "Ironia e Piedade",
+  "sobrenome": "Bilac"
+ },
+ {
+  "id": "espumas-flutuantes",
+  "titulo": "Espumas Flutuantes",
+  "autor": "Castro Alves",
+  "genero": "Poesia",
+  "ano": 1870,
+  "busca": "Espumas Flutuantes",
+  "sobrenome": "Alves"
+ },
+ {
+  "id": "os-escravos",
+  "titulo": "Os Escravos",
+  "autor": "Castro Alves",
+  "genero": "Poesia",
+  "ano": 1883,
+  "busca": "Os Escravos",
+  "sobrenome": "Alves"
+ },
+ {
+  "id": "a-cachoeira-de-paulo-afonso",
+  "titulo": "A Cachoeira de Paulo Afonso",
+  "autor": "Castro Alves",
+  "genero": "Poesia",
+  "ano": 1876,
+  "busca": "A Cachoeira de Paulo Afonso",
+  "sobrenome": "Alves"
+ },
+ {
+  "id": "gonzaga-ou-a-revolucao-de-minas",
+  "titulo": "Gonzaga ou A Revolução de Minas",
+  "autor": "Castro Alves",
+  "genero": "Teatro",
+  "ano": 1875,
+  "busca": "Gonzaga ou A Revolução de Minas",
+  "sobrenome": "Alves"
+ },
+ {
+  "id": "o-navio-negreiro",
+  "titulo": "O Navio Negreiro",
+  "autor": "Castro Alves",
+  "genero": "Poesia",
+  "ano": 1880,
+  "busca": "O Navio Negreiro",
+  "sobrenome": "Alves"
+ },
+ {
+  "id": "hinos-do-equador",
+  "titulo": "Hinos do Equador",
+  "autor": "Castro Alves",
+  "genero": "Poesia",
+  "ano": 1921,
+  "busca": "Hinos do Equador",
+  "sobrenome": "Alves"
+ },
+ {
+  "id": "segundos-cantos",
+  "titulo": "Segundos Cantos",
+  "autor": "Gonçalves Dias",
+  "genero": "Poesia",
+  "ano": 1848,
+  "busca": "Segundos Cantos",
+  "sobrenome": "Dias"
+ },
+ {
+  "id": "ultimos-cantos",
+  "titulo": "Últimos Cantos",
+  "autor": "Gonçalves Dias",
+  "genero": "Poesia",
+  "ano": 1851,
+  "busca": "Últimos Cantos",
+  "sobrenome": "Dias"
+ },
+ {
+  "id": "os-timbiras",
+  "titulo": "Os Timbiras",
+  "autor": "Gonçalves Dias",
+  "genero": "Poesia",
+  "ano": 1857,
+  "busca": "Os Timbiras",
+  "sobrenome": "Dias"
+ },
+ {
+  "id": "leonor-de-mendonca",
+  "titulo": "Leonor de Mendonça",
+  "autor": "Gonçalves Dias",
+  "genero": "Teatro",
+  "ano": 1847,
+  "busca": "Leonor de Mendonça",
+  "sobrenome": "Dias"
+ },
+ {
+  "id": "sextilhas-de-frei-antao",
+  "titulo": "Sextilhas de Frei Antão",
+  "autor": "Gonçalves Dias",
+  "genero": "Poesia",
+  "ano": 1848,
+  "busca": "Sextilhas de Frei Antão",
+  "sobrenome": "Dias"
+ },
+ {
+  "id": "meditacao",
+  "titulo": "Meditação",
+  "autor": "Gonçalves Dias",
+  "genero": "Contos",
+  "ano": 1850,
+  "busca": "Meditação",
+  "sobrenome": "Dias"
+ },
+ {
+  "id": "noite-na-taverna",
+  "titulo": "Noite na Taverna",
+  "autor": "Álvares de Azevedo",
+  "genero": "Contos",
+  "ano": 1855,
+  "busca": "Noite na Taverna",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "macario",
+  "titulo": "Macário",
+  "autor": "Álvares de Azevedo",
+  "genero": "Teatro",
+  "ano": 1855,
+  "busca": "Macário",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "o-conde-lopo",
+  "titulo": "O Conde Lopo",
+  "autor": "Álvares de Azevedo",
+  "genero": "Poesia",
+  "ano": 1866,
+  "busca": "O Conde Lopo",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "o-poema-do-frade",
+  "titulo": "O Poema do Frade",
+  "autor": "Álvares de Azevedo",
+  "genero": "Poesia",
+  "ano": 1862,
+  "busca": "O Poema do Frade",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "livro-de-fra-gondicario",
+  "titulo": "Livro de Fra Gondicário",
+  "autor": "Álvares de Azevedo",
+  "genero": "Poesia",
+  "ano": 1862,
+  "busca": "Livro de Fra Gondicário",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "poesias-completas-azevedo",
+  "titulo": "Poesias Completas",
+  "autor": "Álvares de Azevedo",
+  "genero": "Poesia",
+  "ano": 1862,
+  "busca": "Poesias Completas",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "as-primaveras",
+  "titulo": "As Primaveras",
+  "autor": "Casimiro de Abreu",
+  "genero": "Poesia",
+  "ano": 1859,
+  "busca": "As Primaveras",
+  "sobrenome": "Abreu"
+ },
+ {
+  "id": "camila",
+  "titulo": "Camila",
+  "autor": "Casimiro de Abreu",
+  "genero": "Teatro",
+  "ano": 1856,
+  "busca": "Camila",
+  "sobrenome": "Abreu"
+ },
+ {
+  "id": "cantos-e-fantasias",
+  "titulo": "Cantos e Fantasias",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1865,
+  "busca": "Cantos e Fantasias",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "cantos-do-ermo-e-da-cidade",
+  "titulo": "Cantos do Ermo e da Cidade",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1869,
+  "busca": "Cantos do Ermo e da Cidade",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "cantos-meridionais",
+  "titulo": "Cantos Meridionais",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1869,
+  "busca": "Cantos Meridionais",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "cantos-religiosos",
+  "titulo": "Cantos Religiosos",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1878,
+  "busca": "Cantos Religiosos",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "vozes-da-america",
+  "titulo": "Vozes da América",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1864,
+  "busca": "Vozes da América",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "noturnas",
+  "titulo": "Noturnas",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1861,
+  "busca": "Noturnas",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "anchieta-ou-o-evangelho-nas-selvas",
+  "titulo": "Anchieta ou O Evangelho nas Selvas",
+  "autor": "Fagundes Varela",
+  "genero": "Poesia",
+  "ano": 1875,
+  "busca": "Anchieta ou O Evangelho nas Selvas",
+  "sobrenome": "Varela"
+ },
+ {
+  "id": "missal",
+  "titulo": "Missal",
+  "autor": "Cruz e Sousa",
+  "genero": "Contos",
+  "ano": 1893,
+  "busca": "Missal",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "farois",
+  "titulo": "Faróis",
+  "autor": "Cruz e Sousa",
+  "genero": "Poesia",
+  "ano": 1900,
+  "busca": "Faróis",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "ultimos-sonetos",
+  "titulo": "Últimos Sonetos",
+  "autor": "Cruz e Sousa",
+  "genero": "Poesia",
+  "ano": 1905,
+  "busca": "Últimos Sonetos",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "evocacoes",
+  "titulo": "Evocações",
+  "autor": "Cruz e Sousa",
+  "genero": "Poesia",
+  "ano": 1898,
+  "busca": "Evocações",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "o-livro-derradeiro",
+  "titulo": "O Livro Derradeiro",
+  "autor": "Cruz e Sousa",
+  "genero": "Poesia",
+  "ano": 1961,
+  "busca": "O Livro Derradeiro",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "eu-e-outras-poesias",
+  "titulo": "Eu e Outras Poesias",
+  "autor": "Augusto dos Anjos",
+  "genero": "Poesia",
+  "ano": 1920,
+  "busca": "Eu e Outras Poesias",
+  "sobrenome": "Anjos"
+ },
+ {
+  "id": "setenario-das-dores-de-nossa-senhora",
+  "titulo": "Setenário das Dores de Nossa Senhora",
+  "autor": "Alphonsus de Guimaraens",
+  "genero": "Poesia",
+  "ano": 1899,
+  "busca": "Setenário das Dores de Nossa Senhora",
+  "sobrenome": "Guimaraens"
+ },
+ {
+  "id": "kyriale",
+  "titulo": "Kyriale",
+  "autor": "Alphonsus de Guimaraens",
+  "genero": "Poesia",
+  "ano": 1902,
+  "busca": "Kyriale",
+  "sobrenome": "Guimaraens"
+ },
+ {
+  "id": "pastoral-aos-crentes-do-amor-e-da-morte",
+  "titulo": "Pastoral aos Crentes do Amor e da Morte",
+  "autor": "Alphonsus de Guimaraens",
+  "genero": "Poesia",
+  "ano": 1923,
+  "busca": "Pastoral aos Crentes do Amor e da Morte",
+  "sobrenome": "Guimaraens"
+ },
+ {
+  "id": "dona-mistica",
+  "titulo": "Dona Mística",
+  "autor": "Alphonsus de Guimaraens",
+  "genero": "Poesia",
+  "ano": 1899,
+  "busca": "Dona Mística",
+  "sobrenome": "Guimaraens"
+ },
+ {
+  "id": "camara-ardente",
+  "titulo": "Câmara Ardente",
+  "autor": "Alphonsus de Guimaraens",
+  "genero": "Poesia",
+  "ano": 1899,
+  "busca": "Câmara Ardente",
+  "sobrenome": "Guimaraens"
+ },
+ {
+  "id": "marilia-de-dirceu",
+  "titulo": "Marília de Dirceu",
+  "autor": "Tomás Antônio Gonzaga",
+  "genero": "Poesia",
+  "ano": 1792,
+  "busca": "Marília de Dirceu",
+  "sobrenome": "Gonzaga"
+ },
+ {
+  "id": "cartas-chilenas",
+  "titulo": "Cartas Chilenas",
+  "autor": "Tomás Antônio Gonzaga",
+  "genero": "Poesia",
+  "ano": 1845,
+  "busca": "Cartas Chilenas",
+  "sobrenome": "Gonzaga"
+ },
+ {
+  "id": "sermao-da-sexagesima",
+  "titulo": "Sermão da Sexagésima",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1655,
+  "busca": "Sermão da Sexagésima",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "sermao-do-bom-ladrao",
+  "titulo": "Sermão do Bom Ladrão",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1655,
+  "busca": "Sermão do Bom Ladrão",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "sermao-de-santo-antonio-aos-peixes",
+  "titulo": "Sermão de Santo Antônio aos Peixes",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1654,
+  "busca": "Sermão de Santo Antônio aos Peixes",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "sermao-do-mandato",
+  "titulo": "Sermão do Mandato",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1645,
+  "busca": "Sermão do Mandato",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "historia-do-futuro",
+  "titulo": "História do Futuro",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1718,
+  "busca": "História do Futuro",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "esperancas-de-portugal",
+  "titulo": "Esperanças de Portugal",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1659,
+  "busca": "Esperanças de Portugal",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "cartas",
+  "titulo": "Cartas",
+  "autor": "Padre Antônio Vieira",
+  "genero": "Clássico",
+  "ano": 1735,
+  "busca": "Cartas",
+  "sobrenome": "Vieira"
+ },
+ {
+  "id": "o-abolicionismo",
+  "titulo": "O Abolicionismo",
+  "autor": "Joaquim Nabuco",
+  "genero": "Ensaio",
+  "ano": 1883,
+  "busca": "O Abolicionismo",
+  "sobrenome": "Nabuco"
+ },
+ {
+  "id": "um-estadista-do-imperio",
+  "titulo": "Um Estadista do Império",
+  "autor": "Joaquim Nabuco",
+  "genero": "Ensaio",
+  "ano": 1897,
+  "busca": "Um Estadista do Império",
+  "sobrenome": "Nabuco"
+ },
+ {
+  "id": "minha-formacao",
+  "titulo": "Minha Formação",
+  "autor": "Joaquim Nabuco",
+  "genero": "Ensaio",
+  "ano": 1900,
+  "busca": "Minha Formação",
+  "sobrenome": "Nabuco"
+ },
+ {
+  "id": "camoes-e-os-lusiadas",
+  "titulo": "Camões e Os Lusíadas",
+  "autor": "Joaquim Nabuco",
+  "genero": "Ensaio",
+  "ano": 1872,
+  "busca": "Camões e Os Lusíadas",
+  "sobrenome": "Nabuco"
+ },
+ {
+  "id": "oracao-aos-mocos",
+  "titulo": "Oração aos Moços",
+  "autor": "Rui Barbosa",
+  "genero": "Ensaio",
+  "ano": 1921,
+  "busca": "Oração aos Moços",
+  "sobrenome": "Barbosa"
+ },
+ {
+  "id": "a-queda-do-imperio",
+  "titulo": "A Queda do Império",
+  "autor": "Rui Barbosa",
+  "genero": "Ensaio",
+  "ano": 1921,
+  "busca": "A Queda do Império",
+  "sobrenome": "Barbosa"
+ },
+ {
+  "id": "a-imprensa-e-o-dever-da-verdade",
+  "titulo": "A Imprensa e o Dever da Verdade",
+  "autor": "Rui Barbosa",
+  "genero": "Ensaio",
+  "ano": 1920,
+  "busca": "A Imprensa e o Dever da Verdade",
+  "sobrenome": "Barbosa"
+ },
+ {
+  "id": "cartas-de-inglaterra-barbosa",
+  "titulo": "Cartas de Inglaterra",
+  "autor": "Rui Barbosa",
+  "genero": "Ensaio",
+  "ano": 1896,
+  "busca": "Cartas de Inglaterra",
+  "sobrenome": "Barbosa"
+ },
+ {
+  "id": "o-mambembe",
+  "titulo": "O Mambembe",
+  "autor": "Artur Azevedo",
+  "genero": "Teatro",
+  "ano": 1904,
+  "busca": "O Mambembe",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "a-capital-federal",
+  "titulo": "A Capital Federal",
+  "autor": "Artur Azevedo",
+  "genero": "Teatro",
+  "ano": 1897,
+  "busca": "A Capital Federal",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "o-dote",
+  "titulo": "O Dote",
+  "autor": "Artur Azevedo",
+  "genero": "Teatro",
+  "ano": 1907,
+  "busca": "O Dote",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "amor-por-anexins",
+  "titulo": "Amor por Anexins",
+  "autor": "Artur Azevedo",
+  "genero": "Teatro",
+  "ano": 1872,
+  "busca": "Amor por Anexins",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "o-badejo",
+  "titulo": "O Badejo",
+  "autor": "Artur Azevedo",
+  "genero": "Teatro",
+  "ano": 1898,
+  "busca": "O Badejo",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "contos-fora-da-moda",
+  "titulo": "Contos Fora da Moda",
+  "autor": "Artur Azevedo",
+  "genero": "Contos",
+  "ano": 1894,
+  "busca": "Contos Fora da Moda",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "contos-possiveis",
+  "titulo": "Contos Possíveis",
+  "autor": "Artur Azevedo",
+  "genero": "Contos",
+  "ano": 1889,
+  "busca": "Contos Possíveis",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "vida-alheia",
+  "titulo": "Vida Alheia",
+  "autor": "Artur Azevedo",
+  "genero": "Contos",
+  "ano": 1906,
+  "busca": "Vida Alheia",
+  "sobrenome": "Azevedo"
+ },
+ {
+  "id": "o-juiz-de-paz-da-roca",
+  "titulo": "O Juiz de Paz da Roça",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1838,
+  "busca": "O Juiz de Paz da Roça",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "o-novico",
+  "titulo": "O Noviço",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1845,
+  "busca": "O Noviço",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "judas-em-sabado-de-aleluia",
+  "titulo": "Judas em Sábado de Aleluia",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1844,
+  "busca": "Judas em Sábado de Aleluia",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "os-irmaos-das-almas",
+  "titulo": "Os Irmãos das Almas",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1844,
+  "busca": "Os Irmãos das Almas",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "as-casadas-solteiras",
+  "titulo": "As Casadas Solteiras",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1845,
+  "busca": "As Casadas Solteiras",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "o-caixeiro-da-taverna",
+  "titulo": "O Caixeiro da Taverna",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1847,
+  "busca": "O Caixeiro da Taverna",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "quem-casa-quer-casa",
+  "titulo": "Quem Casa Quer Casa",
+  "autor": "Martins Pena",
+  "genero": "Teatro",
+  "ano": 1845,
+  "busca": "Quem Casa Quer Casa",
+  "sobrenome": "Pena"
+ },
+ {
+  "id": "a-esfinge",
+  "titulo": "A Esfinge",
+  "autor": "Afrânio Peixoto",
+  "genero": "Romance",
+  "ano": 1911,
+  "busca": "A Esfinge",
+  "sobrenome": "Peixoto"
+ },
+ {
+  "id": "maria-bonita",
+  "titulo": "Maria Bonita",
+  "autor": "Afrânio Peixoto",
+  "genero": "Romance",
+  "ano": 1914,
+  "busca": "Maria Bonita",
+  "sobrenome": "Peixoto"
+ },
+ {
+  "id": "sinhazinha",
+  "titulo": "Sinhazinha",
+  "autor": "Afrânio Peixoto",
+  "genero": "Romance",
+  "ano": 1929,
+  "busca": "Sinhazinha",
+  "sobrenome": "Peixoto"
+ },
+ {
+  "id": "fruta-do-mato",
+  "titulo": "Fruta do Mato",
+  "autor": "Afrânio Peixoto",
+  "genero": "Romance",
+  "ano": 1920,
+  "busca": "Fruta do Mato",
+  "sobrenome": "Peixoto"
+ },
+ {
+  "id": "bugrinha",
+  "titulo": "Bugrinha",
+  "autor": "Afrânio Peixoto",
+  "genero": "Romance",
+  "ano": 1922,
+  "busca": "Bugrinha",
+  "sobrenome": "Peixoto"
+ },
+ {
+  "id": "a-falencia",
+  "titulo": "A Falência",
+  "autor": "Júlia Lopes de Almeida",
+  "genero": "Romance",
+  "ano": 1901,
+  "busca": "A Falência",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "a-viuva-simoes",
+  "titulo": "A Viúva Simões",
+  "autor": "Júlia Lopes de Almeida",
+  "genero": "Romance",
+  "ano": 1897,
+  "busca": "A Viúva Simões",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "memorias-de-marta",
+  "titulo": "Memórias de Marta",
+  "autor": "Júlia Lopes de Almeida",
+  "genero": "Romance",
+  "ano": 1889,
+  "busca": "Memórias de Marta",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "a-familia-medeiros",
+  "titulo": "A Família Medeiros",
+  "autor": "Júlia Lopes de Almeida",
+  "genero": "Romance",
+  "ano": 1892,
+  "busca": "A Família Medeiros",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "cruel-amor",
+  "titulo": "Cruel Amor",
+  "autor": "Júlia Lopes de Almeida",
+  "genero": "Romance",
+  "ano": 1911,
+  "busca": "Cruel Amor",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "a-silveirinha",
+  "titulo": "A Silveirinha",
+  "autor": "Júlia Lopes de Almeida",
+  "genero": "Romance",
+  "ano": 1914,
+  "busca": "A Silveirinha",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "ursula",
+  "titulo": "Úrsula",
+  "autor": "Maria Firmina dos Reis",
+  "genero": "Romance",
+  "ano": 1859,
+  "busca": "Úrsula",
+  "sobrenome": "Firmina"
+ },
+ {
+  "id": "gupeva",
+  "titulo": "Gupeva",
+  "autor": "Maria Firmina dos Reis",
+  "genero": "Romance",
+  "ano": 1861,
+  "busca": "Gupeva",
+  "sobrenome": "Firmina"
+ },
+ {
+  "id": "mota-coqueiro",
+  "titulo": "Mota Coqueiro",
+  "autor": "José do Patrocínio",
+  "genero": "Romance",
+  "ano": 1877,
+  "busca": "Mota Coqueiro",
+  "sobrenome": "Patrocínio"
+ },
+ {
+  "id": "pedro-espanhol",
+  "titulo": "Pedro Espanhol",
+  "autor": "José do Patrocínio",
+  "genero": "Romance",
+  "ano": 1884,
+  "busca": "Pedro Espanhol",
+  "sobrenome": "Patrocínio"
+ },
+ {
+  "id": "os-retirantes",
+  "titulo": "Os Retirantes",
+  "autor": "José do Patrocínio",
+  "genero": "Romance",
+  "ano": 1879,
+  "busca": "Os Retirantes",
+  "sobrenome": "Patrocínio"
+ },
+ {
+  "id": "sonetos",
+  "titulo": "Sonetos",
+  "autor": "Antero de Quental",
+  "genero": "Poesia",
+  "ano": 1886,
+  "busca": "Sonetos",
+  "sobrenome": "Quental"
+ },
+ {
+  "id": "odes-modernas",
+  "titulo": "Odes Modernas",
+  "autor": "Antero de Quental",
+  "genero": "Poesia",
+  "ano": 1865,
+  "busca": "Odes Modernas",
+  "sobrenome": "Quental"
+ },
+ {
+  "id": "primaveras-romanticas",
+  "titulo": "Primaveras Românticas",
+  "autor": "Antero de Quental",
+  "genero": "Poesia",
+  "ano": 1872,
+  "busca": "Primaveras Românticas",
+  "sobrenome": "Quental"
+ },
+ {
+  "id": "tendencias-gerais-da-filosofia",
+  "titulo": "Tendências Gerais da Filosofia",
+  "autor": "Antero de Quental",
+  "genero": "Ensaio",
+  "ano": 1890,
+  "busca": "Tendências Gerais da Filosofia",
+  "sobrenome": "Quental"
+ },
+ {
+  "id": "o-livro-de-cesario-verde",
+  "titulo": "O Livro de Cesário Verde",
+  "autor": "Cesário Verde",
+  "genero": "Poesia",
+  "ano": 1887,
+  "busca": "O Livro de Cesário Verde",
+  "sobrenome": "Verde"
+ },
+ {
+  "id": "a-velhice-do-padre-eterno",
+  "titulo": "A Velhice do Padre Eterno",
+  "autor": "Guerra Junqueiro",
+  "genero": "Poesia",
+  "ano": 1885,
+  "busca": "A Velhice do Padre Eterno",
+  "sobrenome": "Junqueiro"
+ },
+ {
+  "id": "a-morte-de-d-joao",
+  "titulo": "A Morte de D. João",
+  "autor": "Guerra Junqueiro",
+  "genero": "Poesia",
+  "ano": 1874,
+  "busca": "A Morte de D. João",
+  "sobrenome": "Junqueiro"
+ },
+ {
+  "id": "patria",
+  "titulo": "Pátria",
+  "autor": "Guerra Junqueiro",
+  "genero": "Poesia",
+  "ano": 1896,
+  "busca": "Pátria",
+  "sobrenome": "Junqueiro"
+ },
+ {
+  "id": "os-simples",
+  "titulo": "Os Simples",
+  "autor": "Guerra Junqueiro",
+  "genero": "Poesia",
+  "ano": 1892,
+  "busca": "Os Simples",
+  "sobrenome": "Junqueiro"
+ },
+ {
+  "id": "finis-patriae",
+  "titulo": "Finis Patriae",
+  "autor": "Guerra Junqueiro",
+  "genero": "Poesia",
+  "ano": 1890,
+  "busca": "Finis Patriae",
+  "sobrenome": "Junqueiro"
+ },
+ {
+  "id": "campo-de-flores",
+  "titulo": "Campo de Flores",
+  "autor": "João de Deus",
+  "genero": "Poesia",
+  "ano": 1893,
+  "busca": "Campo de Flores",
+  "sobrenome": "Deus"
+ },
+ {
+  "id": "cartilha-maternal",
+  "titulo": "Cartilha Maternal",
+  "autor": "João de Deus",
+  "genero": "Ensaio",
+  "ano": 1876,
+  "busca": "Cartilha Maternal",
+  "sobrenome": "Deus"
+ },
+ {
+  "id": "frei-luis-de-sousa",
+  "titulo": "Frei Luís de Sousa",
+  "autor": "Almeida Garrett",
+  "genero": "Teatro",
+  "ano": 1844,
+  "busca": "Frei Luís de Sousa",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "folhas-caidas",
+  "titulo": "Folhas Caídas",
+  "autor": "Almeida Garrett",
+  "genero": "Poesia",
+  "ano": 1853,
+  "busca": "Folhas Caídas",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "camoes",
+  "titulo": "Camões",
+  "autor": "Almeida Garrett",
+  "genero": "Poesia",
+  "ano": 1825,
+  "busca": "Camões",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "dona-branca",
+  "titulo": "Dona Branca",
+  "autor": "Almeida Garrett",
+  "genero": "Poesia",
+  "ano": 1826,
+  "busca": "Dona Branca",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "o-arco-de-sant-ana",
+  "titulo": "O Arco de Sant'Ana",
+  "autor": "Almeida Garrett",
+  "genero": "Romance",
+  "ano": 1845,
+  "busca": "O Arco de Sant'Ana",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "romanceiro",
+  "titulo": "Romanceiro",
+  "autor": "Almeida Garrett",
+  "genero": "Poesia",
+  "ano": 1851,
+  "busca": "Romanceiro",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "um-auto-de-gil-vicente",
+  "titulo": "Um Auto de Gil Vicente",
+  "autor": "Almeida Garrett",
+  "genero": "Teatro",
+  "ano": 1838,
+  "busca": "Um Auto de Gil Vicente",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "falar-verdade-a-mentir",
+  "titulo": "Falar Verdade a Mentir",
+  "autor": "Almeida Garrett",
+  "genero": "Teatro",
+  "ano": 1845,
+  "busca": "Falar Verdade a Mentir",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "o-alfageme-de-santarem",
+  "titulo": "O Alfageme de Santarém",
+  "autor": "Almeida Garrett",
+  "genero": "Teatro",
+  "ano": 1842,
+  "busca": "O Alfageme de Santarém",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "flores-sem-fruto",
+  "titulo": "Flores sem Fruto",
+  "autor": "Almeida Garrett",
+  "genero": "Poesia",
+  "ano": 1845,
+  "busca": "Flores sem Fruto",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "adozinda",
+  "titulo": "Adozinda",
+  "autor": "Almeida Garrett",
+  "genero": "Poesia",
+  "ano": 1828,
+  "busca": "Adozinda",
+  "sobrenome": "Garrett"
+ },
+ {
+  "id": "o-monge-de-cister",
+  "titulo": "O Monge de Cister",
+  "autor": "Alexandre Herculano",
+  "genero": "Romance",
+  "ano": 1848,
+  "busca": "O Monge de Cister",
+  "sobrenome": "Herculano"
+ },
+ {
+  "id": "o-bobo",
+  "titulo": "O Bobo",
+  "autor": "Alexandre Herculano",
+  "genero": "Romance",
+  "ano": 1843,
+  "busca": "O Bobo",
+  "sobrenome": "Herculano"
+ },
+ {
+  "id": "lendas-e-narrativas",
+  "titulo": "Lendas e Narrativas",
+  "autor": "Alexandre Herculano",
+  "genero": "Contos",
+  "ano": 1851,
+  "busca": "Lendas e Narrativas",
+  "sobrenome": "Herculano"
+ },
+ {
+  "id": "a-harpa-do-crente",
+  "titulo": "A Harpa do Crente",
+  "autor": "Alexandre Herculano",
+  "genero": "Poesia",
+  "ano": 1838,
+  "busca": "A Harpa do Crente",
+  "sobrenome": "Herculano"
+ },
+ {
+  "id": "o-paroco-de-aldeia",
+  "titulo": "O Pároco de Aldeia",
+  "autor": "Alexandre Herculano",
+  "genero": "Romance",
+  "ano": 1844,
+  "busca": "O Pároco de Aldeia",
+  "sobrenome": "Herculano"
+ },
+ {
+  "id": "a-voz-do-profeta",
+  "titulo": "A Voz do Profeta",
+  "autor": "Alexandre Herculano",
+  "genero": "Ensaio",
+  "ano": 1836,
+  "busca": "A Voz do Profeta",
+  "sobrenome": "Herculano"
+ },
+ {
+  "id": "auto-da-barca-do-purgatorio",
+  "titulo": "Auto da Barca do Purgatório",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1518,
+  "busca": "Auto da Barca do Purgatório",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-da-barca-da-gloria",
+  "titulo": "Auto da Barca da Glória",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1519,
+  "busca": "Auto da Barca da Glória",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-da-india",
+  "titulo": "Auto da Índia",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1509,
+  "busca": "Auto da Índia",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "farsa-de-ines-pereira",
+  "titulo": "Farsa de Inês Pereira",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1523,
+  "busca": "Farsa de Inês Pereira",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "o-velho-da-horta",
+  "titulo": "O Velho da Horta",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1512,
+  "busca": "O Velho da Horta",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-da-alma",
+  "titulo": "Auto da Alma",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1518,
+  "busca": "Auto da Alma",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-da-fe",
+  "titulo": "Auto da Fé",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1510,
+  "busca": "Auto da Fé",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-da-lusitania",
+  "titulo": "Auto da Lusitânia",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1532,
+  "busca": "Auto da Lusitânia",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-de-mofina-mendes",
+  "titulo": "Auto de Mofina Mendes",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1534,
+  "busca": "Auto de Mofina Mendes",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "auto-da-feira",
+  "titulo": "Auto da Feira",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1527,
+  "busca": "Auto da Feira",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "farsa-dos-almocreves",
+  "titulo": "Farsa dos Almocreves",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1526,
+  "busca": "Farsa dos Almocreves",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "quem-tem-farelos",
+  "titulo": "Quem Tem Farelos?",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1515,
+  "busca": "Quem Tem Farelos?",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "dom-duardos",
+  "titulo": "Dom Duardos",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1522,
+  "busca": "Dom Duardos",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "floresta-de-enganos",
+  "titulo": "Floresta de Enganos",
+  "autor": "Gil Vicente",
+  "genero": "Teatro",
+  "ano": 1536,
+  "busca": "Floresta de Enganos",
+  "sobrenome": "Vicente"
+ },
+ {
+  "id": "sonetos-camoes",
+  "titulo": "Sonetos",
+  "autor": "Luís de Camões",
+  "genero": "Poesia",
+  "ano": 1595,
+  "busca": "Sonetos",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "rimas",
+  "titulo": "Rimas",
+  "autor": "Luís de Camões",
+  "genero": "Poesia",
+  "ano": 1595,
+  "busca": "Rimas",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "auto-de-el-rei-seleuco",
+  "titulo": "Auto de El-Rei Seleuco",
+  "autor": "Luís de Camões",
+  "genero": "Teatro",
+  "ano": 1587,
+  "busca": "Auto de El-Rei Seleuco",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "filodemo",
+  "titulo": "Filodemo",
+  "autor": "Luís de Camões",
+  "genero": "Teatro",
+  "ano": 1587,
+  "busca": "Filodemo",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "os-anfitrioes",
+  "titulo": "Os Anfitriões",
+  "autor": "Luís de Camões",
+  "genero": "Teatro",
+  "ano": 1587,
+  "busca": "Os Anfitriões",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "redondilhas",
+  "titulo": "Redondilhas",
+  "autor": "Luís de Camões",
+  "genero": "Poesia",
+  "ano": 1595,
+  "busca": "Redondilhas",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "eclogas",
+  "titulo": "Éclogas",
+  "autor": "Luís de Camões",
+  "genero": "Poesia",
+  "ano": 1595,
+  "busca": "Éclogas",
+  "sobrenome": "Camões"
+ },
+ {
+  "id": "peregrinacao",
+  "titulo": "Peregrinação",
+  "autor": "Fernão Mendes Pinto",
+  "genero": "Clássico",
+  "ano": 1614,
+  "busca": "Peregrinação",
+  "sobrenome": "Pinto"
+ },
+ {
+  "id": "macunaima",
+  "titulo": "Macunaíma",
+  "autor": "Mário de Andrade",
+  "genero": "Romance",
+  "ano": 1928,
+  "busca": "Macunaíma",
+  "sobrenome": "Andrade"
+ },
+ {
+  "id": "pauliceia-desvairada",
+  "titulo": "Paulicéia Desvairada",
+  "autor": "Mário de Andrade",
+  "genero": "Poesia",
+  "ano": 1922,
+  "busca": "Paulicéia Desvairada",
+  "sobrenome": "Andrade"
+ },
+ {
+  "id": "amar-verbo-intransitivo",
+  "titulo": "Amar, Verbo Intransitivo",
+  "autor": "Mário de Andrade",
+  "genero": "Romance",
+  "ano": 1927,
+  "busca": "Amar, Verbo Intransitivo",
+  "sobrenome": "Andrade"
+ },
+ {
+  "id": "cla-do-jabuti",
+  "titulo": "Clã do Jabuti",
+  "autor": "Mário de Andrade",
+  "genero": "Poesia",
+  "ano": 1927,
+  "busca": "Clã do Jabuti",
+  "sobrenome": "Andrade"
+ },
+ {
+  "id": "pau-brasil",
+  "titulo": "Pau Brasil",
+  "autor": "Oswald de Andrade",
+  "genero": "Poesia",
+  "ano": 1925,
+  "busca": "Pau Brasil",
+  "sobrenome": "Andrade"
+ },
+ {
+  "id": "memorias-sentimentais-de-joao-miramar",
+  "titulo": "Memórias Sentimentais de João Miramar",
+  "autor": "Oswald de Andrade",
+  "genero": "Romance",
+  "ano": 1924,
+  "busca": "Memórias Sentimentais de João Miramar",
+  "sobrenome": "Andrade"
+ },
+ {
+  "id": "juca-mulato",
+  "titulo": "Juca Mulato",
+  "autor": "Menotti del Picchia",
+  "genero": "Poesia",
+  "ano": 1917,
+  "busca": "Juca Mulato",
+  "sobrenome": "Picchia"
+ },
+ {
+  "id": "o-guardador-de-rebanhos",
+  "titulo": "O Guardador de Rebanhos",
+  "autor": "Fernando Pessoa",
+  "genero": "Poesia",
+  "ano": 1925,
+  "busca": "O Guardador de Rebanhos",
+  "sobrenome": "Pessoa"
+ },
+ {
+  "id": "odes-de-ricardo-reis",
+  "titulo": "Odes de Ricardo Reis",
+  "autor": "Fernando Pessoa",
+  "genero": "Poesia",
+  "ano": 1946,
+  "busca": "Odes de Ricardo Reis",
+  "sobrenome": "Pessoa"
+ },
+ {
+  "id": "poesias-de-alvaro-de-campos",
+  "titulo": "Poesias de Álvaro de Campos",
+  "autor": "Fernando Pessoa",
+  "genero": "Poesia",
+  "ano": 1944,
+  "busca": "Poesias de Álvaro de Campos",
+  "sobrenome": "Pessoa"
+ },
+ {
+  "id": "cancioneiro",
+  "titulo": "Cancioneiro",
+  "autor": "Fernando Pessoa",
+  "genero": "Poesia",
+  "ano": 1942,
+  "busca": "Cancioneiro",
+  "sobrenome": "Pessoa"
+ },
+ {
+  "id": "a-confissao-de-lucio",
+  "titulo": "A Confissão de Lúcio",
+  "autor": "Mário de Sá-Carneiro",
+  "genero": "Romance",
+  "ano": 1914,
+  "busca": "A Confissão de Lúcio",
+  "sobrenome": "Sá-Carneiro"
+ },
+ {
+  "id": "principio",
+  "titulo": "Princípio",
+  "autor": "Mário de Sá-Carneiro",
+  "genero": "Contos",
+  "ano": 1912,
+  "busca": "Princípio",
+  "sobrenome": "Sá-Carneiro"
+ },
+ {
+  "id": "dispersao",
+  "titulo": "Dispersão",
+  "autor": "Mário de Sá-Carneiro",
+  "genero": "Poesia",
+  "ano": 1914,
+  "busca": "Dispersão",
+  "sobrenome": "Sá-Carneiro"
+ },
+ {
+  "id": "indicios-de-oiro",
+  "titulo": "Indícios de Oiro",
+  "autor": "Mário de Sá-Carneiro",
+  "genero": "Poesia",
+  "ano": 1937,
+  "busca": "Indícios de Oiro",
+  "sobrenome": "Sá-Carneiro"
+ },
+ {
+  "id": "ceu-em-fogo",
+  "titulo": "Céu em Fogo",
+  "autor": "Mário de Sá-Carneiro",
+  "genero": "Contos",
+  "ano": 1915,
+  "busca": "Céu em Fogo",
+  "sobrenome": "Sá-Carneiro"
+ },
+ {
+  "id": "livro-de-magoas",
+  "titulo": "Livro de Mágoas",
+  "autor": "Florbela Espanca",
+  "genero": "Poesia",
+  "ano": 1919,
+  "busca": "Livro de Mágoas",
+  "sobrenome": "Espanca"
+ },
+ {
+  "id": "livro-de-soror-saudade",
+  "titulo": "Livro de Sóror Saudade",
+  "autor": "Florbela Espanca",
+  "genero": "Poesia",
+  "ano": 1923,
+  "busca": "Livro de Sóror Saudade",
+  "sobrenome": "Espanca"
+ },
+ {
+  "id": "charneca-em-flor",
+  "titulo": "Charneca em Flor",
+  "autor": "Florbela Espanca",
+  "genero": "Poesia",
+  "ano": 1931,
+  "busca": "Charneca em Flor",
+  "sobrenome": "Espanca"
+ },
+ {
+  "id": "as-mascaras-do-destino",
+  "titulo": "As Máscaras do Destino",
+  "autor": "Florbela Espanca",
+  "genero": "Contos",
+  "ano": 1931,
+  "busca": "As Máscaras do Destino",
+  "sobrenome": "Espanca"
+ },
+ {
+  "id": "clepsidra",
+  "titulo": "Clepsidra",
+  "autor": "Camilo Pessanha",
+  "genero": "Poesia",
+  "ano": 1920,
+  "busca": "Clepsidra",
+  "sobrenome": "Pessanha"
+ },
+ {
+  "id": "so",
+  "titulo": "Só",
+  "autor": "António Nobre",
+  "genero": "Poesia",
+  "ano": 1892,
+  "busca": "Só",
+  "sobrenome": "Nobre"
+ },
+ {
+  "id": "despedidas",
+  "titulo": "Despedidas",
+  "autor": "António Nobre",
+  "genero": "Poesia",
+  "ano": 1902,
+  "busca": "Despedidas",
+  "sobrenome": "Nobre"
+ },
+ {
+  "id": "oaristos",
+  "titulo": "Oaristos",
+  "autor": "Eugénio de Castro",
+  "genero": "Poesia",
+  "ano": 1890,
+  "busca": "Oaristos",
+  "sobrenome": "Castro"
+ },
+ {
+  "id": "horas",
+  "titulo": "Horas",
+  "autor": "Eugénio de Castro",
+  "genero": "Poesia",
+  "ano": 1891,
+  "busca": "Horas",
+  "sobrenome": "Castro"
+ },
+ {
+  "id": "belkiss",
+  "titulo": "Belkiss",
+  "autor": "Eugénio de Castro",
+  "genero": "Teatro",
+  "ano": 1894,
+  "busca": "Belkiss",
+  "sobrenome": "Castro"
+ },
+ {
+  "id": "o-anti-cristo",
+  "titulo": "O Anti-Cristo",
+  "autor": "Gomes Leal",
+  "genero": "Poesia",
+  "ano": 1884,
+  "busca": "O Anti-Cristo",
+  "sobrenome": "Leal"
+ },
+ {
+  "id": "claridades-do-sul",
+  "titulo": "Claridades do Sul",
+  "autor": "Gomes Leal",
+  "genero": "Poesia",
+  "ano": 1875,
+  "busca": "Claridades do Sul",
+  "sobrenome": "Leal"
+ },
+ {
+  "id": "visao-dos-tempos",
+  "titulo": "Visão dos Tempos",
+  "autor": "Teófilo Braga",
+  "genero": "Poesia",
+  "ano": 1864,
+  "busca": "Visão dos Tempos",
+  "sobrenome": "Braga"
+ },
+ {
+  "id": "contos-fantasticos",
+  "titulo": "Contos Fantásticos",
+  "autor": "Teófilo Braga",
+  "genero": "Contos",
+  "ano": 1865,
+  "busca": "Contos Fantásticos",
+  "sobrenome": "Braga"
+ },
+ {
+  "id": "as-farpas",
+  "titulo": "As Farpas",
+  "autor": "Ramalho Ortigão",
+  "genero": "Crônicas",
+  "ano": 1887,
+  "busca": "As Farpas",
+  "sobrenome": "Ortigão"
+ },
+ {
+  "id": "john-bull",
+  "titulo": "John Bull",
+  "autor": "Ramalho Ortigão",
+  "genero": "Crônicas",
+  "ano": 1887,
+  "busca": "John Bull",
+  "sobrenome": "Ortigão"
+ },
+ {
+  "id": "holanda",
+  "titulo": "Holanda",
+  "autor": "Ramalho Ortigão",
+  "genero": "Crônicas",
+  "ano": 1883,
+  "busca": "Holanda",
+  "sobrenome": "Ortigão"
+ },
+ {
+  "id": "portugal-contemporaneo",
+  "titulo": "Portugal Contemporâneo",
+  "autor": "Oliveira Martins",
+  "genero": "Ensaio",
+  "ano": 1881,
+  "busca": "Portugal Contemporâneo",
+  "sobrenome": "Martins"
+ },
+ {
+  "id": "os-filhos-de-d-joao-i",
+  "titulo": "Os Filhos de D. João I",
+  "autor": "Oliveira Martins",
+  "genero": "Ensaio",
+  "ano": 1891,
+  "busca": "Os Filhos de D. João I",
+  "sobrenome": "Martins"
+ },
+ {
+  "id": "o-principe-perfeito",
+  "titulo": "O Príncipe Perfeito",
+  "autor": "Oliveira Martins",
+  "genero": "Ensaio",
+  "ano": 1896,
+  "busca": "O Príncipe Perfeito",
+  "sobrenome": "Martins"
+ },
+ {
+  "id": "portugal-nos-mares",
+  "titulo": "Portugal nos Mares",
+  "autor": "Oliveira Martins",
+  "genero": "Ensaio",
+  "ano": 1889,
+  "busca": "Portugal nos Mares",
+  "sobrenome": "Martins"
+ },
+ {
+  "id": "os-gatos",
+  "titulo": "Os Gatos",
+  "autor": "Fialho de Almeida",
+  "genero": "Crônicas",
+  "ano": 1889,
+  "busca": "Os Gatos",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "o-pais-das-uvas",
+  "titulo": "O País das Uvas",
+  "autor": "Fialho de Almeida",
+  "genero": "Contos",
+  "ano": 1893,
+  "busca": "O País das Uvas",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "a-cidade-do-vicio",
+  "titulo": "A Cidade do Vício",
+  "autor": "Fialho de Almeida",
+  "genero": "Romance",
+  "ano": 1882,
+  "busca": "A Cidade do Vício",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "lisboa-galante",
+  "titulo": "Lisboa Galante",
+  "autor": "Fialho de Almeida",
+  "genero": "Crônicas",
+  "ano": 1890,
+  "busca": "Lisboa Galante",
+  "sobrenome": "Almeida"
+ },
+ {
+  "id": "o-barao-de-lavos",
+  "titulo": "O Barão de Lavos",
+  "autor": "Abel Botelho",
+  "genero": "Romance",
+  "ano": 1891,
+  "busca": "O Barão de Lavos",
+  "sobrenome": "Botelho"
+ },
+ {
+  "id": "amanha",
+  "titulo": "Amanhã",
+  "autor": "Abel Botelho",
+  "genero": "Romance",
+  "ano": 1901,
+  "busca": "Amanhã",
+  "sobrenome": "Botelho"
+ },
+ {
+  "id": "os-meus-amores",
+  "titulo": "Os Meus Amores",
+  "autor": "Trindade Coelho",
+  "genero": "Contos",
+  "ano": 1891,
+  "busca": "Os Meus Amores",
+  "sobrenome": "Coelho"
+ },
+ {
+  "id": "in-illo-tempore",
+  "titulo": "In Illo Tempore",
+  "autor": "Trindade Coelho",
+  "genero": "Contos",
+  "ano": 1902,
+  "busca": "In Illo Tempore",
+  "sobrenome": "Coelho"
+ },
+ {
+  "id": "humus",
+  "titulo": "Húmus",
+  "autor": "Raul Brandão",
+  "genero": "Romance",
+  "ano": 1917,
+  "busca": "Húmus",
+  "sobrenome": "Brandão"
+ },
+ {
+  "id": "a-farsa",
+  "titulo": "A Farsa",
+  "autor": "Raul Brandão",
+  "genero": "Romance",
+  "ano": 1903,
+  "busca": "A Farsa",
+  "sobrenome": "Brandão"
+ },
+ {
+  "id": "os-pobres",
+  "titulo": "Os Pobres",
+  "autor": "Raul Brandão",
+  "genero": "Romance",
+  "ano": 1906,
+  "busca": "Os Pobres",
+  "sobrenome": "Brandão"
+ },
+ {
+  "id": "os-pescadores",
+  "titulo": "Os Pescadores",
+  "autor": "Raul Brandão",
+  "genero": "Crônicas",
+  "ano": 1923,
+  "busca": "Os Pescadores",
+  "sobrenome": "Brandão"
+ },
+ {
+  "id": "a-primavera",
+  "titulo": "A Primavera",
+  "autor": "António Feliciano de Castilho",
+  "genero": "Poesia",
+  "ano": 1822,
+  "busca": "A Primavera",
+  "sobrenome": "Castilho"
+ },
+ {
+  "id": "cartas-de-eco-e-narciso",
+  "titulo": "Cartas de Eco e Narciso",
+  "autor": "António Feliciano de Castilho",
+  "genero": "Poesia",
+  "ano": 1836,
+  "busca": "Cartas de Eco e Narciso",
+  "sobrenome": "Castilho"
+ },
+ {
+  "id": "escavacoes-poeticas",
+  "titulo": "Escavações Poéticas",
+  "autor": "António Feliciano de Castilho",
+  "genero": "Poesia",
+  "ano": 1844,
+  "busca": "Escavações Poéticas",
+  "sobrenome": "Castilho"
+ },
+ {
+  "id": "poesias-bocage",
+  "titulo": "Poesias",
+  "autor": "Bocage",
+  "genero": "Poesia",
+  "ano": 1812,
+  "busca": "Poesias",
+  "sobrenome": "Bocage"
+ },
+ {
+  "id": "sonetos-bocage",
+  "titulo": "Sonetos",
+  "autor": "Bocage",
+  "genero": "Poesia",
+  "ano": 1812,
+  "busca": "Sonetos",
+  "sobrenome": "Bocage"
+ },
+ {
+  "id": "poesias-miranda",
+  "titulo": "Poesias",
+  "autor": "Sá de Miranda",
+  "genero": "Poesia",
+  "ano": 1595,
+  "busca": "Poesias",
+  "sobrenome": "Miranda"
+ },
+ {
+  "id": "os-estrangeiros",
+  "titulo": "Os Estrangeiros",
+  "autor": "Sá de Miranda",
+  "genero": "Teatro",
+  "ano": 1559,
+  "busca": "Os Estrangeiros",
+  "sobrenome": "Miranda"
+ },
+ {
+  "id": "menina-e-moca",
+  "titulo": "Menina e Moça",
+  "autor": "Bernardim Ribeiro",
+  "genero": "Romance",
+  "ano": 1554,
+  "busca": "Menina e Moça",
+  "sobrenome": "Ribeiro"
+ },
+ {
+  "id": "carta-a-el-rei-d-manuel",
+  "titulo": "Carta a El-Rei D. Manuel",
+  "autor": "Pero Vaz de Caminha",
+  "genero": "Clássico",
+  "ano": 1500,
+  "busca": "Carta a El-Rei D. Manuel",
+  "sobrenome": "Caminha"
+ },
+ {
+  "id": "tratado-descritivo-do-brasil",
+  "titulo": "Tratado Descritivo do Brasil",
+  "autor": "Gabriel Soares de Sousa",
+  "genero": "Clássico",
+  "ano": 1587,
+  "busca": "Tratado Descritivo do Brasil",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "tratado-da-terra-do-brasil",
+  "titulo": "Tratado da Terra do Brasil",
+  "autor": "Pero de Magalhães Gândavo",
+  "genero": "Clássico",
+  "ano": 1576,
+  "busca": "Tratado da Terra do Brasil",
+  "sobrenome": "Gândavo"
+ },
+ {
+  "id": "tratados-da-terra-e-gente-do-brasil",
+  "titulo": "Tratados da Terra e Gente do Brasil",
+  "autor": "Fernão Cardim",
+  "genero": "Clássico",
+  "ano": 1625,
+  "busca": "Tratados da Terra e Gente do Brasil",
+  "sobrenome": "Cardim"
+ },
+ {
+  "id": "historia-do-brasil",
+  "titulo": "História do Brasil",
+  "autor": "Frei Vicente do Salvador",
+  "genero": "Clássico",
+  "ano": 1627,
+  "busca": "História do Brasil",
+  "sobrenome": "Salvador"
+ },
+ {
+  "id": "capitulos-de-historia-colonial",
+  "titulo": "Capítulos de História Colonial",
+  "autor": "Capistrano de Abreu",
+  "genero": "Ensaio",
+  "ano": 1907,
+  "busca": "Capítulos de História Colonial",
+  "sobrenome": "Abreu"
+ },
+ {
+  "id": "cantos-populares-do-brasil",
+  "titulo": "Cantos Populares do Brasil",
+  "autor": "Silvio Romero",
+  "genero": "Ensaio",
+  "ano": 1883,
+  "busca": "Cantos Populares do Brasil",
+  "sobrenome": "Romero"
+ },
+ {
+  "id": "contos-populares-do-brasil",
+  "titulo": "Contos Populares do Brasil",
+  "autor": "Silvio Romero",
+  "genero": "Ensaio",
+  "ano": 1885,
+  "busca": "Contos Populares do Brasil",
+  "sobrenome": "Romero"
+ },
+ {
+  "id": "cenas-da-vida-amazonica",
+  "titulo": "Cenas da Vida Amazônica",
+  "autor": "José Veríssimo",
+  "genero": "Contos",
+  "ano": 1886,
+  "busca": "Cenas da Vida Amazônica",
+  "sobrenome": "Veríssimo"
+ },
+ {
+  "id": "a-america-latina",
+  "titulo": "A América Latina",
+  "autor": "Manoel Bomfim",
+  "genero": "Ensaio",
+  "ano": 1905,
+  "busca": "A América Latina",
+  "sobrenome": "Bomfim"
+ },
+ {
+  "id": "populacoes-meridionais-do-brasil",
+  "titulo": "Populações Meridionais do Brasil",
+  "autor": "Oliveira Vianna",
+  "genero": "Ensaio",
+  "ano": 1920,
+  "busca": "Populações Meridionais do Brasil",
+  "sobrenome": "Vianna"
+ },
+ {
+  "id": "cronica-de-d-joao-i",
+  "titulo": "Crônica de D. João I",
+  "autor": "Fernão Lopes",
+  "genero": "Clássico",
+  "ano": 1450,
+  "busca": "Crônica de D. João I",
+  "sobrenome": "Lopes"
+ },
+ {
+  "id": "cronica-do-descobrimento-e-conquista-da-guine",
+  "titulo": "Crônica do Descobrimento e Conquista da Guiné",
+  "autor": "Gomes Eanes de Zurara",
+  "genero": "Clássico",
+  "ano": 1453,
+  "busca": "Crônica do Descobrimento e Conquista da Guiné",
+  "sobrenome": "Zurara"
+ },
+ {
+  "id": "decadas-da-asia",
+  "titulo": "Décadas da Ásia",
+  "autor": "João de Barros",
+  "genero": "Clássico",
+  "ano": 1552,
+  "busca": "Décadas da Ásia",
+  "sobrenome": "Barros"
+ },
+ {
+  "id": "cancioneiro-geral",
+  "titulo": "Cancioneiro Geral",
+  "autor": "Garcia de Resende",
+  "genero": "Poesia",
+  "ano": 1516,
+  "busca": "Cancioneiro Geral",
+  "sobrenome": "Resende"
+ },
+ {
+  "id": "carta-de-guia-de-casados",
+  "titulo": "Carta de Guia de Casados",
+  "autor": "Francisco Manuel de Melo",
+  "genero": "Clássico",
+  "ano": 1651,
+  "busca": "Carta de Guia de Casados",
+  "sobrenome": "Melo"
+ },
+ {
+  "id": "apologos-dialogais",
+  "titulo": "Apólogos Dialogais",
+  "autor": "Francisco Manuel de Melo",
+  "genero": "Clássico",
+  "ano": 1721,
+  "busca": "Apólogos Dialogais",
+  "sobrenome": "Melo"
+ },
+ {
+  "id": "nova-floresta",
+  "titulo": "Nova Floresta",
+  "autor": "Manuel Bernardes",
+  "genero": "Clássico",
+  "ano": 1706,
+  "busca": "Nova Floresta",
+  "sobrenome": "Bernardes"
+ },
+ {
+  "id": "vida-de-d-frei-bartolomeu-dos-martires",
+  "titulo": "Vida de D. Frei Bartolomeu dos Mártires",
+  "autor": "Frei Luís de Sousa",
+  "genero": "Clássico",
+  "ano": 1619,
+  "busca": "Vida de D. Frei Bartolomeu dos Mártires",
+  "sobrenome": "Sousa"
+ },
+ {
+  "id": "cronica-do-felicissimo-rei-d-manuel",
+  "titulo": "Crônica do Felicíssimo Rei D. Manuel",
+  "autor": "Damião de Góis",
+  "genero": "Clássico",
+  "ano": 1566,
+  "busca": "Crônica do Felicíssimo Rei D. Manuel",
+  "sobrenome": "Góis"
+ },
+ {
+  "id": "a-rainha-do-ignoto",
+  "titulo": "A Rainha do Ignoto",
+  "autor": "Emília Freitas",
+  "genero": "Romance",
+  "ano": 1899,
+  "busca": "A Rainha do Ignoto",
+  "sobrenome": "Freitas"
+ },
+ {
+  "id": "o-filho-do-pescador",
+  "titulo": "O Filho do Pescador",
+  "autor": "Teixeira e Sousa",
+  "genero": "Romance",
+  "ano": 1843,
+  "busca": "O Filho do Pescador",
+  "sobrenome": "Teixeira"
+ },
+ {
+  "id": "dona-guidinha-do-poco",
+  "titulo": "Dona Guidinha do Poço",
+  "autor": "Manuel de Oliveira Paiva",
+  "genero": "Romance",
+  "ano": 1952,
+  "busca": "Dona Guidinha do Poço",
+  "sobrenome": "Paiva"
+ },
+ {
+  "id": "carvalhos-e-roseiras",
+  "titulo": "Carvalhos e Roseiras",
+  "autor": "Humberto de Campos",
+  "genero": "Crônicas",
+  "ano": 1923,
+  "busca": "Carvalhos e Roseiras",
+  "sobrenome": "Campos"
+ },
+ {
+  "id": "poeira",
+  "titulo": "Poeira",
+  "autor": "Humberto de Campos",
+  "genero": "Poesia",
+  "ano": 1911,
+  "busca": "Poeira",
+  "sobrenome": "Campos"
+ },
+ {
+  "id": "a-alma-encantadora-das-ruas",
+  "titulo": "A Alma Encantadora das Ruas",
+  "autor": "João do Rio",
+  "genero": "Crônicas",
+  "ano": 1908,
+  "busca": "A Alma Encantadora das Ruas",
+  "sobrenome": "Rio"
+ },
+ {
+  "id": "dentro-da-noite",
+  "titulo": "Dentro da Noite",
+  "autor": "João do Rio",
+  "genero": "Contos",
+  "ano": 1910,
+  "busca": "Dentro da Noite",
+  "sobrenome": "Rio"
+ },
+ {
+  "id": "a-profissao-de-jacques-pedreira",
+  "titulo": "A Profissão de Jacques Pedreira",
+  "autor": "João do Rio",
+  "genero": "Romance",
+  "ano": 1911,
+  "busca": "A Profissão de Jacques Pedreira",
+  "sobrenome": "Rio"
+ },
+ {
+  "id": "vida-vertiginosa",
+  "titulo": "Vida Vertiginosa",
+  "autor": "João do Rio",
+  "genero": "Crônicas",
+  "ano": 1911,
+  "busca": "Vida Vertiginosa",
+  "sobrenome": "Rio"
+ },
+ {
+  "id": "os-dias-passam",
+  "titulo": "Os Dias Passam",
+  "autor": "João do Rio",
+  "genero": "Crônicas",
+  "ano": 1912,
+  "busca": "Os Dias Passam",
+  "sobrenome": "Rio"
+ },
+ {
+  "id": "cinematografo",
+  "titulo": "Cinematógrafo",
+  "autor": "João do Rio",
+  "genero": "Crônicas",
+  "ano": 1909,
+  "busca": "Cinematógrafo",
+  "sobrenome": "Rio"
+ },
+ {
+  "id": "a-confederacao-dos-tamoios",
+  "titulo": "A Confederação dos Tamoios",
+  "autor": "Gonçalves de Magalhães",
+  "genero": "Poesia",
+  "ano": 1856,
+  "busca": "A Confederação dos Tamoios",
+  "sobrenome": "Magalhães"
+ },
+ {
+  "id": "suspiros-poeticos-e-saudades",
+  "titulo": "Suspiros Poéticos e Saudades",
+  "autor": "Gonçalves de Magalhães",
+  "genero": "Poesia",
+  "ano": 1836,
+  "busca": "Suspiros Poéticos e Saudades",
+  "sobrenome": "Magalhães"
+ },
+ {
+  "id": "como-se-fazia-um-deputado",
+  "titulo": "Como se Fazia um Deputado",
+  "autor": "França Júnior",
+  "genero": "Teatro",
+  "ano": 1882,
+  "busca": "Como se Fazia um Deputado",
+  "sobrenome": "França"
+ },
+ {
+  "id": "caiu-o-ministerio",
+  "titulo": "Caiu o Ministério",
+  "autor": "França Júnior",
+  "genero": "Teatro",
+  "ano": 1882,
+  "busca": "Caiu o Ministério",
+  "sobrenome": "França"
+ },
+ {
+  "id": "as-doutoras",
+  "titulo": "As Doutoras",
+  "autor": "França Júnior",
+  "genero": "Teatro",
+  "ano": 1889,
+  "busca": "As Doutoras",
+  "sobrenome": "França"
+ },
+ {
+  "id": "inspiracoes-do-claustro",
+  "titulo": "Inspirações do Claustro",
+  "autor": "Junqueira Freire",
+  "genero": "Poesia",
+  "ano": 1855,
+  "busca": "Inspirações do Claustro",
+  "sobrenome": "Freire"
+ },
+ {
+  "id": "contradicoes-poeticas",
+  "titulo": "Contradições Poéticas",
+  "autor": "Junqueira Freire",
+  "genero": "Poesia",
+  "ano": 1855,
+  "busca": "Contradições Poéticas",
+  "sobrenome": "Freire"
+ },
+ {
+  "id": "meridionais",
+  "titulo": "Meridionais",
+  "autor": "Alberto de Oliveira",
+  "genero": "Poesia",
+  "ano": 1884,
+  "busca": "Meridionais",
+  "sobrenome": "Oliveira"
+ },
+ {
+  "id": "sonetos-e-poemas",
+  "titulo": "Sonetos e Poemas",
+  "autor": "Alberto de Oliveira",
+  "genero": "Poesia",
+  "ano": 1885,
+  "busca": "Sonetos e Poemas",
+  "sobrenome": "Oliveira"
+ },
+ {
+  "id": "versos-e-rimas",
+  "titulo": "Versos e Rimas",
+  "autor": "Alberto de Oliveira",
+  "genero": "Poesia",
+  "ano": 1895,
+  "busca": "Versos e Rimas",
+  "sobrenome": "Oliveira"
+ },
+ {
+  "id": "poemas-e-cancoes",
+  "titulo": "Poemas e Canções",
+  "autor": "Vicente de Carvalho",
+  "genero": "Poesia",
+  "ano": 1908,
+  "busca": "Poemas e Canções",
+  "sobrenome": "Carvalho"
+ },
+ {
+  "id": "rosa-rosa-de-amor",
+  "titulo": "Rosa, Rosa de Amor",
+  "autor": "Vicente de Carvalho",
+  "genero": "Poesia",
+  "ano": 1902,
+  "busca": "Rosa, Rosa de Amor",
+  "sobrenome": "Carvalho"
+ },
+ {
+  "id": "relicario",
+  "titulo": "Relicário",
+  "autor": "Vicente de Carvalho",
+  "genero": "Poesia",
+  "ano": 1888,
+  "busca": "Relicário",
+  "sobrenome": "Carvalho"
+ },
+ {
+  "id": "sinfonias",
+  "titulo": "Sinfonias",
+  "autor": "Raimundo Correia",
+  "genero": "Poesia",
+  "ano": 1883,
+  "busca": "Sinfonias",
+  "sobrenome": "Correia"
+ },
+ {
+  "id": "versos-e-versoes",
+  "titulo": "Versos e Versões",
+  "autor": "Raimundo Correia",
+  "genero": "Poesia",
+  "ano": 1887,
+  "busca": "Versos e Versões",
+  "sobrenome": "Correia"
+ },
+ {
+  "id": "aleluias",
+  "titulo": "Aleluias",
+  "autor": "Raimundo Correia",
+  "genero": "Poesia",
+  "ano": 1891,
+  "busca": "Aleluias",
+  "sobrenome": "Correia"
+ },
+ {
+  "id": "primeiros-sonhos",
+  "titulo": "Primeiros Sonhos",
+  "autor": "Raimundo Correia",
+  "genero": "Poesia",
+  "ano": 1879,
+  "busca": "Primeiros Sonhos",
+  "sobrenome": "Correia"
+ },
+ {
+  "id": "obras-poeticas",
+  "titulo": "Obras Poéticas",
+  "autor": "Cláudio Manuel da Costa",
+  "genero": "Poesia",
+  "ano": 1768,
+  "busca": "Obras Poéticas",
+  "sobrenome": "Costa"
+ },
+ {
+  "id": "caramuru",
+  "titulo": "Caramuru",
+  "autor": "Santa Rita Durão",
+  "genero": "Poesia",
+  "ano": 1781,
+  "busca": "Caramuru",
+  "sobrenome": "Durão"
+ },
+ {
+  "id": "o-uraguai",
+  "titulo": "O Uraguai",
+  "autor": "Basílio da Gama",
+  "genero": "Poesia",
+  "ano": 1769,
+  "busca": "O Uraguai",
+  "sobrenome": "Gama"
+ },
+ {
+  "id": "poemas-escolhidos",
+  "titulo": "Poemas Escolhidos",
+  "autor": "Gregório de Matos",
+  "genero": "Poesia",
+  "ano": 1700,
+  "busca": "Poemas Escolhidos",
+  "sobrenome": "Matos"
  }
 ]
