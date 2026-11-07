@@ -6367,11 +6367,15 @@ function recadoNovidQuandoLivre(n){n=n||0;
    Mesma regra do aviso das últimas atualizações: a marca é guardada por conta (e-mail, celular ou id) no localStorage
    (ma-recado-quadro-v1:<usuário>) e dentro dos dados do usuário (S.user.avisos['quadro-v1']), que vão para a nuvem.
    É gravada antes de mostrar a caixa, então nunca repete. Espera a senha e as outras caixas saírem da frente.
-   Para mostrar de novo a todos, troque quadro-v2 por quadro-v3 em RECADO_QUADRO_TAG (e mova a tag antiga para RECADO_QUADRO_TAG_V1). O texto fica em RECADO_QUADRO. */
-const RECADO_QUADRO_TAG='quadro-v2',RECADO_QUADRO_KEY='ma-recado-'+RECADO_QUADRO_TAG;
+   Para mostrar de novo a todos, troque quadro-v3 por quadro-v4 em RECADO_QUADRO_TAG (e mova a tag antiga para RECADO_QUADRO_TAG_V2). O texto fica em RECADO_QUADRO. */
+const RECADO_QUADRO_TAG='quadro-v3',RECADO_QUADRO_KEY='ma-recado-'+RECADO_QUADRO_TAG;
+const RECADO_QUADRO_TAG_V2='quadro-v2',RECADO_QUADRO_KEY_V2='ma-recado-'+RECADO_QUADRO_TAG_V2;
 const RECADO_QUADRO_TAG_V1='quadro-v1',RECADO_QUADRO_KEY_V1='ma-recado-'+RECADO_QUADRO_TAG_V1;
-/* n:2 = item novo do quadro v2 (nenhum no momento). Quem já viu o quadro v1 vê só os itens n:2; quem nunca viu vê tudo. */
+/* n:3 = item novo do quadro v3 (Filmes). Quem já viu o quadro v1 ou v2 vê só os itens n:3; quem nunca viu vê tudo. */
 const RECADO_QUADRO=[
+ {n:3,ic:'🎬',t:'Filmes',d:'Cinema e streaming num lugar só: o que está em cartaz, as estreias e o que chega nas plataformas.',
+  l:['🎞️ Cinema: filmes em cartaz e estreias nos cinemas dos shoppings de Recife, Olinda, Paulista e Jaboatão, com a sinopse de cada filme.','🛍️ Shoppings: veja os filmes de cada cinema e abra o link para conferir horários.','📺 Streaming: filmes e séries chegando na Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com a data.','🔎 Busque por título e filtre por cidade, plataforma, filme ou série.','📅 Ponha a estreia na Agenda para ganhar lembrete.','🔄 A lista se atualiza sozinha.'],
+  b:['Abrir Filmes',"go('filmes')"]},
  {ic:'🌸',t:'Espaço Mulher',d:'Um espaço de cuidado e bem-estar, com tudo guardado só no seu aparelho.',
   l:['🌸 Ciclo: roda das fases, calendário, previsão com período fértil e ovulação, registro diário completo, análises, alertas e lembretes automáticos.','🩺 Saúde: lembretes de consultas, exames e remédios, que tocam o alarme da Agenda.','💧 Autocuidado: água, sono, humor e o “Tempo para mim”.','🛡️ Segurança: contatos de confiança, onde buscar ajuda e um resumo dos direitos da mulher.','🏆 Conquistas: anote o que você conseguiu hoje.'],
   b:['Abrir Espaço Mulher',"go('mulher')"]},
@@ -6388,6 +6392,9 @@ const quadroUsuario=()=>{const c=S.user&&S.user.conta;return String((c&&(c.email
 function quadroVisto(){
  try{if(localStorage.getItem(RECADO_QUADRO_KEY+':'+quadroUsuario()))return true}catch(e){}
  return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG])}
+function quadroVistoV2(){
+ try{if(localStorage.getItem(RECADO_QUADRO_KEY_V2+':'+quadroUsuario()))return true}catch(e){}
+ return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG_V2])}
 function quadroVistoV1(){
  try{if(localStorage.getItem(RECADO_QUADRO_KEY_V1+':'+quadroUsuario()))return true}catch(e){}
  return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG_V1])}
@@ -6398,7 +6405,7 @@ function recadoQuadro(){
  if(!S.user||!S.user.name)return;
  if(document.querySelector('.rc-ov')||quadroVisto())return;
  quadroMarca(); /* marca antes de mostrar: nunca aparece duas vezes */
- const lista=quadroVistoV1()?RECADO_QUADRO.filter(q=>q.n===2):RECADO_QUADRO;if(!lista.length)return;
+ const lista=(quadroVistoV2()||quadroVistoV1())?RECADO_QUADRO.filter(q=>q.n===3):RECADO_QUADRO;if(!lista.length)return;
  const it=lista.map((q,i)=>'<div class="nv-it'+(i===0?' nv-new':'')+'"><div class="nv-h"><b>'+q.ic+' '+esc(q.t)+'</b></div><div class="nv-t">'+esc(q.d)+'</div>'+q.l.map(x=>'<div class="nv-t">'+esc(x)+'</div>').join('')+'<div style="margin-top:8px"><button type="button" class="sec" data-qb="'+i+'">'+esc(q.b[0])+'</button></div></div>').join('');
  const o=document.createElement('div');o.className='ov rc-ov';
  o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Quadro de avisos"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
