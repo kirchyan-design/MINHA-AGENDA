@@ -4669,9 +4669,24 @@ function bbAchaLivro(a,s){const raw=String(s).trim().toLowerCase(),n=bbN(s);if(!
 function bbRefParse(a,t){const m=String(t).match(/^\s*((?:[1-3]\s*)?[^\d:.,\-–]+?)\s*(\d+)(?:\s*[:.,]\s*(\d+)(?:\s*[-–]\s*(\d+))?)?\s*$/);if(!m)return null;
  const l=bbAchaLivro(a,m[1]);if(!l)return null;
  return {l:l,c:Math.max(1,+m[2]),v1:m[3]?+m[3]:0,v2:m[4]?+m[4]:0}}
+/* ----- ir direto: livro, capítulo e versículo ----- */
+function bbNavCaps(a,id,sel){const n=bbInfo(a,id).caps||1;let h='';for(let i=1;i<=n;i++)h+='<option value="'+i+'"'+(i===sel?' selected':'')+'>Capítulo '+i+'</option>';return h}
+function bbNavHtml(a){const ids=bbOrdem(a),B=bbS(),u=B.ult[a],l0=u&&u.l&&ids.indexOf(u.l)>=0?u.l:ids[0],c0=u&&u.l===l0&&u.c?u.c:1;
+ return '<div class="card bb-nav" style="margin:8px 0"><b>📚 Ir direto para</b>'
+  +'<div class="row" style="flex-wrap:nowrap;margin-top:8px"><select id="bb-nl" aria-label="Livro" onchange="bbNavLiv()" style="flex:1;min-width:0">'+ids.map(id=>'<option value="'+id+'"'+(id===l0?' selected':'')+'>'+esc(bbInfo(a,id).nome)+'</option>').join('')+'</select></div>'
+  +'<div class="row" style="flex-wrap:nowrap;margin-top:8px"><select id="bb-nc" aria-label="Capítulo" style="flex:1;min-width:0">'+bbNavCaps(a,l0,c0)+'</select>'
+  +'<input id="bb-nvs" type="number" inputmode="numeric" min="1" placeholder="Versículo" aria-label="Versículo" onkeydown="if(event.key===\'Enter\')bbNavIr()" style="width:104px;flex:none;text-align:center">'
+  +'<button onclick="bbNavIr()" style="flex:none">Ir</button></div></div>'}
+function bbNavLiv(){const a=bbS().aba,l=$('#bb-nl'),c=$('#bb-nc');if(!l||!c)return;c.innerHTML=bbNavCaps(a,l.value,1)}
+function bbNavIr(){const a=bbS().aba,l=$('#bb-nl'),c=$('#bb-nc'),v=$('#bb-nvs');if(!l||!c)return;
+ const n=parseInt(v&&v.value,10)||0;bbAbrir(a,l.value,+c.value||1,n>0?[n,n]:null)}
+/* livros cujo nome combina com o que foi digitado (ex.: "sal" mostra Salmos) */
+function bbLivrosBusca(a,t){const n=bbN(t);if(n.length<2||/\d/.test(t))return '';
+ const ids=bbOrdem(a),ab=BB_AB[n],m=ids.filter(id=>id===ab||bbN(bbInfo(a,id).nome).indexOf(n)>=0);if(!m.length)return '';
+ return '<h3 class="bb-gh">📚 Livros</h3><div class="bb-bk">'+m.map(id=>'<button class="bb-b'+(bbInfo(a,id).dc?' dc':'')+'" onclick="bbAbrir(\''+a+'\',\''+id+'\',1)">'+esc(bbInfo(a,id).nome)+'</button>').join('')+'</div>'}
 function bbBusca(){const el=$('#bb-q'),q=el?el.value:'',B=bbS(),a=B.aba,t=q.trim();bbQ=q;if(!t)return;
  const r=bbRefParse(a,t);if(r){bbAbrir(a,r.l,r.c,r.v1?[r.v1,r.v2||r.v1]:null);return}
- const box=$('#bb-res');if(!box)return;box.innerHTML='<div class="vazio">Buscando…</div>';
+ const box=$('#bb-res');if(!box)return;const bkh=bbLivrosBusca(a,t);box.innerHTML=bkh+'<div class="vazio">Buscando…</div>';
  const ws=t.split(/\s+/).map(bbN).filter(Boolean);if(!ws.length){box.innerHTML='';return}
  bbCarregar(a).then(L=>{const out=[];let mais=false;
   const nm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -4679,7 +4694,7 @@ function bbBusca(){const el=$('#bb-q'),q=el?el.value:'',B=bbS(),a=B.aba,t=q.trim
    for(let c=0;c<b.c.length;c++)for(let v=0;v<b.c[c].length;v++){const x=nm(b.c[c][v]);
     if(ws.every(w=>x.indexOf(w)>=0)){if(out.length>=60){mais=true;break loop}out.push([id,c+1,v+1,b.c[c][v]])}}}
   if(!$('#bb-res'))return;
-  box.innerHTML=out.length?'<h3 class="bb-gh">'+out.length+(mais?'+':'')+' resultado'+(out.length>1?'s':'')+'</h3>'+out.map(x=>'<div class="bb-rs" onclick="bbAbrir(\''+a+'\',\''+x[0]+'\','+x[1]+',['+x[2]+','+x[2]+'])"><b>'+esc(bbRef(a,x[0],x[1],x[2]))+'</b><span>'+esc(x[3])+'</span></div>').join('')+(mais?'<p class="hint">Mostrando os 60 primeiros. Refine a busca para ver outros.</p>':''):'<div class="vazio">Nada encontrado para “'+esc(t)+'”.</div>'
+  box.innerHTML=bkh+(out.length?'<h3 class="bb-gh">'+out.length+(mais?'+':'')+' resultado'+(out.length>1?'s':'')+'</h3>'+out.map(x=>'<div class="bb-rs" onclick="bbAbrir(\''+a+'\',\''+x[0]+'\','+x[1]+',['+x[2]+','+x[2]+'])"><b>'+esc(bbRef(a,x[0],x[1],x[2]))+'</b><span>'+esc(x[3])+'</span></div>').join('')+(mais?'<p class="hint">Mostrando os 60 primeiros. Refine a busca para ver outros.</p>':''):(bkh?'':'<div class="vazio">Nada encontrado para “'+esc(t)+'”.</div>'))
  }).catch(()=>{if($('#bb-res'))box.innerHTML=bbErroHtml(a)})}
 function bbErroHtml(a){return '<div class="bb-ms">Não consegui carregar o texto desta versão. Na primeira vez é preciso internet; depois ele fica guardado no aparelho.'+(a==='cat'?'<br><br>Para a Bíblia Católica com 73 livros, toque em <b>Importar</b> e escolha um arquivo JSON, ou coloque <b>biblia/catolica.json</b> no GitHub do app.':'')
  +'<div class="row" style="justify-content:center;margin-top:12px"><button onclick="bbRecarrega()">Tentar de novo</button><button class="sec" onclick="bbImportar(\''+a+'\')">⬆ Importar</button></div></div>'}
@@ -4749,7 +4764,8 @@ function bbSub(s){const B=bbS();B.sub=s;save();render();window.scrollTo(0,0)}
 /* ----- LER ----- */
 function bbVLer(){const B=bbS(),a=B.aba,f=bbFonte(a),u=B.ult[a];let h='';
  if(u&&u.l)h+='<div class="card bb-cont"><div><small>Continuar lendo</small><b>'+esc(bbRef(a,u.l,u.c))+'</b></div><button onclick="bbAbrir(\''+a+'\',\''+u.l+'\','+u.c+')">Continuar</button></div>';
- h+='<div class="row bb-bus"><input id="bb-q" type="search" placeholder="Buscar palavra ou ir para (ex.: João 3:16)" value="'+esc(bbQ)+'" onkeydown="if(event.key===\'Enter\')bbBusca()"><button onclick="bbBusca()" aria-label="Buscar">🔍</button></div><div id="bb-res"></div>'
+ h+='<div class="row bb-bus"><input id="bb-q" type="search" placeholder="Buscar palavra, livro ou ir para (ex.: João 3:16)" value="'+esc(bbQ)+'" onkeydown="if(event.key===\'Enter\')bbBusca()"><button onclick="bbBusca()" aria-label="Buscar">🔍</button></div><div id="bb-res"></div>'
+  +bbNavHtml(a)
   +'<div class="bb-ver"><select aria-label="Versão" onchange="bbFonteSet(this.value)">'+BB_FONTES[a].map(x=>'<option value="'+x.id+'"'+(x.id===f.id?' selected':'')+'>'+esc(x.nome)+'</option>').join('')+'</select><button class="sec" onclick="bbImportar(\''+a+'\')">⬆ Importar</button></div>'
   +'<p class="hint">'+(a==='cat'?'Bíblia Católica: 73 livros, com os deuterocanônicos (Tobias, Judite, 1 e 2 Macabeus, Sabedoria, Eclesiástico e Baruc).':'Bíblia Protestante: 66 livros, 39 do Antigo e 27 do Novo Testamento.')+'</p>';
  BB_GR[a].forEach(g=>{h+='<h3 class="bb-gh">'+esc(g[0])+'</h3><div class="bb-bk">'+g[1].map(id=>{const i=bbInfo(a,id);return '<button class="bb-b'+(i.dc?' dc':'')+'" onclick="bbAbrir(\''+a+'\',\''+id+'\',1)">'+esc(i.nome)+'</button>'}).join('')+'</div>'});
@@ -6993,6 +7009,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.3':[
+   '✝️ Bíblia: novo seletor “Ir direto para”, onde você escolhe o livro, o capítulo e o versículo e abre na hora. A busca também acha livros pelo nome (digite “sal” e aparece Salmos) e continua buscando palavras nos versículos.'
+  ],
   '3.6.2':[
    '✝️ Novo menu Bíblia, dividido em duas abas: Protestante (66 livros) e Católica (73 livros). Em cada uma você lê por livro e capítulo, busca palavras ou vai direto a uma referência (João 3:16), marca versículos com cores, favorita, anota, copia e compartilha. Também tem Anotações (estudos, notas, favoritos e marcados), Histórias bíblicas com resumo e botão para ler na Bíblia, e a Harpa Cristã / Cânticos com modo cantar (letra grande e rolagem automática).'
   ],
