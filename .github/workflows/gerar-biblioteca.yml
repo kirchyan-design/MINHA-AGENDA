@@ -1,15 +1,20 @@
-name: Gerar Biblioteca (50 livros em PDF)
+name: Gerar Biblioteca (livros em PDF)
 
 # Roda à mão: Actions > Gerar Biblioteca > Run workflow.
-# Baixa 50 livros em português de domínio público (Projeto Gutenberg), cria um PDF de cada um
+# Baixa os livros em português de domínio público (Projeto Gutenberg), cria um PDF de cada um
 # na pasta biblioteca/ e atualiza biblioteca/livros.json. O app lê esses arquivos no menu BIBLIOTECA.
 on:
   workflow_dispatch:
+    inputs:
+      refazer:
+        description: 'Recriar também os PDFs que já existem (para ganharem capa nova)'
+        type: boolean
+        default: false
 
 jobs:
   gerar:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     permissions:
       contents: write
     steps:
@@ -20,6 +25,8 @@ jobs:
       - name: Instalar reportlab
         run: pip install reportlab
       - name: Gerar os PDFs
+        env:
+          REFAZER: ${{ inputs.refazer && '1' || '0' }}
         run: python3 biblioteca/gerar-livros.py
       - name: Salvar no repositório
         if: always()   # salva os PDFs que ficaram prontos mesmo se algum livro falhar
