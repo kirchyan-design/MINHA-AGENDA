@@ -1385,6 +1385,39 @@ nav div#nav.n5 button .ni{width:100%;max-width:46px}
 .cx-dr{width:100%;margin-top:10px;background:var(--fld,rgba(127,127,127,.14));color:var(--ink);box-shadow:none}
 .cx-pl{margin-bottom:12px}
 .cx button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+/* tela inicial editável */
+.hm-bar{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:0 0 8px}
+.hm-pen{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;padding:0;background:var(--sf);color:var(--ac);border:1px solid var(--ln)}
+.hm-pen svg{width:21px;height:21px}
+.hm-bar.ed{justify-content:space-between;align-items:center;background:var(--acs);border:1px dashed var(--ac);border-radius:16px;padding:10px 12px;margin-bottom:10px}
+.hm-bar.ed>div{flex:1;min-width:0}.hm-bar.ed b{display:block}.hm-bar.ed small{display:block;color:var(--mute);font-size:12px;line-height:1.3;margin-top:2px}
+.hm-tools{display:flex;gap:8px;margin:0 0 12px}.hm-tools button{flex:1 1 0}
+.hm-b{position:relative;border:2px dashed var(--ln);border-radius:18px;padding:6px;margin-bottom:10px}
+.hm-b .card,.hm-b .qa,.hm-b .pn-h,.hm-b .gsearch{margin-bottom:0}
+.hm-b h3{margin:4px 2px}
+.hm-b .stat{width:100%;box-sizing:border-box}
+.stats>.hm-b{margin-bottom:0}.stats>.hm-b.w2{grid-column:1/-1}
+.hm-c{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 6px}
+.hm-n{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hm-bt{display:flex;gap:4px;flex:none}
+.hm-bt button{width:34px;height:34px;padding:0;border-radius:10px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);font-size:13px;line-height:1}
+.hm-bt button:disabled{opacity:.35}.hm-bt .hm-x{color:var(--rd)}
+.hm-off{pointer-events:none}
+.hm-txt{border-left:5px solid var(--h,var(--ac));background:color-mix(in srgb,var(--h,var(--ac)) 10%,var(--sf))}
+.hm-txt b{display:block;font-size:17px;margin-bottom:4px}
+.hm-txt p{margin:0;white-space:pre-wrap;line-height:1.45;overflow-wrap:anywhere}
+.hm-f{width:100%;box-sizing:border-box;margin:0 0 8px;font:inherit}
+textarea.hm-f{min-height:84px;resize:vertical}
+.hm-cols{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.hm-cols button{width:30px;height:30px;padding:0;border-radius:50%;border:3px solid transparent;background:var(--h);box-shadow:0 0 0 1px var(--ln)}
+.hm-cols button.on{border-color:var(--sf);box-shadow:0 0 0 2px var(--ink)}
+.hm-sh .qkp{max-height:84vh;overflow:auto}
+.hm-sh h4{margin:6px 2px 8px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.hm-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.hm-g button{display:flex;align-items:center;gap:8px;text-align:left;padding:9px 10px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-radius:14px;font-size:14px;font-weight:600}
+.hm-g .hi{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--h,var(--ac)) 16%,var(--sf));color:var(--h,var(--ac))}
+.hm-g .hi svg{width:18px;height:18px}
+.hm-g button:disabled{opacity:.45}
 </style>
 
 </head>
@@ -7009,6 +7042,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.4':[
+   '✏️ Tela inicial editável: toque no lápis no topo da tela inicial para montar do seu jeito. Mova os blocos com ▲ ▼, tire o que não quer com ✕ e adicione atalhos para qualquer página do menu, seções prontas (versículo, compromissos de hoje, totais…) e cartões de texto com título e cor. Em “Restaurar padrão” tudo volta como era.'
+  ],
   '3.6.3':[
    '✝️ Bíblia: novo seletor “Ir direto para”, onde você escolhe o livro, o capítulo e o versículo e abre na hora. A busca também acha livros pelo nome (digite “sal” e aparece Salmos) e continua buscando palavras nos versículos.'
   ],
@@ -7275,7 +7311,7 @@ function recadoKaylaQuandoLivre(n){n=n||0;
    próprio usuário (S.user.avisos), que vão para a nuvem; assim quem entra com a mesma conta em outro aparelho não vê de novo,
    e outra pessoa que use o mesmo aparelho com outra conta vê a sua vez.
    Usuário novo não vê: ele já recebe a caixa de boas-vindas. Para mostrar de novo a todos, troque -v2 por -v3. */
-const RECADO_NOVID_TAG='novid7-v2',RECADO_NOVID_KEY='ma-recado-'+RECADO_NOVID_TAG;
+const RECADO_NOVID_TAG='novid7-v3',RECADO_NOVID_KEY='ma-recado-'+RECADO_NOVID_TAG;
 const novidUsuario=()=>{const c=S.user&&S.user.conta;return String((c&&(c.email||c.phone||c.uid))||ownerId()||(S.user&&S.user.name)||'local').trim().toLowerCase()};
 function novidVisto(){
  try{if(localStorage.getItem(RECADO_NOVID_KEY+':'+novidUsuario()))return true}catch(e){}
@@ -9614,6 +9650,172 @@ window.avisoV4=function(){qkFechar();const o=document.createElement('div');o.id=
 setTimeout(()=>{try{if(S.user&&S.user.name&&!S.avisoV4&&!document.getElementById('qks'))avisoV4()}catch(e){}},3000);
 })();
 
+
+/* ===== Tela inicial editável (lápis no topo) =====
+   Guarda em S.home = {v:1, blocks:[...]} (vai junto com o backup e com a nuvem).
+   Sem S.home, a tela inicial continua exatamente como era (clássica ou nova).
+   Blocos: {t:'sec',k} seção pronta | {t:'tile',k,w} atalho de página | {t:'txt',title,text,c} cartão de texto | {t:'tit',title} título */
+(function(){
+let HEDIT=false,_hs=0;
+const PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const CFG_ICO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>';
+const COL={agenda:'var(--ac)',cal:'#3fa6d9',notas:'#d9a10f',diario:'#e0609a',compras:'#f08a24',carteira:'#3fa66b',mercado:'#e8344f',concursos:'#6a5bd9',clt:'#0f8b8d',mulher:'#d6409f',cultural:'#c2410c',filmes:'#7c3aed',biblioteca:'#8a5a2b',biblia:'#7a4b1e',config:'#5d6f7c'};
+const CORES=['','#e8344f','#f08a24','#d9a10f','#3fa66b','#3fa6d9','#7c3aed','#d6409f'];
+const NM=k=>{if(k==='config')return _t('Configurações');const t=TABS_ALL.find(x=>x[0]===k);return t?_t(t[2]):k};
+const IC=k=>k==='config'?CFG_ICO:svg(k);
+const ATIVA=k=>{try{tabsAtualizar()}catch(e){}return k==='config'||TABS.some(t=>t[0]===k)};
+const GO=k=>k==='diario'?"dsel=HOJE;go('diario')":"go('"+k+"')";
+const SUB=k=>{try{
+ const hoje=S.ev.filter(e=>e.date===HOJE),pend=hoje.filter(e=>!e.done).length,faltam=S.shop.filter(x=>!x.done).length;
+ switch(k){
+ case 'agenda':return hoje.length?pend+' de '+hoje.length+' pendentes hoje':'Nada hoje';
+ case 'cal':return S.pl.some(p=>p.date===HOJE)?'Plantão hoje':'Datas e plantões';
+ case 'diario':return S.diary[HOJE]?'Escrito hoje ✓':'Ainda não escreveu';
+ case 'notas':return S.notes.length+(S.notes.length===1?' nota':' notas');
+ case 'compras':return faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop));
+ case 'carteira':{const c=cCalc(HOJE.slice(0,7));return c.renda>0?(c.sobra<0?'Faltam '+BRL(-c.sobra):'Sobram '+BRL(c.sobra))+' este mês':'Controle seus gastos'}
+ case 'mercado':return 'Ofertas do mercado';
+ case 'mulher':return 'Cuidado e bem-estar';
+ case 'cultural':return 'Shows, peças e eventos';
+ case 'filmes':return 'Cinema e streaming';
+ case 'biblioteca':return 'Livros em PDF';
+ case 'biblia':return 'Protestante e católica';
+ case 'concursos':return 'Estudos e provas';
+ case 'clt':return 'Vagas de emprego';
+ case 'config':return 'Perfil, tema e menus';
+ }}catch(e){}return ''};
+
+/* seções prontas: [nome, função que devolve o HTML] */
+const SEC={
+ hero:['Saudação com resumo',()=>{
+  const hoje=sortEv(S.ev.filter(e=>e.date===HOJE)),plh=S.pl.filter(p=>p.date===HOJE).sort(plSort),pend=hoje.filter(e=>!e.done).length,faltam=S.shop.filter(x=>!x.done).length;
+  const prof=[S.user.role,S.user.work].filter(Boolean).map(esc).join(' · ');
+  const chips=[`<span class="chip">${svg('agenda')}${hoje.length?(pend?pend+(pend===1?' pendente hoje':' pendentes hoje'):'Tudo feito hoje ✓'):'Dia livre'}</span>`,plh.length?`<span class="chip">${shiftIco(plh[0])} Plantão ${plh[0].ent}–${plh[0].sai}</span>`:'',faltam?`<span class="chip">${svg('compras')}${faltam} ${faltam===1?'item':'itens'} na lista</span>`:''].join('');
+  return `<div class="card hero"><div class="greet-row">${avatar()}<div style="flex:1;min-width:0"><div class="gt">${saud()}, ${esc(S.user.name)}!</div><div class="gd">${dataLonga()}</div>${prof?`<div class="gd">${prof}</div>`:''}</div></div><div class="chips">${chips}</div></div>`}],
+ cab:['Saudação simples',()=>{
+  const prof=[S.user.role,S.user.work].filter(Boolean).map(esc).join(' · ');
+  return `<div class="pn-h">${avatar()}<div><h2>${saud()}, ${esc(S.user.name)}</h2><p>${dataLonga()}${prof?' · '+prof:''}</p></div></div>`}],
+ agora:['Próximo compromisso',()=>{
+  const hoje=sortEv(S.ev.filter(e=>e.date===HOJE)),plh=S.pl.filter(p=>p.date===HOJE).sort(plSort),pend=hoje.filter(e=>!e.done),feitos=hoje.length-pend.length;
+  const d=new Date(),hm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2),prox=pend.find(e=>!e.time||e.time>=hm)||pend[0],pct=hoje.length?Math.round(feitos/hoje.length*100):0,hp=plh[0]&&hospBy(plh[0].hosp);
+  return `<div class="card agora"><div><small>${prox?_t('Próximo compromisso'):plh.length?_t('Plantão de hoje'):_t('Seu dia')}</small><b>${prox?esc(prox.title):plh.length?plh[0].ent+' → '+plh[0].sai:_t('Dia livre')}</b><span>${prox?(prox.time||_t('Sem horário')):plh.length?(hp?esc(hp.name):''):hoje.length?_t('Tudo feito hoje ✓'):_t('Nada marcado')}</span></div><div class="ring" style="--p:${pct}" role="img" aria-label="${pct}%"><i>${hoje.length?feitos+'/'+hoje.length:'–'}</i></div></div>`}],
+ acoes:['Criar rápido',()=>{
+  const foc=(g,s)=>`${g};setTimeout(()=>{const i=document.querySelector('${s}');i&&i.focus()},80)`;
+  const qa=(k,t,h,fn)=>`<button style="--h:${h}" onclick="${fn}"><span class="qi">${svg(k)}</span>${_t(t)}</button>`;
+  return `<div class="qa" role="group" aria-label="${_t('Criar rápido')}">`
+   +qa('agenda','Compromisso','var(--ac)',foc("agQuick()",'#at'))
+   +qa('notas','Nota','#d9a10f',foc("go('notas');S.notes.push({id:uid(),title:'',text:'',color:'',at:Date.now()});save();render()",'.nota input'))
+   +qa('diario','Diário','#e0609a',"dsel=HOJE;go('diario')")
+   +qa('compras','Compra','#f08a24',foc("go('compras')",'#st'))+`</div>`}],
+ busca:['Pergunte ao ChatGPT',()=>`<form class="gsearch" action="https://chatgpt.com/" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pergunte ao ChatGPT" aria-label="Pergunte ao ChatGPT" enterkeyhint="search" autocomplete="off"><button type="submit">Perguntar</button></form>`],
+ frase:['Versículo do dia',()=>fraseCard()],
+ hoje:['Compromissos de hoje',()=>{
+  const hoje=sortEv(S.ev.filter(e=>e.date===HOJE)),plh=S.pl.filter(p=>p.date===HOJE).sort(plSort);
+  const plHtml=plh.map(p=>`<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><span class="t"><b>Plantão ${p.ent} → ${p.sai}</b>${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';sel=HOJE;mes=new Date();go('cal')" aria-label="Abrir plantões">›</button></div>`).join('');
+  return `<h3>${_t('Hoje')}</h3><div class="card">${plHtml}${hoje.length?hoje.map(evItem).join(''):(plh.length?'':'<div class="vazio" style="padding:10px;border:0;margin:0">Nada marcado para hoje.</div>')}</div>`}],
+ totais:['Totais e resumos',()=>vTotais()]
+};
+
+function dados(){if(!S.home||!Array.isArray(S.home.blocks))S.home={v:1,blocks:padrao()};return S.home}
+function padrao(){
+ try{tabsAtualizar()}catch(e){}
+ const id=()=>uid(),sec=k=>({id:id(),t:'sec',k}),tl=(k,w)=>({id:id(),t:'tile',k,w:w||1}),tit=t=>({id:id(),t:'tit',title:t});
+ if(S.layout==='novo'){
+  const ks=TABS.map(t=>t[0]).filter(k=>k!=='inicio'&&k!=='config');
+  return [sec('cab'),sec('agora'),sec('acoes'),tit('Seus espaços')].concat(ks.map(k=>tl(k,k==='compras'||k==='carteira'?2:1)),[sec('hoje'),sec('busca'),sec('frase'),sec('totais')])}
+ const ks=['agenda','diario','compras','notas','carteira'].filter(k=>TABS.some(t=>t[0]===k));
+ return [sec('frase'),sec('busca'),sec('hero'),sec('acoes'),sec('hoje'),tit('Seus espaços')].concat(ks.map(k=>tl(k,k==='carteira'?2:1)),[sec('totais')])}
+
+const tileHtml=b=>{const c=COL[b.k]||'var(--ac)';return `<button class="stat tl${b.w===2?' w2':''}" style="--h:${c}" onclick="${GO(b.k)}"><span class="si">${IC(b.k)}</span><b>${esc(NM(b.k))}</b><small>${esc(_t(SUB(b.k)))}</small></button>`};
+const txtHtml=b=>{const t=(b.title||'').trim(),x=(b.text||'').trim();if(!t&&!x)return '';return `<div class="card hm-txt" style="--h:${b.c||'var(--ac)'}">${t?`<b>${esc(t)}</b>`:''}${x?`<p>${esc(x)}</p>`:''}</div>`};
+const txtEdit=(b,i)=>`<div class="card hm-txt" style="--h:${b.c||'var(--ac)'}"><input class="hm-f" value="${esc(b.title||'')}" placeholder="${_t('Título (opcional)')}" maxlength="60" aria-label="${_t('Título')}" oninput="hmTxt(${i},'title',this.value)" onchange="hmFlush()"><textarea class="hm-f" rows="3" placeholder="${_t('Escreva o que quiser aqui…')}" maxlength="1500" aria-label="${_t('Texto')}" oninput="hmTxt(${i},'text',this.value)" onchange="hmFlush()">${esc(b.text||'')}</textarea><div class="hm-cols" role="group" aria-label="${_t('Cor')}">${CORES.map(c=>`<button type="button" class="${(b.c||'')===c?'on':''}" style="--h:${c||'var(--ac)'}" aria-label="${_t('Cor')}" onclick="hmCor(${i},'${c}')"></button>`).join('')}</div></div>`;
+const titEdit=(b,i)=>`<input class="hm-f" value="${esc(b.title||'')}" placeholder="${_t('Título da seção')}" maxlength="60" aria-label="${_t('Título da seção')}" oninput="hmTxt(${i},'title',this.value)" onchange="hmFlush()" style="font-weight:700;margin:0">`;
+
+function rotulo(b){return b.t==='sec'?(SEC[b.k]?_t(SEC[b.k][0]):b.k):b.t==='tile'?_t('Página')+': '+NM(b.k)+(ATIVA(b.k)?'':' · '+_t('menu desativado')):b.t==='txt'?_t('Cartão de texto'):_t('Título da seção')}
+
+function miolo(b,i){
+ if(b.t==='tile')return tileHtml(b);
+ if(b.t==='txt')return HEDIT?txtEdit(b,i):txtHtml(b);
+ if(b.t==='tit')return HEDIT?titEdit(b,i):((b.title||'').trim()?`<h3>${esc(b.title)}</h3>`:'');
+ const s=SEC[b.k];if(!s)return '';let h='';try{h=s[1]()}catch(e){try{console.warn(e)}catch(x){}}
+ return h||(HEDIT?`<div class="card" style="margin:0;color:var(--mute)">${_t('Esta seção está escondida agora (por exemplo, o versículo desativado em Configurações).')}</div>`:'')}
+
+function corpo(){
+ const bl=dados().blocks,n=bl.length;let out='',buf='';
+ const flush=()=>{if(buf){out+=`<div class="stats bento">${buf}</div>`;buf=''}};
+ bl.forEach((b,i)=>{
+  if(!HEDIT&&b.t==='tile'&&!ATIVA(b.k))return;
+  let h=miolo(b,i);if(!HEDIT&&!h)return;
+  if(HEDIT){
+   const txt=b.t==='txt'||b.t==='tit';
+   h=`<div class="hm-b${b.t==='tile'&&b.w===2?' w2':''}" data-hm="${i}"><div class="hm-c"><span class="hm-n">${esc(rotulo(b))}</span><span class="hm-bt"><button onclick="hmMv(${i},-1)" aria-label="${_t('Mover para cima')}"${i===0?' disabled':''}>▲</button><button onclick="hmMv(${i},1)" aria-label="${_t('Mover para baixo')}"${i===n-1?' disabled':''}>▼</button>${b.t==='tile'?`<button onclick="hmW(${i})" aria-label="${_t('Mudar largura')}">↔</button>`:''}<button class="hm-x" onclick="hmDel(${i})" aria-label="${_t('Remover')}">✕</button></span></div><div class="${txt?'':'hm-off'}">${h}</div></div>`}
+  if(b.t==='tile'){buf+=h}else{flush();out+=h}
+ });
+ flush();
+ if(HEDIT&&!n)out+=`<div class="vazio">${_t('Sua tela inicial está vazia. Toque em Adicionar para montar do seu jeito.')}</div>`;
+ return out}
+
+function barra(){
+ if(!HEDIT)return `<div class="hm-bar"><button class="hm-pen" onclick="hmEdit()" aria-label="${_t('Editar tela inicial')}" title="${_t('Editar tela inicial')}">${PEN}</button></div>`;
+ return `<div class="hm-bar ed"><div><b>${_t('Editando a tela inicial')}</b><small>${_t('Mova com ▲ ▼, tire com ✕ e adicione o que quiser: páginas do menu, cartões de texto e seções.')}</small></div><button onclick="hmDone()">${_t('Concluir')}</button></div><div class="hm-tools"><button onclick="hmAdd()">＋ ${_t('Adicionar')}</button><button class="sec" onclick="hmReset()">${_t('Restaurar padrão')}</button></div>`}
+
+const _vi2=vInicio;
+vInicio=function(){
+ if(!S.home||!Array.isArray(S.home.blocks))return barra()+_vi2();
+ try{return barra()+corpo()}catch(e){try{console.warn(e)}catch(x){}return _vi2()}};
+
+/* ao sair da tela inicial, o modo de edição fecha */
+const _go=go;go=function(t){if(t!=='inicio')HEDIT=false;return _go.apply(this,arguments)};
+
+window.hmEdit=function(){dados();HEDIT=true;save();render();window.scrollTo(0,0)};
+window.hmDone=function(){HEDIT=false;hmClose();save();render();window.scrollTo(0,0)};
+window.hmFlush=function(){clearTimeout(_hs);save()};
+window.hmTxt=function(i,f,v){const b=dados().blocks[i];if(!b)return;b[f]=v;clearTimeout(_hs);_hs=setTimeout(()=>save(),500)};
+window.hmCor=function(i,c){const b=dados().blocks[i];if(!b)return;b.c=c;save();render()};
+window.hmW=function(i){const b=dados().blocks[i];if(!b)return;b.w=b.w===2?1:2;save();render();hmVer(i)};
+window.hmMv=function(i,d){const a=dados().blocks,j=i+d;if(j<0||j>=a.length)return;const t=a[i];a[i]=a[j];a[j]=t;save();render();hmVer(j)};
+window.hmDel=function(i){const a=dados().blocks,b=a[i];if(!b)return;
+ const feito=()=>{a.splice(i,1);save();render()};
+ if(b.t==='txt'&&((b.text||'').trim()||(b.title||'').trim()))ask('Remover este cartão e o texto dele?',feito,'Remover');else feito()};
+window.hmReset=function(){ask('Voltar a tela inicial ao padrão? Os atalhos e cartões que você montou serão apagados.',()=>{delete S.home;HEDIT=false;save();render()},'Restaurar')};
+function hmVer(i){setTimeout(()=>{const e=document.querySelector('[data-hm="'+i+'"]');if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})},50)}
+
+function hmClose(){const o=document.getElementById('hm-sh');if(o)o.remove()}
+window.hmClose=hmClose;
+window.hmAdd=function(){
+ hmClose();const bl=dados().blocks,tem=(t,k)=>bl.some(b=>b.t===t&&b.k===k);
+ try{tabsAtualizar()}catch(e){}
+ const pg=TABS.map(t=>t[0]).filter(k=>k!=='inicio').concat(['config']);
+ const bt=(t,k,ico,nome,cor)=>{const on=t&&tem(t,k);return `<button style="--h:${cor||'var(--ac)'}"${on?' disabled':''} onclick="hmAddB('${t}','${k}')"><span class="hi">${ico}</span><span>${esc(nome)}${on?' ✓':''}</span></button>`};
+ const o=document.createElement('div');o.id='hm-sh';o.className='qks hm-sh';
+ o.innerHTML=`<div class="qkp" role="dialog" aria-label="${_t('Adicionar à tela inicial')}"><b>${_t('Adicionar à tela inicial')}</b>`
+  +`<h4>${_t('Atalhos para páginas do menu')}</h4><div class="hm-g">${pg.map(k=>bt('tile',k,IC(k),NM(k),COL[k])).join('')}</div>`
+  +`<h4>${_t('Seções prontas')}</h4><div class="hm-g">${Object.keys(SEC).map(k=>bt('sec',k,'▦',_t(SEC[k][0]))).join('')}</div>`
+  +`<h4>${_t('Criar do seu jeito')}</h4><div class="hm-g"><button onclick="hmAddB('txt','')"><span class="hi">📝</span><span>${_t('Cartão de texto')}</span></button><button onclick="hmAddB('tit','')"><span class="hi">🔤</span><span>${_t('Título da seção')}</span></button></div>`
+  +`<button class="sec" style="width:100%" onclick="hmClose()">${_t('Fechar')}</button></div>`;
+ o.onclick=e=>{if(e.target===o)hmClose()};document.body.appendChild(o)};
+window.hmAddB=function(t,k){
+ const h=dados();let b;
+ if(t==='tile')b={id:uid(),t:'tile',k:k,w:1};
+ else if(t==='sec')b={id:uid(),t:'sec',k:k};
+ else if(t==='txt')b={id:uid(),t:'txt',title:'',text:'',c:''};
+ else b={id:uid(),t:'tit',title:''};
+ h.blocks.push(b);save();hmClose();render();
+ const i=h.blocks.length-1;
+ setTimeout(()=>{const e=document.querySelector('[data-hm="'+i+'"]');if(e){e.scrollIntoView({behavior:'smooth',block:'center'});const f=e.querySelector('input,textarea');if(f)f.focus()}},90)};
+
+/* traduções */
+[['Editar tela inicial','Edit home screen','Editar pantalla de inicio','Startbildschirm bearbeiten'],
+['Editando a tela inicial','Editing the home screen','Editando la pantalla de inicio','Startbildschirm wird bearbeitet'],
+['Concluir','Done','Listo','Fertig'],['Adicionar','Add','Añadir','Hinzufügen'],
+['Restaurar padrão','Restore default','Restaurar predeterminado','Standard wiederherstellen'],
+['Adicionar à tela inicial','Add to home screen','Añadir a la pantalla de inicio','Zum Startbildschirm hinzufügen'],
+['Atalhos para páginas do menu','Shortcuts to menu pages','Accesos a páginas del menú','Verknüpfungen zu Menüseiten'],
+['Seções prontas','Ready-made sections','Secciones listas','Fertige Bereiche'],
+['Criar do seu jeito','Make your own','Crear a tu manera','Selbst erstellen'],
+['Cartão de texto','Text card','Tarjeta de texto','Textkarte'],['Título da seção','Section title','Título de sección','Abschnittstitel']
+].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
+})();
 
 /* traduções genéricas (usadas em outras telas) */
 [["Fechar","Close","Cerrar","Schließen"],
