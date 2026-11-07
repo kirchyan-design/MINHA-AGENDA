@@ -1260,6 +1260,7 @@ function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.img
 const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
+ filmes:'<rect x="3" y="9" width="18" height="11" rx="2"/><path d="M3 9l2.5-4.5h3L6 9M9.5 9l2.5-4.5h3L12.5 9M16 9l2.5-4.5H21V9"/><path d="m10.5 12.5 4 2.5-4 2.5z"/>',
  clt:'<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18M10.5 13v1.5h3V13"/>',
  mulher:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>',
  cultural:'<path d="M3.5 4.5h10v6.5a5 5 0 0 1-10 0z"/><path d="M6.5 8.5v.6M10.5 8.5v.6"/><path d="M6 12.2c1.2 1.1 3.3 1.1 4.5 0"/><path d="M13.5 8.5h7v6.5a5 5 0 0 1-8.2 3.8"/><path d="M16 12.5v.6M19 12.5v.6"/>',
@@ -1300,7 +1301,7 @@ const VKICO={
  relogio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>'
 };
 const svg=k=>{const th=document.documentElement.dataset.color,cy=th==='cyber'&&CYICO[k],vk=th==='viking'&&VKICO[k],vt=th==='vt'&&typeof VTICO!=='undefined'&&VTICO[k],c=cy||vk||vt;return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${cy?1.7:vk?1.8:1.9}" stroke-linecap="${cy?'square':'round'}" stroke-linejoin="${cy?'miter':'round'}" aria-hidden="true">${c||ICO[k]||''}</svg>`};
-const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural']];
+const TABS_ALL=[['inicio','🏠','Início'],['agenda','📋','Agenda'],['cal','📅','Calendário'],['notas','📝','Notas'],['diario','📖','Diário'],['compras','🛒','Compras'],['carteira','💰','Carteira'],['mercado','🎄','Promoções'],['concursos','🎓','Concursos'],['clt','💼','CLT'],['mulher','🌸','Espaço Mulher'],['cultural','🎭','Espaço Cultural'],['filmes','🎬','Filmes']];
 /* TABS = só os menus ativos (Configurações › Menus do app). A lista é atualizada no próprio lugar. */
 const TABS=[];
 function tabsAtualizar(){const off=Array.isArray(S.tabsOff)?S.tabsOff:[];let v=TABS_ALL.filter(t=>!off.includes(t[0]));if(!v.length)v=[TABS_ALL[0]];TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}}
@@ -3922,12 +3923,151 @@ function vCultural(){setTimeout(cuCarregar,1500);
  document.head.appendChild(s)})();
 
 
+/* ===== Filmes: Cinema (shoppings de Recife, Olinda, Paulista e Jaboatão) e Streaming =====
+   Dados em FI_BASE e no arquivo filmes/filmes.json, que o robô (.github/workflows/atualizar-filmes.yml) atualiza sozinho.
+   O app lê o arquivo ao abrir, ao voltar para o app e a cada 30 min, e guarda a última cópia no aparelho (funciona sem internet).
+   Formato: {atualizado:'AAAA-MM-DD', filmes:{Título:{g gênero, m minutos, cl classificação, s sinopse}},
+   cartaz:{idDoCinema:[títulos]}, embreve:[{t,d,g,s}], streaming:[{t, k:'f'|'s', p:plataforma, d:data, s:sinopse, o:observação}]} */
+const FI_BASE={"atualizado":"2026-11-06","filmes":{"100 Dias":{"g":"Aventura, Drama","m":116},"As Dez Vantagens de Morrer Depois de Você":{"g":"Drama","m":106},"Assalto à Brasileira":{"g":"Ação, Comédia","m":98},"Cara-de-Barro":{"g":"Ação, Aventura, Terror","m":108,"s":"Filme de terror do universo DC, dirigido por James Watkins. Acompanha a queda de Matt Hagen, um astro em ascensão em Hollywood que acaba desfigurado e volta às ruas de Gotham com sede de vingança contra quem o destruiu, tornando-se o vilão Cara-de-Barro.","cl":"18"},"Daniel e a Fornalha Ardente":{"g":"Drama, Religião","m":108,"s":"Drama religioso inspirado na história bíblica de Daniel e de seus companheiros, que enfrentam a fornalha ardente por manterem a fé."},"Feito Pipa":{"g":"Drama","m":93,"s":"Drama brasileiro dirigido por Allan Deberton, com Lázaro Ramos, Yuri Gomes e Teca Pereira. Gugu, um menino de 11 anos, sonha em ser jogador de futebol enquanto enfrenta questões familiares e os desafios da infância. É o filme escolhido pelo Brasil para tentar uma vaga no Oscar 2027.","cl":"14"},"Godzilla Minus Zero":{"g":"Ação, Ficção Científica, Terror","m":125,"s":"Continuação de Godzilla Minus One, o sucesso japonês reconhecido no mundo todo. O filme acompanha novos acontecimentos envolvendo o monstro gigante e as consequências da sua presença para a humanidade, entre medo, sobrevivência e destruição em larga escala."},"Klara e o Sol":{"g":"Drama","m":116,"s":"Drama baseado no romance de Kazuo Ishiguro. Klara é uma Amiga Artificial que observa o mundo com atenção e cuida de uma adolescente doente, enquanto tenta entender o que significa amar."},"Minha Melhor Amiga":{"g":"Comédia","m":118},"O Bosque Selvagem":{"g":"Animação, Aventura, Família, Fantasia","m":130,"s":"Animação de fantasia para toda a família. Prue segue o rastro de seu irmão bebê, levado por um bando de corvos, e descobre uma floresta mágica escondida, cheia de criaturas e segredos."},"O Gatola da Cartola":{"g":"Animação, Aventura, Comédia","m":91,"s":"Animação com o personagem criado por Dr. Seuss. O Gatola da Cartola aparece para ajudar dois irmãos que estão com dificuldade de se adaptar a uma nova cidade e transforma a rotina das crianças numa aventura cheia de confusão e diversão.","cl":"6"},"Os Farofeiros 3":{"g":"Comédia","m":102,"s":"Terceiro filme da comédia brasileira. A turma de amigos embarca numa viagem internacional para um casamento no Caribe, e as confusões, os desentendimentos e as situações constrangedoras vão junto na mala."},"Outra Mamãe":{"g":"Drama, Terror","m":92},"Razão e Sensibilidade":{"g":"Drama, Romance","m":132,"s":"Exibição do clássico baseado no romance de Jane Austen. As irmãs Elinor e Marianne Dashwood, de temperamentos opostos, buscam amor e estabilidade na Inglaterra do século XIX depois de perderem o patrimônio da família."},"Rocky, Um Lutador":{"g":"Ação, Drama","m":119,"s":"Clássico de 1976 com Sylvester Stallone. Rocky Balboa, boxeador de bairro da Filadélfia, ganha a chance improvável de disputar o título mundial dos pesos-pesados e luta para provar o seu valor."},"Street Fighter":{"g":"Ação","m":110,"s":"Adaptação para o cinema da famosa franquia de games de luta Street Fighter."},"Três Horas Para Viver":{"g":"Ação, Comédia","m":99},"Um Tio Quase Perfeito 3":{"g":"Comédia, Infantil","m":94},"Verity":{"g":"Drama","m":118,"s":"Baseado no romance de Colleen Hoover. Lowen, uma escritora em dificuldades, é contratada para terminar a série de livros de uma autora de sucesso que está incapacitada. Ao pesquisar na casa dela, encontra um manuscrito com confissões perturbadoras."}},"cartaz":{"riomar":["100 Dias","As Dez Vantagens de Morrer Depois de Você","Cara-de-Barro","Feito Pipa","Godzilla Minus Zero","Klara e o Sol","Minha Melhor Amiga","O Bosque Selvagem","O Gatola da Cartola","Os Farofeiros 3","Razão e Sensibilidade","Rocky, Um Lutador"],"recife":["As Dez Vantagens de Morrer Depois de Você","Assalto à Brasileira","Cara-de-Barro","Feito Pipa","Godzilla Minus Zero","Klara e o Sol","Minha Melhor Amiga","O Bosque Selvagem","O Gatola da Cartola","Os Farofeiros 3"],"delux":["100 Dias","As Dez Vantagens de Morrer Depois de Você","Feito Pipa","Godzilla Minus Zero","O Bosque Selvagem","O Gatola da Cartola","Os Farofeiros 3"],"tacaruna":["As Dez Vantagens de Morrer Depois de Você","Cara-de-Barro","Daniel e a Fornalha Ardente","Feito Pipa","Godzilla Minus Zero","Klara e o Sol","Minha Melhor Amiga","O Bosque Selvagem","O Gatola da Cartola","Os Farofeiros 3","Street Fighter","Três Horas Para Viver","Um Tio Quase Perfeito 3","Verity"],"plaza":["100 Dias","As Dez Vantagens de Morrer Depois de Você","Godzilla Minus Zero","O Bosque Selvagem","O Gatola da Cartola","Os Farofeiros 3"],"boavista":["As Dez Vantagens de Morrer Depois de Você","Assalto à Brasileira","Cara-de-Barro","Daniel e a Fornalha Ardente","Feito Pipa","Klara e o Sol","O Bosque Selvagem","O Gatola da Cartola","Os Farofeiros 3","Outra Mamãe"]},"embreve":[{"t":"Ebenezer e os Fantasmas do Natal","d":"2026-11-12","g":"Animação, Fantasia","s":"Produção inspirada em Um Conto de Natal, de Charles Dickens. O avarento Ebenezer Scrooge recebe a visita de fantasmas na noite de Natal, que o fazem rever o passado, encarar o presente e pensar no futuro."},{"t":"Jogos Vorazes: Amanhecer na Colheita","d":"2026-11-19","g":"Ação, Ficção Científica","s":"Prelúdio da franquia que mostra Haymitch Abernathy durante a 50ª edição dos Jogos Vorazes, o Segundo Massacre Quaternário, e revela uma fase importante da vida do futuro mentor de Katniss e Peeta."},{"t":"Eu Sou o Rocky","d":"2026-11-19","g":"Drama, Biografia","s":"Mostra os bastidores da criação do primeiro Rocky. Um jovem Sylvester Stallone acredita no roteiro de Rocky: Um Lutador e insiste em interpretar o protagonista, apesar da falta de dinheiro e de apoio dos estúdios."},{"t":"I Love Boosters","d":"2026-11-19","g":"Comédia, Ficção Científica","s":"Comédia com toques de ficção científica. Um grupo de mulheres que rouba roupas de grife entra em conflito com uma poderosa empresária do setor da moda."},{"t":"Enfeitiçadas: Bem-vindos a Hexe","d":"2026-11-26","g":"Animação, Fantasia","s":"Animação sobre Billie, uma adolescente impulsiva que descobre ter poderes mágicos e viaja até Hexe, um reino secreto de bruxas. Ao lado da mãe, Alice, ela investiga mistérios de família que podem mudar o mundo da magia."},{"t":"Entrando Numa Grande Fria","d":"2026-11-26","g":"Comédia","s":"Nova comédia da família que ficou famosa pelas situações constrangedoras. Olivia Jones se apaixona por Henry, filho de Greg Pinto e neto de Jack Byrnes, e o namoro provoca uma série de confusões familiares."}],"streaming":[{"t":"Black Doves: 2ª temporada","k":"s","p":"netflix","d":"2026-11-05","s":"A série de espionagem volta com Keira Knightley e Ben Whishaw. Helen segue como espiã da organização clandestina Black Doves enquanto o marido, Wallace, se prepara para virar primeiro-ministro, e Sam volta a se aproximar dela. Os dois enfrentam novas ameaças e uma conspiração que coloca gente próxima em perigo."},{"t":"A Imperatriz: 3ª temporada","k":"s","p":"netflix","d":"2026-11-12","s":"Temporada final da série alemã, com seis episódios. Mostra as consequências da guerra, o relacionamento delicado entre Elisabeth e o imperador Franz e as disputas na corte, encerrando a trajetória da imperatriz."},{"t":"O Corpo","k":"s","p":"netflix","d":"2026-11-12","s":"Suspense com elementos sobrenaturais. Depois que uma iniciação de equipe de dança dá errado numa escola católica, um grupo de garotas passa a ter visões proféticas que provocam uma onda de histeria na cidade. Criada por Quinn Shephard."},{"t":"The Mosquito Bowl","k":"f","p":"netflix","d":"2026-11-25","s":"Filme de guerra dirigido por Peter Berg, baseado no livro de Buzz Bissinger. Quatro estrelas do futebol americano universitário trocam as carreiras pelo Corpo de Fuzileiros Navais após Pearl Harbor e vivem treinamento e batalhas no Pacífico. Com Nicholas Galitzine, Bill Skarsgård, Ray Nicholson e Tom Francis."},{"t":"Casadas e Caçadoras: 2ª temporada","k":"s","p":"netflix","d":"2026-11-26","s":"Segue a história de Sophie (Brittany Snow) e Margo (Malin Akerman), com mais segredos, relações de poder e situações perigosas entre um grupo de mulheres, depois dos acontecimentos da 1ª temporada."},{"t":"O Instituto","k":"s","p":"prime","d":"2026-11-02","s":"Série baseada no romance de Stephen King. Crianças com habilidades especiais são levadas a uma instalação secreta, onde são submetidas a experimentos."},{"t":"Muhammad Ali: O Maior","k":"s","p":"prime","d":"2026-11-04","s":"Cinebiografia em formato de série sobre a vida e a carreira do lendário boxeador Muhammad Ali."},{"t":"Fuga Mortal","k":"f","p":"prime","d":"2026-11-04"},{"t":"Campus Drivers","k":"s","p":"prime","d":"2026-11-06","o":"Série teen."},{"t":"Devils' Crest","k":"s","p":"prime","d":"2026-11-06"},{"t":"Insaciável","k":"f","p":"prime","d":"2026-11-07"},{"t":"Todo Tempo Que Temos","k":"f","p":"prime","d":"2026-11-09","s":"Drama romântico com Florence Pugh e Andrew Garfield sobre a vida de um casal ao longo dos anos."},{"t":"O Senhor dos Anéis: Os Anéis de Poder · 3ª temporada","k":"s","p":"prime","d":"2026-11-11","s":"Terceira temporada da série ambientada na Segunda Era da Terra-média, que mostra a forja dos Anéis de Poder e a ascensão de Sauron.","o":"Episódios 5 e 6 chegam em 18/11."},{"t":"Refém por um Fio","k":"f","p":"prime","d":"2026-11-13","s":"Suspense baseado em fatos reais, dirigido por Gus Van Sant. Em 1977, Tony Kiritsis (Bill Skarsgård) invade uma financeira e faz um executivo refém, com uma arma ligada por um fio ao pescoço dele, alegando ter sido prejudicado num negócio."},{"t":"Obsessão","k":"f","p":"prime","d":"2026-11-14","s":"Terror escrito e dirigido por Curry Barker. Um jovem apaixonado usa um objeto misterioso capaz de realizar desejos para conquistar a pessoa que ama e descobre que todo desejo tem consequências. Chega para todos os assinantes, depois de passar pela loja do Prime Video."},{"t":"The Chosen: Os Escolhidos · 6ª temporada","k":"s","p":"prime","d":"2026-11-15","s":"Nova temporada da série que retrata a vida de Jesus e de seus seguidores."},{"t":"Madden","k":"f","p":"prime","d":"2026-11-18","s":"Cinebiografia dirigida por David O. Russell sobre John Madden, treinador campeão do Super Bowl com o Oakland Raiders que virou um dos comentaristas esportivos mais famosos dos EUA. Com Nicolas Cage como Madden e Christian Bale como Al Davis."},{"t":"Perfeitos Mentirosos","k":"s","p":"prime","d":"2026-11-20","s":"Jude Derry chega à Universidade Tagus decidida a investigar a morte do irmão."},{"t":"Clashing Through the Snow","k":"f","p":"prime","d":"2026-11-23","o":"Filme natalino."},{"t":"Blade Runner 2099","k":"s","p":"prime","d":"2026-11-25","s":"Minissérie que expande o universo de Blade Runner, com a história ambientada no ano de 2099.","o":"Algumas fontes citam 24/11; outras, 25/11."},{"t":"A Imperatriz se Casou Novamente","k":"s","p":"disney","d":"2026-11-04","s":"Drama de época com fantasia. Depois de ser rejeitada pelo imperador, a imperatriz Navier decide recomeçar a vida e se casar de novo."},{"t":"Tudo é Justo: 2ª temporada","k":"s","p":"disney","d":"2026-11-04","s":"Segunda temporada da série de Ryan Murphy sobre advogadas de divórcio que abrem o próprio escritório."},{"t":"Percy Jackson e os Olimpianos: 3ª temporada","k":"s","p":"disney","d":"2026-11-10","s":"Terceira temporada da série baseada nos livros de Rick Riordan, em que Percy e seus amigos enfrentam deuses e monstros da mitologia grega."},{"t":"It's Always Sunny in Philadelphia: 18ª temporada","k":"s","p":"disney","d":"2026-11-11","s":"Nova temporada da comédia sobre a turma do bar Paddy's Pub, na Filadélfia."},{"t":"Bluey: Restaurante Chique","k":"s","p":"disney","d":"2026-11-16","s":"Novo especial de Bluey, a animação sobre a família de cachorrinhos Heeler."},{"t":"Mickey: Esqueceram de Mim","k":"f","p":"disney","d":"2026-11-27","s":"Especial animado do Mickey. Detalhes da história ainda não divulgados."},{"t":"Stick: 2ª temporada","k":"s","p":"apple","d":"2026-11-04","s":"Segunda temporada da comédia dramática com Owen Wilson, sobre um ex-golfista profissional que treina um jovem talento."},{"t":"Awkwafina: A Cozinheira Improvável","k":"s","p":"apple","d":"2026-11-04"},{"t":"12 12 12","k":"f","p":"apple","d":"2026-11-13"},{"t":"A Arte de Ser Heumann","k":"f","p":"apple","d":"2026-11-13"},{"t":"Snoopy Apresenta: 12 Dias do Beagle","k":"f","p":"apple","d":"2026-11-13","s":"Novo especial de fim de ano com Snoopy e a turma Peanuts."},{"t":"O Pequeno Guerreiro","k":"f","p":"apple","d":"2026-11-25"},{"t":"A Idade Dourada: 4ª temporada","k":"s","p":"hbo","d":"2026-11-01","s":"Drama de época sobre a disputa entre a velha elite e os novos-ricos na Nova York do século XIX."},{"t":"Cidade de Deus: A Luta Não Para · 2ª temporada","k":"s","p":"hbo","d":"2026-11-08","s":"Continuação da série que revisita o universo de Cidade de Deus."},{"t":"Big John's Bosh! Family","k":"s","p":"paramount","d":"2026-11-02"},{"t":"It Gets Worse","k":"s","p":"paramount","d":"2026-11-06"},{"t":"He Said, She Said: Till Death Do Us Part","k":"s","p":"paramount","d":"2026-11-17"},{"t":"Yellowjackets: 4ª temporada","k":"s","p":"paramount","d":"2026-11-20","s":"Quarta temporada da série sobre um time feminino de futebol sobrevivente de um acidente aéreo e o que acontece com elas décadas depois."},{"t":"Merry Christmas Mr. Plankton","k":"f","p":"paramount","d":"2026-11-27","s":"Especial natalino do Plâncton, de Bob Esponja."}]};
+const FI_CINE=[
+ ['riomar','RioMar Recife','r','Pina','Cinemark RioMar Recife','Av. República do Líbano, s/n'],
+ ['recife','Shopping Recife','r','Boa Viagem','UCI Kinoplex Shopping Recife','Av. Padre Carapuceiro, 777'],
+ ['delux','Shopping Recife','r','Boa Viagem','UCI Kinoplex De Lux Shopping Recife','Av. Padre Carapuceiro, 777'],
+ ['tacaruna','Shopping Tacaruna','r','Santo Amaro','UCI Kinoplex Tacaruna','Av. Gov. Agamenon Magalhães, 153'],
+ ['plaza','Plaza Shopping Casa Forte','r','Casa Forte','UCI Kinoplex Casa Forte','Rua João Santos Filho, 255'],
+ ['boavista','Shopping Boa Vista','r','Boa Vista','Kinoplex Boa Vista','Rua José de Alencar, 105'],
+ ['patteo','Shopping Patteo Olinda','o','','Cinépolis Patteo Olinda','Rua Eduardo de Moraes, 255'],
+ ['northway','Paulista North Way Shopping','p','','Cinesystem Paulista','Rodovia PE-15, 242'],
+ ['guararapes','Shopping Guararapes','j','','Cinépolis Shopping Guararapes','Av. Barreto de Menezes, 800']];
+const FI_CID={r:['Recife','#0f8b8d'],o:['Olinda','#d9731f'],p:['Paulista','#6a5bd9'],j:['Jaboatão','#2f9e6b']};
+const FI_PLAT=[['netflix','Netflix','#e50914'],['prime','Prime Video','#00a8e1'],['disney','Disney+','#113ccf'],['apple','Apple TV+','#555555'],['hbo','HBO Max','#8b2fc9'],['paramount','Paramount+','#0064ff']];
+const FI_DS=['dom','seg','ter','qua','qui','sex','sáb'];
+let FI_D=FI_BASE,fiUlt=0,fiHash='',fiSec='cin',fiCs='cartaz',fiCid='',fiPl='',fiTp='',fiPer='fut',fiQ='',fiMais=40;
+const fiNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const fiData=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'');
+const fiDM=d=>d.slice(8,10)+'/'+d.slice(5,7);
+const fiDow=d=>FI_DS[new Date(d+'T12:00:00').getDay()];
+const fiAdd=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)};
+const fiDias=d=>Math.round((new Date(d+'T12:00:00')-new Date(HOJE+'T12:00:00'))/864e5);
+const fiBR=d=>d.split('-').reverse().join('/');
+const fiBusca=t=>'https://www.google.com/search?q='+encodeURIComponent(t);
+const fiPlat=p=>FI_PLAT.find(x=>x[0]===p)||[p,String(p).replace(/^./,c=>c.toUpperCase()),'#6b7280'];
+function fiMerge(b,d){
+ const r={atualizado:d.atualizado>b.atualizado?d.atualizado:b.atualizado,filmes:Object.assign({},b.filmes),cartaz:Object.assign({},b.cartaz),embreve:b.embreve,streaming:b.streaming};
+ if(d.filmes&&typeof d.filmes==='object')Object.keys(d.filmes).forEach(t=>{const n=d.filmes[t];if(!n||typeof n!=='object')return;const m=Object.assign({},r.filmes[t]||{});['g','m','cl'].forEach(k=>{if(n[k])m[k]=n[k]});if(n.s&&String(n.s).trim())m.s=String(n.s);r.filmes[t]=m});
+ if(d.cartaz&&typeof d.cartaz==='object')Object.keys(d.cartaz).forEach(k=>{if(Array.isArray(d.cartaz[k])&&d.cartaz[k].length)r.cartaz[k]=d.cartaz[k].map(String)});
+ const sinB={};b.embreve.forEach(e=>{if(e.s)sinB[e.t]=e.s});b.streaming.forEach(e=>{if(e.s)sinB[e.t]=e.s});
+ if(Array.isArray(d.embreve)&&d.embreve.length)r.embreve=d.embreve.filter(e=>e&&e.t&&fiData(e.d)).map(e=>Object.assign({},e,{s:e.s||sinB[e.t]||''}));
+ if(Array.isArray(d.streaming)&&d.streaming.length)r.streaming=d.streaming.filter(e=>e&&e.t&&e.p&&fiData(e.d)).map(e=>Object.assign({},e,{s:e.s||sinB[e.t]||''}));
+ return r}
+function fiAplicar(d){
+ if(!d||typeof d!=='object'||!fiData(d.atualizado)||d.atualizado<FI_BASE.atualizado)return false;
+ const h=JSON.stringify(d);if(h===fiHash)return false;fiHash=h;FI_D=fiMerge(FI_BASE,d);return true}
+function fiCarregar(forcar){const ag=Date.now();if(!forcar&&ag-fiUlt<120000)return Promise.resolve();fiUlt=ag;
+ return fetch('filmes/filmes.json?x='+ag,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(!d)return;
+  try{localStorage.setItem('ma-filmes-json',JSON.stringify(d))}catch(e){}
+  if(fiAplicar(d)&&tab==='filmes')fiRender()}).catch(()=>{})}
+try{fiAplicar(JSON.parse(localStorage.getItem('ma-filmes-json')||'null'))}catch(e){}
+setTimeout(fiCarregar,3000);setInterval(()=>{if(!document.hidden)fiCarregar()},30*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)fiCarregar()});
+function fiRender(){const y=window.scrollY;render();window.scrollTo(0,y)}
+function fiManual(b){b.disabled=true;b.textContent='Buscando…';fiCarregar(true).then(()=>{fiRender();info('Lista conferida. Última atualização: '+fiBR(FI_D.atualizado)+'.')})}
+/* ---- dados derivados ---- */
+function fiInfo(t){const f=FI_D.filmes[t]||{};if(f.s)return f;const e=FI_D.embreve.find(x=>x.t===t);return e?Object.assign({},f,{g:f.g||e.g,s:e.s}):f}
+function fiCartaz(){const m={};
+ FI_CINE.forEach(c=>{(FI_D.cartaz[c[0]]||[]).forEach(t=>{(m[t]=m[t]||[]).push(c[0])})});
+ FI_D.embreve.forEach(e=>{if(e.d<=HOJE&&e.d>=fiAdd(HOJE,-21)&&!m[e.t])m[e.t]=[]});
+ return Object.keys(m).map(t=>({t:t,c:m[t]})).sort((a,b)=>b.c.length-a.c.length||a.t.localeCompare(b.t,'pt-BR'))}
+const fiCine=id=>FI_CINE.find(c=>c[0]===id);
+function fiChips(i){return (i.g?'<span class="cn-b" style="background:#7c3aed22;color:#7c3aed">🎬 '+esc(i.g)+'</span>':'')+(i.m?'<span class="cn-b" style="background:var(--acs);color:var(--mute)">⏱️ '+esc(i.m)+' min</span>':'')+(i.cl?'<span class="cn-b" style="background:#d9a10f22;color:#a87700">'+(i.cl==='L'?'Livre':esc(i.cl)+' anos')+'</span>':'')}
+function fiSinopse(t,i,o){const s=i.s?'<p>'+esc(i.s)+'</p>':'<p class="cn-nv">Sinopse ainda não carregada. A atualização automática preenche sozinha; enquanto isso, toque em “Trailer e mais informações”.</p>';
+ return '<details class="fi-d"'+(o?' open':'')+'><summary>📖 Sinopse</summary>'+s+'<p><a class="cn-lk" href="'+esc(fiBusca(t+' filme sinopse trailer'))+'" target="_blank" rel="noopener">🔎 Trailer e mais informações ↗</a></p></details>'}
+/* ---- Cinema ---- */
+function fiCardFilme(f){const i=fiInfo(f.t),ids=fiCid?f.c.filter(x=>(fiCine(x)||[])[2]===fiCid):f.c;
+ const cs=ids.length?ids.map(x=>{const c=fiCine(x);return '<span class="cn-b" style="background:'+FI_CID[c[2]][1]+'22;color:'+FI_CID[c[2]][1]+'">📍 '+esc(c[4])+'</span>'}).join(''):'<span class="cn-nv">'+(f.c.length?'Não está nos cinemas desta cidade.':'Estreou recentemente: confira os horários no seu cinema.')+'</span>';
+ return '<div class="cn-card" style="--cc:#7c3aed"><h4>'+esc(f.t)+'</h4><div class="cn-top">'+fiChips(i)+'</div><div class="cn-top" style="margin-top:6px">'+cs+'</div>'+fiSinopse(f.t,i)+'</div>'}
+function fiCartazHtml(){const q=fiNorm(fiQ.trim());
+ if(fiCid&&!FI_CINE.some(c=>c[2]===fiCid&&(FI_D.cartaz[c[0]]||[]).length))return '<div class="vazio">A lista de filmes dos cinemas de '+FI_CID[fiCid][0]+' ainda não foi carregada. Ela entra na atualização automática. Enquanto isso, abra a aba Shoppings para ver o endereço e o link da programação.</div>';
+ const l=fiCartaz().filter(f=>{if(fiCid&&f.c.length&&!f.c.some(x=>fiCine(x)[2]===fiCid))return false;if(fiCid&&!f.c.length)return false;
+  if(q&&!fiNorm(f.t+' '+(fiInfo(f.t).g||'')).includes(q))return false;return true});
+ if(!l.length)return '<div class="vazio">Nenhum filme encontrado com esses filtros.</div>';
+ return l.map(fiCardFilme).join('')}
+function fiBreveHtml(){const q=fiNorm(fiQ.trim());
+ const l=FI_D.embreve.map((e,x)=>[e,x]).filter(a=>a[0].d>HOJE&&(!q||fiNorm(a[0].t+' '+(a[0].g||'')).includes(q))).sort((a,b)=>a[0].d<b[0].d?-1:a[0].d>b[0].d?1:a[0].t.localeCompare(b[0].t,'pt-BR'));
+ if(!l.length)return '<div class="vazio">Nenhuma estreia futura na lista. A atualização automática traz novas estreias.</div>';
+ let h='',dia='';
+ l.forEach(a=>{const e=a[0],n=fiDias(e.d);
+  if(e.d!==dia){dia=e.d;h+='<div class="cu-dia">'+fiDow(e.d)+', '+fiDM(e.d)+' · '+(n===1?'amanhã':'em '+n+' dias')+'</div>'}
+  const ag=(S.ev||[]).some(v=>v.title==='🎬 '+e.t&&v.date===e.d);
+  h+='<div class="cn-card" style="--cc:#d9731f"><h4>'+esc(e.t)+'</h4><div class="cn-top"><span class="cn-b" style="background:#d9731f22;color:#d9731f">🗓️ Estreia '+fiDM(e.d)+'</span>'+fiChips({g:e.g})+'</div>'+fiSinopse(e.t,{s:e.s,g:e.g})+'<div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="fiAgB('+a[1]+');return false">'+(ag?'✅ Na sua Agenda':'📅 Pôr na Agenda')+'</a></div></div>'});
+ return h}
+function fiShopsHtml(){
+ const grupos={};FI_CINE.forEach(c=>{if(fiCid&&c[2]!==fiCid)return;(grupos[c[2]]=grupos[c[2]]||{});(grupos[c[2]][c[1]]=grupos[c[2]][c[1]]||[]).push(c)});
+ let h='';
+ Object.keys(FI_CID).forEach(k=>{const g=grupos[k];if(!g)return;
+  h+='<h3 class="cn-h">📍 '+FI_CID[k][0]+'</h3>';
+  Object.keys(g).forEach(nome=>{const cs=g[nome],c0=cs[0],mapa='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(nome+' '+FI_CID[k][0]+' PE');
+   h+='<div class="cn-card" style="--cc:'+FI_CID[k][1]+'"><h4>🛍️ '+esc(nome)+'</h4><div class="cn-g"><div class="cn-r"><span>Endereço</span><b>'+esc(c0[5]+(c0[3]?' · '+c0[3]:'')+' · '+FI_CID[k][0])+'</b></div></div>'
+    +cs.map(c=>{const l=FI_D.cartaz[c[0]];
+     const corpo=l&&l.length?l.map(t=>{const i=fiInfo(t);return '<details class="fi-m"><summary>'+esc(t)+(i.g?' <small>'+esc(i.g)+(i.m?' · '+i.m+' min':'')+'</small>':'')+'</summary>'+(i.s?'<p>'+esc(i.s)+'</p>':'<p class="cn-nv">Sinopse ainda não carregada.</p>')+'<p><a class="cn-lk" href="'+esc(fiBusca(t+' filme sinopse trailer'))+'" target="_blank" rel="noopener">🔎 Trailer e mais informações ↗</a></p></details>'}).join(''):'<p class="cn-nv" style="margin:6px 0">A lista de filmes deste cinema entra na atualização automática. Enquanto isso, veja a programação do dia no link abaixo.</p>';
+     return '<details class="fi-c"'+(l&&l.length?'':'')+'><summary>🎞️ '+esc(c[4])+' <small>'+(l&&l.length?l.length+' filmes em cartaz':'programação no link')+'</small></summary>'+corpo+'<p><a class="cn-lk" href="'+esc(fiBusca('programação '+c[4]+' hoje'))+'" target="_blank" rel="noopener">🕒 Horários e ingressos ↗</a></p></details>'}).join('')
+    +'<div class="cn-act"><a class="cn-lk" href="'+esc(mapa)+'" target="_blank" rel="noopener">📍 Mapa</a></div></div>'})});
+ if(!fiCid||fiCid==='r')h+='<details class="card cl-live"><summary>🎞️ Outros cinemas do Recife (fora de shopping)</summary><p class="cn-nv" style="margin:8px 0 4px">Cinemas de rua e salas culturais. Toque para ver a programação.</p><div class="cn-act">'+[['Cinema São Luiz','Cinema São Luiz Recife programação'],['Cinemas da Fundação Joaquim Nabuco','Cinema da Fundação Derby Museu Recife programação'],['Moviemax Rosa e Silva','Moviemax Rosa e Silva Recife programação']].map(a=>'<a class="cn-lk" href="'+esc(fiBusca(a[1]))+'" target="_blank" rel="noopener">'+esc(a[0])+' ↗</a>').join('')+'</div></details>';
+ return h||'<div class="vazio">Nenhum shopping encontrado.</div>'}
+function fiCinemaHtml(){return fiCs==='cartaz'?fiCartazHtml():fiCs==='breve'?fiBreveHtml():fiShopsHtml()}
+/* ---- Streaming ---- */
+function fiDiaTxt(d){const n=fiDias(d);return (n===0?'Hoje · ':n===1?'Amanhã · ':'')+fiDow(d)+', '+fiDM(d)}
+function fiStreamHtml(){const q=fiNorm(fiQ.trim()),lim=fiAdd(HOJE,-30);
+ const l=FI_D.streaming.map((e,x)=>[e,x]).filter(a=>{const e=a[0];
+  if(fiPl&&e.p!==fiPl)return false;if(fiTp&&e.k!==fiTp)return false;
+  if(fiPer==='fut'&&e.d<HOJE)return false;if(fiPer==='pas'&&(e.d>=HOJE||e.d<lim))return false;if(fiPer==='all'&&e.d<lim)return false;
+  if(q&&!fiNorm(e.t+' '+fiPlat(e.p)[1]).includes(q))return false;return true});
+ if(!l.length)return '<div class="vazio">Nenhum lançamento encontrado com esses filtros.</div>';
+ l.sort((a,b)=>(fiPer==='pas'?(a[0].d<b[0].d?1:a[0].d>b[0].d?-1:0):(a[0].d<b[0].d?-1:a[0].d>b[0].d?1:0))||a[0].p.localeCompare(b[0].p)||a[0].t.localeCompare(b[0].t,'pt-BR'));
+ let h='',dia='';
+ l.slice(0,fiMais).forEach(a=>{const e=a[0],p=fiPlat(e.p);
+  if(e.d!==dia){dia=e.d;h+='<div class="cu-dia">'+fiDiaTxt(e.d)+'</div>'}
+  const ag=(S.ev||[]).some(v=>v.title==='🎬 '+e.t&&v.date===e.d),i={s:e.s};
+  h+='<div class="cn-card" style="--cc:'+p[2]+'"><div class="cn-top"><span class="cn-b" style="background:'+p[2]+'22;color:'+(p[0]==='apple'?'var(--ink)':p[2])+'">📺 '+esc(p[1])+'</span><span class="cn-b" style="background:var(--acs);color:var(--mute)">'+(e.k==='s'?'📺 Série':'🎬 Filme')+'</span><span class="cn-b" style="background:#d9731f22;color:#d9731f">🗓️ '+fiDM(e.d)+'</span></div><h4>'+esc(e.t)+'</h4>'
+   +(e.o?'<p class="cn-nv" style="margin:0 0 4px">'+esc(e.o)+'</p>':'')+fiSinopse(e.t,i)
+   +'<div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="fiAgS('+a[1]+');return false">'+(ag?'✅ Na sua Agenda':'📅 Pôr na Agenda')+'</a></div></div>'});
+ if(l.length>fiMais)h+='<div class="row" style="justify-content:center"><button onclick="fiMais+=40;fiRefresh()">Mostrar mais ('+(l.length-fiMais)+')</button></div>';
+ return h}
+/* ---- telas ---- */
+function fiAgenda(t,dia){const ti='🎬 '+t;if(S.ev.some(v=>v.title===ti&&v.date===dia)){info('Esse título já está na sua Agenda.');return}
+ S.ev.push({id:uid(),title:ti,date:dia,time:'',done:false});save();info('Adicionado à Agenda em '+fiDM(dia)+'.');fiRender()}
+function fiAgB(x){const e=FI_D.embreve[x];if(e)fiAgenda(e.t,e.d)}
+function fiAgS(x){const e=FI_D.streaming[x];if(e)fiAgenda(e.t,e.d<HOJE?HOJE:e.d)}
+const fiBtn=(on,js,txt)=>'<button class="'+(on?'on':'')+'" onclick="'+js+'">'+txt+'</button>';
+function fiSegCid(){return [['','📋','Todas']].concat(Object.keys(FI_CID).map(k=>[k,'📍',FI_CID[k][0]])).map(a=>'<button class="'+(fiCid===a[0]?'on':'')+'" onclick="fiCid=\''+a[0]+'\';fiRender()"><span class="sl-ei">'+a[1]+'</span>'+a[2]+'</button>').join('')}
+function fiControles(){
+ const busca='<input id="fi-q" class="cn-q" placeholder="Buscar filme ou série…" value="'+esc(fiQ)+'" oninput="fiQ=this.value;fiMais=40;fiRefresh()">';
+ if(fiSec==='cin')return '<div class="seg s3" style="margin-bottom:8px">'+[['cartaz','🎞️ Em cartaz'],['breve','🗓️ Em breve'],['shops','🛍️ Shoppings']].map(a=>fiBtn(fiCs===a[0],"fiCs='"+a[0]+"';fiMais=40;fiRender()",a[1])).join('')+'</div>'
+  +(fiCs==='breve'?'':'<div class="seg s5" style="margin-bottom:8px">'+fiSegCid()+'</div>')+(fiCs==='shops'?'':'<div class="card" style="padding:10px 14px">'+busca+'</div>');
+ return '<div class="card"><div class="seg" style="margin-bottom:8px">'+fiBtn(!fiPl,"fiPl='';fiMais=40;fiRender()",'Todos')+FI_PLAT.map(p=>fiBtn(fiPl===p[0],"fiPl='"+p[0]+"';fiMais=40;fiRender()",esc(p[1]))).join('')+'</div>'
+  +'<div class="seg s3" style="margin-bottom:8px">'+[['','Todos'],['f','🎬 Filmes'],['s','📺 Séries']].map(a=>fiBtn(fiTp===a[0],"fiTp='"+a[0]+"';fiMais=40;fiRender()",a[1])).join('')+'</div>'
+  +'<div class="seg s3" style="margin-bottom:8px">'+[['fut','🗓️ Em breve'],['pas','✅ Já estreou'],['all','Tudo']].map(a=>fiBtn(fiPer===a[0],"fiPer='"+a[0]+"';fiMais=40;fiRender()",a[1])).join('')+'</div>'+busca+'</div>'}
+function fiLista(){return fiSec==='cin'?fiCinemaHtml():fiStreamHtml()}
+function fiRefresh(){const e=$('#fi-lista');if(e)e.innerHTML=fiLista()}
+function fiAviso(){const n=-fiDias(FI_D.atualizado);
+ return n>7?'<p class="cn-nv" style="margin:6px 0 0">⚠️ Última atualização há '+n+' dias. Toque em Atualizar para buscar a programação de hoje.</p>':''}
+function vFilmes(){setTimeout(fiCarregar,1200);
+ return '<h2>'+_t('Filmes')+'</h2>'
+ +'<div class="seg s3" style="margin-bottom:10px;grid-template-columns:1fr 1fr">'+fiBtn(fiSec==='cin',"fiSec='cin';fiMais=40;fiRender()",'🎞️ Cinema')+fiBtn(fiSec==='str',"fiSec='str';fiMais=40;fiRender()",'📺 Streaming')+'</div>'
+ +'<p class="hint" style="margin:0 0 10px">'+(fiSec==='cin'?'Filmes em cartaz e estreias nos cinemas dos shoppings de Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE). Horários, preços e sessões mudam todo dia: confirme sempre no link do cinema.':'Filmes e séries que estão chegando (e os que acabaram de chegar) na Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com a data e a sinopse. As datas são as divulgadas pelas plataformas e podem mudar.')+'</p>'
+ +'<div class="card" style="padding:10px 14px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="cn-nv" style="margin:0">🔄 Atualização automática · última: '+esc(fiBR(FI_D.atualizado))+'</span><button class="sec" onclick="fiManual(this)">Atualizar</button></div>'+fiAviso()+'</div>'
+ +fiControles()+'<div id="fi-lista">'+fiLista()+'</div>'}
+(function(){const s=document.createElement('style');s.textContent=
+'.fi-d,.fi-c,.fi-m{margin-top:8px;font-size:13px}.fi-d>summary,.fi-c>summary,.fi-m>summary{cursor:pointer;font-weight:600;color:var(--ac)}.fi-d p,.fi-c p,.fi-m p{margin:6px 0 0;color:var(--ink);line-height:1.45}.fi-c{border-top:1px solid var(--ln);padding-top:8px}.fi-c>summary{font-size:14px;color:var(--ink)}.fi-c>summary small,.fi-m>summary small{font-weight:400;color:var(--mute)}.fi-m{margin:6px 0 0 10px;padding-left:8px;border-left:2px solid var(--ln)}.fi-m>summary{color:var(--ink);font-weight:500}';
+ document.head.appendChild(s)})();
+
+
 function vMulher(){
  const seg='<div class="seg">'+[['ciclo','🌸 Ciclo'],['saude','🩺 Saúde'],['care','💧 Autocuidado'],['seg','🛡️ Segurança'],['mais','✨ Mais']].map(function(a){return '<button class="'+(muTab===a[0]?'on':'')+'" onclick="muGo(\''+a[0]+'\')">'+a[1]+'</button>'}).join('')+'</div>';
  return '<h2>Espaço Mulher</h2>'+seg+({ciclo:muCiclo,saude:muSaude,care:muCare,seg:muSeg,mais:muMais}[muTab]||muCiclo)()}
 
 function render(){head();if(!S.user.name){welcomeView();return}
- const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,config:vConfig}[tab];
+ const f={inicio:vInicio,agenda:vAgenda,cal:vCal,notas:vNotas,diario:vDiario,compras:vCompras,carteira:vCarteira,mercado:vMeuMercado,concursos:vConcursos,clt:vClt,mulher:vMulher,cultural:vCultural,filmes:vFilmes,config:vConfig}[tab];
  const a=document.activeElement,keep=a&&a.id&&a.tagName!=='BUTTON'?{id:a.id,v:a.value}:null;
  $('#v').innerHTML=f();if(tab==='compras'&&sub==='comp')calcCmp();if(tab==='config'){showVer();permRefresh()}
  if(keep&&$('#'+keep.id)&&tab!=='diario'){const e=$('#'+keep.id);if(e.type!=='date'){e.value=keep.v;}}
@@ -5931,6 +6071,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.5.9':[
+   '🎬 Novo menu Filmes. Aba Cinema: filmes em cartaz, estreias e os shoppings de Recife, Olinda, Paulista e Jaboatão, com os filmes de cada cinema e a sinopse. Aba Streaming: filmes e séries que estão chegando na Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com a data e a sinopse. A lista se atualiza sozinha.'
+  ],
   '3.5.8':[
    '🧹 O menu Comentários foi removido do app.'
   ],
@@ -6291,6 +6434,7 @@ const GUIA_APP=[
  ['💰','Carteira','Resumo, gastos, contas fixas, renda, salário (dia que cai, holerite com descontos, líquido e os melhores dias para pagar as contas) e Investimentos (catálogo com todas as opções, sua carteira, simulador, conversor de moedas e guia).'],
  ['🎄','Promoções','Ofertas do Assaí, do Atacadão e do Novo Atacarejo, com a aba Comparar preços: mostra qual mercado está mais barato por setor e no total.'],
  ['🎭','Espaço Cultural','Shows, peças de teatro, eventos infantis, festivais, festas e exposições em Recife, Olinda, Paulista e Jaboatão, pagos e gratuitos. Filtre por cidade, categoria, preço e data, favorite com ⭐ e ponha o evento na Agenda.'],
+ ['🎬','Filmes','Cinema: filmes em cartaz e estreias nos shoppings de Recife, Olinda, Paulista e Jaboatão, com a sinopse de cada filme. Streaming: filmes e séries que estão chegando na Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com a data. A lista se atualiza sozinha.'],
  ['🔔','Lembretes e alarme','Avisos dos compromissos e dos plantões, com a música que você escolher.'],
  ['⚙️','Configurações','Perfil, conta (Google ou e-mail), backup, idioma, cores do tema, menu e senha do app.']];
 function guiaNovosInit(){
@@ -6683,7 +6827,7 @@ function kParse(txt,now){now=now||new Date();txt=kFalaHora(txt);const n=kNorm(tx
   .replace(/^\s*(?:de|do|da|para|pra|que|um|uma|o|a|às|as|em|no|na)(?=\s)\s*/i,' ').replace(/\s+(em|no|na|às|as|para|pra|de|do|da)\s*$/i,'').replace(/\s+/g,' ').trim();
  if(t)t=t[0].toUpperCase()+t.slice(1);
  return {title:t,date:date,time:time}}
-const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
+const kTabs=[['inicio',/\b(inicio|home|pagina inicial)\b/],['agenda',/\bagenda\b/],['cal',/\bcalendario\b/],['notas',/\bnotas?\b/],['diario',/\bdiario\b/],['compras',/\b(compras|lista)\b/],['carteira',/\b(carteira|gastos|dinheiro|financas)\b/],['mercado',/\b(promocoes|mercado)\b/],['cultural',/\b(espaco cultural|cultural|cultura|shows?|teatros?|pecas?)\b/],['filmes',/\b(filmes?|cinemas?|streaming|series?|netflix)\b/],['clt',/\b(clt|vagas?|empregos?)\b/],['config',/\b(configuracoes?|ajustes|config)\b/]];
 const kFaq=[
  [/lembret|alarme|notifica/,'Para ter lembretes, ative em Configurações › Lembretes e alarme. Depois, todo compromisso com hora avisa antes de começar. Quer que eu ative agora? Digite “ativar lembretes”.'],
  [/backup|restaurar|exportar/,'Em Configurações › Backup no celular você salva, compartilha e restaura seus dados. Se conectar uma conta, também há sincronização na nuvem.'],
@@ -7169,7 +7313,7 @@ function dados(txt,c,n){let m;const say=(r,ch)=>{kAdd('u',txt);kAdd('k',r,ch||nu
   return say(out.length?'Agenda dos próximos 7 dias:\n'+out.join('\n'):'Nenhum compromisso '+(prox?'na semana que vem.':'nos próximos 7 dias.'))}
  return false}
 /* ---- 6. traduz o jeito de falar para os comandos do app ---- */
-const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
+const TABAL=[['clt','clt|vagas?|empregos?|trabalho|carteira assinada'],['mercado','promocoes?|ofertas?|descontos?|mercad\\w*|supermercado|atacad\\w*|assai|mateus|pao de acucar|novo atacarejo'],['filmes','filmes?|cinemas?|streaming|series?|netflix|prime video|disney|hbo|paramount|apple tv'],['cultural','espaco cultural|cultural|cultura|shows?|teatros?|pecas?|ingressos?|eventos culturais'],['carteira','carteira|gastos?|grana|financas|contas|saldo|orcamento|salario|despesas|dinheiro'],['notas','notas?|anotacoes|bloco de notas|caderninho|post-?it'],['diario','diario|querido diario|desabafo|humor'],['compras','compras|lista|feira|despensa'],['cal','calendario|plantoes|plantao|escala'],['agenda','agenda|compromissos|lembretes'],['inicio','inicio|home|pagina inicial|tela inicial|menu principal'],['config','configuracoes?|config|ajustes|opcoes|preferencias|perfil|seguranca|backup']];
 const tabDe=n=>{for(const [t,r] of TABAL)if(new RegExp('(?:^|\\s)(?:'+r+')(?:\\s|$)').test(n))return t;return null};
 const TABOUT={cal:'calendario',config:'configuracoes'};
 const DICT=['agendar','agende','marcar','marque','lembrar','lembre','anotar','anote','comprar','compre','apagar','apague','excluir','exclua','remover','remova','concluir','conclua','finalizar','abrir','abra','desfazer','ativar','desativar','esconder','mostrar','adicionar','adicione','incluir','inclua','colocar','coloque','criar','crie','cancelar','cancele','deletar','limpar','tirar','escrever','guardar','salvar','registrar','cadastrar','reservar','programar'];
@@ -7230,6 +7374,7 @@ kRun=function(txt){txt=String(txt||'').trim();if(!txt)return;
   for(let i=ant;i<K.msgs.length;i++){if(K.msgs[i].who==='u'){K.msgs[i].txt=txt;break}}
  }catch(e){try{console.warn('Kayla vocab:',e)}catch(x){}_run(txt)}};
 /* ---- 8. mais respostas de ajuda ---- */
+kFaq.push([/filme|cinema|streaming|serie|netflix|prime video|disney|hbo|paramount|apple tv|estreia/,'Em Filmes você vê, na aba Cinema, os filmes em cartaz e as estreias dos cinemas dos shoppings de Recife, Olinda, Paulista e Jaboatão, com a sinopse de cada um. Na aba Streaming estão os filmes e séries que chegam à Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com data e sinopse. A lista se atualiza sozinha. Posso abrir: digite “abrir filmes”.']);
 kFaq.push([/cultur|show|teatro|peca de teatro|ingresso|espetaculo/,'Em Espaço Cultural você vê shows, peças de teatro, eventos infantis, festivais e festas em Recife, Olinda, Paulista e Jaboatão, pagos e gratuitos. Dá para filtrar por cidade, categoria, preço e data e pôr o evento na Agenda. Posso abrir: digite “abrir espaço cultural”.'],
  [/mulher|ciclo|menstrua|tpm/,'Em Espaço Mulher você acompanha o ciclo (fases, período fértil, calendário, sintomas, análises e lembretes), saúde, autocuidado e contatos de segurança. Toque em “Espaço Mulher” no menu.'],
  [/promoc|oferta|desconto|supermercado|atacado/,'Em Promoções (Meu Mercado) você acompanha as ofertas dos mercados. Posso abrir: digite “abrir promoções”.'],
@@ -8305,7 +8450,7 @@ let _naRun=false;
 /* ===== v4: skin Tropicália + menu em grupos + painel inicial ===== */
 (function(){
 COR.push(['tropical','Tropicália','#3b4cf0']);
-const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','mulher','concursos','clt']]];
+const GR=[['hoje','Hoje',['inicio']],['plan','Planejar',['agenda','cal','notas','diario']],['din','Dinheiro',['carteira','compras','mercado']],['eu','Para você',['cultural','filmes','mulher','concursos','clt']]];
 const NG=()=>S.layout==='novo',HP=NG;
 const act=g=>g[2].filter(k=>TABS.some(t=>t[0]===k)),grOf=k=>GR.find(g=>g[2].includes(k));
 const nome=k=>{const t=TABS_ALL.find(x=>x[0]===k);return t?_t(t[2]):k};
@@ -8356,7 +8501,7 @@ function vPainel(){
   notas:['#d9a10f',S.notes.length+(S.notes.length===1?' nota':' notas'),"go('notas')"],
   compras:['#f08a24',faltam+(faltam===1?' item a pegar':' itens a pegar')+' · '+brl(tot(S.shop)),"go('compras')",'w2'],
   carteira:['#3fa66b',kc.renda>0?(kc.sobra<0?'Faltam '+BRL(-kc.sobra):'Sobram '+BRL(kc.sobra))+' este mês':'Controle seus gastos',"go('carteira')",'w2'],
-  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],cultural:['#c2410c',CU_DATA.filter(cuVivo).length+' shows, peças e eventos',"go('cultural')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
+  mercado:['#e8344f','Ofertas do mercado',"go('mercado')"],mulher:['#d6409f','Cuidado e bem-estar',"go('mulher')"],cultural:['#c2410c',CU_DATA.filter(cuVivo).length+' shows, peças e eventos',"go('cultural')"],filmes:['#7c3aed','Cinema e streaming',"go('filmes')"],concursos:['#6a5bd9','Estudos e provas',"go('concursos')"],clt:['#0f8b8d','Vagas de emprego',"go('clt')"]};
  const tiles=TABS.map(t=>t[0]).filter(k=>T[k]).map(k=>{const x=T[k];return `<button class="stat tl ${x[3]||''}" style="--h:${x[0]}" onclick="${x[2]}"><span class="si">${svg(k)}</span><b>${esc(nome(k))}</b><small>${x[1]}</small></button>`}).join('');
  const plHtml=plh.map(p=>`<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><span class="t"><b>Plantão ${p.ent} → ${p.sai}</b>${hospBy(p.hosp)?`<br><small style="color:var(--mute)">${hd(hospBy(p.hosp))} ${esc(hospBy(p.hosp).name)}</small>`:''}${p.obs?`<br><small style="color:var(--mute)">${esc(p.obs)}</small>`:''}</span><button class="ghost" onclick="calSub='pl';sel=HOJE;mes=new Date();go('cal')" aria-label="Abrir plantões">›</button></div>`).join('');
  const busca=`<form class="gsearch" action="https://chatgpt.com/" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pergunte ao ChatGPT" aria-label="Pergunte ao ChatGPT" enterkeyhint="search" autocomplete="off"><button type="submit">Perguntar</button></form>`;
