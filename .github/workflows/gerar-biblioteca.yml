@@ -9,6 +9,7 @@ on:
 jobs:
   gerar:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -21,9 +22,11 @@ jobs:
       - name: Gerar os PDFs
         run: python3 biblioteca/gerar-livros.py
       - name: Salvar no repositório
+        if: always()   # salva os PDFs que ficaram prontos mesmo se algum livro falhar
         run: |
           git config user.name "biblioteca-bot"
           git config user.email "biblioteca-bot@users.noreply.github.com"
           git add biblioteca
-          git diff --cached --quiet || git commit -m "Biblioteca: 50 livros em PDF"
+          git diff --cached --quiet || git commit -m "Biblioteca: livros em PDF"
+          git pull --rebase origin ${GITHUB_REF_NAME} || true
           git push
