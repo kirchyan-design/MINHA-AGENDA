@@ -1222,6 +1222,98 @@ nav div#nav.n5 button.plus{flex:0 0 46px;min-width:46px}
 nav div#nav.n5 button .nl{font-size:10px;letter-spacing:-.02em;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 nav div#nav.n5 button .ni{width:100%;max-width:46px}
 }
+
+/* ---- Agenda v2 ---- */
+#v .ag-hero{display:flex;align-items:center;gap:14px;background:var(--grad);color:var(--onac);border-radius:var(--r,22px);padding:18px 18px 18px 20px;margin-bottom:14px;box-shadow:var(--sh2,var(--sh));position:relative;overflow:hidden}
+#v .ag-hero::after{content:"";position:absolute;right:-34px;top:-44px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.1);pointer-events:none}
+#v .ag-hl{flex:1;min-width:0;position:relative;z-index:1}
+#v .ag-hl small{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+#v .ag-hl h2{margin:2px 0 6px;font-size:30px;color:inherit}
+#v .ag-hl p{margin:0;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+#v .ag-hl em{font-style:normal;opacity:.8}
+#v .ag-rg{position:relative;width:72px;height:72px;flex:none;z-index:1;display:grid;place-items:center}
+#v .ag-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+#v .ag-ring circle{fill:none;stroke:currentColor;stroke-width:7;opacity:.25}
+#v .ag-ring circle.v{opacity:1;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+#v .ag-rg b{font:800 15px "Bricolage Grotesque",system-ui,sans-serif}
+
+#v .ag-new{width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:var(--sf);color:var(--mute);border:1.5px dashed var(--ln);border-radius:var(--rs,14px);padding:12px 14px;font-weight:600;box-shadow:none;margin-bottom:16px;text-align:left}
+#v .ag-new span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ac);color:var(--onac);font-size:18px;line-height:1}
+#v .ag-cp{margin-bottom:16px}
+#v .ag-cp input#at{font-size:17px;font-weight:600}
+#v .ag-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+#v .ag-ch{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:7px 10px;font-size:12.5px;font-weight:650;background:var(--fld);color:var(--ink);border:1.5px solid transparent;cursor:pointer;box-shadow:none}
+#v .ag-ch.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}
+#v .ag-ch input,#v .ag-pill input{position:absolute;inset:0;width:100%;height:100%;opacity:0;padding:0;border:0;cursor:pointer}
+#v .ag-cf{display:flex;gap:8px;margin-top:14px}
+
+#v .ag-mh{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px}
+#v .ag-mh strong{font:800 17px "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.02em}
+#v .ag-mr{display:flex;gap:6px}
+#v .ag-pill{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:650;background:var(--acs);color:var(--ac);border:0;cursor:pointer;box-shadow:none}
+
+#v .ag-strip{display:flex;gap:6px;overflow-x:auto;margin:0 -16px 8px;padding:2px 16px 10px;scroll-snap-type:x proximity;scrollbar-width:none;position:relative}
+#v .ag-strip::-webkit-scrollbar{display:none}
+#v .ag-dy{flex:none;width:50px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 7px;border-radius:16px;background:var(--sf);color:var(--ink);border:1px solid var(--ln2);box-shadow:none;scroll-snap-align:center;font-weight:600}
+#v .ag-dy small{font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
+#v .ag-dy b{font:800 18px/1.1 "Bricolage Grotesque",system-ui,sans-serif}
+#v .ag-dy i{width:5px;height:5px;border-radius:50%;background:transparent;margin-top:1px}
+#v .ag-dy i.h{background:var(--ac)}
+#v .ag-dy i.k{background:var(--mute);opacity:.45}
+#v .ag-dy i.l{background:var(--rd)}
+#v .ag-dy.hj{border-color:var(--ac)}
+#v .ag-dy.on{background:var(--ac);color:var(--onac);border-color:var(--ac);box-shadow:0 8px 16px -8px var(--ac)}
+#v .ag-dy.on small{color:inherit;opacity:.85}
+#v .ag-dy.on i.h,#v .ag-dy.on i.k,#v .ag-dy.on i.l{background:currentColor;opacity:1}
+
+#v .ag-seg{display:flex;gap:2px;background:var(--fld);border-radius:var(--rs,14px);padding:4px;margin:4px 0 16px}
+#v .ag-seg button{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;padding:9px 1px;border-radius:calc(var(--rs,14px) - 4px);background:transparent;color:var(--mute);border:0;box-shadow:none;font-size:12.5px;font-weight:650;white-space:nowrap}
+#v .ag-seg button.on{background:var(--sf);color:var(--ink);box-shadow:var(--sh)}
+#v .ag-bd{min-width:17px;height:17px;border-radius:9px;padding:0 4px;font-size:10.5px;line-height:17px;background:var(--acs);color:var(--ac);font-weight:800}
+#v .ag-bd.r{background:var(--rd);color:#fff}
+
+#v .ag-dt{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 2px 2px}
+#v .ag-dt b{font:800 21px "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.02em;text-transform:capitalize}
+#v .ag-dt span{color:var(--mute);font-size:13px}
+#v .ag-gh{display:flex;align-items:center;gap:8px;margin:16px 2px 8px;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+#v .ag-gh::after{content:"";flex:1;height:1px;background:var(--ln2)}
+
+#v .ag-ev{display:grid;grid-template-columns:44px 1fr;gap:10px;margin-bottom:8px}
+#v .ag-tm{padding-top:14px;text-align:right;font:700 13px/1.15 "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink)}
+#v .ag-tm span{font:600 11px/1.15 Figtree,system-ui,sans-serif;color:var(--mute);display:block}
+#v .ag-cd{background:var(--sf);border:1px solid var(--ln2);border-radius:var(--rs,14px);box-shadow:var(--sh);position:relative;overflow:hidden;padding-left:4px;min-width:0}
+#v .ag-cd::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac)}
+#v .ag-ev.late .ag-cd::before{background:var(--rd)}
+#v .ag-ev.done .ag-cd::before{background:var(--ok);opacity:.55}
+#v .ag-top{display:flex;align-items:center;gap:8px;padding:2px 12px 2px 4px}
+#v .ag-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:none;border:0;box-shadow:none;color:var(--ink);text-align:left;padding:11px 8px;font-size:15.5px;font-weight:600;line-height:1.3}
+#v .ag-ti{overflow-wrap:anywhere}
+#v .ag-ev.done .ag-ti{text-decoration:line-through;color:var(--mute);font-weight:500}
+#v .ag-lt{font-size:12px;font-weight:700;color:var(--rd)}
+#v .ag-ev.open .ag-cd{border-color:var(--ac)}
+#v .ag-ac{display:flex;flex-wrap:wrap;gap:6px;padding:2px 12px 12px 10px;animation:agin .18s ease}
+#v .ag-ac button{padding:7px 12px;border-radius:999px;font-size:13px;font-weight:650;background:var(--fld);color:var(--ink);border:0;box-shadow:none}
+#v .ag-ac button.dg{color:var(--rd);margin-left:auto}
+@keyframes agin{from{opacity:0;transform:translateY(-4px)}}
+
+#v .ag-now{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;margin:2px 0 10px}
+#v .ag-now span{font:800 11px Figtree,system-ui,sans-serif;color:var(--rd);text-align:right;letter-spacing:.04em}
+#v .ag-now i{height:2px;background:var(--rd);border-radius:2px;position:relative}
+#v .ag-now i::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--rd)}
+
+#v .ag-sd{display:grid;grid-template-columns:44px 1fr;gap:10px;margin-bottom:10px}
+#v .ag-sd>div:last-child{min-width:0}
+#v .ag-dc{text-align:center;padding-top:2px;position:sticky;top:8px;align-self:start}
+#v .ag-dc small{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--mute);letter-spacing:.04em;line-height:1.3}
+#v .ag-dc b{display:grid;place-items:center;width:38px;height:38px;margin:1px auto;border-radius:50%;font:800 18px "Bricolage Grotesque",system-ui,sans-serif}
+#v .ag-dc.hj b{background:var(--ac);color:var(--onac)}
+#v .ag-sd .ag-ev{grid-template-columns:40px 1fr}
+
+#v .ag-late{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--rd) 12%,var(--sf));border:1px solid color-mix(in srgb,var(--rd) 35%,transparent);border-radius:var(--rs,14px);padding:10px 12px;margin:0 0 14px;font-size:14px;font-weight:600}
+#v .ag-late span{flex:1;min-width:0}
+#v .ag-late button{padding:7px 14px;border-radius:999px;font-size:13px;background:var(--rd);color:#fff;box-shadow:none}
+#v .ag-more{width:100%;background:var(--acs);color:var(--ac);box-shadow:none}
+#v .ag-edit{margin:0 0 8px}
 </style>
 
 </head>
@@ -1392,12 +1484,112 @@ function addEv(dateId,titleId,timeId){const t=$('#'+titleId).value.trim();if(!t)
 function togEv(id){const e=S.ev.find(x=>x.id===id);e.done=!e.done;save();render()}
 function delEv(id){S.ev=S.ev.filter(x=>x.id!==id);save();render()}
 const sortEv=a=>a.sort((x,y)=>(x.date+(x.time||'99')).localeCompare(y.date+(y.time||'99')));
+/* ---------- Agenda v2: linha do tempo do dia + faixa de dias + visões (inspirada em Fantastical, Structured, Todoist e TickTick) ---------- */
+let ag={v:'dia',d:HOJE,a:null,add:0,nd:null,nh:'',tt:'',open:null,more:14};
+const agAdd=(k,n)=>{const d=new Date(k+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
+const agNow=()=>{const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')};
+const agPer=e=>{if(!e.time)return 0;const h=+String(e.time).slice(0,2);return h<12?1:h<18?2:3};
+const AG_PER=['📌 Dia todo','🌅 Manhã','☀️ Tarde','🌙 Noite'];
+const agCmp=(a,b)=>(a.date+' '+(a.time||'')).localeCompare(b.date+' '+(b.time||''));
+const agCap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const agPl=(n,a,b)=>n+' '+(n===1?a:b);
+const agKeep=()=>{const y=window.scrollY;render();window.scrollTo(0,y)};
+const agFoc=s=>setTimeout(()=>{const i=document.querySelector(s);i&&i.focus()},60);
+
+function agDay(k){ag.d=k;ag.v='dia';ag.open=null;edEv=null;render()}
+function agHoje(){ag.d=HOJE;ag.a=null;ag.v='dia';ag.open=null;edEv=null;render()}
+function agView(v){ag.v=v;ag.open=null;ag.more=14;edEv=null;render();window.scrollTo(0,0)}
+function agTap(id){ag.open=ag.open===id?null:id;agKeep()}
+function agMove(id,to){const e=S.ev.find(x=>x.id===id);if(!e)return;e.date=to;e.done=false;ag.open=null;save();agKeep()}
+function agDel(id){S.ev=S.ev.filter(x=>x.id!==id);ag.open=null;save();agKeep()}
+function agEditar(id){edEv=id;ag.open=null;agKeep();agFoc('#ee-t')}
+function agAtrHoje(){S.ev.forEach(e=>{if(e.date<HOJE&&!e.done)e.date=HOJE});ag.v='dia';ag.d=HOJE;ag.a=null;save();render();window.scrollTo(0,0)}
+function agAtrFeito(){ask('Marcar todos os compromissos atrasados como concluídos?',()=>{S.ev.forEach(e=>{if(e.date<HOJE)e.done=true});save();render()},'Marcar')}
+function agQuick(){ag.v='dia';ag.d=HOJE;ag.nd=HOJE;ag.nh='';ag.tt='';ag.add=1;ag.open=null;go('agenda')}
+function agOpenAdd(){ag.add=1;ag.nd=ag.d;ag.nh='';ag.tt='';render();agFoc('#at')}
+function agCancel(){ag.add=0;ag.tt='';render()}
+function agSave(){const el=$('#at'),t=((el&&el.value)||ag.tt||'').trim();if(!t){el&&el.focus();return}
+ const d=ag.nd||ag.d;S.ev.push({id:uid(),title:t,date:d,time:ag.nh||'',done:false});
+ ag.d=d;ag.v='dia';ag.add=0;ag.tt='';ag.nh='';ag.nd=null;ag.open=null;save();render();window.scrollTo(0,0)}
+function agScroll(){const s=document.querySelector('.ag-strip'),b=s&&s.querySelector('.on');if(b)s.scrollLeft=b.offsetLeft-(s.clientWidth-b.offsetWidth)/2}
+
+function agRing(p,n){const c=2*Math.PI*26,o=c*(1-(n?p/n:0));
+ return `<svg class="ag-ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26"/><circle class="v" cx="32" cy="32" r="26" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${o.toFixed(1)}"/></svg><b>${n?Math.round(p/n*100)+'%':'—'}</b>`}
+
+function agHero(){
+ const hj=S.ev.filter(e=>e.date===HOJE),ok=hj.filter(e=>e.done).length,pend=hj.length-ok,n=agNow();
+ const nx=hj.filter(e=>!e.done&&e.time&&e.time>=n).sort(agCmp)[0];
+ let sub;
+ if(nx){const m=(mins(nx.time)||0)-(mins(n)||0);
+  sub=`Próximo às <b>${esc(nx.time)}</b> · ${esc(nx.title)}`+(m<=180?` <em>(${m<1?'agora':m<60?'em '+m+' min':'em '+Math.floor(m/60)+'h'+(m%60?String(m%60).padStart(2,'0'):'')})</em>`:'')}
+ else if(pend)sub=agPl(pend,'compromisso pendente hoje','compromissos pendentes hoje');
+ else sub=hj.length?'Tudo feito por hoje ✓':'Dia livre. Aproveite!';
+ return `<div class="ag-hero"><div class="ag-hl"><small>${esc(dataLonga())}</small><h2>${_t('Agenda')}</h2><p>${sub}</p></div><div class="ag-rg" title="${ok} de ${hj.length} concluídos hoje">${agRing(ok,hj.length)}</div></div>`}
+
+function agRow(e){
+ if(e.id===edEv)return agEdit(e);
+ const open=ag.open===e.id,late=e.date<HOJE&&!e.done;
+ let lt='';if(late){const df=Math.round((new Date(HOJE+'T12:00')-new Date(e.date+'T12:00'))/864e5);lt=`<small class="ag-lt">${df===1?'ontem':'há '+df+' dias'}</small>`}
+ const mv=(l,k)=>`<button onclick="agMove('${e.id}','${k}')">${l}</button>`;
+ const acts=open?`<div class="ag-ac">${e.date<HOJE?mv('Hoje',HOJE)+mv('Amanhã',agAdd(HOJE,1)):mv('+1 dia',agAdd(e.date,1))+mv('+1 semana',agAdd(e.date,7))}<button onclick="agEditar('${e.id}')">✎ Editar</button><button class="dg" onclick="agDel('${e.id}')">Excluir</button></div>`:'';
+ return `<div class="ag-ev${e.done?' done':''}${late?' late':''}${open?' open':''}"><div class="ag-tm">${e.time?`<b>${esc(e.time)}</b>`:'<span>dia todo</span>'}</div><div class="ag-cd"><div class="ag-top"><button class="ag-main" onclick="agTap('${e.id}')" aria-expanded="${open}"><span class="ag-ti">${esc(e.title)}</span>${lt}</button><input type="checkbox" ${e.done?'checked':''} onchange="togEv('${e.id}')" aria-label="Concluir"></div>${acts}</div></div>`}
+
+function agEdit(e){
+ return `<div class="card ag-edit"><input id="ee-t" value="${esc(e.title)}" placeholder="Título" aria-label="Título" onkeydown="if(event.key==='Enter')saveEv('${e.id}')"><div class="row" style="margin-top:8px"><input type="date" id="ee-d" value="${e.date}" aria-label="Data"><input type="time" id="ee-h" value="${e.time||''}" aria-label="Hora"></div><div class="row" style="margin-top:10px"><button class="pri" style="flex:1" onclick="saveEv('${e.id}')">Salvar</button><button class="ghost" onclick="edEv=null;render()">Cancelar</button></div></div>`}
+
+function agSched(list,rev){
+ const g={};list.forEach(e=>(g[e.date]=g[e.date]||[]).push(e));
+ let ks=Object.keys(g).sort();if(rev)ks.reverse();
+ return ks.map(k=>`<div class="ag-sd"><div class="ag-dc${k===HOJE?' hj':''}"><small>${esc(fmt(k,{weekday:'short'}).replace('.',''))}</small><b>${+k.slice(8)}</b><small>${esc(fmt(k,{month:'short'}).replace('.',''))}</small></div><div>${g[k].sort(agCmp).map(agRow).join('')}</div></div>`).join('')}
+
+const agNowMark=n=>`<div class="ag-now"><span>${n}</span><i></i></div>`;
+
+function agComposer(){
+ if(!ag.add)return `<button class="ag-new" onclick="agOpenAdd()"><span>＋</span>Novo compromisso</button>`;
+ const nd=ag.nd||ag.d,dc=[[HOJE,'Hoje'],[agAdd(HOJE,1),'Amanhã'],[agAdd(HOJE,7),'+1 semana']],dCust=!dc.some(c=>c[0]===nd);
+ const tc=[['','Sem hora'],['09:00','09:00'],['14:00','14:00'],['19:00','19:00']],tCust=ag.nh&&!tc.some(c=>c[0]===ag.nh);
+ return `<div class="card ag-cp"><input id="at" placeholder="O que você precisa lembrar?" value="${esc(ag.tt)}" oninput="ag.tt=this.value" onkeydown="if(event.key==='Enter')agSave()" autocomplete="off" aria-label="Novo compromisso">`
+ +`<div class="ag-chips" role="group" aria-label="Data">${dc.map(c=>`<button class="ag-ch${nd===c[0]?' on':''}" onclick="ag.nd='${c[0]}';render()">${c[1]}</button>`).join('')}<label class="ag-ch${dCust?' on':''}">📅 ${dCust?esc(fmt(nd,{day:'numeric',month:'short'})):'Data'}<input type="date" value="${nd}" onchange="ag.nd=this.value||ag.nd;render()" aria-label="Escolher data"></label></div>`
+ +`<div class="ag-chips" role="group" aria-label="Hora">${tc.map(c=>`<button class="ag-ch${ag.nh===c[0]?' on':''}" onclick="ag.nh='${c[0]}';render()">${c[1]}</button>`).join('')}<label class="ag-ch${tCust?' on':''}">🕒 ${tCust?esc(ag.nh):'Hora'}<input type="time" value="${esc(ag.nh)}" onchange="ag.nh=this.value;render()" aria-label="Escolher hora"></label></div>`
+ +`<div class="ag-cf"><button class="ghost" onclick="agCancel()">Cancelar</button><button class="pri" style="flex:1" onclick="agSave()">Adicionar</button></div></div>`}
+
 function vAgenda(){
- const fut=sortEv(S.ev.filter(e=>e.date>=HOJE)),pas=sortEv(S.ev.filter(e=>e.date<HOJE)).reverse().slice(0,5);
- const grp=l=>{const g={};l.forEach(e=>(g[e.date]=g[e.date]||[]).push(e));return Object.keys(g).map(d=>`<h3>${d===HOJE?_t('Hoje'):fmt(d)}</h3><div class="card">${g[d].map(evItem).join('')}</div>`).join('')};
- return `<h2>${_t('Agenda')}</h2><div class="card"><input id="at" placeholder="Novo compromisso" onkeydown="if(event.key==='Enter')addEv('ad','at','ah')"><div class="row" style="margin-top:8px"><input type="date" id="ad" value="${HOJE}"><input type="time" id="ah"><button onclick="addEv('ad','at','ah')">Adicionar</button></div></div>`
- +(fut.length?grp(fut):'<div class="vazio">Nenhum compromisso à frente. Adicione o primeiro acima.</div>')
- +(pas.length?'<h3>Anteriores</h3>'+`<div class="card">${pas.map(evItem).join('')}</div>`:'')}
+ if(!ag.a)ag.a=agAdd(HOJE,-3);
+ if(ag.d<ag.a||ag.d>agAdd(ag.a,30))ag.a=agAdd(ag.d,-3);
+ const atr=S.ev.filter(e=>e.date<HOJE&&!e.done),prox7=S.ev.filter(e=>e.date>=HOJE&&e.date<=agAdd(HOJE,7)&&!e.done);
+ const por={};S.ev.forEach(e=>{const r=por[e.date]=por[e.date]||{p:0};if(!e.done)r.p++});
+ let strip='';
+ for(let i=0;i<31;i++){const k=agAdd(ag.a,i),r=por[k],cl=!r?'':(r.p?(k<HOJE?'l':'h'):'k');
+  strip+=`<button class="ag-dy${k===ag.d?' on':''}${k===HOJE?' hj':''}" onclick="agDay('${k}')" aria-label="${esc(fmt(k,{weekday:'long',day:'numeric',month:'long'}))}"${k===ag.d?' aria-current="date"':''}><small>${esc(fmt(k,{weekday:'short'}).replace('.','').slice(0,3))}</small><b>${+k.slice(8)}</b><i class="${cl}"></i></button>`}
+ const seg=[['dia','Dia',0],['prox','Próximos',prox7.length],['atr','Atrasados',atr.length],['his','Histórico',0]]
+  .map(a=>`<button class="${ag.v===a[0]?'on':''}" onclick="agView('${a[0]}')">${a[1]}${a[2]?`<span class="ag-bd${a[0]==='atr'?' r':''}">${a[2]}</span>`:''}</button>`).join('');
+ let body='';
+ if(ag.v==='dia'){
+  const dia=S.ev.filter(e=>e.date===ag.d).sort(agCmp),hoje=ag.d===HOJE,pend=dia.filter(e=>!e.done).length;
+  const rel=hoje?'Hoje':ag.d===agAdd(HOJE,1)?'Amanhã':ag.d===agAdd(HOJE,-1)?'Ontem':fmt(ag.d,{weekday:'long'});
+  if(hoje&&atr.length)body+=`<div class="ag-late"><span>⚠️ ${agPl(atr.length,'compromisso atrasado','compromissos atrasados')}</span><button onclick="agView('atr')">Ver</button></div>`;
+  body+=`<div class="ag-dt"><b>${esc(rel)}</b><span>${esc(fmt(ag.d,{day:'numeric',month:'long'}))} · ${dia.length?(pend?agPl(pend,'pendente','pendentes'):'tudo feito ✓'):'livre'}</span></div>`;
+  if(!dia.length)body+=`<div class="vazio">Nada marcado para este dia.<br>Toque em “Novo compromisso” para começar.</div>`;
+  else{let last=-1,n=agNow(),nowDone=!hoje||!dia.some(e=>e.time);
+   dia.forEach(e=>{const p=agPer(e);
+    if(!nowDone&&e.time&&e.time>n){body+=agNowMark(n);nowDone=true}
+    if(p!==last){body+=`<div class="ag-gh">${AG_PER[p]}</div>`;last=p}
+    body+=agRow(e)});
+   if(!nowDone)body+=agNowMark(n)}
+ }else if(ag.v==='prox'){
+  const l=S.ev.filter(e=>e.date>=HOJE&&e.date<=agAdd(HOJE,ag.more));
+  body=l.length?agSched(l):`<div class="vazio">Nenhum compromisso nos próximos ${ag.more} dias.</div>`;
+  if(ag.more<90)body+=`<button class="ag-more" onclick="ag.more+=14;render()">Ver mais 14 dias</button>`;
+ }else if(ag.v==='atr'){
+  body=atr.length?`<div class="ag-chips" style="margin:0 0 14px"><button class="ag-ch on" onclick="agAtrHoje()">📌 Mover todos para hoje</button><button class="ag-ch" onclick="agAtrFeito()">✓ Marcar todos como feitos</button></div>`+agSched(atr):`<div class="vazio">Nada atrasado. Você está em dia! 🎉</div>`;
+ }else{
+  const l=S.ev.filter(e=>e.date<HOJE).sort(agCmp).slice(-60);
+  body=l.length?agSched(l,true):`<div class="vazio">Ainda não há compromissos anteriores.</div>`;
+ }
+ setTimeout(agScroll,0);
+ return agHero()+agComposer()
+  +`<div class="ag-mh"><strong>${esc(agCap(fmt(ag.d,{month:'long',year:'numeric'}).replace(' de ',' · ')))}</strong><span class="ag-mr"><button class="ag-pill" onclick="agHoje()">Hoje</button><label class="ag-pill" aria-label="Ir para uma data">📅<input type="date" value="${ag.d}" onchange="if(this.value)agDay(this.value)"></label></span></div>`
+  +`<div class="ag-strip" role="group" aria-label="Dias">${strip}</div><div class="ag-seg" role="tablist">${seg}</div>${body}`}
 
 /* ---------- Calendário ---------- */
 const shiftIco=p=>{const h=(mins(p.ent)||0)/60;return h>=5&&h<17?'☀️':'🌙'};
@@ -2431,7 +2623,7 @@ function vInicio(){
  const gsearch=`<form class="gsearch" action="https://chatgpt.com/" method="get" target="_blank" rel="noopener" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" name="q" id="gq" placeholder="Pergunte ao ChatGPT" aria-label="Pergunte ao ChatGPT" enterkeyhint="search" autocomplete="off"><button type="submit">Perguntar</button></form>`;
  const foc=(go_,sel_)=>`${go_};setTimeout(()=>{const i=document.querySelector('${sel_}');i&&i.focus()},80)`;
  const acoes=`<div class="qa" role="group" aria-label="Criar rápido">`
-  +qa('agenda',_t('Compromisso'),'var(--ac)',foc("go('agenda')",'#at'))
+  +qa('agenda',_t('Compromisso'),'var(--ac)',foc("agQuick()",'#at'))
   +qa('notas',_t('Nota'),'#d9a10f',foc("go('notas');S.notes.push({id:uid(),title:'',text:'',color:'',at:Date.now()});save();render()",'.nota input'))
   +qa('diario',_t('Diário'),'#e0609a',"dsel=HOJE;go('diario')")
   +qa('compras',_t('Compra'),'#f08a24',foc("go('compras')",'#st'))
