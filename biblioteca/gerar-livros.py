@@ -5,9 +5,9 @@
 Uso:   pip install reportlab && python3 biblioteca/gerar-livros.py
        python3 biblioteca/gerar-livros.py --teste     (sem internet: gera 1 PDF de exemplo)
 
-Lê  biblioteca/fontes.json  (50 livros + reservas) e escreve:
+Lê  biblioteca/fontes.json  (todos os livros candidatos) e escreve:
   biblioteca/<id>.pdf   um PDF por livro
-  biblioteca/livros.json   catálogo final que o app lê (só entram os livros que deram certo, no máximo 50)
+  biblioteca/livros.json   catálogo final que o app lê (só entram os livros que deram certo, no máximo META)
 Se um livro não for encontrado, o próximo da lista de reservas entra no lugar."""
 import json, os, re, sys, time, urllib.parse, urllib.request
 from xml.sax.saxutils import escape
@@ -15,6 +15,8 @@ from reportlab.lib.pagesizes import A5
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib.units import mm
+from reportlab.lib import colors
+import colorsys, math
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, PageBreak, NextPageTemplate
 
 def log(*a):
@@ -22,11 +24,47 @@ def log(*a):
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 API = "https://gutendex.com/books/"
-META = 50
+META = 250   # teto; entram todos os livros que forem encontrados
 
 RAW = {}
+REFAZER = os.environ.get("REFAZER") == "1" or "--refazer" in sys.argv   # recria também os PDFs que já existem (para ganharem capa)
+
+def matiz(id_):
+    """Mesma cor do app (função biCor do index.html), para a capa do PDF combinar com a da lista."""
+    n = 0
+    for ch in id_: n = (n * 31 + ord(ch)) % 360
+    return n
+
+DOURADO = colors.HexColor("#f3e3b0")
+
+def desenhar_capa(c, item, W, H):
+    h = matiz(item["id"]) / 360.0
+    fundo = colorsys.hls_to_rgb(h, 0.24, 0.50); topo = colorsys.hls_to_rgb(h, 0.33, 0.48)
+    c.saveState()
+    c.setFillColorRGB(*fundo); c.rect(0, 0, W, H, stroke=0, fill=1)
+    c.setFillColorRGB(*topo); c.rect(0, H * 0.55, W, H * 0.45, stroke=0, fill=1)      # faixa mais clara em cima
+    c.setStrokeColor(DOURADO); c.setLineWidth(1.6); c.rect(12 * mm, 12 * mm, W - 24 * mm, H - 24 * mm, stroke=1, fill=0)
+    c.setLineWidth(0.6); c.rect(15 * mm, 15 * mm, W - 30 * mm, H - 30 * mm, stroke=1, fill=0)
+    cx, cy = W / 2, H - 38 * mm
+    c.setLineWidth(1.4); g = item.get("genero")
+    if g == "Poesia":
+        c.circle(cx, cy, 6 * mm, stroke=1, fill=0)
+        for a in range(0, 360, 45):
+            r = math.radians(a); c.line(cx + 9 * mm * math.cos(r), cy + 9 * mm * math.sin(r), cx + 13 * mm * math.cos(r), cy + 13 * mm * math.sin(r))
+    elif g == "Contos":
+        for dx in (-12, 0, 12): c.circle(cx + dx * mm, cy, 3 * mm, stroke=1, fill=0)
+    elif g == "Teatro":
+        c.circle(cx - 7 * mm, cy, 8 * mm, stroke=1, fill=0); c.circle(cx + 7 * mm, cy, 8 * mm, stroke=1, fill=0)
+    elif g == "Clássico":
+        for dx in (-6, 0, 6): c.line(cx + dx * mm, cy - 8 * mm, cx + dx * mm, cy + 8 * mm)
+        c.line(cx - 10 * mm, cy + 11 * mm, cx + 10 * mm, cy + 11 * mm); c.line(cx - 10 * mm, cy - 11 * mm, cx + 10 * mm, cy - 11 * mm)
+    else:
+        p = c.beginPath(); p.moveTo(cx, cy + 12 * mm); p.lineTo(cx + 12 * mm, cy); p.lineTo(cx, cy - 12 * mm); p.lineTo(cx - 12 * mm, cy); p.close()
+        c.drawPath(p, stroke=1, fill=0); c.circle(cx, cy, 2.5 * mm, stroke=1, fill=0)
+    c.setLineWidth(0.6); c.line(cx - 25 * mm, cy - 17 * mm, cx + 25 * mm, cy - 17 * mm)
+    c.restoreState()
 INICIO = time.time()
-LIMITE_MIN = 40   # para sozinho depois disso e salva o que já ficou pronto
+LIMITE_MIN = 70   # para sozinho depois disso e salva o que já ficou pronto
 
 def baixar(url, tent=2):
     for i in range(tent):
@@ -140,9 +178,9 @@ def gerar_pdf(item, texto, saida, fonte_txt):
     corpo = ParagraphStyle("c", fontName="Times-Roman", fontSize=11.5, leading=16, alignment=TA_JUSTIFY, firstLineIndent=10, spaceAfter=4)
     verso = ParagraphStyle("v", parent=corpo, alignment=0, firstLineIndent=0, leftIndent=8, spaceAfter=7)
     cap = ParagraphStyle("h", fontName="Times-Bold", fontSize=15, leading=19, alignment=TA_CENTER, spaceBefore=18, spaceAfter=12, keepWithNext=1)
-    capa_t = ParagraphStyle("ct", fontName="Times-Bold", fontSize=24, leading=29, alignment=TA_CENTER, spaceAfter=10)
-    capa_a = ParagraphStyle("ca", fontName="Times-Roman", fontSize=15, leading=19, alignment=TA_CENTER, spaceAfter=6)
-    nota = ParagraphStyle("n", fontName="Times-Italic", fontSize=9, leading=12, alignment=TA_CENTER)
+    capa_t = ParagraphStyle("ct", fontName="Times-Bold", fontSize=24, leading=29, alignment=TA_CENTER, spaceAfter=10, textColor=DOURADO)
+    capa_a = ParagraphStyle("ca", fontName="Times-Roman", fontSize=15, leading=19, alignment=TA_CENTER, spaceAfter=6, textColor=colors.white)
+    nota = ParagraphStyle("n", fontName="Times-Italic", fontSize=9, leading=12, alignment=TA_CENTER, textColor=DOURADO)
 
     class Doc(BaseDocTemplate):
         def afterFlowable(self, f):
@@ -154,14 +192,16 @@ def gerar_pdf(item, texto, saida, fonte_txt):
     doc = Doc(saida, pagesize=A5, leftMargin=14*mm, rightMargin=14*mm, topMargin=15*mm, bottomMargin=16*mm,
               title=item["titulo"], author=item["autor"], subject="Domínio público · JC ORGANIZA")
     def rodape(c, d):
+        if d.page == 1:
+            desenhar_capa(c, item, A5[0], A5[1]); return
         c.saveState(); c.setFont("Times-Roman", 9)
         c.drawCentredString(A5[0] / 2, 9*mm, str(d.page - 1) if d.page > 1 else "")
         c.restoreState()
     fr = Frame(doc.leftMargin, doc.bottomMargin, A5[0] - doc.leftMargin - doc.rightMargin, A5[1] - doc.topMargin - doc.bottomMargin)
     doc.addPageTemplates([PageTemplate(id="p", frames=[fr], onPage=rodape)])
 
-    h = [Spacer(1, 45*mm), Paragraph(escape(so_cp1252(item["titulo"])), capa_t), Paragraph(escape(so_cp1252(item["autor"])), capa_a),
-         Spacer(1, 30*mm), Paragraph("%s · %s" % (item["genero"], item["ano"]), nota),
+    h = [Spacer(1, 52*mm), Paragraph(escape(so_cp1252(item["titulo"])), capa_t), Paragraph(escape(so_cp1252(item["autor"])), capa_a),
+         Spacer(1, 26*mm), Paragraph("%s · %s" % (item["genero"], item["ano"]), nota),
          Paragraph(escape(so_cp1252(fonte_txt)), nota), PageBreak()]
     n_par = 0
     for linhas in paragrafos(texto):
@@ -187,7 +227,7 @@ def main():
         log("teste.pdf com", n, "páginas"); return
     feitos, falhas, seguidas = [], [], 0
     fila = list(fontes)
-    log("Começando: %d livros, com limite de %d minutos." % (META, LIMITE_MIN))
+    log("Começando: %d livros candidatos, com limite de %d minutos." % (len(fila), LIMITE_MIN))
     for it in fila:
         if len(feitos) >= META: break
         if time.time() - INICIO > LIMITE_MIN * 60:
@@ -198,7 +238,7 @@ def main():
         # os 50 primeiros sempre são tentados; as reservas só entram se faltar livro
         saida = os.path.join(AQUI, it["id"] + ".pdf")
         try:
-            if os.path.exists(saida) and os.path.getsize(saida) > 20000:
+            if not REFAZER and os.path.exists(saida) and os.path.getsize(saida) > 20000:
                 log("já existe:", it["titulo"]); tam = os.path.getsize(saida)
                 feitos.append(dict(it, paginas=it.get("paginas", 0), mb=round(tam/1048576, 1))); continue
             ach = achar(it)
@@ -222,7 +262,7 @@ def main():
             json.dump(cat, open(os.path.join(AQUI, "livros.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     log("\n%d livros prontos. Falharam: %s" % (len(cat["livros"]), ", ".join(falhas) or "nenhum"))
     if not feitos: sys.exit("Nenhum livro foi gerado.")
-    if len(cat["livros"]) < META: log("Aviso: só %d de %d livros. Rode de novo para tentar os que faltam (os já prontos são mantidos)." % (len(cat["livros"]), META))
+    if len(cat["livros"]) < len(fontes): log("Aviso: só %d de %d livros candidatos. Rode de novo para tentar os que faltam (os já prontos são mantidos)." % (len(cat["livros"]), len(fontes)))
 
 if __name__ == "__main__":
     main()
