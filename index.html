@@ -897,6 +897,9 @@ body.nv #updpill{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 #radiop .rb button{flex:1;min-width:0;padding:11px 4px;font-size:13px;font-weight:800;letter-spacing:.03em;background:var(--acs,#e6f3f5);color:var(--ac,#0f7b8a);border:1px solid transparent;box-shadow:none}
 #radiop .rb button.on{background:var(--ac,#0f7b8a);color:var(--onac,#fff)}
 #radiop .hint{margin:10px 0 0;font-size:12px}
+#radiop .rs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 12px;max-height:40vh;overflow-y:auto}
+#radiop .rs button{min-width:0;padding:9px 6px;font-size:12.5px;font-weight:800;background:transparent;color:var(--ink,#111);border:1px solid var(--ln2,rgba(0,0,0,.2));box-shadow:none}
+#radiop .rs button.on{background:var(--ac,#0f7b8a);color:var(--onac,#fff);border-color:transparent}
 /* v3.4.6: o título encolhe/corta com reticências em vez de passar por baixo dos botões (rádio + engrenagem) */
 header .brand{flex:1 1 0;min-width:0}
 header .brand h1{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(14px,5vw,21px)}
@@ -8333,7 +8336,17 @@ function vtKay(){const n=kayNome(),f=document.getElementById('kay-f'),p=document
 /* ---------- v3.4.5: Rádio (Pop 2K · Hunter.FM) ----------
    No APK novo toca por um serviço nativo (continua com a tela desligada e o app em segundo plano).
    No navegador, ou em APK antigo, usa o player da página (Media Session) como reserva. */
-const RADIO_URL='https://live.hunter.fm/pop2k_stream?ag=mp3',RADIO_NOME='Pop 2K';
+const RADIOS=[
+ {id:'pop2k',nome:'Pop 2K',fonte:'Hunter.FM',url:'https://live.hunter.fm/pop2k_stream?ag=mp3'},
+ {id:'lovesong',nome:'Love Song',fonte:'Xcast',url:'https://stm10.xcast.com.br:7624'},
+ {id:'jovempam',nome:'Jovem Pam',fonte:'Zeno.FM',url:'https://stream.zeno.fm/c45wbq2us3buv'},
+ {id:'mixfm',nome:'Mix FM',fonte:'StreamTheWorld',url:'https://playerservices.streamtheworld.com/api/livestream-redirect/MIXFM_SAOPAULO.mp3'},
+ {id:'anos80',nome:'Anos 80',fonte:'Livemus',url:'http://live2.livemus.com.br:27400/live'},
+ {id:'mwgospel',nome:'MW Gospel',fonte:'Xcast',url:'https://stm25.xcast.com.br:7066'},
+ {id:'hunterrock',nome:'Hunter FM Rock',fonte:'Hunter.FM',url:'https://live.hunter.fm/rock_high'}
+];
+/* rádio escolhida pelo usuário (fica salva em S.radio.sel); a primeira da lista é a padrão */
+const radioAtual=()=>{const id=S.radio&&S.radio.sel;return RADIOS.find(r=>r.id===id)||RADIOS[0]};
 const RAD={st:'stopped',aud:null,open:false,ini:false,permOk:false};
 const RAD_TXT={stopped:'Parada',loading:'Conectando…',playing:'Tocando ao vivo',paused:'Pausada',error:'Sem conexão. Toque em PLAY para tentar de novo.'};
 const radioPlug=()=>plug('Radio');
@@ -8341,7 +8354,8 @@ const radioNativo=()=>!!(nat()&&radioPlug());
 const radioOff=()=>!!(S.radio&&S.radio.off);
 function radioPanel(){let p=$('#radiop');
  if(!p){p=document.createElement('div');p.id='radiop';p.setAttribute('role','dialog');p.setAttribute('aria-label','Rádio');
-  p.innerHTML='<div class="rt"><span class="ri" aria-hidden="true">📻</span><div class="rn"><b>Rádio '+RADIO_NOME+'</b><small id="rad-st"></small></div><button type="button" class="ghost rx" onclick="radioPainel(false)" aria-label="Fechar">✕</button></div>'
+  p.innerHTML='<div class="rt"><span class="ri" aria-hidden="true">📻</span><div class="rn"><b id="rad-nm"></b><small id="rad-st"></small></div><button type="button" class="ghost rx" onclick="radioPainel(false)" aria-label="Fechar">✕</button></div>'
+   +'<div class="rs" id="rad-sel" role="group" aria-label="Escolher rádio">'+RADIOS.map(r=>'<button type="button" data-rid="'+r.id+'" onclick="radioEscolher(\''+r.id+'\')">'+r.nome+'</button>').join('')+'</div>'
    +'<div class="rb"><button type="button" id="rad-pa" onclick="radioPause()">⏸ PAUSE</button><button type="button" id="rad-sp" onclick="radioStop()">⏹ STOP</button><button type="button" id="rad-pl" onclick="radioPlay()">▶ PLAY</button></div>'
    +'<p class="hint" id="rad-h"></p>';
   document.body.appendChild(p)}
@@ -8350,6 +8364,8 @@ function radioUI(){
  const tocando=RAD.st==='playing'||RAD.st==='loading';
  const b=$('#radiob');if(b){b.classList.toggle('on',tocando||RAD.open);b.classList.toggle('tocando',RAD.st==='playing')}
  const st=$('#rad-st');if(st)st.textContent=RAD_TXT[RAD.st]||'';
+ const nm=$('#rad-nm');if(nm)nm.textContent='Rádio '+radioAtual().nome;
+ document.querySelectorAll('#rad-sel button').forEach(x=>{const on=x.dataset.rid===radioAtual().id;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on?'true':'false')});
  const set=(id,on)=>{const e=$('#'+id);if(e){e.classList.toggle('on',!!on);e.setAttribute('aria-pressed',on?'true':'false')}};
  set('rad-pl',tocando);set('rad-pa',RAD.st==='paused');set('rad-sp',RAD.st==='stopped');
  const h=$('#rad-h');if(h)h.textContent=radioNativo()?'Continua tocando com a tela desligada e com o app em segundo plano.':(nat()?'Para continuar tocando com a tela desligada, instale o APK novo (Actions › Gerar APK).':'Neste navegador a rádio pode parar quando a tela apagar. No app instalado ela continua tocando.')}
@@ -8360,6 +8376,12 @@ function radioPainel(v){RAD.open=!!v;
   p.style.display='block'}
  else{const p=$('#radiop');if(p)p.style.display='none'}
  radioUI()}
+function radioEscolher(id){
+ if(!RADIOS.some(r=>r.id===id)||radioAtual().id===id)return;
+ S.radio=S.radio||{};S.radio.sel=id;save();
+ /* se estava tocando (ou conectando), troca na hora para a nova rádio */
+ if(RAD.st==='playing'||RAD.st==='loading')radioPlay();
+ else{if(RAD.st==='paused')radioStop();radioUI()}}
 function radioToggle(){if(radioOff())return;radioPainel(!RAD.open)}
 /* a notificação com os botões da rádio precisa da permissão de notificações (pede uma vez) */
 async function radioPermNotif(){if(RAD.permOk||!nat())return;RAD.permOk=true;
@@ -8367,7 +8389,7 @@ async function radioPermNotif(){if(RAD.permOk||!nat())return;RAD.permOk=true;
 async function radioPlay(){
  if(radioOff())return;
  if(radioNativo()){radioSet('loading');
-  try{await radioPermNotif();await radioPlug().play({url:RADIO_URL,title:'Rádio '+RADIO_NOME})}catch(e){radioSet('error')}
+  try{await radioPermNotif();const R=radioAtual();await radioPlug().play({url:R.url,title:'Rádio '+R.nome})}catch(e){radioSet('error')}
   return}
  radioWeb('play')}
 async function radioPause(){
@@ -8384,13 +8406,13 @@ function radioWeb(acao){
   a.addEventListener('waiting',()=>{if(RAD.st==='playing')radioSet('loading')});
   a.addEventListener('pause',()=>{if(RAD.st==='playing'||RAD.st==='loading')radioSet('paused')});
   a.addEventListener('error',()=>{if(RAD.st!=='stopped')radioSet('error')})}
- if(acao==='play'){radioSet('loading');a.src=RADIO_URL;try{a.load()}catch(e){}const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{if(RAD.st!=='stopped')radioSet('error')})}
+ if(acao==='play'){radioSet('loading');a.src=radioAtual().url;try{a.load()}catch(e){}const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{if(RAD.st!=='stopped')radioSet('error')})}
  else if(acao==='pause'){a.pause();radioSet('paused')}
  else if(acao==='stop'){a.pause();a.removeAttribute('src');try{a.load()}catch(e){}radioSet('stopped')}}
 /* controles na tela de bloqueio / central de mídia (navegador) */
 function radioSessao(){
  try{if(!('mediaSession' in navigator)||radioNativo())return;const ms=navigator.mediaSession;
-  if(RAD.st!=='stopped'){try{ms.metadata=new MediaMetadata({title:'Rádio '+RADIO_NOME,artist:'Hunter.FM',artwork:[{src:'icon-512.png',sizes:'512x512',type:'image/png'}]})}catch(e){}}
+  if(RAD.st!=='stopped'){try{ms.metadata=new MediaMetadata({title:'Rádio '+radioAtual().nome,artist:radioAtual().fonte,artwork:[{src:'icon-512.png',sizes:'512x512',type:'image/png'}]})}catch(e){}}
   ms.playbackState=RAD.st==='playing'?'playing':(RAD.st==='paused'?'paused':'none');
   if(!RAD.ini){RAD.ini=true;
    try{ms.setActionHandler('play',()=>radioPlay())}catch(e){}
@@ -8409,7 +8431,7 @@ function radioInit(){
  if(radioNativo()){try{radioPlug().addListener('state',e=>radioSet(String((e&&e.state)||'stopped')))}catch(e){}radioResync()}
  radioSync()}
 function cfgRadio(){const on=!radioOff();
- return '<h3>📻 Rádio</h3><div class="card"><div class="prm"><span class="ic">📻</span><span class="t"><b>Rádio '+RADIO_NOME+'</b><small>'+(on?'Ativada: o ícone do rádio aparece no topo, ao lado da engrenagem.':'Desativada: o ícone do rádio fica escondido e a música para.')+'</small></span><button class="'+(on?'':'sec')+'" onclick="radioTog()" aria-pressed="'+on+'">'+(on?'Desativar':'Ativar')+'</button></div></div>'}
+ return '<h3>📻 Rádio</h3><div class="card"><div class="prm"><span class="ic">📻</span><span class="t"><b>Rádio</b><small>'+(on?'Ativada: o ícone do rádio aparece no topo, ao lado da engrenagem. Lá você escolhe entras rádios: '+RADIOS.map(r=>r.nome).join(', ')+'.':'Desativada: o ícone do rádio fica escondido e a música para.')+'</small></span><button class="'+(on?'':'sec')+'" onclick="radioTog()" aria-pressed="'+on+'">'+(on?'Desativar':'Ativar')+'</button></div></div>'}
 function radioTog(){S.radio=S.radio||{};if(radioOff()){S.radio.off=0}else{S.radio.off=1;radioStop();radioPainel(false)}save();render()}
 
 /* ---------- v3.4.5: notificações (lembretes) ----------

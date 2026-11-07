@@ -62,7 +62,7 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 
 ## Versão 3.4.5
 
-- **Rádio Pop 2K** (stream `https://live.hunter.fm/pop2k_stream?ag=mp3`): ícone de rádio no topo, ao lado da engrenagem. Ao tocar nele abre o painel com **PAUSE**, **STOP** e **PLAY**. Em **Configurações › Rádio** dá para **desativar** (o ícone some e a música para). A escolha fica em `S.radio.off`.
+- **Rádio** (Pop 2K, Love Song, Jovem Pam, Mix FM, Anos 80, MW Gospel e Hunter FM Rock; endereços na lista `RADIOS` do `index.html`): ícone de rádio no topo, ao lado da engrenagem. Ao tocar nele abre o painel onde o usuário **escolhe a rádio** e usa **PAUSE**, **STOP** e **PLAY**. A escolha fica salva. Para incluir outra rádio, basta adicionar uma linha na lista `RADIOS` do `index.html`. Em **Configurações › Rádio** dá para **desativar** (o ícone some e a música para). A escolha fica em `S.radio.off`.
   - **Tela desligada / app em segundo plano**: no APK novo a rádio toca por um **serviço nativo em primeiro plano** (`RadioService.java` + `RadioPlugin.java`, criados pelo passo “Rádio em segundo plano” do workflow *Gerar APK*). Aparece uma notificação com PAUSE/PLAY e STOP, o serviço segura CPU e Wi-Fi acordados, reconecta sozinho se a internet cair e pausa em ligações ou ao desconectar o fone. **É preciso gerar um APK novo** (Actions › Gerar APK) e instalar por cima; sem isso o app usa o player da página, que pode parar quando a tela apaga.
   - No navegador/APK antigo a rádio usa um player da página (com Media Session). Código no `index.html`: bloco “Rádio (Pop 2K · Hunter.FM)” (`radio*`).
 - **Lista de compras**: removido o botão flutuante do microfone (`vozFabSync` agora nunca mostra o botão).
