@@ -4450,7 +4450,7 @@ const biSalvar=()=>{try{localStorage.setItem('ma-biblioteca',JSON.stringify(BI_P
 const biNorm=t=>String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const biCor=id=>{let n=0;for(const c of id)n=(n*31+c.charCodeAt(0))%360;return n};
 function biCat(){if(biCat.f)return;biCat.f=1;
- fetch('Biblioteca/livros.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{
+ fetch('biblioteca/livros.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{
   if(!d||!Array.isArray(d.livros)||!d.livros.length)return;
   BI_L=d.livros.filter(x=>x&&x.id&&x.titulo);if(tab==='biblioteca')render()}).catch(()=>{})}
 function biLista(ret){
@@ -4492,12 +4492,12 @@ function biErro(msg,b){const m=$('#bi-ms'),c=$('#bi-cv');if(!m)return;if(c)c.hid
  m.innerHTML=esc(msg)+'<br><button class="sec" style="margin-top:12px" onclick="biAbrir(\''+esc(b.id)+'\')">Tentar de novo</button>'}
 function biCarregar(b){
  const g=biGen;
- pdfjsLib.getDocument({url:'Biblioteca/'+encodeURIComponent(b.id)+'.pdf',disableRange:true,disableStream:true}).promise.then(d=>{
+ pdfjsLib.getDocument({url:'biblioteca/'+encodeURIComponent(b.id)+'.pdf',disableRange:true,disableStream:true}).promise.then(d=>{
   if(g!==biGen){try{d.destroy()}catch(e){}return}
   biDoc=d;const p=BI_P[b.id];biPag=p&&p.p>=1&&p.p<=d.numPages?p.p:1;
   $('#bi-tot').textContent='de '+d.numPages;$('#bi-n').max=d.numPages;biDesenhar()
  }).catch(e=>{if(g!==biGen)return;const t=String(e&&(e.name+' '+e.message)||e);
-  biErro(/Missing|404|Unexpected server response \(404\)/i.test(t)?'Este livro ainda não foi adicionado à pasta Biblioteca/ do app. Rode o “Gerar Biblioteca” no GitHub para criar os PDFs.':'Não foi possível abrir este livro. Verifique a internet e tente de novo.',b)})}
+  biErro(/Missing|404|Unexpected server response \(404\)/i.test(t)?'Este livro ainda não foi adicionado à pasta biblioteca/ do app. Rode o “Gerar Biblioteca” no GitHub para criar os PDFs.':'Não foi possível abrir este livro. Verifique a internet e tente de novo.',b)})}
 function biDesenhar(){
  if(!biDoc||!$('#bi-cv'))return;const g=++biRen,prev=biTask;
  if(prev){try{prev.cancel()}catch(e){}}
