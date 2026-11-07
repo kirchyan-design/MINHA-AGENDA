@@ -42,42 +42,79 @@ def sem_acento(s):
     import unicodedata
     return "".join(c for c in unicodedata.normalize("NFD", s.lower()) if unicodedata.category(c) != "Mn")
 
+def norm(s):
+    """Normaliza para comparar grafia antiga e nova (Posthumas/Póstumas, Braz/Brás, Eça/Eca...)."""
+    s = sem_acento(s)
+    for a, b in (("ph", "f"), ("th", "t"), ("y", "i"), ("z", "s"), ("w", "v"), ("k", "c"), ("ch", "c")):
+        s = s.replace(a, b)
+    s = re.sub(r"[^a-z0-9 ]", " ", s)
+    s = re.sub(r"(.)\1+", r"\1", s)          # letras dobradas: Posthumas/Postumas, Ressurreicao/Resurreicao
+    return re.sub(r"\s+", " ", s).strip()
+
+def parecido(titulo_item, titulo_livro):
+    a = norm(titulo_item); b = norm(re.split(r"[;:]", titulo_livro)[0])
+    if not a or not b: return 0
+    if a == b: return 1.0
+    if a in b.split(" ; ")[0] and len(a) >= 6: return 0.9
+    import difflib
+    return difflib.SequenceMatcher(None, a, b).ratio()
+
+def candidatos_html(item):
+    """Lista (id, título) do site do Gutenberg: busca por título e por autor, só português."""
+    vistos, res = set(), []
+    consultas = [item["busca"] + " " + item["sobrenome"],
+                 "l.pt " + item["sobrenome"],
+                 item["busca"]]
+    for c in consultas:
+        try:
+            h = baixar("https://www.gutenberg.org/ebooks/search/?" + urllib.parse.urlencode({"query": c, "submit_search": "Go!"})).decode("utf-8", "replace")
+        except Exception:
+            continue
+        for m in re.finditer(r'<li class="booklink">.*?href="/ebooks/(\d+)".*?class="title">([^<]+)<', h, re.S):
+            if m.group(1) not in vistos:
+                vistos.add(m.group(1)); res.append((m.group(1), m.group(2)))
+        for m in re.finditer(r'href="/ebooks/(\d+)"', h):   # plano C: ids soltos, conferidos pelo cabeçalho
+            if m.group(1) not in vistos:
+                vistos.add(m.group(1)); res.append((m.group(1), ""))
+    return res
+
 def achar_html(item):
     """Plano B: busca no site do Gutenberg e confere idioma, título e autor no próprio texto."""
-    q = urllib.parse.urlencode({"query": item["busca"] + " " + item["sobrenome"], "submit_search": "Go!"})
-    h = baixar("https://www.gutenberg.org/ebooks/search/?" + q).decode("utf-8", "replace")
-    ids = []
-    for m in re.finditer(r'href="/ebooks/(\d+)"', h):
-        if m.group(1) not in ids: ids.append(m.group(1))
-    tit = sem_acento(item["busca"]); sob = sem_acento(item["sobrenome"])
-    for gid in ids[:5]:
+    cands = candidatos_html(item)
+    cands.sort(key=lambda c: -parecido(item["busca"], c[1]) if c[1] else 0)
+    sob = norm(item["sobrenome"])
+    for gid, t in cands[:8]:
+        if t and parecido(item["busca"], t) < 0.72: continue
         url = "https://www.gutenberg.org/cache/epub/%s/pg%s.txt" % (gid, gid)
         try: raw = baixar(url)
         except Exception: continue
-        cab = sem_acento(raw[:4000].decode("utf-8", "replace"))
-        if "language: portuguese" in cab and tit in cab and sob in cab:
+        cab = norm(raw[:5000].decode("utf-8", "replace"))
+        if "language portuguese" in cab and sob in cab and (norm(item["busca"]) in cab or parecido(item["busca"], t) >= 0.72):
             RAW[url] = raw
             return gid, url
     return None
 
 def achar(item):
     """Procura o livro no Gutenberg (idioma pt) e devolve (id, url do texto)."""
+    if item.get("gid"):                      # número fixo do Gutenberg, se informado em fontes.json
+        url = "https://www.gutenberg.org/cache/epub/%s/pg%s.txt" % (item["gid"], item["gid"])
+        return str(item["gid"]), url
     q = urllib.parse.urlencode({"languages": "pt", "search": item["busca"] + " " + item["sobrenome"]})
     try:
         d = json.loads(baixar(API + "?" + q))
     except Exception as e:
         log("   gutendex não respondeu (%s); tentando o site do Gutenberg" % type(e).__name__)
         return achar_html(item)
-    tit = sem_acento(item["busca"]); sob = sem_acento(item["sobrenome"])
+    sob = norm(item["sobrenome"])
     melhor = None
     for b in d.get("results", []):
-        t = sem_acento(b.get("title", ""))
-        a = " ".join(sem_acento(x.get("name", "")) for x in b.get("authors", []))
+        a = " ".join(norm(x.get("name", "")) for x in b.get("authors", []))
         if sob not in a: continue
-        if tit not in t and t.split(" ; ")[0].strip() != tit: continue
+        pt = parecido(item["busca"], b.get("title", ""))
+        if pt < 0.72: continue
         fm = b.get("formats", {})
         url = next((fm[k] for k in fm if k.startswith("text/plain")), None)
-        if url and (melhor is None or len(t) < melhor[2]): melhor = (b["id"], url, len(t))
+        if url and (melhor is None or pt > melhor[2]): melhor = (b["id"], url, pt)
     return melhor[:2] if melhor else achar_html(item)
 
 def limpar_gutenberg(txt):
@@ -155,8 +192,8 @@ def main():
         if len(feitos) >= META: break
         if time.time() - INICIO > LIMITE_MIN * 60:
             log("Tempo limite atingido; salvando o que ficou pronto."); break
-        if seguidas >= 5:
-            log("5 falhas seguidas: parece não haver acesso ao Gutenberg. Parando."); break
+        if seguidas >= 8 and not feitos:
+            log("8 falhas seguidas e nenhum livro pronto: parece não haver acesso ao Gutenberg. Parando."); break
         log("-> " + it["titulo"])
         # os 50 primeiros sempre são tentados; as reservas só entram se faltar livro
         saida = os.path.join(AQUI, it["id"] + ".pdf")
@@ -184,7 +221,8 @@ def main():
     if feitos:   # nunca apaga o catálogo se nada deu certo
             json.dump(cat, open(os.path.join(AQUI, "livros.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     log("\n%d livros prontos. Falharam: %s" % (len(cat["livros"]), ", ".join(falhas) or "nenhum"))
-    if len(cat["livros"]) < META: sys.exit("Atenção: só %d de %d livros." % (len(cat["livros"]), META))
+    if not feitos: sys.exit("Nenhum livro foi gerado.")
+    if len(cat["livros"]) < META: log("Aviso: só %d de %d livros. Rode de novo para tentar os que faltam (os já prontos são mantidos)." % (len(cat["livros"]), META))
 
 if __name__ == "__main__":
     main()
