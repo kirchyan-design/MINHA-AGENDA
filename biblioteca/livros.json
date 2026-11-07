@@ -6,350 +6,252 @@
    "titulo": "Dom Casmurro",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1899
+   "ano": 1899,
+   "paginas": 245,
+   "mb": 0.5
   },
   {
    "id": "memorias-postumas-bras-cubas",
    "titulo": "Memórias Póstumas de Brás Cubas",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1881
+   "ano": 1881,
+   "paginas": 233,
+   "mb": 0.5
   },
   {
    "id": "quincas-borba",
    "titulo": "Quincas Borba",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1891
+   "ano": 1891,
+   "paginas": 295,
+   "mb": 0.6
   },
   {
    "id": "esau-e-jaco",
    "titulo": "Esaú e Jacó",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1904
+   "ano": 1904,
+   "paginas": 259,
+   "mb": 0.5
   },
   {
    "id": "memorial-de-aires",
    "titulo": "Memorial de Aires",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1908
+   "ano": 1908,
+   "paginas": 192,
+   "mb": 0.4
   },
   {
    "id": "helena",
    "titulo": "Helena",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1876
+   "ano": 1876,
+   "paginas": 205,
+   "mb": 0.4
   },
   {
    "id": "a-mao-e-a-luva",
    "titulo": "A Mão e a Luva",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1874
+   "ano": 1874,
+   "paginas": 126,
+   "mb": 0.2
   },
   {
    "id": "iaia-garcia",
    "titulo": "Iaiá Garcia",
    "autor": "Machado de Assis",
    "genero": "Romance",
-   "ano": 1878
-  },
-  {
-   "id": "o-alienista",
-   "titulo": "O Alienista",
-   "autor": "Machado de Assis",
-   "genero": "Contos",
-   "ano": 1882
-  },
-  {
-   "id": "ressurreicao",
-   "titulo": "Ressurreição",
-   "autor": "Machado de Assis",
-   "genero": "Romance",
-   "ano": 1872
+   "ano": 1878,
+   "paginas": 200,
+   "mb": 0.4
   },
   {
    "id": "o-primo-basilio",
    "titulo": "O Primo Basílio",
    "autor": "Eça de Queirós",
    "genero": "Romance",
-   "ano": 1878
+   "ano": 1878,
+   "paginas": 492,
+   "mb": 0.9
   },
   {
    "id": "o-crime-do-padre-amaro",
    "titulo": "O Crime do Padre Amaro",
    "autor": "Eça de Queirós",
    "genero": "Romance",
-   "ano": 1875
+   "ano": 1875,
+   "paginas": 525,
+   "mb": 1.0
   },
   {
    "id": "os-maias",
    "titulo": "Os Maias",
    "autor": "Eça de Queirós",
    "genero": "Romance",
-   "ano": 1888
+   "ano": 1888,
+   "paginas": 777,
+   "mb": 1.5
   },
   {
    "id": "a-reliquia",
    "titulo": "A Relíquia",
    "autor": "Eça de Queirós",
    "genero": "Romance",
-   "ano": 1887
+   "ano": 1887,
+   "paginas": 287,
+   "mb": 0.6
   },
   {
    "id": "a-cidade-e-as-serras",
    "titulo": "A Cidade e as Serras",
    "autor": "Eça de Queirós",
    "genero": "Romance",
-   "ano": 1901
+   "ano": 1901,
+   "paginas": 251,
+   "mb": 0.5
   },
   {
    "id": "a-ilustre-casa-de-ramires",
    "titulo": "A Ilustre Casa de Ramires",
    "autor": "Eça de Queirós",
    "genero": "Romance",
-   "ano": 1900
+   "ano": 1900,
+   "paginas": 383,
+   "mb": 0.8
   },
   {
    "id": "o-guarani",
    "titulo": "O Guarani",
    "autor": "José de Alencar",
    "genero": "Romance",
-   "ano": 1857
+   "ano": 1857,
+   "paginas": 237,
+   "mb": 0.4
   },
   {
    "id": "iracema",
    "titulo": "Iracema",
    "autor": "José de Alencar",
    "genero": "Romance",
-   "ano": 1865
-  },
-  {
-   "id": "senhora",
-   "titulo": "Senhora",
-   "autor": "José de Alencar",
-   "genero": "Romance",
-   "ano": 1875
-  },
-  {
-   "id": "luciola",
-   "titulo": "Lucíola",
-   "autor": "José de Alencar",
-   "genero": "Romance",
-   "ano": 1862
+   "ano": 1865,
+   "paginas": 124,
+   "mb": 0.2
   },
   {
    "id": "ubirajara",
    "titulo": "Ubirajara",
    "autor": "José de Alencar",
    "genero": "Romance",
-   "ano": 1874
-  },
-  {
-   "id": "o-sertanejo",
-   "titulo": "O Sertanejo",
-   "autor": "José de Alencar",
-   "genero": "Romance",
-   "ano": 1875
+   "ano": 1874,
+   "paginas": 136,
+   "mb": 0.2
   },
   {
    "id": "o-cortico",
    "titulo": "O Cortiço",
    "autor": "Aluísio Azevedo",
    "genero": "Romance",
-   "ano": 1890
-  },
-  {
-   "id": "o-mulato",
-   "titulo": "O Mulato",
-   "autor": "Aluísio Azevedo",
-   "genero": "Romance",
-   "ano": 1881
-  },
-  {
-   "id": "casa-de-pensao",
-   "titulo": "Casa de Pensão",
-   "autor": "Aluísio Azevedo",
-   "genero": "Romance",
-   "ano": 1884
+   "ano": 1890,
+   "paginas": 293,
+   "mb": 0.6
   },
   {
    "id": "triste-fim-de-policarpo-quaresma",
    "titulo": "Triste Fim de Policarpo Quaresma",
    "autor": "Lima Barreto",
    "genero": "Romance",
-   "ano": 1915
-  },
-  {
-   "id": "recordacoes-do-escrivao-isaias-caminha",
-   "titulo": "Recordações do Escrivão Isaías Caminha",
-   "autor": "Lima Barreto",
-   "genero": "Romance",
-   "ano": 1909
-  },
-  {
-   "id": "clara-dos-anjos",
-   "titulo": "Clara dos Anjos",
-   "autor": "Lima Barreto",
-   "genero": "Romance",
-   "ano": 1922
+   "ano": 1915,
+   "paginas": 251,
+   "mb": 0.5
   },
   {
    "id": "o-ateneu",
    "titulo": "O Ateneu",
    "autor": "Raul Pompeia",
    "genero": "Romance",
-   "ano": 1888
-  },
-  {
-   "id": "os-sertoes",
-   "titulo": "Os Sertões",
-   "autor": "Euclides da Cunha",
-   "genero": "Clássico",
-   "ano": 1902
+   "ano": 1888,
+   "paginas": 226,
+   "mb": 0.5
   },
   {
    "id": "os-lusiadas",
    "titulo": "Os Lusíadas",
    "autor": "Luís de Camões",
    "genero": "Poesia",
-   "ano": 1572
+   "ano": 1572,
+   "paginas": 355,
+   "mb": 0.4
   },
   {
    "id": "amor-de-perdicao",
    "titulo": "Amor de Perdição",
    "autor": "Camilo Castelo Branco",
    "genero": "Romance",
-   "ano": 1862
-  },
-  {
-   "id": "a-moreninha",
-   "titulo": "A Moreninha",
-   "autor": "Joaquim Manuel de Macedo",
-   "genero": "Romance",
-   "ano": 1844
+   "ano": 1862,
+   "paginas": 182,
+   "mb": 0.3
   },
   {
    "id": "a-escrava-isaura",
    "titulo": "A Escrava Isaura",
    "autor": "Bernardo Guimarães",
    "genero": "Romance",
-   "ano": 1875
-  },
-  {
-   "id": "o-seminarista",
-   "titulo": "O Seminarista",
-   "autor": "Bernardo Guimarães",
-   "genero": "Romance",
-   "ano": 1872
-  },
-  {
-   "id": "memorias-de-um-sargento-de-milicias",
-   "titulo": "Memórias de um Sargento de Milícias",
-   "autor": "Manuel Antônio de Almeida",
-   "genero": "Romance",
-   "ano": 1854
+   "ano": 1875,
+   "paginas": 188,
+   "mb": 0.4
   },
   {
    "id": "inocencia",
    "titulo": "Inocência",
    "autor": "Visconde de Taunay",
    "genero": "Romance",
-   "ano": 1872
-  },
-  {
-   "id": "canaa",
-   "titulo": "Canaã",
-   "autor": "Graça Aranha",
-   "genero": "Romance",
-   "ano": 1902
-  },
-  {
-   "id": "a-carne",
-   "titulo": "A Carne",
-   "autor": "Júlio Ribeiro",
-   "genero": "Romance",
-   "ano": 1888
-  },
-  {
-   "id": "bom-crioulo",
-   "titulo": "Bom-Crioulo",
-   "autor": "Adolfo Caminha",
-   "genero": "Romance",
-   "ano": 1895
-  },
-  {
-   "id": "auto-da-barca-do-inferno",
-   "titulo": "Auto da Barca do Inferno",
-   "autor": "Gil Vicente",
-   "genero": "Teatro",
-   "ano": 1517
-  },
-  {
-   "id": "lira-dos-vinte-anos",
-   "titulo": "Lira dos Vinte Anos",
-   "autor": "Álvares de Azevedo",
-   "genero": "Poesia",
-   "ano": 1853
-  },
-  {
-   "id": "broqueis",
-   "titulo": "Broquéis",
-   "autor": "Cruz e Sousa",
-   "genero": "Poesia",
-   "ano": 1893
-  },
-  {
-   "id": "mensagem",
-   "titulo": "Mensagem",
-   "autor": "Fernando Pessoa",
-   "genero": "Poesia",
-   "ano": 1934
+   "ano": 1872,
+   "paginas": 231,
+   "mb": 0.4
   },
   {
    "id": "viagens-na-minha-terra",
    "titulo": "Viagens na Minha Terra",
    "autor": "Almeida Garrett",
    "genero": "Clássico",
-   "ano": 1846
-  },
-  {
-   "id": "as-pupilas-do-senhor-reitor",
-   "titulo": "As Pupilas do Senhor Reitor",
-   "autor": "Júlio Dinis",
-   "genero": "Romance",
-   "ano": 1867
+   "ano": 1846,
+   "paginas": 281,
+   "mb": 0.5
   },
   {
    "id": "eurico-o-presbitero",
    "titulo": "Eurico, o Presbítero",
    "autor": "Alexandre Herculano",
    "genero": "Romance",
-   "ano": 1844
+   "ano": 1844,
+   "paginas": 203,
+   "mb": 0.4
   },
   {
-   "id": "urupes",
-   "titulo": "Urupês",
-   "autor": "Monteiro Lobato",
+   "id": "a-brasileira-de-prazins",
+   "titulo": "A Brasileira de Prazins",
+   "autor": "Camilo Castelo Branco",
+   "genero": "Romance",
+   "ano": 1882,
+   "paginas": 206,
+   "mb": 0.4
+  },
+  {
+   "id": "papeis-avulsos",
+   "titulo": "Papéis Avulsos",
+   "autor": "Machado de Assis",
    "genero": "Contos",
-   "ano": 1918
-  },
-  {
-   "id": "poesias-olavo-bilac",
-   "titulo": "Poesias",
-   "autor": "Olavo Bilac",
-   "genero": "Poesia",
-   "ano": 1888
-  },
-  {
-   "id": "primeiros-cantos",
-   "titulo": "Primeiros Cantos",
-   "autor": "Gonçalves Dias",
-   "genero": "Poesia",
-   "ano": 1846
+   "ano": 1882,
+   "paginas": 199,
+   "mb": 0.4
   }
  ]
 }
