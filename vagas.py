@@ -19,7 +19,27 @@ def get(url):
         return json.load(r)
 
 def limpa(h):
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h or "")).strip()
+    h = h or ""
+    h = re.sub(r"(?i)<a[^>]*href=[\"']mailto:([^\"'?>\s]+)[^>]*>", r" \1 ", h)  # link mailto vira texto
+    h = re.sub(r"(?i)\s*[\[(]\s*(?:at|arroba)\s*[\])]\s*", "@", h)  # nome [at] empresa.com.br
+    h = re.sub(r"(?i)\s+arroba\s+", "@", h)
+    h = re.sub(r"(?i)\s*[\[(]\s*ponto\s*[\])]\s*", ".", h)
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h)).strip()
+
+EMAIL_RX = re.compile(r"[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+")
+EMAIL_RUIM = re.compile(r"no-?reply|nao-?responda|donotreply|@(?:gupy|adzuna|example|sentry|wixpress)\.|\.(?:png|jpg|jpeg|gif|svg|webp)$", re.I)
+EMAIL_BOM = re.compile(r"curr[ií]culo|curriculo|\bcv\b|vaga|rh|recrut|selec|talento|trabalhe|emprego|pessoal|dp", re.I)
+
+def acha_email(txt):
+    """Devolve o melhor e-mail do texto: ignora endereços de sistema e prefere os de RH/currículo."""
+    achados = []
+    for m in EMAIL_RX.findall(txt or ""):
+        m = m.strip(".,;:").lower()
+        if EMAIL_RUIM.search(m) or m in achados: continue
+        achados.append(m)
+    for m in achados:
+        if EMAIL_BOM.search(m.split("@")[0]): return m
+    return achados[0] if achados else ""
 
 AREAS = [
  ("apr", r"aprendiz|estagi"), ("sau", r"enfermeir|técnico de enfermagem|médic|farmac|dentista|fisioterap|nutricion|psicólog|saúde"),
@@ -56,8 +76,8 @@ def extras(txt):
         m = re.search(rx, txt, re.I)
         if m: h.append(m.group(0).strip())
     if h: x["h"] = " · ".join(h)
-    m = re.search(r"[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+", txt)
-    if m: x["em"] = m.group(0).lower()
+    em = acha_email(txt)
+    if em: x["em"] = em
     m = re.search(r"R\$\s?\d{1,3}(?:\.\d{3})*,\d{2}", txt)
     if m: x["s"] = m.group(0)
     return x
@@ -80,11 +100,12 @@ def gupy():
                         if not re.search(r"effective|apprentice|clt", str(j.get("type", "")), re.I) and j.get("type"): continue
                         cidj = CID.get(j.get("city") or cidade, cid)
                         desc = limpa(j.get("description"))
+                        completo = " ".join(limpa(str(j.get(k) or "")) for k in ("description", "responsibilities", "prerequisites", "relevantExperiences", "additionalInformation", "benefits", "contact", "email"))
                         t = j.get("name", "")
                         v = {"id": "g" + hashlib.sha1((j.get("jobUrl") or t + cidade).encode()).hexdigest()[:10], "cid": cidj, "c": t, "e": j.get("careerPageName") or j.get("companyName") or "",
                              "a": area(t), "n": nivel(t), "d": data_br(j.get("publishedDate", "")), "f": "Gupy", "u": j.get("jobUrl") or j.get("careerPageUrl") or "",
                              "m": {"on-site": "Presencial", "hybrid": "Híbrido", "remote": "Remoto"}.get(j.get("workplaceType"), ""), "o": desc[:240]}
-                        v.update(extras(desc)); out.append(v); achou = True
+                        v.update(extras(completo)); out.append(v); achou = True
                     if len(itens) < 100: break
                 if achou: break
             except Exception as e:
@@ -104,6 +125,9 @@ def adzuna():
                 v = {"id": "z" + str(j.get("id")), "cid": cid, "c": t, "e": (j.get("company") or {}).get("display_name", ""), "a": area(t), "n": nivel(t),
                      "d": data_br(j.get("created", "")), "f": "Adzuna", "u": j.get("redirect_url", ""), "l": (j.get("location") or {}).get("display_name", ""), "o": desc[:240]}
                 v.update(extras(desc))
+                if not v.get("em"):
+                    em = acha_email(limpa(j.get("description")) + " " + limpa(j.get("title")))
+                    if em: v["em"] = em
                 if j.get("salary_min") and j.get("salary_max"):
                     f = lambda n: "R$ " + f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
                     v["s"] = f(j["salary_min"]) if j["salary_min"] == j["salary_max"] else f"{f(j['salary_min'])} a {f(j['salary_max'])}"
@@ -122,7 +146,7 @@ def main():
     agora = (dt.datetime.utcnow() - dt.timedelta(hours=3)).strftime("%d/%m/%Y %H:%M")
     if vagas:
         json.dump({"atualizado": agora, "vagas": vagas}, open(SAIDA, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
-        L(f"{len(vagas)} vagas gravadas")
+        L(f"{len(vagas)} vagas gravadas, {sum(1 for v in vagas if v.get('em'))} com e-mail da empresa")
     else:
         L("Nenhuma vaga coletada: mantive o arquivo anterior.")
     open(os.path.join(REL, "relatorio.txt"), "w", encoding="utf-8").write("\n".join(log))

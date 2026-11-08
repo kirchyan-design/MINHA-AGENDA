@@ -3513,8 +3513,14 @@ function cltDeriva(v){
  let m=o.match(/\b(presencial|h[ií]brido|remoto|home office)\b/i);if(m)x.m=m[1][0].toUpperCase()+m[1].slice(1).toLowerCase();
  const h=[];[/\d{1,2}h(?:\d{2})?\s*(?:às|as|a|-|–)\s*\d{1,2}h(?:\d{2})?/i,/segunda a (?:sexta|sábado|sabado)[^.;,]{0,25}/i,/escala\s*\d+\s*[x×]\s*\d+/i,/\d{2}\s*h(?:oras)?\s*semanais/i].forEach(r=>{const k=o.match(r);if(k)h.push(k[0].trim())});if(h.length)x.h=h.join(" · ");
  const b=[];(o.match(/vale[- ](?:transporte|refeição|alimentação)|plano (?:de saúde|odontológico)|seguro de vida|cesta básica|comiss(?:ão|ões)|premiação|PLR|auxílio[- ][a-zçã]+/gi)||[]).forEach(s=>{s=s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();if(!b.includes(s))b.push(s)});if(b.length)x.b=b.join(", ");
- m=o.match(/[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+/);if(m)x.em=m[0].toLowerCase();
+ const em=cltAchaEmail(o);if(em)x.em=em;
  return x}
+/* acha o melhor e-mail num texto: aceita "nome [at] empresa", ignora e-mails de sistema e prefere os de RH/currículo */
+function cltAchaEmail(t){
+ t=String(t||"").replace(/\s*[\[(]\s*(?:at|arroba)\s*[\])]\s*/gi,"@").replace(/\s+arroba\s+/gi,"@").replace(/\s*[\[(]\s*ponto\s*[\])]\s*/gi,".");
+ const ruim=/no-?reply|nao-?responda|donotreply|@(?:gupy|adzuna|example|sentry|wixpress)\.|\.(?:png|jpe?g|gif|svg|webp)$/i,bom=/curr[ií]culo|\bcv\b|vaga|\brh|recrut|selec|talento|trabalhe|emprego|pessoal|\bdp/i,l=[];
+ (t.match(/[\w.+\-]+@[\w\-]+(?:\.[\w\-]+)+/g)||[]).forEach(e=>{e=e.replace(/^[.,;:]+|[.,;:]+$/g,"").toLowerCase();if(!ruim.test(e)&&!l.includes(e))l.push(e)});
+ return l.find(e=>bom.test(e.split("@")[0]))||l[0]||""}
 function cltMk(o){const v={id:o.id||"v"+cltHash([o.cid,o.c,o.e,o.f,o.u||"",o.d||""].join("|")),cid:o.cid,c:o.c||"",e:o.e||"",a:o.a||"adm",n:o.n||"F",s:o.s||"",q:o.q||"",d:o.d||"",f:o.f||"",o:o.o||"",b:o.b||"",h:o.h||"",m:o.m||"",r:o.r||"",l:o.l||"",u:o.u||"",em:o.em||""};const x=cltDeriva(v);["b","h","m","em"].forEach(k=>{if(!v[k]&&x[k])v[k]=x[k]});return v}
 const CLT_BASE=CLT_RAW.map((r,i)=>{const v=cltMk({cid:r[0],c:r[1],e:r[2],a:r[3],n:r[4],s:r[5],q:r[6],d:r[7],f:r[8],o:r[9],b:r[10],h:r[11],r:r[12],u:r[13],l:r[14],em:r[15]});v.id="v"+cltHash(r[0]+"|"+r[1]+"|"+r[2]+"|"+r[8]+"|"+i);return v});
 let CLT_DATA=CLT_BASE,CLT_QUANDO=CLT_ATUAL,CLT_REMOTO=false,cltUlt=0,cltNovas=new Set();
@@ -3555,7 +3561,7 @@ function cltCard(v){
  const row=(k,x)=>x?`<div class="cn-r"><span>${k}</span><b>${esc(x)}</b></div>`:"",rn=(k,x)=>`<div class="cn-r"><span>${k}</span><b${x?"":` style="opacity:.55;font-weight:400"`}>${x?esc(x):"Não informado no anúncio"}</b></div>`;
  return `<div class="cn-card" style="--cc:${ar[2]}"><div class="cn-top"><span class="cn-b" style="background:${ci[1]}22;color:${ci[1]}">📍 ${esc(ci[0])}</span><span class="cn-uf">${ar[0]} ${esc(ar[1])}</span><button class="cn-fv" onclick="cltFavT('${v.id}')" aria-label="Favoritar" aria-pressed="${fav}">${fav?"⭐":"☆"}</button></div>
  <h4>${esc(v.c)}${cltNovas.has(v.id)?` <span class="cn-b" style="background:#2f9e6b22;color:#2f9e6b">🆕 Nova</span>`:""}</h4>${v.e?`<div class="cn-pz">🏢 ${esc(v.e)}</div>`:""}${(cltIni().sent||{})[v.id]?`<div class="cn-pz" style="color:#2f9e6b">✅ Currículo enviado em ${esc(cltIni().sent[v.id])}</div>`:""}
- <div class="cn-g">${row("Vagas",v.q)}${rn("Salário",v.s)}${rn("Benefícios",v.b)}${rn("Jornada / horário",v.h)}${rn("Modalidade",v.m)}${row("Local",v.l)}${row("Requisitos",v.r)}${row("E-mail p/ currículo",v.em)}${row("Publicada",v.d)}${row("Contrato","CLT")}${row("Fonte",src?src[0]:v.f)}</div>
+ <div class="cn-g">${row("Vagas",v.q)}${rn("Salário",v.s)}${rn("Benefícios",v.b)}${rn("Jornada / horário",v.h)}${rn("Modalidade",v.m)}${row("Local",v.l)}${row("Requisitos",v.r)}${v.em?`<div class="cn-r"><span>E-mail p/ currículo</span><b><a href="mailto:${esc(v.em)}" style="color:inherit;word-break:break-all">${esc(v.em)}</a></b></div>`:rn("E-mail p/ currículo","")}${row("Publicada",v.d)}${row("Contrato","CLT")}${row("Fonte",src?src[0]:v.f)}</div>
  ${v.o?`<p class="cn-nv" style="margin:8px 0 0">${esc(v.o)}</p>`:""}
  <div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="cltEnviar('${v.id}');return false">📨 Enviar currículo${v.em?" (e-mail pronto)":""}</a><a class="cn-lk" href="${esc(cltBusca(v))}" target="_blank" rel="noopener">🔎 Buscar vaga</a>${fu?`<a class="cn-lk" href="${esc(fu)}" target="_blank" rel="noopener">Abrir ${esc((src?src[0]:(v.f||"vaga")).split(" (")[0])} ↗</a>`:""}</div></div>`}
 function cltRes(){
