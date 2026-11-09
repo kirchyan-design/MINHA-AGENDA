@@ -7215,6 +7215,12 @@ function vozFecha(){clearTimeout(V.tm);const b=$('#voz');if(b)b.style.display='n
 function vozAuto(ms){clearTimeout(V.tm);V.tm=setTimeout(vozFecha,ms)}
 const vozBt=on=>{const b=$('#vozfab');if(b)b.classList.toggle('on',!!on)};
 const vozTxt=()=>((V.acc||'')+' '+(V.txt||'')).replace(/\s+/g,' ').trim();
+/* junta os trechos ouvidos: o Android às vezes recomeça a frase após uma pausa (“arroz” … “8,99”) e o parcial novo trazia só o último trecho */
+function vzJunta(acc,seg,m){m=String(m||'').trim();acc=acc||'';seg=seg||'';if(!m)return[acc,seg];if(!seg)return[acc,m];
+ const a=String(nrm(seg)),b=String(nrm(m));
+ if(b.length<a.length&&a.includes(b))return[acc,seg];
+ if(b.includes(a)||a.slice(0,2)===b.slice(0,2))return[acc,m];
+ return[(acc+' '+seg).trim(),m]}
 /* botão flutuante do microfone: só aparece em Compras › lista atual */
 function vozFabSync(){
  const show=false; /* v3.4.5: botão flutuante do microfone removido da Lista de compras */
@@ -7254,7 +7260,7 @@ async function vozIni(ev){
    const ouvindo=()=>vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');
    ouvindo();vozBt(1);V.on=true;
    const opt={language:LOC(),maxResults:3,partialResults:true,popup:false};
-   V.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m){V.txt=m;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(vozTxt())+'<small>Solte o botão para registrar</small></span>','ouve')}});
+   V.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m){[V.acc,V.txt]=vzJunta(V.acc,V.txt,m);if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(vozTxt())+'<small>Solte o botão para registrar</small></span>','ouve')}});
    try{V.ls2=await N.addListener('listeningState',e=>{
     if(!(e&&e.status==='stopped')||!V.on||V.done)return;
     /* o Android encerra sozinho após um silêncio; se o dedo ainda está no botão, volta a ouvir */
@@ -7262,8 +7268,8 @@ async function vozIni(ev){
     else if(!V.hold)setTimeout(vozProc,300)})}catch(e){}
    await N.start(opt);
    if(!V.hold)vozFim();return}
-  const r=new W();r.lang=LOC();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
-  r.onresult=e=>{let x='';for(let i=0;i<e.results.length;i++)x+=e.results[i][0].transcript;V.txt=x;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(x)+'<small>Solte o botão para registrar</small></span>','ouve')};
+  const r=new W();r.lang=LOC();r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
+  r.onresult=e=>{let x='';for(let i=0;i<e.results.length;i++)x+=e.results[i][0].transcript;V.acc='';V.txt=x;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(x)+'<small>Solte o botão para registrar</small></span>','ouve')};
   const sq=V.seq;r.onerror=e=>{V.erro=e&&e.error;setTimeout(()=>{if(sq===V.seq)vozProc()},300)};r.onend=()=>{if(sq===V.seq)vozProc()};
   vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');vozBt(1);
   V.sr=r;V.on=true;r.start()
@@ -8530,13 +8536,14 @@ function kVoiceAbort(){const t=K_VOZ;if(!t)return;t.dead=true;K_VOZ=null;clearTi
  try{if(t.n)t.n.stop();else if(t.w)t.w.abort()}catch(e){}kMicUi(false)}
 async function kVoiceStop(){const t=K_VOZ;if(!t||t.dead)return;
  try{if(t.n)await t.n.stop();else if(t.w)t.w.stop()}catch(e){}
- setTimeout(()=>{if(!t.dead)t.fim(t.parcial||'')},2500)}
+ setTimeout(()=>{if(!t.dead)t.fim(t.full?t.full():(t.parcial||''))},2500)}
 async function kVoice(){
  if(K_VOZ){kVoiceStop();return}
  if(typeof V!=='undefined'&&(V.on||V.hold)){kAdd('k','O microfone da lista de compras está em uso agora. Solte o botão e tente de novo.');return}
  const N=nat()?plug('SpeechRecognition'):null,W=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!N&&!W){kAdd('k',nat()?'O reconhecimento de voz ainda não está neste app. Instale a versão nova do aplicativo para usar a voz.':'Este navegador não tem reconhecimento de voz. Abra pelo Google Chrome ou use o app instalado.');return}
- const t={n:N,w:null,dead:false,err:'',max:null,parcial:'',ls:null,ls2:null,sil:null};
+ const t={n:N,w:null,dead:false,err:'',max:null,parcial:'',acc:'',ls:null,ls2:null,sil:null};
+ t.full=()=>((t.acc||'')+' '+(t.parcial||'')).replace(/\s+/g,' ').trim();
  t.fim=txt=>{if(t.dead)return;t.dead=true;clearTimeout(t.max);kVoiceClean(t);if(K_VOZ===t)K_VOZ=null;kMicUi(false);
   txt=String(txt||'').trim();
   if(txt)kRun(txt);
@@ -8552,8 +8559,8 @@ async function kVoice(){
    try{const a=await N.available();if(a&&a.available===false){t.dead=true;clearTimeout(t.max);K_VOZ=null;kMicUi(false);kAdd('k','O reconhecimento de voz não está disponível neste celular. Confira se o app Google está instalado e atualizado.');return}}catch(e){}
    let r=null,ult=null;const ini0=Date.now();
    /* guarda o que foi ouvindo (parcial) para não perder o final da frase quando o Android encerra cedo */
-   try{t.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m&&!t.dead)t.parcial=String(m)})}catch(e){}
-   try{t.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped'&&Date.now()-ini0>700&&!t.dead){clearTimeout(t.sil);t.sil=setTimeout(()=>{if(!t.dead)t.fim(t.parcial)},900)}})}catch(e){}
+   try{t.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m&&!t.dead)[t.acc,t.parcial]=vzJunta(t.acc,t.parcial,m)})}catch(e){}
+   try{t.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped'&&Date.now()-ini0>700&&!t.dead){clearTimeout(t.sil);t.sil=setTimeout(()=>{if(!t.dead)t.fim(t.full())},900)}})}catch(e){}
    for(let tent=0;tent<3&&!t.dead;tent++){
     const ini=Date.now();
     try{r=await N.start({language:LOC(),maxResults:5,partialResults:true,popup:false});ult=null;break}
@@ -8564,9 +8571,9 @@ async function kVoice(){
      try{await Promise.race([N.stop(),new Promise(ok=>setTimeout(ok,800))])}catch(x){}
      await new Promise(ok=>setTimeout(ok,500))}}
    if(t.dead)return;
-   const fin=String((r&&r.matches&&r.matches[0])||'').trim(),par=String(t.parcial||'').trim();
+   const fin=String((r&&r.matches&&r.matches[0])||'').trim(),par=t.full();
    /* o resultado final costuma ser o melhor; se o parcial ouviu bem mais, usa o parcial */
-   if(fin||par){t.fim(par.length>fin.length*1.15+3?par:fin)}
+   if(fin||par){t.fim(fin.length>par.length?fin:par)}
    else{await new Promise(ok=>{const iv=setInterval(()=>{if(t.dead){clearInterval(iv);ok()}},200)})}
   }else{
    const r=new W();t.w=r;r.lang=LOC();r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
