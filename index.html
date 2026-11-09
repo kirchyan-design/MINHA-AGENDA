@@ -1441,7 +1441,7 @@ const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const HOJE=iso(new Date());
 const fmt=(s,o)=>new Date(s+'T12:00').toLocaleDateString(LOC(),o||{weekday:'short',day:'numeric',month:'short'});
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-let S={ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',color:'teal',menu:'side',tabsOff:[],pl:[],hosp:[],mercados:[],scans:[]};
+let S={ev:[],notes:[],diary:{},shop:[],prods:{},hist:[],market:'',user:{name:''},theme:'auto',color:'teal',menu:'side',tabsOff:[],pl:[],hosp:[],mercados:[],scans:[],coms:[]};
 try{const r=localStorage.getItem('minha-agenda');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
 /* v2.6: dados exclusivos por conta (e-mail). OWNK = dono dos dados que estão ativos; ACCP = dados guardados das outras contas. */
 const OWNK='ma-owner',ACCP='ma-acc:';let TROCANDO=false;
@@ -2599,6 +2599,41 @@ const fraseCard=()=>{if(S.versOff)return '';const v=VERSOS[fraseIdx()];return `<
 const inicial=()=>(S.user.name||'?').trim().charAt(0).toUpperCase();
 const avatar=c=>S.user.photo?`<img class="av ${c||''}" src="${S.user.photo}" alt="Foto de perfil">`:`<span class="av ${c||''}" aria-hidden="true">${esc(inicial())}</span>`;
 const saudBloco=(extra)=>`<div class="greet-row">${avatar()}<div style="flex:1;min-width:0"><div class="gt">${saud()}, ${esc(S.user.name)}!</div><div class="gd">${dataLonga()}</div>${extra||''}</div></div>`;
+/* ---------- v3.7.0: comentários na página inicial ----------
+   Cada pessoa escreve comentários na tela Início e só pode editar ou excluir os PRÓPRIOS comentários.
+   Ficam em S.coms (id, x texto, at criado, ed editado, u autor) e acompanham o backup e a nuvem da conta. */
+let COM_DRAFT='',COM_EDIT=null;
+const comAutor=()=>{const c=S.user&&S.user.conta;return String((c&&(c.uid||c.email||c.phone))||ownerId()||(S.user&&S.user.name)||'local').toLowerCase()};
+const comMeu=c=>!c.u||c.u===comAutor();
+function comData(ms){const d=new Date(ms);return d.toLocaleDateString(LOC(),{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'})}
+function comCard(){
+ S.coms=Array.isArray(S.coms)?S.coms:[];
+ const l=S.coms.slice().sort((a,b)=>b.at-a.at);
+ const itens=l.map(c=>{
+  const meu=comMeu(c),edit=COM_EDIT===c.id;
+  const corpo=edit
+   ?`<textarea id="com-ed" maxlength="500" rows="3" style="width:100%;box-sizing:border-box" aria-label="Editar comentário">${esc(c.x)}</textarea><div class="row" style="margin-top:6px"><button onclick="comSalvaEd('${c.id}')">Salvar</button><button class="sec" onclick="comCancelaEd()">Cancelar</button></div>`
+   :`<div style="word-break:break-word;white-space:pre-wrap;margin-top:2px">${esc(c.x)}</div>`;
+  return `<div class="item" style="align-items:flex-start"><span class="cw-ic" aria-hidden="true">💬</span><div class="t" style="min-width:0;flex:1"><b>${esc(c.n||'Você')}</b> <small style="color:var(--mute)">${comData(c.at)}${c.ed?' · editado':''}</small>${corpo}</div>${meu&&!edit?`<div style="display:flex;flex-direction:column;gap:4px"><button class="ghost" onclick="comEditar('${c.id}')" aria-label="Editar comentário">✏️</button><button class="ghost" onclick="comExcluir('${c.id}')" aria-label="Excluir comentário">🗑️</button></div>`:''}</div>`}).join('');
+ return `<h3>💬 ${_t('Comentários')}</h3><div class="card" id="com-card"><textarea id="com-in" maxlength="500" rows="2" placeholder="Escreva um comentário…" aria-label="Novo comentário" style="width:100%;box-sizing:border-box" oninput="COM_DRAFT=this.value">${esc(COM_DRAFT)}</textarea><div class="row" style="margin-top:6px"><button onclick="comAdd()">Comentar</button></div>${l.length?`<div style="margin-top:10px">${itens}</div>`:`<p class="hint" style="margin:10px 0 0">Nenhum comentário ainda. Escreva o primeiro!</p>`}</div>`}
+function comAdd(){
+ const e=document.getElementById('com-in'),x=((e&&e.value)||COM_DRAFT||'').trim().slice(0,500);
+ if(!x){if(e)e.focus();return}
+ S.coms=Array.isArray(S.coms)?S.coms:[];
+ S.coms.push({id:uid(),x:x,at:Date.now(),u:comAutor(),n:(S.user&&S.user.name)||''});
+ COM_DRAFT='';save();render()}
+function comEditar(id){const c=(S.coms||[]).find(x=>x.id===id);if(!c||!comMeu(c))return;COM_EDIT=id;render();setTimeout(()=>{const e=document.getElementById('com-ed');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}},60)}
+function comCancelaEd(){COM_EDIT=null;render()}
+function comSalvaEd(id){
+ const c=(S.coms||[]).find(x=>x.id===id),e=document.getElementById('com-ed');
+ if(!c||!comMeu(c)){COM_EDIT=null;render();return}
+ const x=((e&&e.value)||'').trim().slice(0,500);
+ if(!x){info('O comentário não pode ficar vazio. Para apagar, use Excluir.');return}
+ if(x!==c.x){c.x=x;c.ed=Date.now();save()}
+ COM_EDIT=null;render()}
+function comExcluir(id){
+ const c=(S.coms||[]).find(x=>x.id===id);if(!c||!comMeu(c))return;
+ ask('Excluir este comentário?',()=>{S.coms=S.coms.filter(x=>x.id!==id);if(COM_EDIT===id)COM_EDIT=null;save();render()})}
 function vInicio(){
  const hoje=sortEv(S.ev.filter(e=>e.date===HOJE)),plh=S.pl.filter(p=>p.date===HOJE).sort(plSort),pend=hoje.filter(e=>!e.done).length,faltam=S.shop.filter(x=>!x.done).length,nn=S.notes.length;
  const prof=[S.user.role,S.user.work].filter(Boolean).map(esc).join(' · ');
@@ -2628,6 +2663,7 @@ function vInicio(){
  +st('notas','#d9a10f',_t('Notas'),nn+(nn===1?' nota':' notas'),`go('notas')`)
  +(()=>{const k=cCalc(HOJE.slice(0,7));return st('carteira','#3fa66b',_t('Carteira'),k.renda>0?(k.sobra<0?'Faltam '+BRL(-k.sobra):'Sobram '+BRL(k.sobra))+' este mês':'Controle seus gastos do mês',`go('carteira')`,'grid-column:1/-1')})()
  +`</div>`
+ +comCard()
  +vTotais()}
 
 /* ---------- Configurações ---------- */
@@ -2986,7 +3022,7 @@ function shRender(){if(shLivre()){SH.rp=false;render()}else SH.rp=true}
 function shAplica(m){if(TROCANDO)return false;SH.ap=true;try{S.cart=m;normCart();save()}finally{SH.ap=false}return true}
 function shErroTxt(e){const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();
  return /permission|403|unauthenticated/.test(t)?'A Carteira compartilhada ainda não está liberada no Firestore. Publique as regras novas do arquivo firestore.rules no console do Firebase.':/failed to fetch|network|load failed/.test(t)?'Sem conexão com a internet.':'Não foi possível concluir: '+t.trim().slice(0,120)}
-function shSumiu(){chLimpa();shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';SH.inv=[];shDlgFecha();
+function shSumiu(){shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';SH.inv=[];shDlgFecha();
  try{render()}catch(e){}info('Esta Carteira deixou de ser compartilhada (foi encerrada ou você foi removido). A sua cópia continua neste aparelho.')}
 async function shPerm(){ /* sem permissão: ou saiu da lista, ou as regras não foram publicadas */
  const L=shLink();let m;
@@ -3069,7 +3105,7 @@ function shSair(){const I=SH.info,L=shLink();if(!L)return;const dono=I&&I.dono==
   try{
    if(dono){const d=await shLer(L.id);if(d){const w=[];for(let i=0;i<d.partes;i++)w.push({delete:shDocName(L.id)+'/dados/p'+i});try{(await chConsulta({orderBy:[{field:{fieldPath:'t'},direction:'ASCENDING'}],limit:400})).forEach(m=>w.push({delete:shDocName(L.id)+'/dados/'+m.id}))}catch(e){}if(w.length)await shCommit(w);await shCommit([{delete:shDocName(L.id)}])}}
    else await shSairDe(L.id,shUid());
-   shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';chLimpa();shDlgFecha();render();info(dono?'A Carteira deixou de ser compartilhada.':'Você saiu da Carteira compartilhada.')
+   shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';shDlgFecha();render();info(dono?'A Carteira deixou de ser compartilhada.':'Você saiu da Carteira compartilhada.')
   }catch(e){info(shErroTxt(e))}},dono?'Parar de compartilhar':'Sair')}
 const shTemDados=()=>{normCart();const c=S.cart;return c.base>0||c.gastos.length>0||c.fixas.length>0||c.rendas.length>0||!!c.sal||!!(c.inv&&c.inv.meus&&c.inv.meus.length)};
 async function shAceitar(id){
@@ -3096,7 +3132,7 @@ function shCardIn(){
   const eu=shUid(),outros=I?Object.keys(I.mem).filter(k=>k!==eu).map(k=>I.mem[k]):[],pend=I?I.convites.length:0;
   const quem=outros.length?'Com '+outros.join(', '):pend?'Aguardando '+pend+' convite'+(pend>1?'s':'')+' ser'+(pend>1?'em':'')+' aceito'+(pend>1?'s':''):'Só você por enquanto';
   const hh=SH.t?new Date(SH.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';
-  return `<div class="card"><div class="prm"><span class="ic">${SH.ok===false?'⚠️':'👥'}</span><span class="t"><b>Carteira compartilhada</b><small>${esc(quem)}</small><small>${SH.ok===false?esc(SH.msg):SH.ok?'✅ Em tempo real'+(hh?' · '+hh:''):'Sincronizando…'}</small></span><button class="sec" onclick="shAbrir()">Gerenciar</button></div><div class="row" style="margin-top:8px"><button class="sec" style="flex:1" onclick="chAbrir()">💬 Chat${CH.nao?` <b style=\"background:var(--rd);color:#fff;border-radius:10px;padding:1px 7px;margin-left:4px\">${CH.nao}</b>`:''}</button></div></div>`}
+  return `<div class="card"><div class="prm"><span class="ic">${SH.ok===false?'⚠️':'👥'}</span><span class="t"><b>Carteira compartilhada</b><small>${esc(quem)}</small><small>${SH.ok===false?esc(SH.msg):SH.ok?'✅ Em tempo real'+(hh?' · '+hh:''):'Sincronizando…'}</small></span><button class="sec" onclick="shAbrir()">Gerenciar</button></div></div>`}
  const cv=SH.inv.map(x=>`<div class="card"><b>📨 Convite para a Carteira</b><p class="hint" style="margin:6px 0 10px"><b>${esc(x.donoEmail||'Alguém')}</b> quer compartilhar a Carteira com você. Vocês dois verão e poderão alterar os mesmos dados, em tempo real.</p><div class="row"><button onclick="shAceitar('${x.id}')">Aceitar</button><button class="sec" onclick="shRecusar('${x.id}')">Recusar</button></div></div>`).join('');
  return cv+`<div class="card"><div class="prm"><span class="ic">👥</span><span class="t"><b>Compartilhar a Carteira</b><small>Convide alguém pelo e-mail: as mudanças aparecem para os dois na hora.</small></span><button class="sec" onclick="shAbrir()">Convidar</button></div></div>`}
 const shCard=()=>`<div id="sh-card">${shCardIn()}</div>`;
@@ -3121,64 +3157,6 @@ function shDlgDesenha(){
   +(L?`<button class="ghost" style="width:100%;margin-top:12px" onclick="shSair()">${dono?'⛔ Parar de compartilhar':'🚪 Sair da Carteira compartilhada'}</button>`:'')
   +`<div class="row" style="margin-top:12px"><button class="sec" style="flex:1" onclick="shDlgFecha()">Fechar</button></div></div>`;
  if(foco){const e=document.getElementById('sh-em');if(e){e.value=val;e.focus()}}}
-/* ---------- v3.6.9: chat da Carteira compartilhada ----------
-   Mensagens em carteiras/{id}/dados/m… (mesma pasta de dados da Carteira, já liberada para os membros pelas regras atuais).
-   Campos: t (hora do servidor), u (uid), n (e-mail de quem enviou), x (texto). Consulta curta a cada 3 s com o chat aberto e a cada 20 s fechado (contador de não lidas). */
-const CH={msgs:[],last:'',busy:false,t:0,open:false,nao:0,err:''};
-const chKey=()=>{const L=shLink();return L?'ma-shchat:'+shUid()+':'+L.id:''};
-const chVisto=()=>{try{return localStorage.getItem(chKey())||''}catch(e){return ''}};
-const chSetVisto=v=>{try{if(chKey())localStorage.setItem(chKey(),v)}catch(e){}};
-async function chConsulta(q){
- const L=shLink();if(!L)return[];
- const r=await fsReq('POST',FS_B+'/carteiras/'+L.id+':runQuery',{structuredQuery:Object.assign({from:[{collectionId:'dados'}]},q)});
- return (r||[]).filter(x=>x.document&&x.document.fields&&x.document.fields.t).map(x=>{const f=x.document.fields;return{id:x.document.name.split('/').pop(),t:f.t.timestampValue,u:shStr(f.u),n:shStr(f.n),x:shStr(f.x)}})}
-const chMaior=(a,b)=>(!a||(b&&new Date(b)>new Date(a)))?b:a;
-function chLimpa(){CH.msgs=[];CH.last='';CH.nao=0;CH.open=false;CH.err='';const o=document.getElementById('ch-ov');if(o)o.remove()}
-async function chAtualiza(){
- if(CH.busy||!ct()||!nat()||!shLink())return;
- CH.busy=true;CH.t=Date.now();
- try{
-  const novas=CH.last?await chConsulta({where:{fieldFilter:{field:{fieldPath:'t'},op:'GREATER_THAN',value:{timestampValue:CH.last}}},orderBy:[{field:{fieldPath:'t'},direction:'ASCENDING'}],limit:200})
-   :(await chConsulta({orderBy:[{field:{fieldPath:'t'},direction:'DESCENDING'}],limit:80})).reverse();
-  CH.err='';
-  if(novas.length){
-   const ids=new Set(CH.msgs.map(m=>m.id));const add=novas.filter(m=>!ids.has(m.id));
-   CH.msgs=CH.msgs.concat(add);CH.last=CH.msgs.length?CH.msgs[CH.msgs.length-1].t:CH.last;
-   const deOutros=add.filter(m=>m.u!==shUid());
-   if(CH.open){chSetVisto(CH.last);chDesenha(true)}
-   else if(deOutros.length){
-    const v=chVisto();CH.nao=CH.msgs.filter(m=>m.u!==shUid()&&(!v||new Date(m.t)>new Date(v))).length;
-    if(CH._avisou!==CH.last){CH._avisou=CH.last;try{bbToast('💬 '+(deOutros[deOutros.length-1].n||'Nova mensagem')+': '+deOutros[deOutros.length-1].x.slice(0,60))}catch(e){}}
-    shCardRefresh()}
-  }else if(!CH.last&&CH.open)chDesenha(false);
- }catch(e){CH.err=/failed to fetch|network|load failed/i.test(String(e&&e.message||e))?'Sem conexão.':/permission|403/i.test(String((e&&e.code)||'')+(e&&e.message||''))?'Sem permissão para o chat.':'Não foi possível carregar o chat.';if(CH.open)chDesenha(false)}
- finally{CH.busy=false}}
-async function chEnviar(){
- const inp=document.getElementById('ch-in'),txt=((inp&&inp.value)||'').trim().slice(0,500),L=shLink();
- if(!txt||!L)return;
- const c=ct()||{},id='m'+Date.now().toString(36)+shNovoId().slice(0,6);
- if(inp)inp.value='';
- try{
-  await shCommit([{update:{name:shDocName(L.id)+'/dados/'+id,fields:{u:shVal.s(shUid()),n:shVal.s(c.email||c.name||''),x:shVal.s(txt)}},updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:false}}]);
-  await chAtualiza()
- }catch(e){if(inp&&!inp.value)inp.value=txt;info(shErroTxt(e))}}
-function chAbrir(){
- if(!shLink()){info('Convide alguém para a Carteira para usar o chat.');return}
- if(document.getElementById('ch-ov'))return;
- CH.open=true;CH.nao=0;
- const o=document.createElement('div');o.className='ov';o.id='ch-ov';document.body.appendChild(o);
- chDesenha(false);chAtualiza().then(()=>{chSetVisto(CH.last)});shCardRefresh()}
-function chFecha(){CH.open=false;const o=document.getElementById('ch-ov');if(o)o.remove();chSetVisto(CH.last);CH.nao=0;if(SH.rp)setTimeout(()=>{if(shLivre()){SH.rp=false;render()}},50);else shCardRefresh()}
-function chHora(t){const d=new Date(t),h=d.toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});return d.toDateString()===new Date().toDateString()?h:d.toLocaleDateString(LOC(),{day:'2-digit',month:'2-digit'})+' '+h}
-function chDesenha(rolar){
- const o=document.getElementById('ch-ov');if(!o)return;
- const eu=shUid(),old=document.getElementById('ch-lista'),fim=!old||old.scrollHeight-old.scrollTop-old.clientHeight<80,val=(document.getElementById('ch-in')||{}).value||'',foco=document.activeElement&&document.activeElement.id==='ch-in';
- const lista=CH.msgs.length?CH.msgs.map(m=>{const meu=m.u===eu;return `<div style="display:flex;justify-content:${meu?'flex-end':'flex-start'};margin:4px 0"><div style="max-width:82%;padding:7px 11px;border-radius:14px;background:${meu?'var(--ac)':'var(--acs)'};color:${meu?'var(--onac)':'var(--ink)'};word-break:break-word">${meu?'':`<small style="display:block;font-weight:700;opacity:.8">${esc((m.n||'').split('@')[0]||'Alguém')}</small>`}${esc(m.x).replace(/\n/g,'<br>')}<small style="display:block;text-align:right;opacity:.65;font-size:11px;margin-top:2px">${chHora(m.t)}</small></div></div>`}).join('')
-  :`<p class="hint" style="text-align:center;margin:30px 0">${CH.err?esc(CH.err):CH.last===''&&CH.busy?'Carregando…':'Nenhuma mensagem ainda. Diga um oi 👋'}</p>`;
- o.innerHTML=`<div class="dlg" role="dialog" aria-label="Chat da Carteira" style="max-width:420px;display:flex;flex-direction:column;height:min(78vh,560px)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><b>💬 Chat da Carteira</b><button class="ghost" onclick="chFecha()" aria-label="Fechar">✕</button></div><div id="ch-lista" style="flex:1;overflow:auto;padding:2px">${lista}${CH.err&&CH.msgs.length?`<p class="hint" style="text-align:center">${esc(CH.err)}</p>`:''}</div><div class="row" style="margin-top:8px"><input id="ch-in" maxlength="500" placeholder="Escreva uma mensagem" autocomplete="off" onkeydown="if(event.key==='Enter')chEnviar()"><button onclick="chEnviar()" aria-label="Enviar">➤</button></div></div>`;
- const l=document.getElementById('ch-lista');if(l&&(rolar&&fim||!old))l.scrollTop=l.scrollHeight;else if(l&&old)l.scrollTop=old.scrollTop;
- const i=document.getElementById('ch-in');if(i){i.value=val;if(foco||!old)i.focus()}}
-setInterval(()=>{try{if(document.hidden||!nat()||!ct()||!shLink()||CH.busy)return;if(Date.now()-CH.t>=(CH.open?3000:20000))chAtualiza()}catch(e){}},1500);
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};
@@ -7452,6 +7430,11 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.7.0':[
+   '💬 Comentários na página inicial: escreva um comentário na tela Início e, quando quiser, edite ou exclua os seus próprios comentários.',
+   '🧹 O chat da Carteira compartilhada foi removido. A Carteira compartilhada continua funcionando normalmente.',
+   '📌 O quadro de avisos foi atualizado com as novidades.'
+  ],
   '3.6.9':[
    '💬 Chat da Carteira compartilhada: converse com quem divide a Carteira com você, com aviso de mensagem nova e contador de não lidas. O chat fica só entre as pessoas da Carteira.'
   ],
@@ -7781,12 +7764,16 @@ function recadoNovidQuandoLivre(n){n=n||0;
    Mesma regra do aviso das últimas atualizações: a marca é guardada por conta (e-mail, celular ou id) no localStorage
    (ma-recado-quadro-v1:<usuário>) e dentro dos dados do usuário (S.user.avisos['quadro-v1']), que vão para a nuvem.
    É gravada antes de mostrar a caixa, então nunca repete. Espera a senha e as outras caixas saírem da frente.
-   Para mostrar de novo a todos, troque quadro-v3 por quadro-v4 em RECADO_QUADRO_TAG (e mova a tag antiga para RECADO_QUADRO_TAG_V2). O texto fica em RECADO_QUADRO. */
-const RECADO_QUADRO_TAG='quadro-v3',RECADO_QUADRO_KEY='ma-recado-'+RECADO_QUADRO_TAG;
+   Para mostrar de novo a todos, troque quadro-v4 por quadro-v5 em RECADO_QUADRO_TAG (e mova a tag antiga para RECADO_QUADRO_TAG_V3). O texto fica em RECADO_QUADRO. */
+const RECADO_QUADRO_TAG='quadro-v4',RECADO_QUADRO_KEY='ma-recado-'+RECADO_QUADRO_TAG;
+const RECADO_QUADRO_TAG_V3='quadro-v3',RECADO_QUADRO_KEY_V3='ma-recado-'+RECADO_QUADRO_TAG_V3;
 const RECADO_QUADRO_TAG_V2='quadro-v2',RECADO_QUADRO_KEY_V2='ma-recado-'+RECADO_QUADRO_TAG_V2;
 const RECADO_QUADRO_TAG_V1='quadro-v1',RECADO_QUADRO_KEY_V1='ma-recado-'+RECADO_QUADRO_TAG_V1;
-/* n:3 = item novo do quadro v3 (Filmes). Quem já viu o quadro v1 ou v2 vê só os itens n:3; quem nunca viu vê tudo. */
+/* n:4 = item novo do quadro v4 (Comentários); n:3 = Filmes (quadro v3). Quem já viu o quadro v3 vê só os itens n:4; quem viu só o v1 ou v2 vê n:3 e n:4; quem nunca viu vê tudo. */
 const RECADO_QUADRO=[
+ {n:4,ic:'💬',t:'Comentários',d:'Agora a página inicial tem um espaço para você comentar.',
+  l:['✍️ Escreva um comentário na tela Início e toque em Comentar.','✏️ Edite o seu comentário quando quiser; ele fica marcado como editado.','🗑️ Exclua o seu comentário com um toque (você só mexe nos seus).','🧹 O chat da Carteira compartilhada foi removido; o resto da Carteira compartilhada continua igual.'],
+  b:['Ver comentários',"go('inicio');setTimeout(()=>{const e=document.getElementById('com-card');e&&e.scrollIntoView({behavior:'smooth',block:'center'})},200)"]},
  {n:3,ic:'🎬',t:'Filmes',d:'Cinema e streaming num lugar só: o que está em cartaz, as estreias e o que chega nas plataformas.',
   l:['🎞️ Cinema: filmes em cartaz e estreias nos cinemas dos shoppings de Recife, Olinda, Paulista e Jaboatão, com a sinopse de cada filme.','🛍️ Shoppings: veja os filmes de cada cinema e abra o link para conferir horários.','📺 Streaming: filmes e séries chegando na Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com a data.','🔎 Busque por título e filtre por cidade, plataforma, filme ou série.','📅 Ponha a estreia na Agenda para ganhar lembrete.','🔄 A lista se atualiza sozinha.'],
   b:['Abrir Filmes',"go('filmes')"]},
@@ -7806,6 +7793,9 @@ const quadroUsuario=()=>{const c=S.user&&S.user.conta;return String((c&&(c.email
 function quadroVisto(){
  try{if(localStorage.getItem(RECADO_QUADRO_KEY+':'+quadroUsuario()))return true}catch(e){}
  return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG])}
+function quadroVistoV3(){
+ try{if(localStorage.getItem(RECADO_QUADRO_KEY_V3+':'+quadroUsuario()))return true}catch(e){}
+ return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG_V3])}
 function quadroVistoV2(){
  try{if(localStorage.getItem(RECADO_QUADRO_KEY_V2+':'+quadroUsuario()))return true}catch(e){}
  return !!(S.user&&S.user.avisos&&S.user.avisos[RECADO_QUADRO_TAG_V2])}
@@ -7819,7 +7809,7 @@ function recadoQuadro(){
  if(!S.user||!S.user.name)return;
  if(document.querySelector('.rc-ov')||quadroVisto())return;
  quadroMarca(); /* marca antes de mostrar: nunca aparece duas vezes */
- const lista=(quadroVistoV2()||quadroVistoV1())?RECADO_QUADRO.filter(q=>q.n===3):RECADO_QUADRO;if(!lista.length)return;
+ const lista=quadroVistoV3()?RECADO_QUADRO.filter(q=>q.n===4):(quadroVistoV2()||quadroVistoV1())?RECADO_QUADRO.filter(q=>q.n>=3):RECADO_QUADRO;if(!lista.length)return;
  const it=lista.map((q,i)=>'<div class="nv-it'+(i===0?' nv-new':'')+'"><div class="nv-h"><b>'+q.ic+' '+esc(q.t)+'</b></div><div class="nv-t">'+esc(q.d)+'</div>'+q.l.map(x=>'<div class="nv-t">'+esc(x)+'</div>').join('')+'<div style="margin-top:8px"><button type="button" class="sec" data-qb="'+i+'">'+esc(q.b[0])+'</button></div></div>').join('');
  const o=document.createElement('div');o.className='ov rc-ov';
  o.innerHTML='<div class="dlg rc-dlg" role="alertdialog" aria-label="Quadro de avisos"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
