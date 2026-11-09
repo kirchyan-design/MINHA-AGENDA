@@ -1923,74 +1923,57 @@ function calcCmp(){const el=$('#cres');if(!el)return;const A=side(cmp.a),B=side(
 function mmBusca(v){v=nrm(v);document.querySelectorAll('#v .mm-i').forEach(e=>{e.style.display=!v||e.dataset.t.includes(v)?'':'none'});
  document.querySelectorAll('#v .mm-c').forEach(c=>{const any=[...c.querySelectorAll('.mm-i')].some(e=>e.style.display!=='none');c.style.display=any?'':'none';const h=c.previousElementSibling;if(h&&h.tagName==='H3')h.style.display=any?'':'none'})}
 /* ---------- Promoções: Assaí Atacadista (encartes de Pernambuco) ---------- */
-const AS_SAUDE=`
-Iogurte natural Danone sabores|copo 160g|3.99|3.19
-Iogurte líquido YoPro Danone sabores|PET 250g|9.99|8.79
-Iogurte líquido zero sabor morango ou batido Danone|PET 1,2kg|18.45|15.90
-Leite fermentado Activia zero sabores|PET 1kg|18.45|16.90
-Iogurte natural Nestlé sabores|copo 160g/170g|4.25|2.89
-Iogurte líquido zero Nestlé sabores|PET 170g|3.89|2.99
-Iogurte natural Nestlé sabores|bandeja 340g|9.85|7.90
-Iogurte líquido zero Nestlé sabores|PET 1,15kg|17.75|14.90
-Iogurte natural Itambé sabores|copo 170g|3.39|2.89
-Iogurte com polpa zero Itambé sabores|bandeja 510g|8.35|5.99
-Iogurte natural integral Milk Itambé|pote 450g|12.25|9.90
-Iogurte líquido zero Itambé sabores|PET 1,15kg|16.29|13.90
-Requeijão cremoso zero lactose Nolac Itambé|pote 200g|9.35|8.69
-Manteiga com sal zero lactose Itacolomy|pote 200g|13.45|12.90
-Ricota fresca Valelac|preço do quilo, na peça|31.50|27.90
-Queijo tipo prato Lacfree Verde Campo|preço do quilo, na peça|89.90|79.90
-`;
-const AS_SAUDE_APP=`
-Bebida láctea Power Whey 3 Corações sabores|TP 250ml|8.09|6.49|5 un.
-Creatine Black Skull sabores|pote 300g|35.90|29.90|6 un.
-Whey 100% HD Black Skull sabores|pacote 900g|119.90|99.90|6 un.
-`;
-const AS_APP=`
-Biscoito cream cracker Vitarella (tradicional ou água e sal)|350g/400g|4.89|3.79|10 un.
-Ketchup ou maionese Hellmann's sabores|garrafa 380g ou 335g|15.29|10.90|10 un.
-Mistura de creme de leite Mococa|TP 200g|1.99|1.79|10 un.
-Vinho frisante Pink Moon tipos|garrafa 275ml|5.89|4.79|10 un.
-Cerveja Pure Gold Stella Artois|lata 473ml|6.99|5.99|10 un.
-Papel higiênico folha dupla Personal VIP (leve 12 e pague 11)|11 rolos de 30m|24.50|18.99|10 un.
-Creme dental carvão ativado Sorriso|caixeta 90g|7.25|5.99|10 un.
-Sabonete vegetal leite de aveia Davene fragrâncias|embalagem 90g|3.55|3.19|10 un.
-Desodorante aerossol 72h Giovanna Baby fragrâncias|frasco 150ml|13.39|10.70|10 un.
-Shampoo Naturals Palmolive tipos|frasco 650ml|15.69|12.55|10 un.
-Amaciante de roupas concentrado Comfort fragrâncias|frasco 500ml|11.49|8.90|10 un.
-Tira-manchas em pó Vanish tipos|pacote 400g|20.99|16.90|10 un.
-Água sanitária Dragão|frasco 2L|5.65|3.89|10 un.
-Limpador perfumado Casa & Perfume fragrâncias|frasco 2L|15.90|12.90|10 un.
-Odorizador de ambientes aerossol Chá Branco Secar|frasco 360ml|15.09|12.99|10 un.
-Feijão de corda tipo 1 Pai Heleno|pacote 1kg|6.99|6.09|10 un.
-Leite condensado semidesnatado Sabe|TP 395g|5.89|5.29|10 un.
-Macarrão Vitamassa tipos (argola)|pacote 300g|3.55|2.99|10 un.
-Carne moída resfriada Masterboi|bandeja 1kg|24.90|21.90|5 un.
-Queijo tipo mussarela fatiado Président|embalagem 150g|10.90|9.49|10 un.
-Sobrecoxas de frango temperadas e congeladas Assa Fácil no forno Sadia|pacote 800g|16.80|14.99|6 un.
-`;
 const AS_LEVA=`
-Panettone com frutas cristalizadas ou gotas de chocolate Tommy|caixeta 400g|14.99|12.99
-Panettone com frutas cristalizadas ou gotas de chocolate Romanato|pacote 300g|9.90|6.99
-Whey Balance Protein Health Labs sabores|pacote 455g|69.90|59.90
-Espumante Lunar tipos|garrafa 750ml|37.90|27.90
-Espumante moscatel branco ou rosé Verse|garrafa 660ml|32.90|22.90
-Papel sulfite A4 Report|pacote com 500 folhas|29.90|23.50
-Lâmpada de LED bulbo Elgin|unidade 12W bivolt|6.19|3.99
-Liquidificador 60Hz LM-400 Master Mondial|unidade 220V|79.90|69.90
-Churrasqueira elétrica CH07 Mondial|unidade 127V ou 220V|189.00|139.90
-Forno elétrico FR-42 Mondial|unidade 42L 127V ou 220V|399.90|299.90
-Ventilador de coluna Turbo Mondial|unidade 40cm 127V ou 220V|299.90|259.90
-Caixa amplificadora CM-300-N Mondial|unidade bivolt|319.90|279.90
-Pneu aro 13 175/75 A5 84T Xbri Fastway|unidade · preço promocional a partir de 4 un.|279.90|259.90
-Pneu aro 15 185/60 Xbri Fastway|unidade · preço promocional a partir de 4 un.|289.90|259.90
-Pneu aro 14 175/65 86H Direction 2 Touring Goodyear|unidade · preço promocional a partir de 4 un.|379.90|359.90
+Arroz parboilizado tipo 1 Rampinelli|pacote 1kg|4.29|4.15
+Cesta básica Assaí NE|kit 1 · 11 itens|59.89|55.90
+Leite condensado semidesnatado Natville|TP 395g|6.39|5.99
+Macarrão spaghetti Bonsabor|pacote 400g|2.39|1.89
+Molho pronto tradicional Julieta|sachê 310g|1.25|1.19
+Catchup Tambaú|garrafa 380g|4.99|3.99
+Cerveja lager Amstel|lata 473ml|4.49|3.99
+Refrigerante original ou zero Guaraná Antarctica|PET 2,5L|8.79|7.49
+Queijo tipo mussarela Davaca|preço do quilo, na peça|48.90|39.90
+Batata palito congelada Chic Bem Brasil|pacote 2kg|20.69|18.90
+Linguiça tipo calabresa defumada Sadia|pacote 2,5kg|73.79|53.90
+Pizza congelada Perdigão sabores|caixeta 460g|14.90|13.90
+Manteiga com ou sem sal Itacolomy|pote 200g|11.55|9.49
+Açúcar cristal Petribu|pacote 1kg|3.49|3.15
+Café tradicional ou extraforte Ouro Verde ou Petinho|pacote almofada 250g|12.95|9.99
+Flocão de milho Gostosin|pacote 400g|1.09|0.99
+Cupim bovino resfriado a vácuo Masterboi|preço do quilo|38.90|34.90
+Filé de peito de frango congelado Seara|bandeja 1kg|22.90|19.89
+Coxas e sobrecoxas de frango congeladas Mauricéa|preço do quilo|10.90|9.89
+`;
+const AS_OFERTAS=`
+Biscoito cream cracker tradicional Pilar|pacote 350g|4.29|3.79
+Biscoito recheado Vitamassa sabores|pacote 130g|1.69|1.39
+Achocolatado em pó Chocolatto 3 Corações|pacote 700g|19.89|14.99
+Vinho chileno Concha y Toro tipos|garrafa 750ml|29.90|22.90
+Suco de uva integral OQ|garrafa 1,5L|17.90|13.90
+Papel higiênico folha dupla Max Pure|pacote leve 12 e pague 11 · 11 rolos de 30m|18.45|13.90
+Absorvente noturno com abas Intimus tipos|pacote 45 unidades|33.79|25.90
+Fralda descartável hiper Fofura Baby|pacote, vários tamanhos|67.29|47.90
+Shampoo ou condicionador Elseve tipos|frasco 400ml|33.90|22.50
+Sabonete Albany fragrâncias|embalagem 80g|1.65|1.45
+Desodorante aerossol Above fragrâncias|frasco 250ml|10.59|8.49
+Creme dental Even tipos|caixeta 70g|1.99|1.55
+Lava-roupas em pó Primavera ou Maciez Tixan Ypê|pacote 1,6kg|18.90|16.90
+Lava-roupas líquido Brilhante fragrâncias|refil 900ml|11.85|9.90
+Tira-manchas em barra Assim tipos|embalagem 80g|4.25|3.99
+Amaciante de roupas concentrado Fofo fragrâncias|frasco 500ml|8.29|7.29
+Multi-inseticida Mata Insetos Proinset|frasco 350ml|9.90|6.99
+Água sanitária Clorito|galão 5L|10.85|8.49
+Limpador multiúso Casa & Limpeza fragrâncias|frasco 500ml|4.35|3.89
+Lava-louças Dragão fragrâncias|frasco 500ml|1.69|1.25
+Desinfetante Dragão fragrâncias|frasco 2L|6.49|4.90
+Garrafa térmica Gostar Sanremo cores|unidade 750ml|32.90|24.90
+Copos transparentes descartáveis Cristalcopo|pacote 100 unidades de 180ml|6.69|4.89
+Alimento para cães adultos sabor carne & cereal Champ|saco 18kg|134.90|89.90
+Mop com balde compacto Brilhus Bettanin|unidade|84.90|59.90
 `;
 const AS_ENC=[
- {id:'saude',t:'Especial Saúde & Bem-Estar · iogurtes e laticínios',ini:'2026-11-06',fim:'2026-11-08',txt:AS_SAUDE,app:false},
- {id:'saudeapp',t:'Saúde & Bem-Estar · exclusivos do app Meu Assaí',ini:'2026-11-06',fim:'2026-11-08',txt:AS_SAUDE_APP,app:true},
- {id:'app',t:'Especial App Meu Assaí · ofertas com descontos imperdíveis',ini:'2026-11-06',fim:'2026-11-08',txt:AS_APP,app:true},
- {id:'leva',t:'Leva o Assaí com você · aqui o seu dinheiro vale mais',ini:'2026-11-06',fim:'2026-11-08',txt:AS_LEVA,app:false}
+ {id:'leva',t:'Leva o Assaí com você · Economia arretada',ini:'2026-11-09',fim:'2026-11-12',txt:AS_LEVA,app:false},
+ {id:'ofertas',t:'Ofertas da semana · mercearia, higiene e limpeza',ini:'2026-11-09',fim:'2026-11-12',txt:AS_OFERTAS,app:false}
 ];
 function asLista(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const a=l.split('|');return{n:a[0],d:a[1],de:+a[2],por:+a[3],lim:a[4]||''}})}
 const dm=iso=>iso.slice(8,10)+'/'+iso.slice(5,7);
@@ -2274,201 +2257,51 @@ function vMercadoAtac(){
   return `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.lim?' · limite '+esc(i.lim):''}</small></span><span style="text-align:right;flex:none"><strong>${brl(i.at)}</strong><br><small style="color:var(--ac)">App <b>${brl(i.app)}</b></small> · <small style="color:var(--ac)">Cartão <b>${brl(i.car)}</b></small><br>${i.de?`<small style="color:var(--mute);text-decoration:line-through">${brl(i.de)}</small> <small style="color:var(--ac);font-weight:700">-${pc}%</small> `:''}<small style="color:var(--mute)">até ${dm(AT_FIM)}</small></span></div>`}).join('')}</div>`).join('');
  return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='atacadao'),40)}<div><strong>Ofertas do Atacadão</strong><br><small style="color:var(--mute)">Lojas de Pernambuco · ${tot+atTodas().reduce((a,e)=>a+e.txt.trim().split('\n').length,0)} produtos${AT_ATU?' · folhetos atualizados em '+new Date(AT_ATU).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}</small></div></div>${vivoAt?`<div style="margin-top:8px">${mmChip(v)} <small style="color:var(--mute)">de ${dm(AT_INI)} a ${dm(AT_FIM)}</small></div>`:''}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">O preço em destaque é o da loja, para todos. <b>App</b> é o preço para quem usa o app Meu Atacadão e <b>Cartão</b> vale pagando com o cartão Atacadão, Carrefour ou Sam's Club (crédito sujeito a análise). Riscado: preço antigo. O limite por cliente vale para app e cartão. Nos folhetos em PDF, a loja garante 10 unidades ou 10 kg de cada produto enquanto durarem os estoques. Confirme os valores na loja.</p></div>`+((vivoAt||atTodas().length)?blocos+atListas():mmVazio('Atacadão'))}
 /* ---------- Promoções: Novo Atacarejo (encartes de Pernambuco) ---------- */
-const NV_ENC={fds:{t:'Findi com Despensa Cheia',ini:'2026-11-06',fim:'2026-11-08'},lim:{t:'Mania de Limpeza',ini:'2026-11-05',fim:'2026-11-08'},lat:{t:'Semana dos Laticínios',ini:'2026-11-03',fim:'2026-11-07'},sup:{t:'Super Ofertas',ini:'2026-11-03',fim:'2026-11-06'}};
+const NV_ENC={sup:{t:'Super Ofertas',ini:'2026-11-09',fim:'2026-11-13'}};
 const NV_TXT=`
-#fds|Mercearia e despensa
-Açúcar Demerara Ipojuca|1kg|3.18|un|1|
-Farinha de Trigo Finna|Embalagem papel, tradicional tipo 1, 1kg|3.68|un|1|
-Sardinha Ralada 88|Óleo ou tomate, 110g|4.18|un|1|
-Feijão Preto Turquesa|Tipo 1, 1kg|6.98|un|1|
-Café Clássico Santa Clara|Almofada a vácuo, 250g|11.48|un|1|
-Extrato de Tomate Palmeiron|TP 270g|2.28|un||
-Leite em Pó Betânia|Integral, sachê 200g|5.98|un||
-Leite Condensado Italac|395g|5.98|un||
-Massa para Lasanha Vitarella|500g|7.98|un||
-Azeite Extravirgem Camponês|Vidro 250ml|17.98|un||
-Macarrão Instantâneo Nissin Lámen|Diversos sabores, 85g|1.88|un||
-Biscoito Maizena, Cream Cracker ou Maria Vitarella|Tradicional, leite, baunilha ou chocolate, 350g|3.98|un||
-Leite UHT Camponesa Origem ou Proteínas|Desnatado ou integral, 1L|8.98|un||
-Panettone Nille|Frutas cristalizadas ou gotas de chocolate, 400g|18.98|un||
-Panettone Casa Suíça|Chocolate ou frutas cristalizadas, 400g|22.98|un||
-Biscoito Wafer Vitarella|Diversos sabores, 80g|1.38|un||
-Salgadinho Cheetos|33g, 35g ou 40g|2.98|un||
-Biscoito Matutinha|Cebola e salsa ou manteiga de garrafa, 250g|4.98|un||
-Mistura para Bolo Dona Benta|Diversos sabores, 450g|5.98|un||
-Doce de Leite La Serenissima|Pote 400g|9.98|un|1|
-#fds|Higiene e limpeza
-Guardanapo Tinilo|Premium, 20 x 22cm, leve 100 pague 90|1.98|un||
-Sabonete Albany|Diversas fragrâncias, 80g|1.58|un||
-Kit Skala Shampoo 325ml + Condicionador 200ml|Diversas fragrâncias|13.98|un||
-Absorvente Intimus Noturno|Com abas, suave, 45 unidades|23.98|un||
-Inseticida Aerossol SBP|Diversos tipos, 450ml, embalagem promocional|16.98|un||
-Limpador Multiuso Brilux|Diversas fragrâncias, leve 750ml pague 500ml|3.78|un||
-Sabão em Barra Ypê|Neutro, 5 x 160g · Clube Novo: receba R$ 1,65 de volta, preço final R$ 7,25|8.90|un||6 unidades
-Amaciante Diluído Sonho|Diversas fragrâncias, 2L|8.98|un||
-Desinfetante Pinho Sol|Diversas fragrâncias, 1,75L|19.98|un||
-Sacos para Lixo Brilhus Rolo Mega|30L ou 50L|19.98|un||
-#fds|Perecíveis: carnes, frios e laticínios
-Filé de Merluza Alasca|Congelado|27.98|kg||
-Filé de Tilápia Netuno|Congelado, 800g|36.98|un||
-Linguiça Toscana Natto|Frango, resfriada|14.98|kg||
-Costela Bovina Ponta de Agulha|Resfriado|24.98|kg||
-Fraldinha Bovina|Resfriada, preço do kg na peça ou no pedaço|42.98|kg||
-Bananinha do Contra Filé|Congelada|46.98|kg||
-Frango Inteiro Formoso|Congelado|10.98|kg||
-Coxa e Sobrecoxa de Frango|Resfriado, a granel|12.98|kg||
-Filé de Peito de Frango Lar|Bandeja congelada, 1kg|19.80|un||
-Massa Pastel Mazza Foods Fest|200g|2.48|un||
-Pão Bisnaguinha Bauducco|Tradicional, 260g|6.98|un||
-Pão de Forma PlusVita|Original, 480g|8.48|un||
-Iogurte Grego Vigor|Diversos sabores, 90g|3.48|un||
-Bebida Láctea Betânia|Morango, bandeja 680g|6.98|un||
-Iogurte Polpa Ninho|Diversos sabores, bandeja 540g|7.98|un||
-Requeijão Cremoso Vigor|Tradicional ou light, 200g|7.98|un||
-Cobertura Culinária Natural da Vaca|Sabor requeijão, bisnaga 1,8kg|10.98|un||
-Iogurte Líquido Vigor Zero|Batido ou morango, 1100g|17.98|un||
-#fds|Bebidas
-Cerveja Skol|Super latão, 550ml|4.38|un||
-Cerveja Antarctica Original|473ml|4.58|un||
-Cerveja Heineken Pilsen|473ml|5.98|un||
-Cerveja Brahma Chopp|Pack com 12 latões de 473ml (nesta embalagem, a unidade sai por R$ 3,98)|47.76|un||
-Frisante Pink Moon|Rosé e pêssego, 750ml|15.98|un||
-Rum Montilla|Carta cristal, 1L|24.98|un||
-Vinho Tinto Quinta do Morgado|Suave, 750ml|15.98|un||
-Vinho Tinto Pérgola|Suave ou seco, 1L|22.98|un||
-Whisky Black & White|1L|59.80|un||
-Whisky White Horse|1L|69.80|un||
-Whisky Chivas|12 anos, 1L|109.80|un||
-Gin Tanqueray London Dry|750ml|119.80|un||
-Refrigerante Guaraná Antarctica|Tradicional, pet 200ml|1.78|un||
-Bebida H2OH!|Limão ou limoneto, pet 500ml|3.98|un||
-Refrigerante Sukita|Pet 2L|4.98|un||
-Refrigerante Coca-Cola Color Pack|6 latas tradicionais de 350ml (nesta embalagem, a unidade sai por R$ 3,33)|19.98|un||
-Bebida Alcoólica Mista Smirnoff Ice|Diversos sabores, 269ml|4.98|un||
-Vodka Smirnoff|Red, 998ml|36.98|un||
-Água Mineral Sterbom|Sem gás, pet 510ml|0.88|un||
-Água Mineral Nille|Com gás, 500ml|1.28|un||
-Refresco Dafruta|Diversos tipos, 200ml|1.28|un||
-Suco de Uva Integral OQ|1,5L|14.98|un||
-Energético Baly|Diversos sabores, 473ml|6.98|un||
-Energético Flying Horse|Diversos tipos, 2L|8.98|un||
-#lim|Mania de Limpeza · com cashback Clube Novo
-Detergente em Pó Bem-te-vi|Diversas fragrâncias, sachê 800g · receba R$ 1,22 de volta, preço final R$ 4,56|5.78|un||4
-Alvejante Sem Cloro Vanish|Multiuso white ou pink, sachê 500ml · receba R$ 0,48 de volta, preço final R$ 9,50|9.98|un||5
-Amaciante Concentrado Comfort Intense|Diversas fragrâncias, 1,5L · receba R$ 3,00 de volta, preço final R$ 18,98|21.98|un||3
-Lava Roupas Líquido Omo|3L, diversas fragrâncias · receba R$ 5,00 de volta, preço final R$ 24,98|29.98|un||2
-Lava-Louças Invicto|Diversas fragrâncias, 500ml · receba R$ 0,48 de volta, preço final R$ 1,00|1.48|un||6
-Limpador Multiuso Veja Gold|Original, 750ml · receba R$ 0,28 de volta, preço final R$ 5,50|5.78|un||5
-Sabão em Barra Glicerinado Minuano|Neutro, 5 x 160g · receba R$ 1,78 de volta, preço final R$ 7,20|8.98|un||
-Papel Higiênico Alpino|Folha dupla, 30m, leve 12 pague 11 · receba R$ 2,00 de volta, preço final R$ 12,98|14.98|un||
-Sabão em Pó Omo|Lavagem perfeita, bag 1,6kg · receba R$ 1,98 de volta, preço final R$ 21,00|22.98|un||
-Alvejante Vanish|Multi ou white, 1,5L · receba R$ 1,48 de volta, preço final R$ 27,50|28.98|un||
-Papel Higiênico Supra|Folha tripla, 20m, 12 rolos · receba R$ 2,00 de volta, preço final R$ 17,98|19.98|un||
-#lim|Mania de Limpeza · limpeza da casa
-Água Sanitária Brilux|Leve 1L pague 900ml|2.18|un||
-Papel Toalha Caprice|50 folhas|3.78|un||
-Amaciante Bem-te-vi|Diversas fragrâncias, 1,8L|6.48|un||
-Limpador Cif Cremoso|Diversos tipos, squeeze 450ml|17.98|un||
-Inseticida Aerossol Mat Inset|Diversas fragrâncias, 360ml|10.90|un||
-Saco para Lixo Esfrebom|Rolo 30L ou rolo 50L (BT306 e BT307)|10.98|un||
-Vassoura Noviça Original|Com cabo (BT167215)|12.98|un||
-Papel Higiênico Max Pure|Folha dupla, leve 24 pague 21|24.98|un||
-Detergente em Pó Ala 800g|Diversas fragrâncias, 800g|5.98|un||
-Sabão em Barra Bem-te-vi|Fragrâncias exceto coco, 5 x 160g|8.98|un||
-Lava-Roupas Líquido Bem-te-vi|Perfumes de flores ou lavanda, 5L|22.98|un||
-Desinfetante Minuano|Vários tipos, 500ml|2.38|un||
-Amaciante Diluído Minuano|Fragrâncias, 2L|8.98|un||
-Passa Roupas Fácil Becker|500ml|8.98|un||
-Lava-Roupas Líquido Mais Ekonomico|3L|11.98|un||
-Tira Manchas Líquido Assim|1,5L|21.98|un||
-Kit Multiuso Azulim|Original, 3 x 500ml (nesta embalagem, a unidade sai por R$ 3,99)|11.98|un||
-Limpador Ual Perfume Concentrado|Fragrâncias, 130ml|12.98|un||
-Desinfetante Becker|Diversas fragrâncias, 5L|12.98|un||
-Detergente Líquido Toplin 3L|Maçã ou neutro, 3L|15.98|un||
-Kit Limpadores Perfumados Azulim|Alegria ou carinho, 1L|21.90|un||
-Álcool Líquido Azulim Start|46° INPM, 1L|9.98|un||
-Pano Multiuso Condor Azul|Antibacteriano, leve 7 pague 5|9.98|un||
-Pano Multiuso Limppano Toalex|44 unidades|11.98|un||
-Lustra Móveis Poliflor|Jasmim ou lavanda, 200ml|13.68|un||
-Limpa Vidros Veja Vidrex|500ml|21.98|un||
-Limpador de Casa e Perfumado|Sensualidade ou agradable, 5L|29.98|un||
-Saco para Lixo Dia a Dia|30L ou 50L, 10 unidades|3.98|un||
-Papel Toalha Familiar|2 x 50 folhas|4.18|un||
-Papel Toalha Scala Plus|3 x 120 folhas|16.98|un||
-Papel Higiênico Mimmo|12 rolos, 20m, folha tripla|17.98|un||
-Bloco para Caixa Acoplada Limppano Marine|2 unidades de 45g|21.98|un||
-Esponja Brilhus Multiúso|Leve 6 pague 4|3.98|un||
-Rodinho de Pia Betthavale 21,5cm ou Bompack 15cm||8.98|un||
-Evita Mofo Inspira|Diversas fragrâncias, 180g|12.98|un||
-Rodo Multiuso Condor|30cm (1124)|12.98|un||
-Pá Condor|Cabo articulado|19.98|un||
-Mop Noviça Compacto|Com balde e cabo|59.80|un||
 #sup|Mercearia
-Farinha de Milho Flocada Flokão|400g|0.95|un|1|
-Açúcar Olho D'Água|Granulado, 1kg|2.98|un|1|
-Arroz Parboilizado Pop|Tipo 2, 1kg|3.98|un|1|
-Feijão Carioca Turquesa|Tipo 1, 1kg|7.48|un|1|
-Óleo de Soja Soya|900ml|7.98|un|1|
-Macarrão Instantâneo Nissin Nosso Sabor|Diversos sabores, 70g|1.48|un||
-Molho de Tomate Tambaú|Tradicional, sachê 300g|1.78|un||
-Macarrão Vitarella|Espaguete fino, 400g|1.98|un|1|5 fardos
-Milho Verde ou Dueto Bonare|Lata 170g|2.98|un||
-Azeite Extravirgem Gallo|Vidro 500ml|29.90|un||
-Aveia Nestlé|Flocos finos/Flocos regulares, 170g|3.78|un||
-Cream Cracker, Maizena ou Maria Pilar|Tradicional, 350g / 307g|3.78|un||
+Flocão Fortemilho|400 g|0.98|un|1|
+Açúcar Cristal Petribu|1 kg|3.08|un|1|
+Arroz Parboilizado Kika, Rampinelli ou Caçarola|TP 1 · 1 kg|3.98|un|1|
+Feijão Carioca Kicaldo|Tipo 1, 1 kg|7.48|un|1|
+Óleo de Soja Abc, Coamo ou Vitaliv|900 ml|7.98|un|1|
+Macarrão Espaguete Bonsabor|Tradicional, 400 g|1.88|un||
+Macarrão Instantâneo Nissin Lámen|Diversos sabores, 85g|1.88|un||
+Molho de Tomate Tambaú|Tradicional, sachê 300g|1.68|un||
+Leite em Pó Betânia|Integral, sachê 200 g|5.98|un||
+Azeite Extravirgem Gallo|Vidro, 500 mL|28.40|un||
+Leite Condensado Piracanjuba|395g|5.98|un||
+Aveia Nestlé|Flocos ou flocos finos, 450g|7.98|un||
+Bombom Sortido Garoto|220 g|10.98|un||
+Panettone Nille|Frutas ou gotas de chocolate, 400g|17.98|un||
+Panettone Bauducco|Tradicional ou Chocottone, 400g|24.98|un||
+Biscoito Wafer Marilan|Diversos sabores, pacote 70 g|1.18|un||
 Biscoito Recheado Treloso|Diversos sabores, 120g|1.68|un||
-Bombom Sortido Garoto|220g|10.98|un||
-Panettone Bauducco|Tradicional, 400g|24.98|un||
-#sup|Laticínios e Derivados
-Creme de Leite Leve Italac|UHT, 200g|2.58|un||
-Leite Condensado Betânia|Semidesnatado, 395g|4.98|un||
-Leite UHT Betânia ou Natville|Integral ou desnatado, 1L|5.65|un||
-Leite em Pó Camponesa|Instantâneo ou integral, sachê 200g|6.38|un||
-Bebida Láctea UHT Nescau|Active Go, 180ml|1.58|un||
-Margarina Deline|Com sal, 3kg|26.98|un||
-#sup|Açougue, Frios e Congelados
-Coxa Sobrecoxa com Porção Dorsal Lar / Canção|Congelado, envelopado|8.98|kg||
-Frango Inteiro|Resfriado|9.98|kg|1|
-Fígado Bovino|A granel, congelado; preço do kg na peça ou no pedaço|11.88|kg|1|
-Bisteca Suína|A granel, congelada|14.98|kg||
-Filé de Tilápia Brazilian Fish|Congelado, 500g|25.98|un||
-Peito, Acém ou Chambaril Bovino|Com osso, resfriado|29.98|kg||
-Charque Ponta de Agulha||39.98|kg||
-Salsicha Hot Dog Perdigão|Congelada, mista, pacote 5kg (nesta embalagem, 1kg sai por R$ 9,98)|49.90|un|1|
-Queijo do Reino Regina|Fracionado, lata|97.80|kg||
-#sup|Limpeza
-Água Sanitária Olimpo|1L|1.65|un||
-Lava-Louças Líquido Ypê|Diversas fragrâncias, 500ml|1.85|un||
-Detergente em Pó Ala|Diversas fragrâncias, 400g|2.35|un|1|
-Esponja Scotch Brite|Limpeza extrema/pesada, com 4 unidades|6.78|un||
-Lava Roupas Líquido Toplin|Dupla ação, 5L|24.98|un||
-#sup|Higiene Pessoal e Papéis
-Sabonete Even Suave|Diversas fragrâncias, 85g|1.48|un||
-Papel Toalha Malu|Folha dupla, 20,5 x 19cm|3.38|un||
-Papel Higiênico Caprice|Folha dupla, 12x30m (Leve 12, pague 11)|11.98|un||
-Desodorante Aerossol Dove|Diversas fragrâncias, 200ml|13.78|un|1|
-Creme Dental Colgate|Máxima proteção anticáries, 4 unidades de 90g|13.98|un||
-#lat|Semana dos Laticínios
-Bebida Láctea Isinho|Diversos sabores, 70g|0.98|un||
-Coalhada Isis|Desnatada/Integral/Adoçada, copo 150ml|3.48|un||
-Iogurte Isis Frutisis|Morango, 150g|3.98|un||
-Bebida Láctea Isis|Diversos sabores, 900g|5.98|un||
-Iogurte Isis|Sabores, 480g|6.48|un||
-Iogurte Líquido Chamyto|Diversos sabores, 100g|3.48|un||
-Bebida Láctea Chamyto|Morango com cereal de chocolate ou colorido, 130g|3.98|un||
-Iogurte Polpa Chambinho|Morango, bandeja 510g|7.98|un||
-Petit Chambinho|Morango, bandeja 320g|9.98|un||
-Leite Fermentado Chamyto|6 x 120g|10.98|un||
-Iogurte Parmalat Fit Zero|Coco/Desnatado, bandeja 400g|3.98|un||
-Iogurte Parmalat Fit Zero|Coco ou Morango, 100g|3.98|un||
-Sobremesa Flan Batavo|Frutas vermelhas, 2 x 100g|6.98|un||
-Iogurte Integral Cremoso Batavo|Natural, bandeja 510g|8.98|un||
-Iogurte Grego Batavo|Morango, pote 450g|14.98|un||
-Leite Fermentado Betânia Kids|Diversos sabores, 80g|0.88|un||
-Iogurte Natural Betânia|Diversos sabores, 170g|2.98|un||
-Iogurte Yobem Triplo Zero|Diversos sabores, 170g|2.98|un||
-Bebida Láctea Betânia|Diversos sabores, 540g|4.98|un||
-Iogurte Yobem Triplo Zero|Diversos sabores, 1150g|15.98|un||
+Biscoito Cream Cracker Premium ou Maria ou Maizena Pilar|Tradicional, 307g ou 350g|3.99|un||
+Bebida Láctea Yobem|15g de proteínas whey, diversos sabores, 250ml|5.98|un||
+Leite UHT Italac|Semidesnatado, integral, desnatado ou fonte de fibras|6.48|un||
+#sup|Açougue, frios e congelados
+Frango Inteiro Mauricéa|Congelado|10.98|kg||
+Fígado Bovino|A granel, congelado; preço do kg na peça ou no pedaço|12.88|kg||
+Peito de Frango|Resfriado|14.98|kg||
+Capa de Filé Bovina|Resfriada; preço do kg na peça ou no pedaço|37.98|kg||
+Filé de Tilápia Netuno|Congelado, 800 g|37.98|un||
+Hambúrguer Bovino Maturatta|Fraldinha, picanha ou costela, 180g|5.98|un||
+Nuggets Sadia|Diversos tipos, 300g|8.98|un||
+Margarina Deline|Com sal, 1 kg|11.88|un||
+Salsicha Mista Perdigão|Resfriada, a granel|11.98|kg||
+Pizza Sadia|Diversos sabores, 440 g ou 460 g|15.98|un||
+#sup|Higiene e limpeza
+Esponja Multiuso Tinindo|Leve 4 pague 3|3.45|un||
+Papel Toalha Caprice|50 folhas|3.58|un||
+Detergente em Pó Bem-te-vi|Diversas fragrâncias, sachê 1,6kg|9.38|un||
+Amaciante Bem-te-vi|Diversas fragrâncias, 5L|14.98|un||
+Lava Roupas Líquido Becker|Versátil, 5 L|21.90|un||
+Sabonete Protex|Diversas fragrâncias, 85g|2.58|un||
+Desodorante Aerossol Above|Diversos tipos, 150ml|5.98|un||
+Creme Dental Colgate|Tripla ação, 120g|6.98|un||
+Papel Higiênico Zeep|Folha dupla, leve 12 pague 11, 30m|12.98|un||
+Kit Niely Shampoo 275ml + Condicionador 175ml|Diversos tipos|17.98|un||
 `;
 function nvParse(txt){const out=[];let c=null;txt.split('\n').map(l=>l.trim()).filter(Boolean).forEach(l=>{if(l[0]==='#'){const a=l.slice(1).split('|');c={e:a[0],t:a[1],it:[]};out.push(c);return}
  const a=l.split('|');c.it.push({n:a[0],d:a[1],p:+a[2],u:a[3],s:a[4]==='1',x:a[5]||''})});return out}
@@ -2477,98 +2310,105 @@ function vMercadoNovo(){
  const chips=Object.keys(NV_ENC).map(k=>{const e=NV_ENC[k];return `<div style="margin-top:8px"><strong style="font-size:14px">${esc(e.t)}</strong><br>${mmChip(mmVal(e.fim))} <small style="color:var(--mute)">de ${dm(e.ini)} a ${dm(e.fim)}</small></div>`}).join('');
  const blocos=sec.map(s=>{const e=NV_ENC[s.e];return `<h3>${esc(e.t)} · ${esc(s.t)}</h3><div class="card mm-c">${s.it.map(i=>
   `<div class="item mm-i" data-t="${esc(nrm(i.n+' '+i.d))}"><span class="t">${esc(i.n)}<br><small style="color:var(--mute)">${esc(i.d)}${i.x?(i.d?' · ':'')+'limite '+esc(i.x)+' por cliente':''}</small>${i.s?'<br><small style="color:var(--ac);font-weight:700">★ Super oferta</small>':''}</span><span style="text-align:right;flex:none"><strong>${brl(i.p)}</strong><small style="color:var(--mute)"> ${i.u==='kg'?'/kg':'cada'}</small><br><small style="color:var(--mute)">até ${dm(e.fim)}</small></span></div>`).join('')}</div>`}).join('');
- return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. Nos itens com cashback, o valor volta para quem é do Clube Novo e o preço final já mostra o desconto. Compras de bazar e eletro: até 10x sem juros no Cartão Novo Atacarejo e até 6x sem juros nos demais cartões, com parcela mínima de R$ 15; alimentos em 1x sem juros e 2x ou 3x com juros no Cartão Novo Atacarejo. Confirme os valores na loja.</p></div>`+(sec.length?blocos:mmVazio('Novo Atacarejo'))}
+ return `<div class="card"><div style="display:flex;align-items:center;gap:10px">${logo(MERC0.find(m=>m.id==='novo'),40)}<div><strong>Ofertas do Novo Atacarejo</strong><br><small style="color:var(--mute)">Lojas participantes de Pernambuco · ${tot} produtos</small></div></div>${chips}<input id="mm-q" placeholder="Buscar produto ou marca" style="margin-top:10px" oninput="mmBusca(this.value)"><p class="hint">Preços válidos para atacado e varejo, até a data indicada ou enquanto durarem os estoques, o que ocorrer primeiro. Descontos não acumulativos e a loja pode limitar a quantidade por cliente. Lojas: Abreu e Lima, Barreiros, Cabo de Santo Agostinho, Camaragibe, Escada, Goiana, Igarassu, Jaboatão dos Guararapes, Olinda, Paulista, Ribeirão, Recife (exceto Casa Forte) e São Lourenço da Mata. Compras de bazar e eletro: até 10x sem juros no Cartão Novo Atacarejo e até 6x sem juros nos demais cartões, com parcela mínima de R$ 15; alimentos em 1x sem juros e 2x ou 3x com juros no Cartão Novo Atacarejo. Confirme os valores na loja.</p></div>`+(sec.length?blocos:mmVazio('Novo Atacarejo'))}
 let mmMk='assai';
 function mmSet(k){mmMk=k;render();window.scrollTo(0,0)}
 /* ---------- Promoções: comparador de preços entre mercados ---------- */
 const CMP_MK=[['assai','Assaí','Assaí'],['atacadao','Atacadão','Atacadão'],['novo','Novo Atacarejo','Novo']];
-const CMP_SET=[['Mercearia','🛒'],['Hortifrúti','🥬'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽']];
+const CMP_SET=[['Mercearia','🛒'],['Hortifrúti','🥬'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽'],['Utilidades','🏠']];
 /* Produtos equivalentes: [id, setor, nome, quantidade de referência, Assaí, Atacadão, Novo].
    Cada mercado lista [nome exato do produto no encarte, tamanho da embalagem em relação à referência]. O preço é dividido por esse tamanho,
    para comparar o mesmo conteúdo (ex.: 3L de refrigerante = 3 × a referência de 1 L). Se houver mais de um produto, vale o mais barato. */
 const CMP=[
  /* Mercearia */
- ['acucar','Mercearia','Açúcar','1 kg',null,[["Açúcar Petribu Cristal",1]],[["Açúcar Olho D'Água",1]]],
- ['demerara','Mercearia','Açúcar demerara','1 kg',null,[["Açúcar Demerara Olho D'Água",1]],[["Açúcar Demerara Ipojuca",1]]],
- ['feijao','Mercearia','Feijão carioca tipo 1','1 kg',null,[["Feijão Carioca Kicaldo",1]],[["Feijão Carioca Turquesa",1]]],
- ['arroz','Mercearia','Arroz parboilizado','1 kg',null,[["Arroz Mariano",1]],[["Arroz Parboilizado Pop",1]]],
- ['trigo','Mercearia','Farinha de trigo tipo 1','1 kg',null,[["Farinha de Trigo Tia Mara",1]],[["Farinha de Trigo Finna",1]]],
- ['flocao','Mercearia','Flocão de milho','400 g',null,[["Flocão de Milho Flokão",1]],[["Farinha de Milho Flocada Flokão",1]]],
- ['macarrao','Mercearia','Macarrão espaguete','400 g',null,[["Macarrão Comum Aliança",1]],[["Macarrão Vitarella",1]]],
- ['lamen','Mercearia','Macarrão instantâneo','70 g',null,[["Macarrão Instantâneo Nosso Sabor Lámen",74/70]],[["Macarrão Instantâneo Nissin Nosso Sabor",1],["Macarrão Instantâneo Nissin Lámen",85/70]]],
- ['molho','Mercearia','Molho de tomate','300 g',null,[["Molho de Tomate Palmeiron",1],["Molho de Tomate Cica Pomodoro Tradicional",1],["Molho de Tomate Tarantella Tradicional · Pouch 300g",1]],[["Molho de Tomate Tambaú",1]]],
- ['extrato','Mercearia','Extrato de tomate','300 g',null,[["Extrato de Tomate Elefante Cebola e Alho",1],["Extrato de Tomate Elefante Só Tomate",1]],[["Extrato de Tomate Palmeiron",270/300]]],
- ['aveia','Mercearia','Aveia em flocos','170 g',null,[["Aveia Apti Flocos/Flocos Finos",150/170]],[["Aveia Nestlé",1]]],
- ['condensado','Mercearia','Leite condensado semidesnatado','395 g',[["Leite condensado semidesnatado Sabe",1]],[["Leite Condensado Betânia",1]],[["Leite Condensado Betânia",1]]],
- ['cafe','Mercearia','Café torrado e moído','250 g',null,[["Café São Braz",1],["Café 3 Corações Tradicional/Extra Forte",1]],[["Café Clássico Santa Clara",1]]],
- ['oleo','Mercearia','Óleo de soja','900 ml',null,[["Óleo de Soja Liza",1]],[["Óleo de Soja Soya",1]]],
- ['azeite','Mercearia','Azeite extravirgem','500 ml',null,[["Azeite de Oliva Andorinha",1],["Azeite de Oliva Borges",250/500]],[["Azeite Extravirgem Gallo",1],["Azeite Extravirgem Camponês",250/500]]],
- ['milho','Mercearia','Milho verde / ervilha em lata','170 g',null,[["Ervilha e Milho Bonare Dueto",1]],[["Milho Verde ou Dueto Bonare",1]]],
- ['panettone','Mercearia','Panettone','400 g',[["Panettone com frutas cristalizadas ou gotas de chocolate Tommy",1],["Panettone com frutas cristalizadas ou gotas de chocolate Romanato",300/400]],[["Chocottone/Panettone Bauducco",1]],[["Panettone Bauducco",1],["Panettone Nille",1],["Panettone Casa Suíça",1]]],
- ['cream','Mercearia','Biscoito cream cracker','350 g',[["Biscoito cream cracker Vitarella (tradicional ou água e sal)",1]],[["Biscoito Vitamassa",1]],[["Cream Cracker, Maizena ou Maria Pilar",1],["Biscoito Maizena, Cream Cracker ou Maria Vitarella",1]]],
- ['bombom','Mercearia','Bombom sortido (caixa)','200 g',null,[["Bombom Neugebauer Amor Carioca",1]],[["Bombom Sortido Garoto",220/200]]],
- ['mistbolo','Mercearia','Mistura para bolo','400 g',null,[["Mistura para Bolo Apti (vários sabores)",1]],[["Mistura para Bolo Dona Benta",450/400]]],
+ ['acucar','Mercearia','Açúcar','1 kg',[["Açúcar cristal Petribu",1]],[["Açúcar Petribu Cristal",1]],[["Açúcar Cristal Petribu",1]]],
+ ['demerara','Mercearia','Açúcar demerara','1 kg',null,[["Açúcar Demerara Olho D'Água",1]],null],
+ ['feijao','Mercearia','Feijão carioca tipo 1','1 kg',null,[["Feijão Carioca Kicaldo",1]],[["Feijão Carioca Kicaldo",1]]],
+ ['arroz','Mercearia','Arroz parboilizado','1 kg',[["Arroz parboilizado tipo 1 Rampinelli",1]],[["Arroz Mariano",1]],[["Arroz Parboilizado Kika, Rampinelli ou Caçarola",1]]],
+ ['trigo','Mercearia','Farinha de trigo tipo 1','1 kg',null,[["Farinha de Trigo Tia Mara",1]],null],
+ ['flocao','Mercearia','Flocão de milho','400 g',[["Flocão de milho Gostosin",1]],[["Flocão de Milho Flokão",1]],[["Flocão Fortemilho",1]]],
+ ['macarrao','Mercearia','Macarrão espaguete','400 g',[["Macarrão spaghetti Bonsabor",1]],[["Macarrão Comum Aliança",1]],[["Macarrão Espaguete Bonsabor",1]]],
+ ['lamen','Mercearia','Macarrão instantâneo','70 g',null,[["Macarrão Instantâneo Nosso Sabor Lámen",74/70]],[["Macarrão Instantâneo Nissin Lámen",1.214286]]],
+ ['molho','Mercearia','Molho de tomate','300 g',[["Molho pronto tradicional Julieta",1.033333]],[["Molho de Tomate Palmeiron",1],["Molho de Tomate Cica Pomodoro Tradicional",1],["Molho de Tomate Tarantella Tradicional · Pouch 300g",1]],[["Molho de Tomate Tambaú",1]]],
+ ['extrato','Mercearia','Extrato de tomate','300 g',null,[["Extrato de Tomate Elefante Cebola e Alho",1],["Extrato de Tomate Elefante Só Tomate",1]],null],
+ ['aveia','Mercearia','Aveia em flocos','170 g',null,[["Aveia Apti Flocos/Flocos Finos",150/170]],[["Aveia Nestlé",2.647059]]],
+ ['condensado','Mercearia','Leite condensado semidesnatado','395 g',[["Leite condensado semidesnatado Natville",1]],[["Leite Condensado Betânia",1]],[["Leite Condensado Piracanjuba",1]]],
+ ['cafe','Mercearia','Café torrado e moído','250 g',[["Café tradicional ou extraforte Ouro Verde ou Petinho",1]],[["Café São Braz",1],["Café 3 Corações Tradicional/Extra Forte",1]],null],
+ ['oleo','Mercearia','Óleo de soja','900 ml',null,[["Óleo de Soja Liza",1]],[["Óleo de Soja Abc, Coamo ou Vitaliv",1]]],
+ ['azeite','Mercearia','Azeite extravirgem','500 ml',null,[["Azeite de Oliva Andorinha",1],["Azeite de Oliva Borges",250/500]],[["Azeite Extravirgem Gallo",1]]],
+ ['milho','Mercearia','Milho verde / ervilha em lata','170 g',null,[["Ervilha e Milho Bonare Dueto",1]],null],
+ ['panettone','Mercearia','Panettone','400 g',null,[["Chocottone/Panettone Bauducco",1]],[["Panettone Bauducco",1],["Panettone Nille",1]]],
+ ['cream','Mercearia','Biscoito cream cracker','350 g',[["Biscoito cream cracker tradicional Pilar",1]],[["Biscoito Vitamassa",1]],[["Biscoito Cream Cracker Premium ou Maria ou Maizena Pilar",1]]],
+ ['bombom','Mercearia','Bombom sortido (caixa)','200 g',null,[["Bombom Neugebauer Amor Carioca",1]],[["Bombom Sortido Garoto",1.1]]],
+ ['mistbolo','Mercearia','Mistura para bolo','400 g',null,[["Mistura para Bolo Apti (vários sabores)",1]],null],
  /* Hortifrúti (os encartes de feira de Assaí e Novo voltam toda semana: estas linhas ficam prontas para quando entrarem) */
- ['banana','Hortifrúti','Banana-pacovan','1 kg',null,[["Banana Pacovan",1]],[["Manga Keitt ou Banana Pacovan",1]]],
- ['manga','Hortifrúti','Manga','1 kg',[["Manga-Palmer",1],["Manga-Tommy",1]],[["Manga Tommy",1]],[["Manga Keitt ou Banana Pacovan",1]]],
- ['melao','Hortifrúti','Melão amarelo','1 kg',[["Melão-amarelo",1]],[["Melão Amarelo",1]],[["Melão Amarelo",1]]],
- ['abacaxi','Hortifrúti','Abacaxi','1 unidade',[["Abacaxi",1]],[["Abacaxi Tropical",1]],[["Abacaxi Pérola",1]]],
- ['cenoura','Hortifrúti','Cenoura','1 kg',null,[["Cenoura",1]],[["Cenoura",1]]],
- ['batata','Hortifrúti','Batata inglesa (lavada)','1 kg',[["Batata lavada",1]],[["Batata lavada",1]],[["Batata Inglesa",1]]],
- ['batatadoce','Hortifrúti','Batata-doce','1 kg',null,[["Batata-doce",1]],[["Batata Doce",1]]],
- ['alho','Hortifrúti','Alho a granel','1 kg',[["Alho a granel",1]],null,[["Alho",1]]],
- ['maca','Hortifrúti','Maçã nacional (gala)','1 kg',[["Maçã-gala",1]],[["Maçã Nacional Gala",1]],[["Limão Taiti ou Maçã Nacional",1]]],
- ['limao','Hortifrúti','Limão-taiti','1 kg',null,[["Limão-taiti",1]],[["Limão Taiti ou Maçã Nacional",1]]],
- ['uva','Hortifrúti','Uva sem semente','500 g',[["Uva-branca sem semente",1]],[["Uva Sweet Jubille",1]],[["Uva Verde Da Roça, Seleta ou Delly Fruit",1]]],
- ['mamao','Hortifrúti','Mamão','1 kg',[["Mamão-formosa",1]],[["Mamão Comum",1]],null],
- ['abacate','Hortifrúti','Abacate','1 kg',[["Abacate",1]],null,[["Abacate",1]]],
+ ['banana','Hortifrúti','Banana-pacovan','1 kg',null,[["Banana Pacovan",1]],null],
+ ['manga','Hortifrúti','Manga','1 kg',null,[["Manga Tommy",1]],null],
+ ['melao','Hortifrúti','Melão amarelo','1 kg',null,[["Melão Amarelo",1]],null],
+ ['abacaxi','Hortifrúti','Abacaxi','1 unidade',null,[["Abacaxi Tropical",1]],null],
+ ['cenoura','Hortifrúti','Cenoura','1 kg',null,[["Cenoura",1]],null],
+ ['batata','Hortifrúti','Batata inglesa (lavada)','1 kg',null,[["Batata lavada",1]],null],
+ ['batatadoce','Hortifrúti','Batata-doce','1 kg',null,[["Batata-doce",1]],null],
+ ['alho','Hortifrúti','Alho a granel','1 kg',null,null,null],
+ ['maca','Hortifrúti','Maçã nacional (gala)','1 kg',null,[["Maçã Nacional Gala",1]],null],
+ ['limao','Hortifrúti','Limão-taiti','1 kg',null,[["Limão-taiti",1]],null],
+ ['uva','Hortifrúti','Uva sem semente','500 g',null,[["Uva Sweet Jubille",1]],null],
+ ['mamao','Hortifrúti','Mamão','1 kg',null,[["Mamão Comum",1]],null],
+ ['abacate','Hortifrúti','Abacate','1 kg',null,null,null],
  /* Laticínios */
- ['leite','Laticínios','Leite longa vida','1 L',null,[["Leite Longa Vida Elegê",1]],[["Leite UHT Betânia ou Natville",1]]],
- ['margarina','Laticínios','Margarina com sal','3 kg',null,[["Margarina Primor",1]],[["Margarina Deline",1]]],
- ['manteiga','Laticínios','Manteiga com sal','200 g',[["Manteiga com sal zero lactose Itacolomy",1]],[["Manteiga Betânia",1],["Manteiga Sertão Jucurutu Resfriada com Sal",500/200]],null],
- ['requeijao','Laticínios','Requeijão cremoso','200 g',[["Requeijão cremoso zero lactose Nolac Itambé",1]],[["Requeijão Danone Resfriado",1],["Requeijão Sertão Jucurutu Resfriada Tradicional",2]],[["Requeijão Cremoso Vigor",1]]],
- ['yopro','Laticínios','Iogurte líquido YoPro','250 g',[["Iogurte líquido YoPro Danone sabores",1]],[["Bebida Láctea YoPro",1]],null],
- ['powerwhey','Laticínios','Bebida láctea Power Whey 3 Corações','250 ml',[["Bebida láctea Power Whey 3 Corações sabores",1]],[["Bebida Láctea 3 Corações Power Whey",260/250]],null],
- ['iogcopo','Laticínios','Iogurte em copo (sabores)','170 g',[["Iogurte natural Danone sabores",160/170],["Iogurte natural Nestlé sabores · copo 160g/170g",1],["Iogurte natural Itambé sabores",1]],[["Iogurte Danone Resfriado · vários sabores, unidade, 170 g",1],["Iogurte Natural Danone Resfriado",160/170]],[["Iogurte Natural Betânia",1],["Iogurte Yobem Triplo Zero · Diversos sabores, 170g",1]]],
- ['iognat','Laticínios','Iogurte natural em bandeja','340 g',[["Iogurte natural Nestlé sabores · bandeja 340g",1],["Iogurte natural integral Milk Itambé",450/340]],[["Iogurte Natural Danone Resfriado Integral/Desnatado",1]],[["Iogurte Integral Cremoso Batavo",510/340]]],
- ['iogpolpa','Laticínios','Iogurte com polpa em bandeja','500 g',[["Iogurte com polpa zero Itambé sabores",510/500]],null,[["Iogurte Polpa Ninho",540/500],["Iogurte Polpa Chambinho",510/500],["Iogurte Isis",480/500]]],
- ['iog1l','Laticínios','Iogurte em garrafa','1 kg (≈ 1 L)',[["Iogurte líquido zero sabor morango ou batido Danone",1.2],["Iogurte líquido zero Nestlé sabores · PET 1,15kg",1.15],["Iogurte líquido zero Itambé sabores",1.15]],[["Iogurte Danone Resfriado · vários sabores, garrafa, 1,25 kg",1.25],["Iogurte Itambé Resfriado",1.15]],[["Iogurte Líquido Vigor Zero",1.1],["Iogurte Yobem Triplo Zero · Diversos sabores, 1150g",1.15]]],
- ['fermentado','Laticínios','Leite fermentado (Activia / Chamyto)','1 kg',[["Leite fermentado Activia zero sabores",1]],[["Leite Fermentado Activia Resfriado Morango/Ameixa",0.8],["Leite Fermentado Activia Resfriado Ameixa Zero/Morango Zero",0.8]],[["Leite Fermentado Chamyto",0.72]]],
+ ['leite','Laticínios','Leite longa vida','1 L',null,[["Leite Longa Vida Elegê",1]],[["Leite UHT Italac",1]]],
+ ['margarina','Laticínios','Margarina com sal','3 kg',null,[["Margarina Primor",1]],[["Margarina Deline",0.333333]]],
+ ['manteiga','Laticínios','Manteiga com sal','200 g',[["Manteiga com ou sem sal Itacolomy",1]],[["Manteiga Betânia",1],["Manteiga Sertão Jucurutu Resfriada com Sal",500/200]],null],
+ ['requeijao','Laticínios','Requeijão cremoso','200 g',null,[["Requeijão Danone Resfriado",1],["Requeijão Sertão Jucurutu Resfriada Tradicional",2]],null],
+ ['yopro','Laticínios','Iogurte líquido YoPro','250 g',null,[["Bebida Láctea YoPro",1]],null],
+ ['powerwhey','Laticínios','Bebida láctea proteica (Power Whey / Yobem)','250 ml',null,[["Bebida Láctea 3 Corações Power Whey",260/250]],[["Bebida Láctea Yobem",1]]],
+ ['iogcopo','Laticínios','Iogurte em copo (sabores)','170 g',null,[["Iogurte Danone Resfriado · vários sabores, unidade, 170 g",1],["Iogurte Natural Danone Resfriado",160/170]],null],
+ ['iognat','Laticínios','Iogurte natural em bandeja','340 g',null,[["Iogurte Natural Danone Resfriado Integral/Desnatado",1]],null],
+ ['iogpolpa','Laticínios','Iogurte com polpa em bandeja','500 g',null,null,null],
+ ['iog1l','Laticínios','Iogurte em garrafa','1 kg (≈ 1 L)',null,[["Iogurte Danone Resfriado · vários sabores, garrafa, 1,25 kg",1.25],["Iogurte Itambé Resfriado",1.15]],null],
+ ['fermentado','Laticínios','Leite fermentado (Activia / Chamyto)','1 kg',null,[["Leite Fermentado Activia Resfriado Morango/Ameixa",0.8],["Leite Fermentado Activia Resfriado Ameixa Zero/Morango Zero",0.8]],null],
  /* Carnes e congelados */
- ['sobrecoxa','Carnes e congelados','Coxa e sobrecoxa de frango','1 kg',[["Sobrecoxas de frango temperadas e congeladas Assa Fácil no forno Sadia",0.8]],[["Coxa com Sobrecoxa de Frango Resfriada Natto",1]],[["Coxa Sobrecoxa com Porção Dorsal Lar / Canção",1],["Coxa e Sobrecoxa de Frango",1]]],
- ['filefrango','Carnes e congelados','Filé de peito de frango','1 kg',null,[["Filezinho de Peito de Frango Seara Congelado",1],["Filé de Peito de Frango Resfriado Natto",1]],[["Filé de Peito de Frango Lar",1]]],
- ['carnemoida','Carnes e congelados','Carne bovina moída','1 kg',[["Carne moída resfriada Masterboi",1]],[["Carne Bovina Moída Friboi Congelada",0.5]],null],
- ['bananinha','Carnes e congelados','Bananinha (contra filé)','1 kg',null,[["Carne Bovina Bananinha Friboi Congelada",1]],[["Bananinha do Contra Filé",1]]],
+ ['sobrecoxa','Carnes e congelados','Coxa e sobrecoxa de frango','1 kg',[["Coxas e sobrecoxas de frango congeladas Mauricéa",1]],[["Coxa com Sobrecoxa de Frango Resfriada Natto",1]],null],
+ ['filefrango','Carnes e congelados','Filé de peito de frango','1 kg',[["Filé de peito de frango congelado Seara",1]],[["Filezinho de Peito de Frango Seara Congelado",1],["Filé de Peito de Frango Resfriado Natto",1]],[["Peito de Frango",1]]],
+ ['carnemoida','Carnes e congelados','Carne bovina moída','1 kg',null,[["Carne Bovina Moída Friboi Congelada",0.5]],null],
+ ['bananinha','Carnes e congelados','Bananinha (contra filé)','1 kg',null,[["Carne Bovina Bananinha Friboi Congelada",1]],null],
  ['figado','Carnes e congelados','Fígado bovino','1 kg',null,[["Fígado Bovino Reserva Resfriado",1]],[["Fígado Bovino",1]]],
- ['tilapia','Carnes e congelados','Filé de tilápia congelado','500 g',null,[["Filé de Peixe Tilápia Seara Congelado",600/500]],[["Filé de Tilápia Brazilian Fish",1],["Filé de Tilápia Netuno",800/500]]],
- ['salsicha','Carnes e congelados','Salsicha hot dog congelada','5 kg',null,[["Salsicha Hot Dog Rezende Congelada",1]],[["Salsicha Hot Dog Perdigão",1]]],
+ ['tilapia','Carnes e congelados','Filé de tilápia congelado','500 g',null,[["Filé de Peixe Tilápia Seara Congelado",600/500]],[["Filé de Tilápia Netuno",1.6]]],
+ ['salsicha','Carnes e congelados','Salsicha hot dog congelada','5 kg',null,[["Salsicha Hot Dog Rezende Congelada",1]],null],
  /* Bebidas */
- ['cola','Bebidas','Refrigerante de cola','1 L',null,[["Refrigerante Pepsi Cola",1]],[["Refrigerante Coca-Cola Color Pack",6*0.35]]],
- ['guarana','Bebidas','Guaraná Antarctica','350 ml',null,[["Refrigerante Guaraná Antarctica",1]],[["Refrigerante Guaraná Antarctica",200/350]]],
- ['h2oh','Bebidas','Refresco H2OH!','500 ml',null,[["Refresco H2OH!",1]],[["Bebida H2OH!",1]]],
- ['energetico','Bebidas','Energético','2 L',null,[["Energético Blade",1]],[["Energético Flying Horse",1]]],
- ['sucouva','Bebidas','Suco de uva integral','1,5 L',null,[["Suco de Uva Vinhedos do Vale",1]],[["Suco de Uva Integral OQ",1]]],
- ['cerveja','Bebidas','Cerveja em lata (18+)','473 ml',[["Cerveja Pure Gold Stella Artois",1]],[["Cerveja Budweiser (18+)",12]],[["Cerveja Skol",550/473],["Cerveja Antarctica Original",1],["Cerveja Heineken Pilsen",1],["Cerveja Brahma Chopp",12]]],
- ['frisante','Bebidas','Vinho frisante (18+)','750 ml',[["Vinho frisante Pink Moon tipos",275/750]],[["Vinho Adega do Vale (18+)",1]],[["Frisante Pink Moon",1]]],
- ['whisky','Bebidas','Whisky White Horse (18+)','1 L',null,[["Whisky White Horse (18+)",0.5]],[["Whisky White Horse",1]]],
+ ['cola','Bebidas','Refrigerante de cola','1 L',null,[["Refrigerante Pepsi Cola",1]],null],
+ ['guarana','Bebidas','Guaraná Antarctica','350 ml',[["Refrigerante original ou zero Guaraná Antarctica",7.142857]],[["Refrigerante Guaraná Antarctica",1]],null],
+ ['h2oh','Bebidas','Refresco H2OH!','500 ml',null,[["Refresco H2OH!",1]],null],
+ ['energetico','Bebidas','Energético','2 L',null,[["Energético Blade",1]],null],
+ ['sucouva','Bebidas','Suco de uva integral','1,5 L',[["Suco de uva integral OQ",1]],[["Suco de Uva Vinhedos do Vale",1]],null],
+ ['cerveja','Bebidas','Cerveja em lata (18+)','473 ml',[["Cerveja lager Amstel",1]],[["Cerveja Budweiser (18+)",12]],null],
+ ['frisante','Bebidas','Vinho frisante (18+)','750 ml',null,[["Vinho Adega do Vale (18+)",1]],null],
+ ['whisky','Bebidas','Whisky White Horse (18+)','1 L',null,[["Whisky White Horse (18+)",0.5]],null],
  /* Higiene */
- ['papelh','Higiene','Papel higiênico folha dupla','12 rolos de 30 m',[["Papel higiênico folha dupla Personal VIP (leve 12 e pague 11)",1]],[["Papel Higiênico Familiar",240/360]],[["Papel Higiênico Alpino",1],["Papel Higiênico Caprice",1]]],
- ['desod','Higiene','Desodorante aerossol','150 ml',[["Desodorante aerossol 72h Giovanna Baby fragrâncias",1]],[["Desodorante Aerossol ONE Above",1],["Desodorante Aerossol Old Spice",200/150]],[["Desodorante Aerossol Dove",200/150]]],
- ['sabonete','Higiene','Sabonete em barra','90 g',[["Sabonete vegetal leite de aveia Davene fragrâncias",1]],[["Sabonete Above Extreme Black/Cream Original",450/90]],[["Sabonete Albany",80/90],["Sabonete Even Suave",85/90]]],
- ['dental','Higiene','Creme dental','90 g',[["Creme dental carvão ativado Sorriso",1]],[["Creme Dental Oral-B",2],["Creme Dental Even",70/90]],[["Creme Dental Colgate",4]]],
- ['shampoo','Higiene','Shampoo','400 ml',[["Shampoo Naturals Palmolive tipos",650/400]],[["Shampoo Elseve",1]],null],
- ['absorvente','Higiene','Absorvente noturno com abas','32 un',null,[["Absorvente Sempre Livre Conforto Noturno Suave com abas",1],["Absorvente Noturno Always Seca/Suave com abas",48/32]],[["Absorvente Intimus Noturno",45/32]]],
+ ['papelh','Higiene','Papel higiênico folha dupla','12 rolos de 30 m',[["Papel higiênico folha dupla Max Pure",1]],[["Papel Higiênico Familiar",240/360]],[["Papel Higiênico Zeep",1]]],
+ ['desod','Higiene','Desodorante aerossol','150 ml',[["Desodorante aerossol Above fragrâncias",1.666667]],[["Desodorante Aerossol ONE Above",1],["Desodorante Aerossol Old Spice",200/150]],[["Desodorante Aerossol Above",1]]],
+ ['sabonete','Higiene','Sabonete em barra','90 g',[["Sabonete Albany fragrâncias",0.888889]],[["Sabonete Above Extreme Black/Cream Original",450/90]],[["Sabonete Protex",0.944444]]],
+ ['dental','Higiene','Creme dental','90 g',[["Creme dental Even tipos",0.777778]],[["Creme Dental Oral-B",2],["Creme Dental Even",70/90]],[["Creme Dental Colgate",1.333333]]],
+ ['shampoo','Higiene','Shampoo','400 ml',[["Shampoo ou condicionador Elseve tipos",1]],[["Shampoo Elseve",1]],null],
+ ['absorvente','Higiene','Absorvente noturno com abas','32 un',[["Absorvente noturno com abas Intimus tipos",1.40625]],[["Absorvente Sempre Livre Conforto Noturno Suave com abas",1],["Absorvente Noturno Always Seca/Suave com abas",48/32]],null],
  /* Limpeza */
- ['deterg','Limpeza','Detergente líquido de louça','500 ml',null,[["Detergente Líquido Dragão",1]],[["Lava-Louças Líquido Ypê",1],["Lava-Louças Invicto",1],["Detergente Líquido Toplin 3L",6]]],
- ['amaciante','Limpeza','Amaciante concentrado','1 L',[["Amaciante de roupas concentrado Comfort fragrâncias",0.5]],[["Amaciante para Roupas Concentrado Downy",1.5]],[["Amaciante Concentrado Comfort Intense",1.5]]],
- ['multiuso','Limpeza','Limpador multiuso','500 ml',[["Limpador perfumado Casa & Perfume fragrâncias",4]],[["Limpador Multiuso Veja",1],["Limpador Casa & Perfume",1]],[["Limpador Multiuso Brilux",1.5],["Limpador Multiuso Veja Gold",1.5]]],
- ['sabaob','Limpeza','Sabão em barra','160 g',null,[["Sabão em Pedaço Ypê",5]],[["Sabão em Barra Ypê",5],["Sabão em Barra Glicerinado Minuano",5],["Sabão em Barra Bem-te-vi",5]]],
- ['lavapo','Limpeza','Lava-roupas em pó','400 g',null,[["Lava Roupas em Pó Ala",1]],[["Detergente em Pó Ala",1],["Detergente em Pó Ala 800g",2],["Detergente em Pó Bem-te-vi",2],["Sabão em Pó Omo",4]]],
- ['lavaliq','Limpeza','Lava-roupas líquido','1 L',null,[["Lava Roupas Líquido Tixan",3],["Lava Roupas Líquido Dragão Azul",3]],[["Lava Roupas Líquido Omo",3],["Lava-Roupas Líquido Mais Ekonomico",3],["Lava-Roupas Líquido Bem-te-vi",5],["Lava Roupas Líquido Toplin",5]]],
- ['agsan','Limpeza','Água sanitária','1 L',[["Água sanitária Dragão",2]],null,[["Água Sanitária Brilux",1],["Água Sanitária Olimpo",1]]],
- ['inset','Limpeza','Inseticida aerossol','380 ml',null,[["Inseticida Aerossol SBP",1]],[["Inseticida Aerossol SBP",450/380],["Inseticida Aerossol Mat Inset",360/380]]],
- ['esponja','Limpeza','Esponja multiuso Brilhus','1 unidade',null,[["Esponja Multiuso Brilhus",1]],[["Esponja Brilhus Multiúso",6]]],
- ['papeltoalha','Limpeza','Papel toalha (2 rolos)','2 rolos',null,[["Papel Toalha Malu",1]],[["Papel Toalha Malu",1],["Papel Toalha Familiar",1]]]
+ ['deterg','Limpeza','Detergente líquido de louça','500 ml',[["Lava-louças Dragão fragrâncias",1]],[["Detergente Líquido Dragão",1]],null],
+ ['amaciante','Limpeza','Amaciante concentrado','1 L',[["Amaciante de roupas concentrado Fofo fragrâncias",0.5]],[["Amaciante para Roupas Concentrado Downy",1.5]],null],
+ ['multiuso','Limpeza','Limpador multiuso','500 ml',[["Limpador multiúso Casa & Limpeza fragrâncias",1]],[["Limpador Multiuso Veja",1],["Limpador Casa & Perfume",1]],null],
+ ['sabaob','Limpeza','Sabão em barra','160 g',null,[["Sabão em Pedaço Ypê",5]],null],
+ ['lavapo','Limpeza','Lava-roupas em pó','400 g',[["Lava-roupas em pó Primavera ou Maciez Tixan Ypê",4]],[["Lava Roupas em Pó Ala",1]],[["Detergente em Pó Bem-te-vi",4]]],
+ ['lavaliq','Limpeza','Lava-roupas líquido','1 L',[["Lava-roupas líquido Brilhante fragrâncias",0.9]],[["Lava Roupas Líquido Tixan",3],["Lava Roupas Líquido Dragão Azul",3]],[["Lava Roupas Líquido Becker",5]]],
+ ['agsan','Limpeza','Água sanitária','1 L',[["Água sanitária Clorito",5]],null,null],
+ ['inset','Limpeza','Inseticida aerossol','380 ml',[["Multi-inseticida Mata Insetos Proinset",0.921053]],[["Inseticida Aerossol SBP",1]],null],
+ ['esponja','Limpeza','Esponja multiuso','1 unidade',null,[["Esponja Multiuso Brilhus",1]],[["Esponja Multiuso Tinindo",4]]],
+ ['papeltoalha','Limpeza','Papel toalha (2 rolos)','2 rolos',null,[["Papel Toalha Malu",1]],null],
+ ['achoc','Mercearia','Achocolatado em pó','700 g',[["Achocolatado em pó Chocolatto 3 Corações",1]],[["Achocolatado em Pó Chocolatto 3 Corações",1],["Achocolatado em Pó 3 Corações Chocolatto",1.285714]],null],
+ ['mussarela','Laticínios','Queijo mussarela (peça)','1 kg',[["Queijo tipo mussarela Davaca",1]],[["Queijo Mussarela Natville Resfriado",1],["Queijo Mussarela Jucurutu Resfriado Lanche",1]],null],
+ ['cupim','Carnes e congelados','Cupim bovino','1 kg',[["Cupim bovino resfriado a vácuo Masterboi",1]],[["Carne Bovina Cupim Friboi Congelada",1]],null],
+ ['calabresa','Carnes e congelados','Linguiça calabresa','1 kg',[["Linguiça tipo calabresa defumada Sadia",2.5]],[["Linguiça tipo Calabresa Seara",0.4]],null],
+ ['pizza','Carnes e congelados','Pizza congelada','460 g',[["Pizza congelada Perdigão sabores",1]],null,[["Pizza Sadia",1]]],
+ ['copo','Utilidades','Copos descartáveis 180 ml','100 un',[["Copos transparentes descartáveis Cristalcopo",1]],[["Copo de Plástico Descartável Cristalcopo",1]],null],
+ ['termica','Utilidades','Garrafa térmica','1 L',[["Garrafa térmica Gostar Sanremo cores",0.75]],[["Garrafa Térmica Use Mor",1]],null]
 ];
 let mmView='lista',cmpApp=true;try{cmpApp=localStorage.getItem('ma-cmp-app')!=='0'}catch(e){}
 function mmVw(v){mmView=v;render();window.scrollTo(0,0)}
@@ -7048,6 +6888,11 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.5':[
+   '🛒 Promoções › Assaí: entraram os encartes novos, válidos de 09/11 a 12/11/2026 (Leva o Assaí com você · Economia arretada, e as ofertas da semana de mercearia, higiene e limpeza). Os encartes antigos, já vencidos, saíram.',
+   '🛒 Promoções › Novo Atacarejo: entrou o encarte Super Ofertas, válido de 09/11 a 13/11/2026, com mercearia, açougue/congelados e higiene/limpeza. Os encartes antigos saíram e o texto sobre cashback foi tirado, porque este encarte não tem.',
+   '⚖️ Comparar preços: atualizado com os preços novos do Assaí e do Novo Atacarejo. Entraram achocolatado, mussarela, cupim, calabresa, pizza, copos descartáveis e garrafa térmica, e saíram os nomes dos encartes vencidos. Cada oferta sai do app às 23:59 do último dia.'
+  ],
   '3.6.4':[
    '✏️ Tela inicial editável: toque no lápis no topo da tela inicial para montar do seu jeito. Mova os blocos com ▲ ▼, tire o que não quer com ✕ e adicione atalhos para qualquer página do menu, seções prontas (versículo, compromissos de hoje, totais…) e cartões de texto com título e cor. Em “Restaurar padrão” tudo volta como era.'
   ],
