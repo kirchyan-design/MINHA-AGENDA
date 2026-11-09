@@ -1521,7 +1521,7 @@ let LOGOS={};try{const r=localStorage.getItem('minha-agenda-logos');if(r)LOGOS=J
 let FOTOS={},dimgs=[],dimgsFor=null;try{const r=localStorage.getItem('minha-agenda-fotos');if(r)FOTOS=JSON.parse(r)||{}}catch(e){}
 const saveFotos=()=>{if(TROCANDO)return true;try{localStorage.setItem('minha-agenda-fotos',JSON.stringify(FOTOS));return true}catch(e){return false}};
 function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.imgs||[]).forEach(i=>used.add(i)));let ch=false;Object.keys(FOTOS).forEach(k=>{if(!used.has(k)){delete FOTOS[k];ch=true}});if(ch)saveFotos()}
-const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}return ok};
+const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}try{shAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
  biblia:'<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v16H6.5A1.5 1.5 0 0 0 5 20.5z"/><path d="M5 20.5V21h14"/><path d="M12 6.5v8M9 9.5h6"/>',
@@ -2876,7 +2876,7 @@ function nuvAplicar(uid,txt,at){
   const ant=localStorage.getItem('minha-agenda');if(ant!==null)localStorage.setItem('ma-pre-nuvem:'+uid,ant); /* cópia de segurança dos dados anteriores */
   localStorage.setItem('minha-agenda',JSON.stringify(novo));
   if(d.FOTOS&&typeof d.FOTOS==='object')localStorage.setItem('minha-agenda-fotos',JSON.stringify(d.FOTOS));
-  nuvGrava(uid,{at:at,hash:'',pend:1});
+  nuvGrava(uid,{at:at,hash:'',pend:1});try{shReset(uid)}catch(e){}
   localStorage.setItem('ma-msg','Dados da sua conta carregados da nuvem.');
  }catch(e){TROCANDO=false;throw new Error('Sem espaço no aparelho para carregar os dados da nuvem.')}
  recarregar()}
@@ -2914,6 +2914,213 @@ function nuvStatus(){if(!ct())return '';
  const hh=NUV.t?new Date(NUV.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';
  const ic=NUV.ok===true?'☁️✅':NUV.ok===false?'☁️⚠️':'☁️';
  return `<div class="prm" style="margin-top:10px"><span class="ic">${ic}</span><span class="t"><b>Dados na nuvem</b><small>${esc(NUV.msg||'Seus dados ficam guardados na sua conta e voltam em qualquer aparelho.')}${hh&&NUV.ok!==null?' · '+hh:''}</small></span><button class="sec" onclick="nuvSync(true)">Sincronizar</button></div>`}
+/* ---------- v3.6.8: Carteira compartilhada em tempo real ----------
+   Só a Carteira (S.cart) é compartilhada, por e-mail. Os dados ficam em carteiras/{id} no Firestore (e carteiras/{id}/dados/p0..).
+   Quem convida é o "dono"; o convidado aceita na própria Carteira. Toda mudança é enviada em ~1 s e os outros aparelhos conferem a cada 3 s
+   com a Carteira aberta (a API REST do Firestore não tem escuta ao vivo). Mudanças simultâneas são juntas item a item (função shMerge).
+   Estado local de cada conta: localStorage 'ma-sh:<uid>' = {id, rev, base (cópia da última versão sincronizada), modo}. Exige as regras novas do firestore.rules. */
+const SH={busy:false,again:false,t:0,disc:0,ok:null,msg:'',inv:[],info:null,rp:false,ap:false};let SH_T=null;
+const shKey=u=>'ma-sh:'+u,shUid=()=>{const c=ct();return (c&&c.uid)||''};
+const shLink=()=>{const u=shUid();if(!u)return null;try{return JSON.parse(localStorage.getItem(shKey(u)))||null}catch(e){return null}};
+const shSetLink=o=>{const u=shUid();if(!u)return;try{if(o)localStorage.setItem(shKey(u),JSON.stringify(o));else localStorage.removeItem(shKey(u))}catch(e){}};
+function shReset(u){try{const L=JSON.parse(localStorage.getItem(shKey(u)));if(L){L.base='';L.modo='usar';localStorage.setItem(shKey(u),JSON.stringify(L))}}catch(e){}}
+const shCj=x=>JSON.stringify(x,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((o,q)=>(o[q]=v[q],o),{}):v);
+const shCopia=()=>JSON.parse(JSON.stringify(S.cart||{}));
+const shBackupLocal=()=>{try{localStorage.setItem('ma-cart-bk:'+shUid(),JSON.stringify(S.cart||{}))}catch(e){}};
+/* Junta 3 versões (base = última sincronizada, l = deste aparelho, r = da nuvem). Itens com id são juntos um a um; em conflito de valor, vale pref ('loc' ou 'rem'). */
+function shMerge(b,l,r,pref){
+ const eq=(x,y)=>shCj(x)===shCj(y),O=x=>x&&typeof x==='object'&&!Array.isArray(x);
+ if(eq(l,r))return r;
+ if(b!==undefined){if(eq(l,b))return r;if(eq(r,b))return l}
+ if(O(l)&&O(r)){
+  const bb=O(b)?b:{},out={};
+  new Set([...Object.keys(l),...Object.keys(r),...Object.keys(bb)]).forEach(k=>{
+   const iL=k in l,iR=k in r,iB=k in bb;
+   if(iL&&iR)out[k]=shMerge(bb[k],l[k],r[k],pref);
+   else if(iL){if(!iB||!eq(l[k],bb[k]))out[k]=l[k]}
+   else if(iR){if(!iB||!eq(r[k],bb[k]))out[k]=r[k]}});
+  return out}
+ const ids=a=>Array.isArray(a)&&a.every(x=>x&&typeof x==='object'&&x.id!=null);
+ if(ids(l)&&ids(r)){
+  const bm=new Map((ids(b)?b:[]).map(x=>[x.id,x])),lm=new Map(l.map(x=>[x.id,x])),rm=new Map(r.map(x=>[x.id,x])),out=[];
+  r.forEach(x=>{const y=lm.get(x.id),z=bm.get(x.id);if(y)out.push(shMerge(z,y,x,pref));else if(!z||!eq(x,z))out.push(x)});
+  l.forEach(x=>{if(rm.has(x.id))return;const z=bm.get(x.id);if(!z||!eq(x,z))out.push(x)});
+  return out}
+ return pref==='rem'?r:l}
+/* ---- Firestore ---- */
+const shVal={s:v=>({stringValue:String(v==null?'':v)}),i:v=>({integerValue:String(v)}),a:a=>({arrayValue:{values:a.map(x=>({stringValue:String(x)}))}})};
+const shArr=f=>((f&&f.arrayValue&&f.arrayValue.values)||[]).map(v=>v.stringValue||''),shStr=f=>(f&&f.stringValue)||'';
+const shDocName=id=>FS_N+'/carteiras/'+id,shDocUrl=id=>FS_B+'/carteiras/'+id;
+function shParse(d){const f=d.fields||{},mi=(f.membrosInfo&&f.membrosInfo.mapValue&&f.membrosInfo.mapValue.fields)||{},mem={};Object.keys(mi).forEach(k=>mem[k]=shStr(mi[k]));
+ return{upd:d.updateTime,rev:+((f.rev&&f.rev.integerValue)||0),partes:+((f.partes&&f.partes.integerValue)||0),por:shStr(f.por),porEmail:shStr(f.porEmail),dono:shStr(f.dono),donoEmail:shStr(f.donoEmail),membros:shArr(f.membros),mem:mem,convites:shArr(f.convites)}}
+const shCommit=w=>fsReq('POST',FS_B+':commit',{writes:w});
+const shConflito=e=>/FAILED_PRECONDITION|ABORTED|409/.test(String((e&&e.code)||''));
+const shNovoId=()=>{const a=new Uint8Array(15);crypto.getRandomValues(a);return Array.from(a,b=>b.toString(36).padStart(2,'0')).join('').slice(0,20)};
+async function shLer(id){const d=await fsReq('GET',shDocUrl(id));return d&&d.fields?shParse(d):null}
+async function shBaixar(id,n){
+ if(!n)return {};
+ const nomes=[];for(let i=0;i<n;i++)nomes.push(shDocName(id)+'/dados/p'+i);
+ const r=await fsReq('POST',FS_B+':batchGet',{documents:nomes}),m={};
+ (r||[]).forEach(x=>{if(x.found)m[x.found.name]=(x.found.fields.d&&x.found.fields.d.stringValue)||''});
+ let t='';for(const n of nomes){if(m[n]===undefined)throw new Error('Dados incompletos na nuvem.');t+=m[n]}
+ const o=JSON.parse(t);if(!o||typeof o!=='object'||Array.isArray(o))throw new Error('Dados da Carteira compartilhada inválidos.');return o}
+const shPartes=cart=>{const p=JSON.stringify(cart),a=[];for(let i=0;i<p.length;i+=NUV_PART)a.push(p.slice(i,i+NUV_PART));if(!a.length)a.push('{}');return a};
+async function shEnviar(id,cart,d){ /* d = estado lido da nuvem; só grava se ninguém mexeu desde então */
+ const parts=shPartes(cart),c=ct()||{},rev=d.rev+1,campos={rev:shVal.i(rev),em:shVal.s(new Date().toISOString()),por:shVal.s(shUid()),porEmail:shVal.s(c.email||''),partes:shVal.i(parts.length),tamanho:shVal.i(JSON.stringify(cart).length)};
+ const w=[{update:{name:shDocName(id),fields:campos},updateMask:{fieldPaths:Object.keys(campos)},currentDocument:{updateTime:d.upd}}];
+ parts.forEach((x,i)=>w.push({update:{name:shDocName(id)+'/dados/p'+i,fields:{d:shVal.s(x)}}}));
+ for(let i=parts.length;i<d.partes;i++)w.push({delete:shDocName(id)+'/dados/p'+i});
+ await shCommit(w);return rev}
+async function shConsulta(campo,v){
+ const r=await fsReq('POST',FS_B+':runQuery',{structuredQuery:{from:[{collectionId:'carteiras'}],where:{fieldFilter:{field:{fieldPath:campo},op:'ARRAY_CONTAINS',value:{stringValue:v}}},limit:10}});
+ return (r||[]).filter(x=>x.document).map(x=>Object.assign(shParse(x.document),{id:x.document.name.split('/').pop()}))}
+async function shDescobrir(){
+ const u=shUid(),em=String((ct()||{}).email||'').trim();SH.disc=Date.now();
+ const m=await shConsulta('membros',u);
+ if(m.length){shSetLink({id:m[0].id,rev:-1,base:'',modo:'usar'});SH.inv=[];return}
+ SH.inv=em?await shConsulta('convites',em):[]}
+/* ---- estado na tela ---- */
+function shSt(ok,msg){SH.ok=ok;SH.msg=msg;shCardRefresh();shDlgDesenha()}
+const shLivre=()=>tab==='carteira'&&!document.querySelector('.ov')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')&&!cEd;
+function shRender(){if(shLivre()){SH.rp=false;render()}else SH.rp=true}
+function shAplica(m){if(TROCANDO)return false;SH.ap=true;try{S.cart=m;normCart();save()}finally{SH.ap=false}return true}
+function shErroTxt(e){const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();
+ return /permission|403|unauthenticated/.test(t)?'A Carteira compartilhada ainda não está liberada no Firestore. Publique as regras novas do arquivo firestore.rules no console do Firebase.':/failed to fetch|network|load failed/.test(t)?'Sem conexão com a internet.':'Não foi possível concluir: '+t.trim().slice(0,120)}
+function shSumiu(){shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';SH.inv=[];shDlgFecha();
+ try{render()}catch(e){}info('Esta Carteira deixou de ser compartilhada (foi encerrada ou você foi removido). A sua cópia continua neste aparelho.')}
+async function shPerm(){ /* sem permissão: ou saiu da lista, ou as regras não foram publicadas */
+ const L=shLink();let m;
+ try{m=await shConsulta('membros',shUid())}catch(e){shSt(false,'A Carteira compartilhada ainda não está liberada no Firestore (publique as regras do firestore.rules).');return}
+ if(L&&m.some(x=>x.id===L.id)){shSt(false,'Sem permissão para sincronizar a Carteira. Confira as regras do Firestore.');return}
+ shSumiu()}
+/* ---- sincronização (envia e recebe) ---- */
+async function shSync(manual){
+ if(!nat()||!FA()||!ct()||!shUid()||TROCANDO)return;
+ if(SH.busy){SH.again=true;return}
+ SH.busy=true;SH.t=Date.now();
+ try{
+  let L=shLink();
+  if(!L){try{await shDescobrir()}catch(e){SH.inv=[];if(manual)throw e}L=shLink();if(!L){shCardRefresh();return}}
+  for(let tent=0;tent<4;tent++){
+   const d=await shLer(L.id);
+   if(!d){shSumiu();return}
+   SH.info=d;normCart();
+   const loc=shCopia(),base=L.base?JSON.parse(L.base):undefined;
+   let rem=null,merged,push;
+   if(d.rev!==L.rev||base===undefined)rem=await shBaixar(L.id,d.partes);
+   if(rem===null){merged=loc;push=shCj(loc)!==L.base}
+   else if(base===undefined){
+    if(L.modo==='juntar'){merged=shMerge({},loc,rem,'rem');push=shCj(merged)!==shCj(rem)}
+    else{merged=rem;push=false;shBackupLocal()}}
+   else{merged=shMerge(base,loc,rem,'loc');push=shCj(merged)!==shCj(rem)}
+   let rev=d.rev;
+   if(push){try{rev=await shEnviar(L.id,merged,d)}catch(e){if(shConflito(e)&&tent<3)continue;throw e}}
+   const livre=shCj(S.cart)===shCj(loc),mudou=shCj(merged)!==shCj(loc);
+   if(!livre){SH.again=true;break} /* o usuário mexeu durante a sincronização: confere de novo sem perder a mudança */
+   if(mudou&&!shAplica(merged))return;
+   shSetLink({id:L.id,rev:rev,base:shCj(S.cart)});
+   if(mudou&&rem!==null){const eu=d.por===shUid();try{bbToast(eu?'🔄 Carteira atualizada':'🔄 Carteira atualizada'+(d.porEmail?' por '+d.porEmail:''))}catch(e){}shRender()}
+   shSt(true,'Sincronizado');break}
+  shDlgDesenha()
+ }catch(e){
+  const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();
+  if(/permission|403|unauthenticated/.test(t))await shPerm();
+  else shSt(false,/failed to fetch|network|load failed/.test(t)?'Sem conexão. Sincroniza quando a internet voltar.':'Não foi possível sincronizar a Carteira: '+t.trim().slice(0,100));
+ }finally{SH.busy=false;if(SH.again){SH.again=false;setTimeout(shSync,300)}}}
+function shAgendar(){if(SH.ap||TROCANDO||!nat()||!ct())return;const L=shLink();if(!L||!L.base)return;clearTimeout(SH_T);
+ SH_T=setTimeout(()=>{const L2=shLink();if(L2&&L2.base&&S.cart&&shCj(S.cart)!==L2.base)shSync()},700)}
+setInterval(()=>{try{
+ if(document.hidden||!nat()||!ct()||TROCANDO)return;
+ if(SH.rp&&shLivre()){SH.rp=false;render()}
+ const on=tab==='carteira',L=shLink(),ago=Date.now()-SH.t;
+ if(L){if(ago>=(on?3000:20000))shSync()}
+ else if(Date.now()-SH.disc>=(on?30000:300000))shSync()}catch(e){}},1500);
+document.addEventListener('visibilitychange',()=>{try{if(!document.hidden&&ct()&&shLink())shSync()}catch(e){}});
+/* ---- convidar, aceitar, sair ---- */
+const shEmailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+async function shCriar(em){
+ const c=ct(),u=shUid(),id=shNovoId();normCart();const cart=shCopia(),parts=shPartes(cart);
+ const campos={dono:shVal.s(u),donoEmail:shVal.s(c.email||''),donoNome:shVal.s(S.user.name||''),membros:shVal.a([u]),membrosInfo:{mapValue:{fields:{[u]:shVal.s(c.email||c.name||'')}}},convites:shVal.a([em]),rev:shVal.i(0),partes:shVal.i(0),tamanho:shVal.i(0),em:shVal.s(new Date().toISOString()),por:shVal.s(u),porEmail:shVal.s(c.email||'')};
+ await shCommit([{update:{name:shDocName(id),fields:campos},currentDocument:{exists:false}}]);
+ try{
+  const f2={rev:shVal.i(1),partes:shVal.i(parts.length),tamanho:shVal.i(JSON.stringify(cart).length)},w=[{update:{name:shDocName(id),fields:f2},updateMask:{fieldPaths:Object.keys(f2)}}];
+  parts.forEach((x,i)=>w.push({update:{name:shDocName(id)+'/dados/p'+i,fields:{d:shVal.s(x)}}}));
+  await shCommit(w)
+ }catch(e){try{await shCommit([{delete:shDocName(id)}])}catch(x){}throw e}
+ shSetLink({id:id,rev:1,base:shCj(cart)})}
+async function shConvidar(){
+ const inp=document.getElementById('sh-em'),em=((inp&&inp.value)||'').trim().toLowerCase(),c=ct()||{};
+ if(!shEmailOk(em)){info('Digite um e-mail válido.');return}
+ if(em===String(c.email||'').toLowerCase()){info('Este é o seu próprio e-mail.');return}
+ const I=SH.info;if(I&&(I.membros.length+I.convites.length>=5)){info('O limite é de 5 pessoas na Carteira compartilhada.');return}
+ if(I&&(I.convites.includes(em)||Object.values(I.mem).map(x=>String(x).toLowerCase()).includes(em))){info('Esta pessoa já foi convidada.');return}
+ try{
+  if(!shLink())await shCriar(em);
+  else await shCommit([{update:{name:shDocName(shLink().id),fields:{dono:shVal.s(shUid())}},updateMask:{fieldPaths:['dono']},updateTransforms:[{fieldPath:'convites',appendMissingElements:{values:[{stringValue:em}]}}]}]);
+  if(inp)inp.value='';await shSync(true);bbToast('📨 Convite enviado para '+em);shDlgDesenha()
+ }catch(e){info(shErroTxt(e))}}
+function shTirarConvite(i){const I=SH.info,L=shLink();if(!I||!L||!I.convites[i])return;const em=I.convites[i];
+ ask('Cancelar o convite para '+em+'?',async()=>{try{await shCommit([{update:{name:shDocName(L.id),fields:{dono:shVal.s(shUid())}},updateMask:{fieldPaths:['dono']},updateTransforms:[{fieldPath:'convites',removeAllFromArray:{values:[{stringValue:em}]}}]}]);await shSync(true)}catch(e){info(shErroTxt(e))}},'Cancelar convite')}
+async function shSairDe(id,u){return shCommit([{update:{name:shDocName(id),fields:{}},updateMask:{fieldPaths:['membrosInfo.`'+u+'`']},updateTransforms:[{fieldPath:'membros',removeAllFromArray:{values:[{stringValue:u}]}}]}])}
+function shRemover(u){const I=SH.info,L=shLink();if(!I||!L)return;
+ ask('Remover '+(I.mem[u]||'esta pessoa')+' da Carteira compartilhada? Ela mantém uma cópia no aparelho dela, mas deixa de receber as mudanças.',async()=>{try{await shSairDe(L.id,u);await shSync(true)}catch(e){info(shErroTxt(e))}},'Remover')}
+function shSair(){const I=SH.info,L=shLink();if(!L)return;const dono=I&&I.dono===shUid();
+ ask(dono?'Parar de compartilhar? A Carteira deixa de ser compartilhada para todos. Cada pessoa mantém uma cópia no próprio aparelho.':'Sair da Carteira compartilhada? Você mantém uma cópia neste aparelho, mas deixa de receber e enviar mudanças.',async()=>{
+  try{
+   if(dono){const d=await shLer(L.id);if(d){const w=[];for(let i=0;i<d.partes;i++)w.push({delete:shDocName(L.id)+'/dados/p'+i});if(w.length)await shCommit(w);await shCommit([{delete:shDocName(L.id)}])}}
+   else await shSairDe(L.id,shUid());
+   shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';shDlgFecha();render();info(dono?'A Carteira deixou de ser compartilhada.':'Você saiu da Carteira compartilhada.')
+  }catch(e){info(shErroTxt(e))}},dono?'Parar de compartilhar':'Sair')}
+const shTemDados=()=>{normCart();const c=S.cart;return c.base>0||c.gastos.length>0||c.fixas.length>0||c.rendas.length>0||!!c.sal||!!(c.inv&&c.inv.meus&&c.inv.meus.length)};
+async function shAceitar(id){
+ const x=SH.inv.find(i=>i.id===id);if(!x)return;let modo='usar';
+ if(shTemDados()){
+  const d=await formDlg({title:'Aceitar Carteira compartilhada',sub:'Você já tem dados na sua Carteira. Quer juntar com os da outra pessoa ou usar só os dela? Uma cópia da sua Carteira atual fica guardada no aparelho.',fields:[],ok:'Juntar as duas',links:[{id:'usar',t:'Usar só a Carteira compartilhada'}]});
+  if(!d)return;modo=d.link?'usar':'juntar'}
+ const u=shUid(),em=String((ct()||{}).email||'').toLowerCase();
+ try{
+  await shCommit([{update:{name:shDocName(id),fields:{membrosInfo:{mapValue:{fields:{[u]:shVal.s(em)}}}}},updateMask:{fieldPaths:['membrosInfo.`'+u+'`']},updateTransforms:[{fieldPath:'membros',appendMissingElements:{values:[{stringValue:u}]}},{fieldPath:'convites',removeAllFromArray:{values:[{stringValue:em}]}}]}]);
+  shBackupLocal();shSetLink({id:id,rev:-1,base:'',modo:modo});SH.inv=[];await shSync(true);render();bbToast('👥 Você entrou na Carteira compartilhada')
+ }catch(e){info(shErroTxt(e))}}
+function shRecusar(id){const x=SH.inv.find(i=>i.id===id);if(!x)return;
+ ask('Recusar o convite de '+(x.donoEmail||'quem convidou')+'?',async()=>{try{
+  const em=String((ct()||{}).email||'').toLowerCase();
+  await shCommit([{update:{name:shDocName(id),fields:{dono:shVal.s(x.dono)}},updateMask:{fieldPaths:['dono']},updateTransforms:[{fieldPath:'convites',removeAllFromArray:{values:[{stringValue:em}]}}]}]);
+  SH.inv=SH.inv.filter(i=>i.id!==id);render()}catch(e){info(shErroTxt(e))}},'Recusar')}
+/* ---- telas: cartão no topo da Carteira e janela "Compartilhar" ---- */
+function shCardIn(){
+ if(!ct())return `<div class="card"><div class="prm"><span class="ic">👥</span><span class="t"><b>Compartilhar a Carteira</b><small>Conecte uma conta (Configurações › Conta) para dividir a Carteira com outra pessoa.</small></span></div></div>`;
+ if(!nat())return `<div class="card"><div class="prm"><span class="ic">👥</span><span class="t"><b>Compartilhar a Carteira</b><small>Disponível no aplicativo instalado no celular.</small></span></div></div>`;
+ const L=shLink(),I=SH.info;
+ if(L){
+  const eu=shUid(),outros=I?Object.keys(I.mem).filter(k=>k!==eu).map(k=>I.mem[k]):[],pend=I?I.convites.length:0;
+  const quem=outros.length?'Com '+outros.join(', '):pend?'Aguardando '+pend+' convite'+(pend>1?'s':'')+' ser'+(pend>1?'em':'')+' aceito'+(pend>1?'s':''):'Só você por enquanto';
+  const hh=SH.t?new Date(SH.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';
+  return `<div class="card"><div class="prm"><span class="ic">${SH.ok===false?'⚠️':'👥'}</span><span class="t"><b>Carteira compartilhada</b><small>${esc(quem)}</small><small>${SH.ok===false?esc(SH.msg):SH.ok?'✅ Em tempo real'+(hh?' · '+hh:''):'Sincronizando…'}</small></span><button class="sec" onclick="shAbrir()">Gerenciar</button></div></div>`}
+ const cv=SH.inv.map(x=>`<div class="card"><b>📨 Convite para a Carteira</b><p class="hint" style="margin:6px 0 10px"><b>${esc(x.donoEmail||'Alguém')}</b> quer compartilhar a Carteira com você. Vocês dois verão e poderão alterar os mesmos dados, em tempo real.</p><div class="row"><button onclick="shAceitar('${x.id}')">Aceitar</button><button class="sec" onclick="shRecusar('${x.id}')">Recusar</button></div></div>`).join('');
+ return cv+`<div class="card"><div class="prm"><span class="ic">👥</span><span class="t"><b>Compartilhar a Carteira</b><small>Convide alguém pelo e-mail: as mudanças aparecem para os dois na hora.</small></span><button class="sec" onclick="shAbrir()">Convidar</button></div></div>`}
+const shCard=()=>`<div id="sh-card">${shCardIn()}</div>`;
+function shCardRefresh(){try{const e=document.getElementById('sh-card');if(e&&tab==='carteira'&&!(document.activeElement&&document.activeElement.id==='sh-em'))e.innerHTML=shCardIn()}catch(x){}}
+function shAbrir(){
+ if(!ct()||!nat()){info('Conecte uma conta Google no aplicativo para compartilhar a Carteira.');return}
+ if(document.getElementById('sh-ov'))return;
+ const o=document.createElement('div');o.className='ov';o.id='sh-ov';document.body.appendChild(o);shDlgDesenha();shSync(true)}
+function shDlgFecha(){const o=document.getElementById('sh-ov');if(o)o.remove();if(SH.rp)setTimeout(()=>{if(shLivre()){SH.rp=false;render()}},50);else shCardRefresh()}
+function shDlgDesenha(){
+ const o=document.getElementById('sh-ov');if(!o)return;
+ const foco=document.activeElement&&document.activeElement.id==='sh-em',val=foco?document.activeElement.value:'';
+ const L=shLink(),I=SH.info,eu=shUid(),dono=!L||(I&&I.dono===eu);
+ let lista='';
+ if(L&&!I)lista=`<p class="hint">${SH.ok===false?esc(SH.msg):'Carregando…'}</p>`;
+ else if(L&&I){
+  lista=`<div class="card" style="margin:10px 0">`+Object.keys(I.mem).map(k=>`<div class="item"><span class="cw-ic" aria-hidden="true">${k===I.dono?'👑':'👤'}</span><div class="t"><b>${esc(I.mem[k]||'Sem e-mail')}</b>${k===eu?' <small>(você)</small>':''}<br><small style="color:var(--mute)">${k===I.dono?'Dono':'Participante'}</small></div>${dono&&k!==eu?`<button class="ghost" onclick="shRemover('${k}')" aria-label="Remover">✕</button>`:''}</div>`).join('')
+   +I.convites.map((e,i)=>`<div class="item"><span class="cw-ic" aria-hidden="true">📨</span><div class="t"><b>${esc(e)}</b><br><small style="color:var(--mute)">Convite pendente</small></div>${dono?`<button class="ghost" onclick="shTirarConvite(${i})" aria-label="Cancelar convite">✕</button>`:''}</div>`).join('')+`</div>`;
+  lista+=`<p class="hint" style="margin:0 0 6px">${SH.ok===false?'⚠️ '+esc(SH.msg):'✅ As mudanças aparecem para todos em poucos segundos.'}</p>`}
+ o.innerHTML=`<div class="dlg" role="dialog" aria-label="Carteira compartilhada" style="max-height:86vh;overflow:auto"><p><b>👥 Carteira compartilhada</b></p><p style="color:var(--mute);font-size:13px;margin:0 0 6px">Só a Carteira é compartilhada (renda, gastos, fixas, salário e investimentos). Todos da lista veem e alteram os mesmos dados. O resto do app continua só seu.</p>${lista}`
+  +(dono?`<label class="fl" for="sh-em">Convidar pelo e-mail (Gmail)</label><div class="row"><input id="sh-em" type="email" inputmode="email" autocapitalize="off" placeholder="pessoa@gmail.com" onkeydown="if(event.key==='Enter')shConvidar()"><button onclick="shConvidar()">Convidar</button></div><p class="hint" style="margin:6px 0 0">A pessoa precisa entrar no app com a conta Google deste e-mail. O convite aparece na Carteira dela.</p>`:'')
+  +(L?`<button class="ghost" style="width:100%;margin-top:12px" onclick="shSair()">${dono?'⛔ Parar de compartilhar':'🚪 Sair da Carteira compartilhada'}</button>`:'')
+  +`<div class="row" style="margin-top:12px"><button class="sec" style="flex:1" onclick="shDlgFecha()">Fechar</button></div></div>`;
+ if(foco){const e=document.getElementById('sh-em');if(e){e.value=val;e.focus()}}}
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};
@@ -5562,7 +5769,7 @@ function vCarteira(){
  const k=cCalc(cMes);
  const seg=`<div class="seg s4 s5 s6">${[['res','📊','Resumo'],['gas','💸','Gastos'],['fix','📌','Fixas'],['ren','💵','Renda'],['sal','🧾','Salário'],['inv','📈','Invest.']].map(a=>`<button class="${cSub===a[0]?'on':''}" onclick="cSub='${a[0]}';cEd=null;render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join('')}</div>`;
  const nv=`<div class="cal-h"><button class="sec" onclick="cMove(-1)" aria-label="Mês anterior">‹</button><strong class="cw-m">${esc(cMesTxt())}</strong><button class="sec" onclick="cMove(1)" aria-label="Próximo mês">›</button></div>`;
- return `<h2>${_t('Carteira')}</h2>`+seg+((cSub==='sal'&&salV==='cfg')||cSub==='inv'?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cSub==='inv'?vInv():cRenda(k))+cPdfBtn()}
+ return `<h2>${_t('Carteira')}</h2>`+shCard()+seg+((cSub==='sal'&&salV==='cfg')||cSub==='inv'?'':nv)+(cSub==='res'?cResumo(k)+salMini():cSub==='gas'?cGastos(k):cSub==='fix'?cFixas(k):cSub==='sal'?cSalario(k):cSub==='inv'?vInv():cRenda(k))+cPdfBtn()}
 
 /* --- Resumo --- */
 function cResumo(k){
@@ -7187,6 +7394,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.8':[
+   '👥 Carteira compartilhada: convide outra pessoa pelo e-mail (Gmail) e as duas passam a ver e alterar a mesma Carteira, com as mudanças aparecendo na hora para as duas. Só o menu Carteira é compartilhado; o resto do app continua só seu.'
+  ],
   '3.6.7':[
    '👋 Um recado do criador, em tom mais formal, fica disponível por 48 horas e aparece uma única vez por dia, com atalho direto para enviar o seu feedback pelo WhatsApp.'
   ],
@@ -9979,7 +10189,7 @@ window.hmAddB=function(t,k){
 ["Tentar de novo","Try again","Intentar de nuevo","Erneut versuchen"]
 ].forEach(r=>{I18N.en[r[0]]=r[1];I18N.es[r[0]]=r[2];I18N.de[r[0]]=r[3]});
 
-natalAuto();guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();radioInit();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(recadoNovidQuandoLivre,6200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
+natalAuto();guiaNovosInit();applyTheme();nav();render();initSW();initLembretes();radioInit();lockApp().then(()=>{setTimeout(()=>nuvSync(false,true),3000);setTimeout(()=>{if(!TROCANDO)shSync()},6000);setTimeout(apkChecar,500);setTimeout(permIntro,600);setTimeout(recadoQuandoLivre,1500);setTimeout(micQuandoLivre,2000);setTimeout(novidadesQuandoLivre,2500);setTimeout(guiaNovosQuandoLivre,2800);setTimeout(recadoConfigQuandoLivre,3200);setTimeout(avisoFlowQuandoLivre,4200);setTimeout(recadoKaylaQuandoLivre,5200);setTimeout(recadoNovidQuandoLivre,6200);setTimeout(pushAtualizacoes,3500);setTimeout(ocrAquecer,6000)});
 try{const mm=localStorage.getItem('ma-msg');if(mm){localStorage.removeItem('ma-msg');setTimeout(()=>info(mm),900)}}catch(e){}
 
 /* ===== KAYLA · APRENDE COM O USUÁRIO =====

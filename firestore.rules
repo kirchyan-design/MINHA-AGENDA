@@ -8,5 +8,48 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
     }
+
+    // Carteira compartilhada: carteiras/{id} (dono, membros, convites por e-mail) e carteiras/{id}/dados/p0.. (conteúdo).
+    match /carteiras/{cid} {
+      function logado() { return request.auth != null; }
+      function membro() { return logado() && request.auth.uid in resource.data.membros; }
+      function convidado() {
+        return logado() && request.auth.token.email != null && request.auth.token.email_verified == true
+          && request.auth.token.email in resource.data.convites;
+      }
+      function mudou() { return request.resource.data.diff(resource.data).affectedKeys(); }
+
+      allow read: if membro() || convidado();
+
+      allow create: if logado()
+        && request.resource.data.dono == request.auth.uid
+        && request.resource.data.membros == [request.auth.uid];
+
+      allow update: if
+        // qualquer membro grava os dados
+        (membro() && mudou().hasOnly(['rev','em','por','porEmail','partes','tamanho']))
+        // o dono convida, cancela convite e remove pessoas
+        || (membro() && resource.data.dono == request.auth.uid
+            && request.resource.data.dono == resource.data.dono
+            && mudou().hasOnly(['convites','membros','membrosInfo']))
+        // um membro sai da lista
+        || (membro() && !(request.auth.uid in request.resource.data.membros)
+            && mudou().hasOnly(['membros','membrosInfo']))
+        // o convidado aceita (entra na lista)
+        || (convidado() && mudou().hasOnly(['membros','membrosInfo','convites'])
+            && request.auth.uid in request.resource.data.membros
+            && request.resource.data.membros.size() == resource.data.membros.size() + 1
+            && !(request.auth.token.email in request.resource.data.convites))
+        // o convidado recusa
+        || (convidado() && mudou().hasOnly(['convites'])
+            && !(request.auth.token.email in request.resource.data.convites));
+
+      allow delete: if logado() && resource.data.dono == request.auth.uid;
+
+      match /dados/{parte} {
+        allow read, write: if logado()
+          && request.auth.uid in get(/databases/$(database)/documents/carteiras/$(cid)).data.membros;
+      }
+    }
   }
 }
