@@ -4386,6 +4386,9 @@ function fiCartaz(){const m={};
 const fiCine=id=>FI_CINE.find(c=>c[0]===id);
 /* ---- capas reais: o app busca o pôster de cada título na busca pública da Apple (iTunes) e guarda no aparelho ---- */
 let FI_CP={};try{FI_CP=JSON.parse(localStorage.getItem('ma-filmes-capas')||'{}')||{}}catch(e){}
+/* capas enviadas por você (pasta capas/): têm prioridade sobre a busca automática */
+const FI_CAPAS={"Merry Christmas Mr. Plankton": "capas/merry-christmas-mr-plankton.jpg", "He Said, She Said: Till Death Do Us Part": "capas/he-said-she-said-till-death-do-us-part.jpg", "Yellowjackets: 4ª temporada": "capas/yellowjackets.jpg", "O Pequeno Guerreiro": "capas/o-pequeno-guerreiro.jpg", "Snoopy Apresenta: 12 Dias do Beagle": "capas/12-dias-do-beagle.jpg", "A Arte de Ser Heumann": "capas/a-arte-de-ser-heumann.jpg", "12 12 12": "capas/12-12-12.jpg", "Bluey: Restaurante Chique": "capas/bluey-restaurante-chique.jpg", "Mickey: Esqueceram de Mim": "capas/mickey-esqueceram-de-mim.jpg", "It's Always Sunny in Philadelphia: 18ª temporada": "capas/its-always-sunny.jpg", "Percy Jackson e os Olimpianos: 3ª temporada": "capas/percy-jackson.jpg", "Blade Runner 2099": "capas/blade-runner-2099.jpg", "Clashing Through the Snow": "capas/crashing-through-the-snow.jpg", "Crashing Through the Snow": "capas/crashing-through-the-snow.jpg", "Perfeitos Mentirosos": "capas/perfeitos-mentirosos.jpg", "Madden": "capas/madden.jpg", "The Chosen: Os Escolhidos · 6ª temporada": "capas/the-chosen.jpg", "Obsessão": "capas/obsessao.jpg"};
+const fiCpGet=t=>FI_CAPAS[t]||FI_CP[t];
 const fiCpSave=()=>{try{localStorage.setItem('ma-filmes-capas',JSON.stringify(FI_CP))}catch(e){}};
 const fiCpBase=t=>String(t).replace(/\s*[:·\-–]\s*\d+[ªa]?\s*temporada.*$/i,'').replace(/\s*\d+[ªa]\s*temporada.*$/i,'').trim();
 function fiCpTipo(t){const e=FI_D.streaming.find(x=>x.t===t);return e&&e.k==='s'?'s':'f'}
@@ -4397,9 +4400,9 @@ function fiCpBuscar(t){const tp=fiCpTipo(t),b=fiCpBase(t),nb=fiNorm(b);
   const m=rs.find(r=>{const n=fiNorm(r.trackName||r.collectionName||'').replace(/\s*,?\s*(temporada|season)\s*\d+.*$/,'');return n===nb||n.startsWith(nb)||nb.startsWith(n)&&n.length>3})||null;
   const u=m&&m.artworkUrl100?m.artworkUrl100.replace(/\d+x\d+(bb)?\.(jpg|png)/,'400x600bb.jpg'):'';
   FI_CP[t]=u||0;fiCpSave()}).catch(()=>{})}
-function fiCpFim(){fiCpAtivos--;fiCpProx();document.querySelectorAll('.fx-p[data-t],.fx-w[data-t],.fx-sh-h[data-t]').forEach(el=>{const u=FI_CP[el.dataset.t];if(u&&!el.classList.contains('fx-img'))fiCpAplicar(el,u)})}
+function fiCpFim(){fiCpAtivos--;fiCpProx();document.querySelectorAll('.fx-p[data-t],.fx-w[data-t],.fx-sh-h[data-t]').forEach(el=>{const u=fiCpGet(el.dataset.t);if(u&&!el.classList.contains('fx-img'))fiCpAplicar(el,u)})}
 function fiCpProx(){while(fiCpAtivos<3&&fiCpFila.length){const t=fiCpFila.shift();fiCpAtivos++;fiCpBuscar(t).then(fiCpFim,fiCpFim)}}
-function fiCapas(){document.querySelectorAll('.fx-p[data-t],.fx-w[data-t],.fx-sh-h[data-t]').forEach(el=>{const t=el.dataset.t,u=FI_CP[t];
+function fiCapas(){document.querySelectorAll('.fx-p[data-t],.fx-w[data-t],.fx-sh-h[data-t]').forEach(el=>{const t=el.dataset.t,u=fiCpGet(t);
   if(u)fiCpAplicar(el,u);else if(u===undefined&&!fiCpFila.includes(t)){fiCpFila.push(t)}});
  fiCpProx()}
 /* ===== VISUAL NOVO DO MENU FILMES: pôsteres, carrosséis, logos das plataformas e folha de detalhes ===== */
