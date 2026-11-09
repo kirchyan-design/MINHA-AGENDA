@@ -4102,60 +4102,111 @@ const cuFim=e=>e.f||e.d,cuDM=d=>d.slice(8,10)+'/'+d.slice(5,7),cuDow=d=>CU_DS[ne
 const cuNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 function cuAddD(d,n){const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)}
 const cuVivo=e=>cuFim(e)>=HOJE;
+let cuDia='';
+const CU_MA=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 function cuJanela(){
+ if(cuDia)return [cuDia,cuDia];
  if(cuPer==='hoje')return [HOJE,HOJE];
  if(cuPer==='7d')return [HOJE,cuAddD(HOJE,6)];
  if(cuPer==='fds'){const w=new Date(HOJE+'T12:00:00').getDay(),fim=cuAddD(HOJE,(7-w)%7);return [(w===5||w===6||w===0)?HOJE:cuAddD(HOJE,5-w),fim]}
  if(cuPer==='mes'){const m=HOJE.slice(0,7);return [HOJE,m+'-31']}
  return null}
 function cuFiltrar(ig){
+ ig=ig||'';
  const q=cuNorm(cuQ.trim()),fav=cuIni().fav,j=cuJanela();
  return CU_DATA.filter(e=>{
   if(!cuVivo(e))return false;
-  if(ig!=='c'&&cuCid&&e.c!==cuCid)return false;
-  if(ig!=='k'&&cuK&&e.k!==cuK)return false;
+  if(!ig.includes('c')&&cuCid&&e.c!==cuCid)return false;
+  if(!ig.includes('k')&&cuK&&e.k!==cuK)return false;
   if(cuP==='free'&&e.g!==1)return false;
   if(cuP==='paid'&&e.g!==0)return false;
-  if(j&&!(e.d<=j[1]&&cuFim(e)>=j[0]))return false;
+  if(!ig.includes('d')&&j&&!(e.d<=j[1]&&cuFim(e)>=j[0]))return false;
   if(cuFav&&!fav.includes(e.i))return false;
   if(q&&!cuNorm([e.t,e.l,e.o,e.p,e.h,CU_CID[e.c][0],(CU_CAT.find(x=>x[0]===e.k)||['','',''])[2]].join(' ')).includes(q))return false;
   return true})}
 const cuSemMapa=l=>!l||/a definir|no ingresso|no link/i.test(l);
-function cuCard(e){
- const fav=cuIni().fav.includes(e.i),ci=CU_CID[e.c],ct=CU_CAT.find(x=>x[0]===e.k)||CU_CAT[0],cor=CU_COR[e.k],ag=(S.ev||[]).some(v=>v.title==='🎭 '+e.t&&v.date===(e.d<HOJE?HOJE:e.d));
- const dt=e.f&&e.f!==e.d?(e.d<HOJE?'Em cartaz até '+cuDM(e.f):cuDow(e.d)+' '+cuDM(e.d)+' a '+cuDow(e.f)+' '+cuDM(e.f)):cuDow(e.d)+', '+cuDM(e.d)+(e.d.slice(0,4)!==HOJE.slice(0,4)?'/'+e.d.slice(0,4):'');
- const row=(k,x)=>x?`<div class="cn-r"><span>${k}</span><b>${esc(x)}</b></div>`:'';
- const pb=e.g===1?`<span class="cn-b" style="background:#2f9e6b22;color:#2f9e6b">🎟️ Gratuito</span>`:e.g===0?`<span class="cn-b" style="background:#d9a10f22;color:#a87700">💲 Pago</span>`:`<span class="cn-b" style="background:var(--acs);color:var(--mute)">💬 Consultar</span>`;
- const mapa='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((cuSemMapa(e.l)?e.t:e.l)+' '+ci[0]+' PE');
- return `<div class="cn-card" style="--cc:${cor}"><div class="cn-top"><span class="cn-b" style="background:${cor}22;color:${cor}">${ct[1]} ${esc(ct[2])}</span><span class="cn-b" style="background:${ci[1]}22;color:${ci[1]}">📍 ${esc(ci[0])}</span>${pb}<button class="cn-fv" onclick="cuFavT(${e.x})" aria-label="Favoritar" aria-pressed="${fav}">${fav?'⭐':'☆'}</button></div>
- <h4>${esc(e.t)}</h4>
- <div class="cn-g">${row('Quando',dt)}${row('Horário',e.h)}${row('Onde',e.l)}${row('Valor',e.p)}</div>
- ${e.o?`<p class="cn-nv" style="margin:8px 0 0">${esc(e.o)}</p>`:''}
- <div class="cn-act"><a class="cn-lk cn-dl" href="#" onclick="cuAgenda(${e.x});return false">${ag?'✅ Na sua Agenda':'📅 Pôr na Agenda'}</a><a class="cn-lk" href="${esc(mapa)}" target="_blank" rel="noopener">📍 Mapa</a>${e.u?`<a class="cn-lk" href="${esc(e.u)}" target="_blank" rel="noopener">${e.g===0||e.p?'🎟️ Ingressos':'🔗 Mais info'} ↗</a>`:''}</div></div>`}
+const cuCatDe=e=>CU_CAT.find(x=>x[0]===e.k)||CU_CAT[0];
+const cuAtivo=()=>!!(cuCid||cuK||cuP!=='all'||cuPer!=='all'||cuDia||cuQ.trim()||cuFav);
+function cuDt(e){const k=e.d<HOJE?HOJE:e.d;if(e.d<HOJE&&e.f)return [e.f.slice(8),'ATÉ '+CU_MA[+e.f.slice(5,7)-1]];return [k.slice(8),CU_MA[+k.slice(5,7)-1]]}
+function cuQuando(e){return e.f&&e.f!==e.d?(e.d<HOJE?'Em cartaz até '+cuDM(e.f):cuDow(e.d)+' '+cuDM(e.d)+' a '+cuDow(e.f)+' '+cuDM(e.f)):cuDow(e.d)+', '+cuDM(e.d)+(e.d.slice(0,4)!==HOJE.slice(0,4)?'/'+e.d.slice(0,4):'')}
+const cuHeart=e=>cuIni().fav.includes(e.i)?'❤️':'🤍';
+const cuFvBtn=e=>`<div class="cu-fv" data-fv="${e.x}" role="button" tabindex="0" aria-label="Favoritar" onclick="event.stopPropagation();cuFavT(${e.x})">${cuHeart(e)}</div>`;
+function cuPoster(e,sm){const ct=cuCatDe(e),cor=CU_COR[e.k],d=cuDt(e),ci=CU_CID[e.c];
+ return `<div class="cu-po${sm?' sm':''}" style="--cc:${cor}" role="button" tabindex="0" onclick="cuAbrir(${e.x})"><i class="cu-em">${ct[1]}</i>
+ <div class="cu-dt"><b>${d[0]}</b><span>${d[1]}</span></div>${cuFvBtn(e)}
+ <div class="cu-pb"><small>${esc(ct[2])}${e.g===1?'<em class="cu-free">GRÁTIS</em>':''}</small><h4>${esc(e.t)}</h4><p>${e.h?'⏰ '+esc(e.h.split(' · ')[0])+' · ':''}📍 ${esc(e.l||ci[0])}</p></div></div>`}
+function cuRail(tit,sub,l,sm){if(!l.length)return '';return `<section><div class="cu-rh"><h3>${tit}</h3><span>${sub}</span></div><div class="cu-sc">${l.map(e=>cuPoster(e,sm)).join('')}</div></section>`}
+function cuRails(){
+ if(cuAtivo())return '';
+ const v=CU_DATA.filter(cuVivo),lim=cuAddD(HOJE,10),lim30=cuAddD(HOJE,30);
+ const sc=e=>(['show','festival','teatro','arte','infantil'].includes(e.k)?3:1)+(e.p?1:0)+(e.h?1:0)+(e.u?1:0);
+ const dest=v.filter(e=>e.d>=HOJE&&e.d<=lim).sort((a,b)=>sc(b)-sc(a)||(a.d<b.d?-1:1)).slice(0,8).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:(a.h||'')<(b.h||'')?-1:1);
+ const free=v.filter(e=>e.g===1&&cuFim(e)>=HOJE&&e.d<=lim30).sort((a,b)=>(a.d<HOJE?HOJE:a.d)<(b.d<HOJE?HOJE:b.d)?-1:1).slice(0,10);
+ const cart=v.filter(e=>e.d<HOJE&&e.f).sort((a,b)=>a.f<b.f?-1:1).slice(0,8);
+ const car=v.filter(e=>e.k==='carnaval'&&e.d>=HOJE).slice(0,8);
+ return cuRail('🔥 Em destaque','próximos 10 dias',dest)+cuRail('🎟️ Grátis para curtir','sem pagar nada',free,1)+cuRail('🖼️ Em cartaz agora','exposições e mostras',cart,1)+cuRail('🎉 Carnaval 2027','já tem festa marcada',car,1)}
+function cuItem(e){const ct=cuCatDe(e),cor=CU_COR[e.k],ci=CU_CID[e.c];
+ const meta=[e.h?'⏰ '+esc(e.h):'','📍 '+esc(e.l||ci[0])].filter(Boolean).join(' · ');
+ const pr=e.g===1?`<span style="background:#2f9e6b22;color:#2f9e6b">🎟️ Grátis</span>`:e.g===0?`<span style="background:#d9a10f22;color:#a87700">${e.p&&e.p.length<=24?'💲 '+esc(e.p):'💲 Pago'}</span>`:'';
+ const mu=e.f&&e.f!==e.d?`<span>${e.d<HOJE?'até '+cuDM(e.f):'até '+cuDM(e.f)}</span>`:'';
+ return `<div class="cu-it" style="--cc:${cor}" role="button" tabindex="0" onclick="cuAbrir(${e.x})"><i class="cu-ic">${ct[1]}</i><div class="cu-bd"><h4>${esc(e.t)}</h4><p>${meta}</p><div class="cu-tg"><span style="background:${ci[1]}22;color:${ci[1]}">${esc(ci[0])}</span>${pr}${mu}</div></div>${cuFvBtn(e)}</div>`}
 function cuRes(){
  const l=cuFiltrar(''),tot=l.length;
- if(!tot)return `<div class="vazio">Nenhum evento encontrado com esses filtros.<br>Tente outra cidade, categoria ou período.</div>`;
+ const cab=`<div class="cu-lh"><h3>${tot} ${tot===1?'evento':'eventos'}${cuAtivo()?' encontrados':' na agenda'}</h3>${cuAtivo()?`<span class="cu-clr" role="button" tabindex="0" onclick="cuLimpar()">Limpar ✕</span>`:''}</div>`;
+ if(!tot)return cab+`<div class="cu-empty"><i>🎭</i><b>Nada por aqui ainda</b><p>Nenhum evento com esses filtros. Tente outra data, cidade ou categoria.</p></div>`;
  const ord=l.slice().sort((a,b)=>{const x=a.d<HOJE?HOJE:a.d,y=b.d<HOJE?HOJE:b.d;return x<y?-1:x>y?1:(a.h||'')<(b.h||'')?-1:(a.h||'')>(b.h||'')?1:a.t<b.t?-1:1}),vis=ord.slice(0,cuMais);
- let h='',mes='',dia='';
+ let h=cab,mes='',dia='',buf='';
+ const fecha=()=>{if(!dia)return;const w=cuDow(dia);h+=`<div class="cu-day"><div class="cu-tl${dia===HOJE?' hoje':''}"><span>${dia===HOJE?'hoje':w}</span><b>${dia.slice(8)}</b><small>${CU_MA[+dia.slice(5,7)-1]}</small></div><div class="cu-stk">${buf}</div></div>`;buf=''};
  vis.forEach(e=>{const k=e.d<HOJE?HOJE:e.d,m=k.slice(0,7);
-  if(m!==mes){mes=m;dia='';h+=`<h3 class="cn-h cu-mes">🗓️ ${CU_MES[+m.slice(5,7)-1].replace(/^./,c=>c.toUpperCase())} de ${m.slice(0,4)} <small>${ord.filter(x=>(x.d<HOJE?HOJE:x.d).slice(0,7)===m).length}</small></h3>`}
-  if(k!==dia){dia=k;h+=`<div class="cu-dia">${k===HOJE?'Hoje · ':''}${cuDow(k)}, ${cuDM(k)}</div>`}
-  h+=cuCard(e)});
- if(ord.length>vis.length)h+=`<div class="row" style="justify-content:center"><button onclick="cuMais+=30;cuRefresh()">Mostrar mais (${ord.length-vis.length})</button></div>`;
+  if(k!==dia){fecha();dia=k}
+  if(m!==mes){mes=m;fecha();dia=k;h+=`<div class="cu-mes">${CU_MES[+m.slice(5,7)-1]} ${m.slice(0,4)}<small>${ord.filter(x=>(x.d<HOJE?HOJE:x.d).slice(0,7)===m).length}</small></div>`}
+  buf+=cuItem(e)});
+ fecha();
+ if(ord.length>vis.length)h+=`<div class="cu-more" role="button" tabindex="0" onclick="cuMais+=30;cuRefresh()">Mostrar mais ${ord.length-vis.length} eventos ↓</div>`;
  return h}
-function cuChipsCid(){const base=cuFiltrar('c'),n=k=>base.filter(v=>v.c===k).length;
- return [['','📋','Todas',base.length]].concat(Object.keys(CU_CID).map(k=>[k,'📍',CU_CID[k][0],n(k)])).map(a=>`<button class="${cuCid===a[0]?'on':''}" onclick="cuCid='${a[0]}';cuMais=30;cuRefresh()"><span class="sl-ei">${a[1]}</span>${a[2]}<br><b>${a[3]}</b></button>`).join('')}
-function cuChipsCat(){const base=cuFiltrar('k'),n=k=>base.filter(v=>v.k===k).length;
- return [['','✨','Todos',base.length]].concat(CU_CAT.map(c=>[c[0],c[1],c[2],n(c[0])])).map(a=>`<button class="${cuK===a[0]?'on':''}" onclick="cuK='${a[0]}';cuMais=30;cuRefresh()">${a[1]} ${a[2]} <b>${a[3]}</b></button>`).join('')}
-function cuChipsPer(){return [['all','Todas as datas'],['hoje','Hoje'],['fds','Fim de semana'],['7d','Próx. 7 dias'],['mes','Este mês']].map(a=>`<button class="${cuPer===a[0]?'on':''}" onclick="cuPer='${a[0]}';cuMais=30;cuRefresh()">${a[1]}</button>`).join('')}
-function cuChipsPre(){return [['all','Todos'],['free','🎟️ Gratuitos'],['paid','💲 Pagos']].map(a=>`<button class="${cuP===a[0]?'on':''}" onclick="cuP='${a[0]}';cuMais=30;cuRefresh()">${a[1]}</button>`).join('')}
-function cuResumo(){const v=CU_DATA.filter(cuVivo),g=v.filter(e=>e.g===1).length,s=cuFiltrar('').length;return `${v.length} eventos agendados · ${g} gratuitos · mostrando ${s}`}
-function cuRefresh(){const s=(i,f)=>{const e=$('#'+i);if(e)e.innerHTML=f()};s('cu-res',cuRes);s('cu-cid',cuChipsCid);s('cu-cat',cuChipsCat);s('cu-per',cuChipsPer);s('cu-pre',cuChipsPre);s('cu-sum',cuResumo)}
-function cuFavT(x){const e=CU_DATA[x];if(!e)return;const c=cuIni(),i=c.fav.indexOf(e.i);if(i<0)c.fav.push(e.i);else c.fav.splice(i,1);save();const y=window.scrollY;render();window.scrollTo(0,y)}
+function cuCats(){const base=cuFiltrar('k');
+ return [['','✨','Tudo',base.length]].concat(CU_CAT.map(c=>[c[0],c[1],c[2],base.filter(v=>v.k===c[0]).length])).map(a=>{const c=a[0]?CU_COR[a[0]]:'#e0609a';return `<div class="cu-cat${cuK===a[0]?' on':''}" style="--c:${c};--c2:${c}88" role="button" tabindex="0" onclick="cuK='${a[0]}';cuMais=30;cuRefresh()"><i>${a[1]}</i><span>${esc(a[2])}</span><b>${a[3]}</b></div>`}).join('')}
+function cuDias(){const base=cuFiltrar('d');
+ let h=`<div class="cu-dy${!cuDia&&cuPer==='all'?' on':''}" role="button" tabindex="0" onclick="cuSetDia('')"><span>todas</span><b>∞</b><small>${base.length} ev.</small></div>`;
+ for(let i=0;i<21;i++){const d=cuAddD(HOJE,i),n=base.filter(e=>e.d<=d&&cuFim(e)>=d).length;
+  h+=`<div class="cu-dy${cuDia===d?' on':''}${n?'':' z'}" role="button" tabindex="0" onclick="cuSetDia('${d}')"><span>${i===0?'hoje':cuDow(d)}</span><b>${d.slice(8)}</b><small>${n?n+' ev.':'—'}</small></div>`}
+ return h}
+function cuPills(){const P=[['per','hoje','☀️ Hoje'],['per','fds','🎉 Fim de semana'],['per','7d','📆 7 dias'],['per','mes','🗓️ Este mês'],['pr','free','🎟️ Grátis'],['pr','paid','💲 Pagos'],['fav','','⭐ Favoritos']];
+ return P.map(p=>{const on=p[0]==='per'?(cuPer===p[1]&&!cuDia):p[0]==='pr'?cuP===p[1]:cuFav;return `<div class="cu-pl${on?' on':''}" role="button" tabindex="0" onclick="cuPill('${p[0]}','${p[1]}')">${p[2]}</div>`}).join('')}
+function cuCidades(){const base=cuFiltrar('c');
+ return [['','📍 Todas as cidades',base.length]].concat(Object.keys(CU_CID).map(k=>[k,CU_CID[k][0],base.filter(v=>v.c===k).length])).map(a=>`<div class="cu-pl${cuCid===a[0]?' on':''}" role="button" tabindex="0" onclick="cuCid='${a[0]}';cuMais=30;cuRefresh()">${a[1]}<b>${a[2]}</b></div>`).join('')}
+function cuStat(){const v=CU_DATA.filter(cuVivo);return [[v.length,'eventos'],[v.filter(e=>e.g===1).length,'gratuitos'],[v.filter(e=>e.d<=HOJE&&cuFim(e)>=HOJE).length,'hoje'],[v.filter(e=>e.d>HOJE&&e.d<=cuAddD(HOJE,(7-new Date(HOJE+'T12:00:00').getDay())%7)).length,'nesta semana']].map(a=>`<div><b>${a[0]}</b><span>${a[1]}</span></div>`).join('')}
+function cuRefresh(){
+ const keep={};['cu-cats','cu-days','cu-pills','cu-cid'].forEach(i=>{const e=$('#'+i);if(e)keep[i]=e.scrollLeft});
+ const s=(i,f)=>{const e=$('#'+i);if(e)e.innerHTML=f()};
+ s('cu-cats',cuCats);s('cu-days',cuDias);s('cu-pills',cuPills);s('cu-cid',cuCidades);s('cu-rails',cuRails);s('cu-res',cuRes);s('cu-stat',cuStat);
+ Object.keys(keep).forEach(i=>{const e=$('#'+i);if(e)e.scrollLeft=keep[i]});
+ const x=$('#cu-qx');if(x)x.style.display=cuQ?'':'none'}
+function cuSetDia(d){cuDia=(cuDia===d?'':d);cuPer='all';cuMais=30;cuRefresh()}
+function cuPill(t,v){if(t==='per'){cuPer=cuPer===v&&!cuDia?'all':v;cuDia=''}else if(t==='pr'){cuP=cuP===v?'all':v}else{cuFav=!cuFav}cuMais=30;cuRefresh()}
+function cuLimpar(){cuCid='';cuK='';cuP='all';cuPer='all';cuDia='';cuQ='';cuFav=false;cuMais=30;const q=$('#cu-q');if(q)q.value='';cuRefresh()}
+function cuFavT(x){const e=CU_DATA[x];if(!e)return;const c=cuIni(),i=c.fav.indexOf(e.i);if(i<0)c.fav.push(e.i);else c.fav.splice(i,1);save();
+ document.querySelectorAll('[data-fv="'+x+'"]').forEach(b=>{b.textContent=cuHeart(e)});
+ document.querySelectorAll('[data-fvb="'+x+'"]').forEach(b=>{b.textContent=c.fav.includes(e.i)?'❤️ Favorito':'🤍 Favoritar'});
+ if(cuFav)cuRefresh()}
 function cuAgenda(x){const e=CU_DATA[x];if(!e)return;const m=(e.h||'').match(/(\d{1,2})h(\d{2})?/),hh=m?String(m[1]).padStart(2,'0')+':'+(m[2]||'00'):'',dia=e.d<HOJE?HOJE:e.d,t='🎭 '+e.t;
- if(S.ev.some(v=>v.title===t&&v.date===dia)){info('Esse evento já está na sua Agenda.');return}
- S.ev.push({id:uid(),title:t,date:dia,time:hh,done:false});save();info('Adicionado à Agenda em '+cuDM(dia)+(hh?' às '+hh.replace(':','h'):'')+'.');const y=window.scrollY;render();window.scrollTo(0,y)}
+ const b=$('#cu-bag');
+ if(S.ev.some(v=>v.title===t&&v.date===dia)){if(b)b.textContent='✅ Já está na sua Agenda';return}
+ S.ev.push({id:uid(),title:t,date:dia,time:hh,done:false});save();if(b)b.textContent='✅ Adicionado em '+cuDM(dia)+(hh?' às '+hh.replace(':','h'):'')}
 function cuManual(b){b.disabled=true;b.textContent='Buscando…';cuCarregar(true).then(()=>{render();info('Lista conferida. Última atualização: '+CU_QUANDO+'.')})}
+function cuFecha(){const o=$('#cu-ov');if(o)o.remove();document.body.style.overflow=''}
+function cuAbrir(x){const e=CU_DATA[x];if(!e)return;const o0=$('#cu-ov');if(o0)o0.remove();
+ const ct=cuCatDe(e),cor=CU_COR[e.k],ci=CU_CID[e.c],fav=cuIni().fav.includes(e.i),dia=e.d<HOJE?HOJE:e.d,ag=(S.ev||[]).some(v=>v.title==='🎭 '+e.t&&v.date===dia);
+ const row=(i,k,v)=>v?`<div class="cu-r"><i>${i}</i><div><small>${k}</small><b>${esc(v)}</b></div></div>`:'';
+ const pb=e.g===1?'<span>🎟️ Gratuito</span>':e.g===0?'<span>💲 Pago</span>':'<span>💬 Consultar valor</span>';
+ const mapa='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((cuSemMapa(e.l)?e.t:e.l)+' '+ci[0]+' PE');
+ const share=navigator.share?`<div class="cu-bt" role="button" tabindex="0" onclick="cuShare(${e.x})">📤 Compartilhar</div>`:'';
+ const o=document.createElement('div');o.className='cu-ov';o.id='cu-ov';o.onclick=cuFecha;
+ o.innerHTML=`<div class="cu-sh" style="--cc:${cor}" onclick="event.stopPropagation()" role="dialog" aria-modal="true"><div class="cu-sh-h"><i class="cu-em">${ct[1]}</i><div class="cu-x" role="button" tabindex="0" aria-label="Fechar" onclick="cuFecha()">✕</div><div class="cu-sh-tg"><span>${ct[1]} ${esc(ct[2])}</span><span>📍 ${esc(ci[0])}</span>${pb}</div><h3>${esc(e.t)}</h3></div>
+ <div class="cu-sh-b">${row('🗓️','Quando',cuQuando(e))}${row('⏰','Horário',e.h)}${row('📍','Onde',e.l)}${row('💰','Valor',e.p)}${e.o?`<div class="cu-nt">ℹ️ ${esc(e.o)}</div>`:''}
+ <div class="cu-ac"><div class="cu-bt pri" id="cu-bag" role="button" tabindex="0" onclick="cuAgenda(${e.x})">${ag?'✅ Já está na sua Agenda':'📅 Pôr na Agenda'}</div><a class="cu-bt" href="${esc(mapa)}" target="_blank" rel="noopener">📍 Ver no mapa</a>${e.u?`<a class="cu-bt" href="${esc(e.u)}" target="_blank" rel="noopener">${e.g===0||e.p?'🎟️ Ingressos':'🔗 Mais info'} ↗</a>`:''}<div class="cu-bt" data-fvb="${e.x}" role="button" tabindex="0" onclick="cuFavT(${e.x})">${fav?'❤️ Favorito':'🤍 Favoritar'}</div>${share}</div></div></div>`;
+ document.body.appendChild(o);document.body.style.overflow='hidden'}
+function cuShare(x){const e=CU_DATA[x];if(!e||!navigator.share)return;navigator.share({title:e.t,text:'🎭 '+e.t+'\n'+cuQuando(e)+(e.h?' · '+e.h:'')+(e.l?'\n📍 '+e.l:'')+(e.u?'\n'+e.u:'')}).catch(()=>{})}
 const CU_CASAS=[
  ['Recife',[['Teatro de Santa Isabel','Teatro de Santa Isabel Recife'],['Teatro do Parque','Teatro do Parque Recife'],['Teatro Luiz Mendonça','Teatro Luiz Mendonça Recife'],['Teatro RioMar Recife','Teatro RioMar Recife'],['Teatro Boa Vista','Teatro Boa Vista Recife'],['CAIXA Cultural Recife','CAIXA Cultural Recife'],['Paço do Frevo','Paço do Frevo Recife'],['Instituto Ricardo Brennand','Instituto Ricardo Brennand Recife'],['Sede do Galo da Madrugada','Sede do Galo da Madrugada Recife'],['Sesc Pernambuco','Sesc Pernambuco Recife']]],
  ['Olinda',[['Classic Hall','Classic Hall Olinda'],['Centro de Convenções de Pernambuco','Centro de Convenções de Pernambuco Olinda'],['Casa Estação da Luz','Casa Estação da Luz Olinda'],['Espaço Cultural Osvaldo Sérgio','Espaço Cultural Osvaldo Sérgio Olinda'],['Alma Arte Café','Alma Arte Café Olinda']]],
@@ -4164,21 +4215,116 @@ const CU_CASAS=[
 const CU_SITES=[['Sympla · Recife','https://www.sympla.com.br/eventos/recife-pe'],['iHoje · agenda do Recife','https://ihoje.com/recife/eventos'],['Bilheteria Digital · PE','https://www.bilheteriadigital.com/PE'],['Recife Ingressos','https://www.recifeingressos.com/eventos'],['Uhuu · Teatro RioMar','https://uhuu.com/v/teatro-riomar-recife-80'],['VibeIndex · Recife','https://www.vibeindex.com.br/events/recife-pe'],['VibeIndex · Olinda','https://www.vibeindex.com.br/events/olinda-pe'],['VibeIndex · Paulista','https://www.vibeindex.com.br/events/paulista-pe'],['VibeIndex · Jaboatão','https://www.vibeindex.com.br/events/jaboatao-dos-guararapes-pe']];
 function cuCasas(){return CU_CASAS.map(g=>`<div class="cn-act" style="margin:6px 0"><b style="min-width:84px;font-size:13px">📍 ${esc(g[0])}</b>${g[1].map(c=>{const u=/^https?:/.test(c[1])?c[1]:'https://www.google.com/search?q='+encodeURIComponent('programação '+c[1]);return `<a class="cn-lk" href="${esc(u)}" target="_blank" rel="noopener">${esc(c[0])} ↗</a>`}).join('')}</div>`).join('')}
 function vCultural(){setTimeout(cuCarregar,1500);
- return `<h2>${_t('Espaço Cultural')}</h2>
- <p class="hint" style="margin:0 0 10px">Shows, peças de teatro, espetáculos infantis, festivais, festas e exposições, pagos e gratuitos, em Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE). Lista reunida em ${esc(CU_QUANDO)} a partir de sites de ingressos e agendas culturais. Datas, horários e valores mudam: confirme sempre no link do evento. “Consultar” significa que a fonte não informou o preço. Eventos que já passaram saem sozinhos.</p>
- <div class="card" style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="cn-nv" style="margin:0" id="cu-sum">${cuResumo()}</span><button class="sec" onclick="cuManual(this)">🔄 Atualizar</button></div>
- <div class="seg s5" id="cu-cid">${cuChipsCid()}</div>
- <div class="card"><div class="seg" id="cu-cat" style="margin-bottom:8px">${cuChipsCat()}</div>
- <div class="seg s3" id="cu-pre" style="margin-bottom:8px">${cuChipsPre()}</div>
- <div class="seg" id="cu-per" style="margin-bottom:8px">${cuChipsPer()}</div>
- <input id="cu-q" class="cn-q" placeholder="Buscar show, peça, artista, local ou bairro…" value="${esc(cuQ)}" oninput="cuQ=this.value;cuMais=30;cuRefresh()">
- <div class="row" style="margin-top:8px"><button class="${cuFav?'':'sec'}" onclick="cuFav=!cuFav;cuMais=30;render()" aria-pressed="${cuFav}">${cuFav?'⭐ Só favoritos':'☆ Favoritos'}</button><button class="sec" onclick="cuCid='';cuK='';cuP='all';cuPer='all';cuQ='';cuFav=false;cuMais=30;render()">Limpar filtros</button></div></div>
+ return `<div class="cu-hero"><small>Recife · Olinda · Paulista · Jaboatão</small><h2>${_t('Espaço Cultural')}</h2><p>Hoje é ${cuDow(HOJE)}, ${cuDM(HOJE)}. O que vai rolar na sua cidade?</p>
+ <div class="cu-q"><span>🔍</span><input id="cu-q" placeholder="Artista, peça, local ou bairro…" value="${esc(cuQ)}" oninput="cuQ=this.value;cuMais=30;cuRefresh()" autocomplete="off"><span class="cu-qx" id="cu-qx" role="button" aria-label="Limpar busca" style="${cuQ?'':'display:none'}" onclick="cuQ='';$('#cu-q').value='';cuRefresh()">✕</span></div>
+ <div class="cu-st" id="cu-stat">${cuStat()}</div></div>
+ <div id="cu-cats" class="cu-hs cu-cats">${cuCats()}</div>
+ <div id="cu-days" class="cu-hs">${cuDias()}</div>
+ <div id="cu-pills" class="cu-hs">${cuPills()}</div>
+ <div id="cu-cid" class="cu-hs">${cuCidades()}</div>
+ <div id="cu-rails">${cuRails()}</div>
  <div id="cu-res">${cuRes()}</div>
+ <p class="cu-note">Lista reunida em ${esc(CU_QUANDO)} a partir de sites de ingressos e agendas culturais. Datas, horários e valores mudam: confirme sempre no link do evento. Eventos que já passaram saem sozinhos.</p>
+ <div class="cu-ft"><div class="cu-pl" role="button" tabindex="0" onclick="cuManual(this)">🔄 Atualizar lista</div></div>
  <details class="card cl-live"><summary>🏛️ Casas de espetáculo e centros culturais</summary><p class="cn-nv" style="margin:8px 0 4px">Toque para buscar a programação atual de cada casa.</p>${cuCasas()}</details>
  <details class="card cl-live"><summary>🔗 Ver mais eventos ao vivo nos sites de ingressos</summary><p class="cn-nv" style="margin:8px 0 4px">As agendas mudam toda hora. Toque para abrir.</p><div class="cn-act">${CU_SITES.map(s=>`<a class="cn-lk" href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])} ↗</a>`).join('')}</div></details>`}
-(function(){const s=document.createElement('style');s.textContent=
-'.cu-dia{margin:12px 2px 6px;font-weight:700;font-size:13px;color:var(--mute);text-transform:capitalize;letter-spacing:.2px}.cu-mes{margin-top:20px}#cu-cat button b{font-weight:800;opacity:.8}#cu-cat button{white-space:nowrap}';
- document.head.appendChild(s)})();
+(function(){const s=document.createElement('style');s.textContent=`
+.cu-dia{margin:12px 2px 6px;font-weight:700;font-size:13px;color:var(--mute);text-transform:capitalize;letter-spacing:.2px}
+.cu-hero{position:relative;overflow:hidden;border-radius:26px;padding:18px 16px 14px;margin:0 0 16px;color:#fff;background:radial-gradient(120% 140% at 100% 0%,rgba(139,92,246,.55) 0,transparent 55%),linear-gradient(135deg,#c2410c 0%,#e0609a 58%,#8b5cf6 100%);box-shadow:0 16px 32px -18px #c2410c}
+.cu-hero:before{content:'🎭';position:absolute;right:-8px;top:-16px;font-size:112px;opacity:.17;transform:rotate(14deg);pointer-events:none}
+.cu-hero>*{position:relative}
+.cu-hero small{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.92}
+.cu-hero h2{color:#fff;font-size:29px;margin:4px 0 2px;letter-spacing:-.02em}
+.cu-hero p{margin:0 0 13px;font-size:13.5px;opacity:.94}
+.cu-q{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.97);border-radius:99px;padding:0 14px;color:#14232e}
+.cu-q input{background:transparent;border:0;border-radius:0;padding:13px 0;color:#14232e;flex:1;min-width:0;box-shadow:none}
+.cu-q input::placeholder{color:#6b7c88}.cu-q input:focus{outline:none}
+.cu-q:focus-within{box-shadow:0 0 0 3px rgba(255,255,255,.55)}
+.cu-qx{cursor:pointer;opacity:.55;padding:6px;font-size:14px}
+.cu-st{display:flex;gap:7px;margin-top:12px}
+.cu-st div{flex:1;background:rgba(255,255,255,.2);border-radius:14px;padding:8px 2px;text-align:center}
+.cu-st b{display:block;font:800 20px/1 "Bricolage Grotesque",system-ui,sans-serif}
+.cu-st span{font-size:10.5px;opacity:.92}
+.cu-hs,.cu-sc{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -16px 10px;padding:2px 16px 6px}
+.cu-sc{gap:12px;scroll-snap-type:x proximity;scroll-padding-left:16px}
+.cu-hs::-webkit-scrollbar,.cu-sc::-webkit-scrollbar{display:none}
+.cu-cats{gap:6px}
+.cu-cat{flex:none;width:76px;text-align:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.cu-cat i{display:grid;place-items:center;width:62px;height:62px;margin:0 auto 6px;border-radius:50%;font-size:27px;font-style:normal;border:3px solid var(--bg);box-shadow:0 0 0 2px var(--ln);background:linear-gradient(145deg,var(--c),var(--c2));opacity:.82;transition:transform .15s,box-shadow .15s,opacity .15s}
+.cu-cat.on i{opacity:1;transform:scale(1.07);box-shadow:0 0 0 3px var(--c),0 10px 18px -8px var(--c)}
+.cu-cat span{display:block;font-size:11.5px;font-weight:600;line-height:1.15;color:var(--mute);min-height:27px}
+.cu-cat.on span{color:var(--ink);font-weight:800}
+.cu-cat b{font-size:10.5px;color:var(--mute);font-weight:700;opacity:.8}
+.cu-dy{flex:none;width:56px;padding:8px 0 7px;border-radius:17px;text-align:center;background:var(--sf);border:1px solid var(--ln);cursor:pointer;user-select:none}
+.cu-dy span{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--mute);letter-spacing:.04em}
+.cu-dy b{display:block;font:800 21px/1.15 "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink)}
+.cu-dy small{font-size:10px;color:var(--mute)}
+.cu-dy.z{opacity:.5}
+.cu-dy.on{background:linear-gradient(160deg,#c2410c,#e0609a);border-color:transparent;box-shadow:0 10px 18px -10px #c2410c;opacity:1}
+.cu-dy.on b,.cu-dy.on span,.cu-dy.on small{color:#fff}
+.cu-pl{flex:none;padding:8px 14px;border-radius:99px;background:var(--sf);border:1px solid var(--ln);font-size:13px;font-weight:600;color:var(--mute);cursor:pointer;white-space:nowrap;user-select:none}
+.cu-pl b{opacity:.7;font-weight:700;margin-left:5px;font-size:12px}
+.cu-pl.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.cu-rh{display:flex;align-items:baseline;justify-content:space-between;margin:16px 0 8px}
+.cu-rh h3,.cu-lh h3{font:800 18px/1.1 "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink);margin:0}
+.cu-rh span{font-size:12px;color:var(--mute)}
+.cu-em{position:absolute;right:-8px;top:34px;font-size:96px;font-style:normal;line-height:1;opacity:.3;transform:rotate(-10deg);z-index:0;pointer-events:none}
+.cu-po{position:relative;flex:none;scroll-snap-align:start;width:218px;height:268px;border-radius:24px;overflow:hidden;color:#fff;cursor:pointer;background:linear-gradient(155deg,var(--cc) 0%,var(--cc) 35%,#2a1240 140%);box-shadow:0 14px 26px -16px var(--cc)}
+.cu-po.sm{width:166px;height:204px;border-radius:20px}.cu-po.sm .cu-em{font-size:70px;top:46px}
+.cu-po:after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(10,4,20,.8) 0%,rgba(10,4,20,.28) 50%,transparent 78%);z-index:0;pointer-events:none}
+.cu-dt{position:absolute;left:12px;top:12px;z-index:1;background:rgba(255,255,255,.96);color:#14232e;border-radius:14px;padding:6px 10px;text-align:center;line-height:1}
+.cu-dt b{display:block;font:800 19px/1 "Bricolage Grotesque",system-ui,sans-serif}.cu-dt span{font-size:9.5px;font-weight:800;letter-spacing:.05em}
+.cu-fv{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:17px;cursor:pointer;flex:none;-webkit-tap-highlight-color:transparent}
+.cu-po .cu-fv{position:absolute;right:10px;top:10px;z-index:1;background:rgba(0,0,0,.3);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.cu-pb{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:12px 14px 14px}
+.cu-pb small{display:flex;gap:6px;align-items:center;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.95}
+.cu-pb h4{margin:4px 0 5px;font:800 17px/1.15 "Bricolage Grotesque",system-ui,sans-serif;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cu-po.sm .cu-pb h4{font-size:15px;-webkit-line-clamp:2}
+.cu-pb p{margin:0;font-size:12px;opacity:.93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cu-free{font-style:normal;background:#2f9e6b;color:#fff;border-radius:99px;padding:2px 7px;font-size:9.5px;letter-spacing:.04em}
+.cu-lh{display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px}
+.cu-clr{font-size:12.5px;font-weight:700;color:var(--ac);cursor:pointer;background:var(--acs);padding:6px 12px;border-radius:99px}
+.cu-mes{display:flex;align-items:center;gap:8px;margin:18px 2px 10px;font:800 15px/1 "Bricolage Grotesque",system-ui,sans-serif;text-transform:capitalize;color:var(--mute)}
+.cu-mes:after{content:'';flex:1;height:1px;background:var(--ln)}.cu-mes small{order:3;font-size:11px;font-weight:700;background:var(--acs);color:var(--ac);padding:2px 8px;border-radius:99px}
+.cu-day{display:grid;grid-template-columns:52px 1fr;gap:10px;margin-bottom:12px}
+.cu-tl{position:sticky;top:8px;align-self:start;text-align:center;border-radius:17px;padding:8px 0;background:var(--sf);border:1px solid var(--ln);line-height:1.1}
+.cu-tl span{display:block;font-size:10.5px;font-weight:800;text-transform:uppercase;color:var(--mute);letter-spacing:.04em}
+.cu-tl b{display:block;font:800 23px/1.1 "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink)}
+.cu-tl small{font-size:10px;font-weight:800;color:var(--mute)}
+.cu-tl.hoje{background:linear-gradient(160deg,#c2410c,#e0609a);border-color:transparent;box-shadow:0 10px 18px -10px #c2410c}.cu-tl.hoje span,.cu-tl.hoje b,.cu-tl.hoje small{color:#fff}
+.cu-stk{display:flex;flex-direction:column;gap:8px;min-width:0}
+.cu-it{position:relative;overflow:hidden;display:flex;gap:11px;align-items:flex-start;background:var(--sf);border:1px solid var(--ln);border-radius:19px;padding:11px 8px 11px 13px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cu-it:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cc)}
+.cu-it:active{transform:scale(.985)}
+.cu-ic{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:15px;font-size:23px;font-style:normal;background:linear-gradient(145deg,var(--cc),#2a1240 200%)}
+.cu-bd{flex:1;min-width:0}
+.cu-bd h4{margin:0 0 3px;font-size:15px;line-height:1.22;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cu-bd p{margin:0 0 6px;font-size:12.5px;line-height:1.3;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cu-tg{display:flex;flex-wrap:wrap;gap:5px}.cu-tg span{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--acs);color:var(--ac)}
+.cu-more{text-align:center;margin:8px 0 4px;padding:13px;border-radius:16px;background:var(--acs);color:var(--ac);font-weight:700;cursor:pointer}
+.cu-empty{text-align:center;padding:34px 16px;border:1.5px dashed var(--ln);border-radius:22px;color:var(--mute)}.cu-empty i{display:block;font-size:44px;font-style:normal;margin-bottom:6px}.cu-empty b{display:block;color:var(--ink);font-size:16px}.cu-empty p{margin:4px 0 0;font-size:13px}
+.cu-note{font-size:12px;color:var(--mute);margin:16px 2px 10px;line-height:1.45}
+.cu-ft{display:flex;justify-content:center;margin-bottom:14px}.cu-ft .cu-pl{background:var(--acs);color:var(--ac);border-color:transparent}
+.cu-ov{position:fixed;inset:0;z-index:70;background:rgba(8,6,14,.58);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:cufi .2s}
+.cu-sh{width:100%;max-width:640px;max-height:90vh;overflow-y:auto;background:var(--sf);color:var(--ink);border-radius:28px 28px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));overscroll-behavior:contain;animation:cuup .3s cubic-bezier(.2,.8,.2,1)}
+.cu-sh-h{position:relative;overflow:hidden;color:#fff;padding:22px 18px 20px;background:linear-gradient(155deg,var(--cc) 0%,#2a1240 160%)}
+.cu-sh-h .cu-em{right:-6px;top:-6px;font-size:120px;opacity:.24;transform:rotate(12deg)}
+.cu-x{position:absolute;right:12px;top:12px;z-index:2;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.32);display:grid;place-items:center;cursor:pointer;font-size:15px}
+.cu-sh-tg{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px;margin-right:42px}.cu-sh-tg span{background:rgba(255,255,255,.22);padding:4px 11px;border-radius:99px;font-size:11.5px;font-weight:700}
+.cu-sh-h h3{position:relative;z-index:1;color:#fff;font:800 23px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:12px 0 0}
+.cu-sh-b{padding:8px 18px 0}
+.cu-r{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--ln)}
+.cu-r i{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--acs);font-style:normal}
+.cu-r small{display:block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}.cu-r b{font-weight:600;font-size:14.5px;line-height:1.35}
+.cu-nt{margin-top:12px;padding:11px 13px;border-radius:14px;background:var(--acs);font-size:13px;line-height:1.45}
+.cu-ac{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.cu-bt{display:flex;align-items:center;justify-content:center;padding:13px 8px;border-radius:15px;font-weight:700;font-size:14px;text-align:center;cursor:pointer;text-decoration:none;background:var(--acs);color:var(--ac);user-select:none}
+.cu-bt.pri{grid-column:1/-1;background:linear-gradient(135deg,#c2410c,#e0609a);color:#fff;box-shadow:0 12px 20px -12px #c2410c}
+@keyframes cuup{from{transform:translateY(46px);opacity:0}to{transform:none;opacity:1}}@keyframes cufi{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.cu-sh,.cu-ov,.cu-cat i{animation:none;transition:none}}
+`;
+ document.head.appendChild(s);
+ document.addEventListener('keydown',ev=>{const t=ev.target;if((ev.key==='Enter'||ev.key===' ')&&t&&t.getAttribute&&t.getAttribute('role')==='button'&&/(^|\s)cu-/.test(t.className||'')){ev.preventDefault();t.click()}})})();
 
 
 /* ===== Filmes: Cinema (shoppings de Recife, Olinda, Paulista e Jaboatão) e Streaming =====
