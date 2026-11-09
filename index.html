@@ -7429,6 +7429,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.7.1':[
+   '💬 Corrigido: a caixa de comentários agora aparece na tela inicial nos dois layouts (Clássico e Novo).'
+  ],
   '3.7.0':[
    '💬 Comentários na página inicial: escreva um comentário na tela Início e, quando quiser, edite ou exclua os seus próprios comentários.',
    '🧹 O chat da Carteira compartilhada foi removido. A Carteira compartilhada continua funcionando normalmente.',
@@ -10358,6 +10361,8 @@ window.kMemLimpar=function(){if(confirm('Apagar tudo o que a Kayla aprendeu sobr
 
 /* v3.7.0: cartão de Comentários sempre no fim da tela Início (layout clássico, novo e tela inicial personalizada) */
 {const _viCom=vInicio;vInicio=function(){return _viCom()+comCard()}}
+/* a primeira tela já foi desenhada antes deste trecho: redesenha a Início para o cartão aparecer sem precisar trocar de tela */
+try{if(tab==='inicio'&&S.user&&S.user.name&&document.getElementById('v'))render()}catch(e){}
 </script>
 </body>
 </html>
