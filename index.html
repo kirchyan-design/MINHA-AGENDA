@@ -2663,7 +2663,6 @@ function vInicio(){
  +st('notas','#d9a10f',_t('Notas'),nn+(nn===1?' nota':' notas'),`go('notas')`)
  +(()=>{const k=cCalc(HOJE.slice(0,7));return st('carteira','#3fa66b',_t('Carteira'),k.renda>0?(k.sobra<0?'Faltam '+BRL(-k.sobra):'Sobram '+BRL(k.sobra))+' este mês':'Controle seus gastos do mês',`go('carteira')`,'grid-column:1/-1')})()
  +`</div>`
- +comCard()
  +vTotais()}
 
 /* ---------- Configurações ---------- */
@@ -10356,6 +10355,9 @@ window.kMemTog=function(){kCfg().aprende=ON()?0:1;save();render()};
 window.kMemVer=function(){kOpen();kAdd('k',resumo())};
 window.kMemLimpar=function(){if(confirm('Apagar tudo o que a Kayla aprendeu sobre você?')){limpaTudo();render();toast('Memória da Kayla apagada.')}};
 })();
+
+/* v3.7.0: cartão de Comentários sempre no fim da tela Início (layout clássico, novo e tela inicial personalizada) */
+{const _viCom=vInicio;vInicio=function(){return _viCom()+comCard()}}
 </script>
 </body>
 </html>
