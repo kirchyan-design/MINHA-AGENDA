@@ -4384,6 +4384,24 @@ function fiCartaz(){const m={};
  FI_D.embreve.forEach(e=>{if(e.d<=HOJE&&e.d>=fiAdd(HOJE,-21)&&!m[e.t])m[e.t]=[]});
  return Object.keys(m).map(t=>({t:t,c:m[t]})).sort((a,b)=>b.c.length-a.c.length||a.t.localeCompare(b.t,'pt-BR'))}
 const fiCine=id=>FI_CINE.find(c=>c[0]===id);
+/* ---- capas reais: o app busca o pôster de cada título na busca pública da Apple (iTunes) e guarda no aparelho ---- */
+let FI_CP={};try{FI_CP=JSON.parse(localStorage.getItem('ma-filmes-capas')||'{}')||{}}catch(e){}
+const fiCpSave=()=>{try{localStorage.setItem('ma-filmes-capas',JSON.stringify(FI_CP))}catch(e){}};
+const fiCpBase=t=>String(t).replace(/\s*[:·\-–]\s*\d+[ªa]?\s*temporada.*$/i,'').replace(/\s*\d+[ªa]\s*temporada.*$/i,'').trim();
+function fiCpTipo(t){const e=FI_D.streaming.find(x=>x.t===t);return e&&e.k==='s'?'s':'f'}
+function fiCpAplicar(el,u){if(!el||!u)return;el.style.setProperty('--img','url("'+u+'")');el.classList.add('fx-img')}
+let fiCpFila=[],fiCpAtivos=0;
+function fiCpBuscar(t){const tp=fiCpTipo(t),b=fiCpBase(t),nb=fiNorm(b);
+ const url='https://itunes.apple.com/search?term='+encodeURIComponent(b)+'&country=BR&limit=8&'+(tp==='s'?'media=tvShow&entity=tvSeason':'media=movie&entity=movie');
+ return fetch(url).then(r=>r.ok?r.json():null).then(d=>{const rs=(d&&d.results)||[];
+  const m=rs.find(r=>{const n=fiNorm(r.trackName||r.collectionName||'').replace(/\s*,?\s*(temporada|season)\s*\d+.*$/,'');return n===nb||n.startsWith(nb)||nb.startsWith(n)&&n.length>3})||null;
+  const u=m&&m.artworkUrl100?m.artworkUrl100.replace(/\d+x\d+(bb)?\.(jpg|png)/,'400x600bb.jpg'):'';
+  FI_CP[t]=u||0;fiCpSave()}).catch(()=>{})}
+function fiCpFim(){fiCpAtivos--;fiCpProx();document.querySelectorAll('.fx-p[data-t],.fx-w[data-t],.fx-sh-h[data-t]').forEach(el=>{const u=FI_CP[el.dataset.t];if(u&&!el.classList.contains('fx-img'))fiCpAplicar(el,u)})}
+function fiCpProx(){while(fiCpAtivos<3&&fiCpFila.length){const t=fiCpFila.shift();fiCpAtivos++;fiCpBuscar(t).then(fiCpFim,fiCpFim)}}
+function fiCapas(){document.querySelectorAll('.fx-p[data-t],.fx-w[data-t],.fx-sh-h[data-t]').forEach(el=>{const t=el.dataset.t,u=FI_CP[t];
+  if(u)fiCpAplicar(el,u);else if(u===undefined&&!fiCpFila.includes(t)){fiCpFila.push(t)}});
+ fiCpProx()}
 /* ===== VISUAL NOVO DO MENU FILMES: pôsteres, carrosséis, logos das plataformas e folha de detalhes ===== */
 const FI_MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 const fiHs=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h};
@@ -4402,14 +4420,14 @@ function fiPoster(o){return '<div class="fx-p'+(o.cls?' '+o.cls:'')+'" role="but
  +(o.tl?'<span class="fx-tl">'+o.tl+'</span>':'')+(o.tr?'<span class="fx-tr">'+o.tr+'</span>':'')
  +'<div class="fx-pb"><b>'+esc(o.t)+'</b>'+(o.sub?'<small>'+esc(o.sub)+'</small>':'')+'</div></div>'}
 function fiWide(o){return '<div class="fx-w" role="button" tabindex="0" data-t="'+esc(o.t)+'" data-x="'+(o.x!=null?o.x:'')+'" onclick="'+o.click+'" style="'+fiSty(o.th)+'"><span class="fx-we">'+o.th.e+'</span><div class="fx-wt">'+(o.k?'<span class="fx-bd">'+o.k+'</span>':'')+'<b>'+esc(o.t)+'</b>'+(o.sub?'<small>'+esc(o.sub)+'</small>':'')+'<span class="fx-cta">'+(o.cta||'Ver detalhes')+' ›</span></div>'+(o.logo?'<span class="fx-wl">'+o.logo+'</span>':'')+'</div>'}
-function fiItem(o){return '<div class="fx-li" role="button" tabindex="0" data-t="'+esc(o.t)+'" data-x="'+(o.x!=null?o.x:'')+'" onclick="'+o.click+'"><div class="fx-p mini" style="'+fiSty(o.th)+'"><span class="fx-pe">'+o.th.e+'</span>'+(o.logo?'<span class="fx-tl">'+o.logo+'</span>':'')+'</div><div class="fx-lb"><b>'+esc(o.t)+'</b><div class="fx-cs">'+(o.chips||'')+'</div>'+(o.desc?'<p>'+esc(o.desc)+'</p>':'')+'</div><span class="fx-go">›</span></div>'}
+function fiItem(o){return '<div class="fx-li" role="button" tabindex="0" data-t="'+esc(o.t)+'" data-x="'+(o.x!=null?o.x:'')+'" onclick="'+o.click+'"><div class="fx-p mini" data-t="'+esc(o.t)+'" style="'+fiSty(o.th)+'"><span class="fx-pe">'+o.th.e+'</span>'+(o.logo?'<span class="fx-tl">'+o.logo+'</span>':'')+'</div><div class="fx-lb"><b>'+esc(o.t)+'</b><div class="fx-cs">'+(o.chips||'')+'</div>'+(o.desc?'<p>'+esc(o.desc)+'</p>':'')+'</div><span class="fx-go">›</span></div>'}
 const fiP=(on,js,txt)=>'<button class="'+(on?'on':'')+'" onclick="'+js+'">'+txt+'</button>';
 /* folha de detalhes (abre de baixo para cima) */
 function fiClose(){const o=document.querySelector('.fx-ov');if(o){o.remove();document.body.style.overflow=''}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fiClose()});
 function fiSheet(o){fiClose();const d=document.createElement('div');d.className='fx-ov';
- d.innerHTML='<div class="fx-sh" role="dialog" aria-modal="true"><div class="fx-sh-h" style="'+fiSty(o.th)+'"><span class="fx-she">'+o.th.e+'</span>'+(o.logo?'<span class="fx-shl">'+o.logo+'</span>':'')+'<button class="fx-x" onclick="fiClose()" aria-label="Fechar">✕</button><h3>'+esc(o.t)+'</h3></div><div class="fx-sh-b">'+o.body+'</div></div>';
- d.onclick=e=>{if(e.target===d)fiClose()};document.body.appendChild(d);document.body.style.overflow='hidden'}
+ d.innerHTML='<div class="fx-sh" role="dialog" aria-modal="true"><div class="fx-sh-h" data-t="'+esc(o.t)+'" style="'+fiSty(o.th)+'"><span class="fx-she">'+o.th.e+'</span>'+(o.logo?'<span class="fx-shl">'+o.logo+'</span>':'')+'<button class="fx-x" onclick="fiClose()" aria-label="Fechar">✕</button><h3>'+esc(o.t)+'</h3></div><div class="fx-sh-b">'+o.body+'</div></div>';
+ d.onclick=e=>{if(e.target===d)fiClose()};document.body.appendChild(d);document.body.style.overflow='hidden';fiCapas()}
 function fiSinBlk(i){return i.s?'<h4 class="fx-h4">📖 Sinopse</h4><p class="fx-sin">'+esc(i.s)+'</p>':'<p class="fx-nv">Sinopse ainda não carregada. A atualização automática preenche sozinha; enquanto isso, toque em Trailer.</p>'}
 const fiTrailer=t=>'<a class="fx-b sec" href="'+esc(fiBusca(t+' trailer'))+'" target="_blank" rel="noopener">▶ Trailer</a>';
 function fiSheetF(t){const i=fiInfo(t),f=fiCartaz().find(x=>x.t===t),ids=f?f.c:[];let on;
@@ -4499,10 +4517,10 @@ function fiControles(){
   +(fiCs==='breve'?'':fiSegCid())+(fiCs==='shops'?'':busca);
  return fiRailPl()+'<div class="fx-sub">'+[['','Tudo'],['f','🎬 Filmes'],['s','📺 Séries']].map(a=>fiP(fiTp===a[0],"fiTp='"+a[0]+"';fiMais=40;fiRender()",a[1])).join('')+'<span class="fx-sep"></span>'+[['fut','🗓️ Em breve'],['pas','✅ Já estreou'],['all','Tudo']].map(a=>fiP(fiPer===a[0],"fiPer='"+a[0]+"';fiMais=40;fiRender()",a[1])).join('')+'</div>'+busca}
 function fiLista(){return fiSec==='cin'?fiCinemaHtml():fiStreamHtml()}
-function fiRefresh(){const e=$('#fi-lista');if(e)e.innerHTML=fiLista()}
+function fiRefresh(){const e=$('#fi-lista');if(e){e.innerHTML=fiLista();fiCapas()}}
 function fiAviso(){const n=-fiDias(FI_D.atualizado);
  return n>7?'<p class="fx-warn">⚠️ Última atualização há '+n+' dias. Toque em Atualizar para buscar a programação de hoje.</p>':''}
-function vFilmes(){setTimeout(fiCarregar,1200);
+function vFilmes(){setTimeout(fiCarregar,1200);setTimeout(fiCapas,60);
  const logos=FI_PLAT.map(p=>FI_LOGO[p[0]]?'<img src="'+FI_LOGO[p[0]]+'" alt="">':'').join('');
  return '<div class="fx-hero"><div class="fx-hero-t"><span class="fx-hero-e">🎬</span><div><h2>'+_t('Filmes')+'</h2><p>'+(fiSec==='cin'?'Em cartaz e estreias nos cinemas de Recife, Olinda, Paulista e Jaboatão':'O que chega na Netflix, Prime, Disney+, Apple TV+, HBO Max e Paramount+')+'</p></div></div>'
  +'<div class="fx-tabs"><button class="'+(fiSec==='cin'?'on':'')+'" onclick="fiSec=\'cin\';fiMais=40;fiRender()">🍿 Cinema</button><button class="'+(fiSec==='str'?'on':'')+'" onclick="fiSec=\'str\';fiMais=40;fiRender()"><span class="fx-mini">'+logos+'</span> Streaming</button></div>'
@@ -4574,6 +4592,8 @@ function vFilmes(){setTimeout(fiCarregar,1200);
 .fx-x{position:absolute;top:14px;right:14px;z-index:2;width:38px;height:38px;padding:0;border-radius:50%;background:rgba(0,0,0,.42);color:#fff;border:0;font-size:15px;display:grid;place-items:center;box-shadow:none}
 .fx-sh-b{padding:16px 18px 0}.fx-h4{margin:18px 0 6px;font-size:14px;letter-spacing:.01em}.fx-sin{margin:0;font-size:14.5px;line-height:1.55}
 .fx-cid{margin-top:8px}.fx-cid>b{font-size:13px}.fx-rl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--ln2);color:var(--ink);text-decoration:none;font-size:14px;font-weight:600}.fx-rl em{font-style:normal;color:var(--ac);font-size:12.5px;font-weight:750;white-space:nowrap}
+.fx-img{background:linear-gradient(0deg,rgba(0,0,0,.15),rgba(0,0,0,.15)),var(--img) center/cover no-repeat,linear-gradient(var(--an),var(--g1),var(--g2))!important}.fx-img>.fx-pe,.fx-img>.fx-we,.fx-img>.fx-she{display:none}
+.fx-p.fx-img:before{background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.85))}.fx-w.fx-img:before{background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,.1) 75%)}
 @keyframes fxf{from{opacity:0}to{opacity:1}}@keyframes fxu{from{transform:translateY(60px);opacity:.4}to{transform:none;opacity:1}}
 `;
  document.head.appendChild(s)})();
