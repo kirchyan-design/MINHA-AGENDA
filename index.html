@@ -2986,7 +2986,7 @@ function shRender(){if(shLivre()){SH.rp=false;render()}else SH.rp=true}
 function shAplica(m){if(TROCANDO)return false;SH.ap=true;try{S.cart=m;normCart();save()}finally{SH.ap=false}return true}
 function shErroTxt(e){const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();
  return /permission|403|unauthenticated/.test(t)?'A Carteira compartilhada ainda não está liberada no Firestore. Publique as regras novas do arquivo firestore.rules no console do Firebase.':/failed to fetch|network|load failed/.test(t)?'Sem conexão com a internet.':'Não foi possível concluir: '+t.trim().slice(0,120)}
-function shSumiu(){shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';SH.inv=[];shDlgFecha();
+function shSumiu(){chLimpa();shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';SH.inv=[];shDlgFecha();
  try{render()}catch(e){}info('Esta Carteira deixou de ser compartilhada (foi encerrada ou você foi removido). A sua cópia continua neste aparelho.')}
 async function shPerm(){ /* sem permissão: ou saiu da lista, ou as regras não foram publicadas */
  const L=shLink();let m;
@@ -3067,9 +3067,9 @@ function shRemover(u){const I=SH.info,L=shLink();if(!I||!L)return;
 function shSair(){const I=SH.info,L=shLink();if(!L)return;const dono=I&&I.dono===shUid();
  ask(dono?'Parar de compartilhar? A Carteira deixa de ser compartilhada para todos. Cada pessoa mantém uma cópia no próprio aparelho.':'Sair da Carteira compartilhada? Você mantém uma cópia neste aparelho, mas deixa de receber e enviar mudanças.',async()=>{
   try{
-   if(dono){const d=await shLer(L.id);if(d){const w=[];for(let i=0;i<d.partes;i++)w.push({delete:shDocName(L.id)+'/dados/p'+i});if(w.length)await shCommit(w);await shCommit([{delete:shDocName(L.id)}])}}
+   if(dono){const d=await shLer(L.id);if(d){const w=[];for(let i=0;i<d.partes;i++)w.push({delete:shDocName(L.id)+'/dados/p'+i});try{(await chConsulta({orderBy:[{field:{fieldPath:'t'},direction:'ASCENDING'}],limit:400})).forEach(m=>w.push({delete:shDocName(L.id)+'/dados/'+m.id}))}catch(e){}if(w.length)await shCommit(w);await shCommit([{delete:shDocName(L.id)}])}}
    else await shSairDe(L.id,shUid());
-   shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';shDlgFecha();render();info(dono?'A Carteira deixou de ser compartilhada.':'Você saiu da Carteira compartilhada.')
+   shSetLink(null);SH.info=null;SH.ok=null;SH.msg='';chLimpa();shDlgFecha();render();info(dono?'A Carteira deixou de ser compartilhada.':'Você saiu da Carteira compartilhada.')
   }catch(e){info(shErroTxt(e))}},dono?'Parar de compartilhar':'Sair')}
 const shTemDados=()=>{normCart();const c=S.cart;return c.base>0||c.gastos.length>0||c.fixas.length>0||c.rendas.length>0||!!c.sal||!!(c.inv&&c.inv.meus&&c.inv.meus.length)};
 async function shAceitar(id){
@@ -3096,7 +3096,7 @@ function shCardIn(){
   const eu=shUid(),outros=I?Object.keys(I.mem).filter(k=>k!==eu).map(k=>I.mem[k]):[],pend=I?I.convites.length:0;
   const quem=outros.length?'Com '+outros.join(', '):pend?'Aguardando '+pend+' convite'+(pend>1?'s':'')+' ser'+(pend>1?'em':'')+' aceito'+(pend>1?'s':''):'Só você por enquanto';
   const hh=SH.t?new Date(SH.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';
-  return `<div class="card"><div class="prm"><span class="ic">${SH.ok===false?'⚠️':'👥'}</span><span class="t"><b>Carteira compartilhada</b><small>${esc(quem)}</small><small>${SH.ok===false?esc(SH.msg):SH.ok?'✅ Em tempo real'+(hh?' · '+hh:''):'Sincronizando…'}</small></span><button class="sec" onclick="shAbrir()">Gerenciar</button></div></div>`}
+  return `<div class="card"><div class="prm"><span class="ic">${SH.ok===false?'⚠️':'👥'}</span><span class="t"><b>Carteira compartilhada</b><small>${esc(quem)}</small><small>${SH.ok===false?esc(SH.msg):SH.ok?'✅ Em tempo real'+(hh?' · '+hh:''):'Sincronizando…'}</small></span><button class="sec" onclick="shAbrir()">Gerenciar</button></div><div class="row" style="margin-top:8px"><button class="sec" style="flex:1" onclick="chAbrir()">💬 Chat${CH.nao?` <b style=\"background:var(--rd);color:#fff;border-radius:10px;padding:1px 7px;margin-left:4px\">${CH.nao}</b>`:''}</button></div></div>`}
  const cv=SH.inv.map(x=>`<div class="card"><b>📨 Convite para a Carteira</b><p class="hint" style="margin:6px 0 10px"><b>${esc(x.donoEmail||'Alguém')}</b> quer compartilhar a Carteira com você. Vocês dois verão e poderão alterar os mesmos dados, em tempo real.</p><div class="row"><button onclick="shAceitar('${x.id}')">Aceitar</button><button class="sec" onclick="shRecusar('${x.id}')">Recusar</button></div></div>`).join('');
  return cv+`<div class="card"><div class="prm"><span class="ic">👥</span><span class="t"><b>Compartilhar a Carteira</b><small>Convide alguém pelo e-mail: as mudanças aparecem para os dois na hora.</small></span><button class="sec" onclick="shAbrir()">Convidar</button></div></div>`}
 const shCard=()=>`<div id="sh-card">${shCardIn()}</div>`;
@@ -3121,6 +3121,64 @@ function shDlgDesenha(){
   +(L?`<button class="ghost" style="width:100%;margin-top:12px" onclick="shSair()">${dono?'⛔ Parar de compartilhar':'🚪 Sair da Carteira compartilhada'}</button>`:'')
   +`<div class="row" style="margin-top:12px"><button class="sec" style="flex:1" onclick="shDlgFecha()">Fechar</button></div></div>`;
  if(foco){const e=document.getElementById('sh-em');if(e){e.value=val;e.focus()}}}
+/* ---------- v3.6.9: chat da Carteira compartilhada ----------
+   Mensagens em carteiras/{id}/dados/m… (mesma pasta de dados da Carteira, já liberada para os membros pelas regras atuais).
+   Campos: t (hora do servidor), u (uid), n (e-mail de quem enviou), x (texto). Consulta curta a cada 3 s com o chat aberto e a cada 20 s fechado (contador de não lidas). */
+const CH={msgs:[],last:'',busy:false,t:0,open:false,nao:0,err:''};
+const chKey=()=>{const L=shLink();return L?'ma-shchat:'+shUid()+':'+L.id:''};
+const chVisto=()=>{try{return localStorage.getItem(chKey())||''}catch(e){return ''}};
+const chSetVisto=v=>{try{if(chKey())localStorage.setItem(chKey(),v)}catch(e){}};
+async function chConsulta(q){
+ const L=shLink();if(!L)return[];
+ const r=await fsReq('POST',FS_B+'/carteiras/'+L.id+':runQuery',{structuredQuery:Object.assign({from:[{collectionId:'dados'}]},q)});
+ return (r||[]).filter(x=>x.document&&x.document.fields&&x.document.fields.t).map(x=>{const f=x.document.fields;return{id:x.document.name.split('/').pop(),t:f.t.timestampValue,u:shStr(f.u),n:shStr(f.n),x:shStr(f.x)}})}
+const chMaior=(a,b)=>(!a||(b&&new Date(b)>new Date(a)))?b:a;
+function chLimpa(){CH.msgs=[];CH.last='';CH.nao=0;CH.open=false;CH.err='';const o=document.getElementById('ch-ov');if(o)o.remove()}
+async function chAtualiza(){
+ if(CH.busy||!ct()||!nat()||!shLink())return;
+ CH.busy=true;CH.t=Date.now();
+ try{
+  const novas=CH.last?await chConsulta({where:{fieldFilter:{field:{fieldPath:'t'},op:'GREATER_THAN',value:{timestampValue:CH.last}}},orderBy:[{field:{fieldPath:'t'},direction:'ASCENDING'}],limit:200})
+   :(await chConsulta({orderBy:[{field:{fieldPath:'t'},direction:'DESCENDING'}],limit:80})).reverse();
+  CH.err='';
+  if(novas.length){
+   const ids=new Set(CH.msgs.map(m=>m.id));const add=novas.filter(m=>!ids.has(m.id));
+   CH.msgs=CH.msgs.concat(add);CH.last=CH.msgs.length?CH.msgs[CH.msgs.length-1].t:CH.last;
+   const deOutros=add.filter(m=>m.u!==shUid());
+   if(CH.open){chSetVisto(CH.last);chDesenha(true)}
+   else if(deOutros.length){
+    const v=chVisto();CH.nao=CH.msgs.filter(m=>m.u!==shUid()&&(!v||new Date(m.t)>new Date(v))).length;
+    if(CH._avisou!==CH.last){CH._avisou=CH.last;try{bbToast('💬 '+(deOutros[deOutros.length-1].n||'Nova mensagem')+': '+deOutros[deOutros.length-1].x.slice(0,60))}catch(e){}}
+    shCardRefresh()}
+  }else if(!CH.last&&CH.open)chDesenha(false);
+ }catch(e){CH.err=/failed to fetch|network|load failed/i.test(String(e&&e.message||e))?'Sem conexão.':/permission|403/i.test(String((e&&e.code)||'')+(e&&e.message||''))?'Sem permissão para o chat.':'Não foi possível carregar o chat.';if(CH.open)chDesenha(false)}
+ finally{CH.busy=false}}
+async function chEnviar(){
+ const inp=document.getElementById('ch-in'),txt=((inp&&inp.value)||'').trim().slice(0,500),L=shLink();
+ if(!txt||!L)return;
+ const c=ct()||{},id='m'+Date.now().toString(36)+shNovoId().slice(0,6);
+ if(inp)inp.value='';
+ try{
+  await shCommit([{update:{name:shDocName(L.id)+'/dados/'+id,fields:{u:shVal.s(shUid()),n:shVal.s(c.email||c.name||''),x:shVal.s(txt)}},updateTransforms:[{fieldPath:'t',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:false}}]);
+  await chAtualiza()
+ }catch(e){if(inp&&!inp.value)inp.value=txt;info(shErroTxt(e))}}
+function chAbrir(){
+ if(!shLink()){info('Convide alguém para a Carteira para usar o chat.');return}
+ if(document.getElementById('ch-ov'))return;
+ CH.open=true;CH.nao=0;
+ const o=document.createElement('div');o.className='ov';o.id='ch-ov';document.body.appendChild(o);
+ chDesenha(false);chAtualiza().then(()=>{chSetVisto(CH.last)});shCardRefresh()}
+function chFecha(){CH.open=false;const o=document.getElementById('ch-ov');if(o)o.remove();chSetVisto(CH.last);CH.nao=0;if(SH.rp)setTimeout(()=>{if(shLivre()){SH.rp=false;render()}},50);else shCardRefresh()}
+function chHora(t){const d=new Date(t),h=d.toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});return d.toDateString()===new Date().toDateString()?h:d.toLocaleDateString(LOC(),{day:'2-digit',month:'2-digit'})+' '+h}
+function chDesenha(rolar){
+ const o=document.getElementById('ch-ov');if(!o)return;
+ const eu=shUid(),old=document.getElementById('ch-lista'),fim=!old||old.scrollHeight-old.scrollTop-old.clientHeight<80,val=(document.getElementById('ch-in')||{}).value||'',foco=document.activeElement&&document.activeElement.id==='ch-in';
+ const lista=CH.msgs.length?CH.msgs.map(m=>{const meu=m.u===eu;return `<div style="display:flex;justify-content:${meu?'flex-end':'flex-start'};margin:4px 0"><div style="max-width:82%;padding:7px 11px;border-radius:14px;background:${meu?'var(--ac)':'var(--acs)'};color:${meu?'var(--onac)':'var(--ink)'};word-break:break-word">${meu?'':`<small style="display:block;font-weight:700;opacity:.8">${esc((m.n||'').split('@')[0]||'Alguém')}</small>`}${esc(m.x).replace(/\n/g,'<br>')}<small style="display:block;text-align:right;opacity:.65;font-size:11px;margin-top:2px">${chHora(m.t)}</small></div></div>`}).join('')
+  :`<p class="hint" style="text-align:center;margin:30px 0">${CH.err?esc(CH.err):CH.last===''&&CH.busy?'Carregando…':'Nenhuma mensagem ainda. Diga um oi 👋'}</p>`;
+ o.innerHTML=`<div class="dlg" role="dialog" aria-label="Chat da Carteira" style="max-width:420px;display:flex;flex-direction:column;height:min(78vh,560px)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><b>💬 Chat da Carteira</b><button class="ghost" onclick="chFecha()" aria-label="Fechar">✕</button></div><div id="ch-lista" style="flex:1;overflow:auto;padding:2px">${lista}${CH.err&&CH.msgs.length?`<p class="hint" style="text-align:center">${esc(CH.err)}</p>`:''}</div><div class="row" style="margin-top:8px"><input id="ch-in" maxlength="500" placeholder="Escreva uma mensagem" autocomplete="off" onkeydown="if(event.key==='Enter')chEnviar()"><button onclick="chEnviar()" aria-label="Enviar">➤</button></div></div>`;
+ const l=document.getElementById('ch-lista');if(l&&(rolar&&fim||!old))l.scrollTop=l.scrollHeight;else if(l&&old)l.scrollTop=old.scrollTop;
+ const i=document.getElementById('ch-in');if(i){i.value=val;if(foco||!old)i.focus()}}
+setInterval(()=>{try{if(document.hidden||!nat()||!ct()||!shLink()||CH.busy)return;if(Date.now()-CH.t>=(CH.open?3000:20000))chAtualiza()}catch(e){}},1500);
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};
@@ -7394,6 +7452,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.9':[
+   '💬 Chat da Carteira compartilhada: converse com quem divide a Carteira com você, com aviso de mensagem nova e contador de não lidas. O chat fica só entre as pessoas da Carteira.'
+  ],
   '3.6.8':[
    '👥 Carteira compartilhada: convide outra pessoa pelo e-mail (Gmail) e as duas passam a ver e alterar a mesma Carteira, com as mudanças aparecendo na hora para as duas. Só o menu Carteira é compartilhado; o resto do app continua só seu.'
   ],

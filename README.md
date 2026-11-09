@@ -2,6 +2,11 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Carteira compartilhada e chat (v3.6.8 e 3.6.9)
+
+- Na **Carteira** há o cartão **👥 Compartilhar a Carteira**: o dono convida pelo e-mail (Gmail) e a outra pessoa aceita na própria Carteira. Só o menu Carteira é compartilhado. As mudanças são enviadas em ~1 s e o outro aparelho confere a cada 3 s (20 s em outras telas); edições simultâneas são juntas item a item (`shMerge`). Dados em `carteiras/{id}` e `carteiras/{id}/dados/p*`. Exige as regras do `firestore.rules` publicadas, app instalado (APK) e conta Google. Máximo de 5 pessoas.
+- **Chat (v3.6.9)**: botão **💬 Chat** no cartão. As mensagens ficam em `carteiras/{id}/dados/m…` (campos `t` hora do servidor, `u`, `n`, `x`), então **não precisa mudar as regras**: a regra de `dados/{parte}` já libera só os membros. Atualiza a cada 3 s com o chat aberto e a cada 20 s fechado (contador de não lidas e aviso). Ao **Parar de compartilhar**, o dono apaga também as mensagens (até 400). Máx. 500 caracteres por mensagem; mostra as últimas 80 ao abrir.
+
 ## Atualizações do aplicativo
 
 - **Quem tem o APK 2.0 ou anterior** vê na tela Início um cartão com o botão **BAIXAR ATUALIZAÇÃO**, que abre a pasta do Google Drive (`APK_URL` no `index.html`) com o APK novo. É só instalar por cima, sem desinstalar. **Agora não** esconde o cartão por 3 dias.
