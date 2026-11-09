@@ -909,7 +909,10 @@ main{position:relative;z-index:1}
 
 /* ---------- recado do criador (02/11 e 03/11) ---------- */
 .dev-dlg{position:relative;padding-top:34px;text-align:center}
-.dev-dlg p{font-weight:700;line-height:1.45;margin:6px 0 0}
+.dev-dlg p{font-weight:400;line-height:1.5;margin:10px 0 0}
+.dev-dlg p.dev-t{font-size:17px;margin-top:6px}
+.dev-dlg p b{font-weight:700}
+.dev-wa{display:block;margin-top:16px;padding:13px 16px;border-radius:14px;background:#25D366;color:#fff;font-weight:700;font-size:15px;text-decoration:none;text-align:center}
 .dev-x{position:absolute;top:8px;right:8px;width:36px;height:36px;min-width:0;padding:0;border-radius:50%;border:0;background:var(--bg);color:var(--tx);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
 
 /* ---------- recado: guia das Configurações (aparece uma única vez) ---------- */
@@ -6874,17 +6877,24 @@ function vEscanear(){
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>applyTheme())}catch(e){}
 
 
-/* ---------- recado do criador: aparece 1 vez em 02/11 e 1 vez em 03/11 (por aparelho, vale para qualquer conta) ---------- */
-const DEV_MSG='OLÁ, EU SOU JOÃO O CRIADOR DO APLICATIVO, SE ESTÁ GOSTANDO DO APP MANDA UM OI NO WHATSAPP, 81984264462 E ME DIZ O QUE ESTÁ ACHANDO, SEU FEEDBACK É DE EXTREMA IMPORTÂNCIA, BOM USO DESDE JÁ AGRADEÇO 🙏🏾';
-const DEV_DIAS={'11-02':1,'11-03':1};
+/* ---------- recado do criador: fica no ar por 48 horas e aparece UMA vez por dia (por aparelho, vale para qualquer conta) ----------
+   Janela: começa em DEV_INI e termina 48 h depois. Para um novo recado, mude a data de DEV_INI (ano, mês-1, dia) e o texto abaixo. */
+const DEV_INI=new Date(2026,10,9,0,0,0).getTime(); /* 09/11/2026 às 00:00 (mês começa em 0: 10 = novembro) */
+const DEV_FIM=DEV_INI+48*60*60*1000;               /* 11/11/2026 às 00:00, ou seja, vale 09/11 e 10/11 */
+const DEV_FONE='5581984264462',DEV_FONE_TXT='(81) 98426-4462';
 function recadoCriador(){
- const d=new Date(),mmdd=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
- if(!DEV_DIAS[mmdd])return;
- const key='ma-recado-criador-'+d.getFullYear()+'-'+mmdd;
+ const agora=Date.now();
+ if(agora<DEV_INI||agora>=DEV_FIM)return;
+ const d=new Date(),dia=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const key='ma-recado-criador-'+dia;
  try{if(localStorage.getItem(key))return;localStorage.setItem(key,'1')}catch(e){}
  if(document.querySelector('.dev-ov'))return;
  const o=document.createElement('div');o.className='ov dev-ov';
- o.innerHTML='<div class="dlg dev-dlg" role="alertdialog" aria-label="Mensagem do criador"><button type="button" class="dev-x" aria-label="Fechar">✕</button><p>'+esc(DEV_MSG)+'</p></div>';
+ o.innerHTML='<div class="dlg dev-dlg" role="alertdialog" aria-label="Mensagem do criador"><button type="button" class="dev-x" aria-label="Fechar">✕</button>'
+  +'<p class="dev-t">Olá! Eu sou o <b>João</b>, criador do aplicativo.</p>'
+  +'<p>Espero que esteja gostando! A sua opinião é muito importante para mim. Se possível, envie-me um feedback sobre a sua experiência.</p>'
+  +'<p>Desde já, agradeço. Que Deus abençoe você! 🙏🏾</p>'
+  +'<a class="dev-wa" href="https://wa.me/'+DEV_FONE+'" target="_blank" rel="noopener">💬 WhatsApp: '+DEV_FONE_TXT+'</a></div>';
  document.body.appendChild(o);
  const fim=()=>{document.removeEventListener('keydown',kd,true);o.remove()};
  const kd=e=>{if(e.key==='Escape')fim()};
@@ -7177,6 +7187,9 @@ function micQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelector(
 
 /* Para cada atualização: aumente VERSION no sw.js e acrescente aqui a mesma versão com a lista de novidades. */
 const NOVIDADES={
+  '3.6.7':[
+   '👋 Um recado do criador, em tom mais formal, fica disponível por 48 horas e aparece uma única vez por dia, com atalho direto para enviar o seu feedback pelo WhatsApp.'
+  ],
   '3.6.6':[
    '🎬 Menu Filmes com visual totalmente novo: pôsteres coloridos por gênero, carrosséis, destaques “Mais em cartaz” e “Chegando hoje”, linha do tempo das estreias e folha de detalhes com sinopse, cinemas e trailer.',
    '📺 Streaming agora tem as logos da Netflix, Prime Video, Disney+, Apple TV+, HBO Max e Paramount+, com seletor de plataforma e uma fileira de lançamentos para cada uma.'
