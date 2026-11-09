@@ -7168,7 +7168,7 @@ function recadoQuandoLivre(n){n=n||0;if(PIN_LK||permAsking||document.querySelect
 })();
 
 /* ---------- comando de voz na lista de compras (segure o botão e fale: "arroz turquesa 6,99") ---------- */
-const PTN={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30,quarenta:40,cinquenta:50,sessenta:60,setenta:70,oitenta:80,noventa:90,cem:100,cento:100,duzentos:200,trezentos:300,quatrocentos:400,quinhentos:500,seiscentos:600,setecentos:700,oitocentos:800,novecentos:900};
+const PTN={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,catorze:14,quatorze:14,quinze:15,dezesseis:16,dezessete:17,dezoito:18,dezenove:19,vinte:20,trinta:30,quarenta:40,cinquenta:50,sessenta:60,setenta:70,oitenta:80,noventa:90,cem:100,cento:100,duzentos:200,trezentos:300,quatrocentos:400,quinhentos:500,seiscentos:600,setecentos:700,oitocentos:800,novecentos:900,duzentas:200,trezentas:300,quatrocentas:400,quinhentas:500,seiscentas:600,setecentas:700,oitocentas:800,novecentas:900};
 const ptRank=v=>v>=100?3:v>=20?2:v>=10?0:1;
 /* troca números falados por dígitos: "seis e noventa e nove" -> "6 99"; "cento e cinco" -> "105" */
 function ptNumeros(txt){
@@ -7185,10 +7185,38 @@ function ptNumeros(txt){
   gr.push(cur);out.push(gr.join(' '));i=j}
  return out.join(' ')}
 /* Entende frases como "arroz turquesa 6,99", "feijão 8 e 49", "leite seis reais e noventa e nove centavos". */
-function parseVoz(txt){
+/* prepara o texto falado: números por extenso, “vírgula”, “meio quilo”, “um quilo e meio”, “mil gramas”… devolve texto com dígitos */
+function vzPreparo(txt){
  let t=String(txt||'').replace(/R\s*\$\s*/gi,' ').replace(/\s+/g,' ').trim();
- t=ptNumeros(t).replace(/(\d)\s*(?:v[ií]rgula)\s*(\d)/gi,'$1,$2');
- let kg=false;const mk=/\s*\b(?:por|o|a|\/)\s*(?:kg|quilos?|quilogramas?)\b/i;if(mk.test(t)){kg=true;t=t.replace(mk,' ')}
+ t=t.replace(/\bmil\s+(?=gramas?\b|gr\b)/gi,'1000 ').replace(/\b(\d)\s*(?:v[ií]rgula|ponto)\s*(\d)/gi,'$1,$2');
+ t=ptNumeros(t).replace(/(\d)\s*(?:v[ií]rgula|ponto)\s*(\d)/gi,'$1,$2');
+ const KW='(?:quilogramas?|quilos?|kilos?|kgs?|k\\.?\\s?g\\.?)';
+ t=t.replace(new RegExp('\\b(?:meio|meia)\\s+'+KW+'(?![a-zà-ÿ])','gi'),' 500 gramas ')
+  .replace(new RegExp('\\b(\\d+)\\s*'+KW+'\\s+e\\s+(?:meio|meia)\\b','gi'),(a,n)=>' '+(+n+0.5).toString().replace('.',',')+' kg ')
+  .replace(new RegExp('\\b(\\d+)\\s*'+KW+'\\s+e\\s+(\\d{2,3})\\s*(?:gramas?|gr|g)\\b','gi'),(a,n,g)=>' '+((+n)*1000+(+g))+' gramas ')
+  .replace(/(\d)\s*(kg|g|gr)(?![a-zà-ÿ])/gi,'$1 $2');
+ return t.replace(/\s+/g,' ').trim()}
+/* Entende frases como “arroz turquesa 6,99”, “feijão 8 e 49”, “carne 500 gramas 25,90 o quilo”, “banana dois quilos e meio 7,99”,
+   “queijo meio quilo 40 reais o quilo”, “frango 2 kg total 31,80”, “leite 3 unidades 4,50”. */
+function parseVoz(txt){
+ let t=vzPreparo(txt);
+ let kg=false,peso=null,total=false,qtd=null;
+ /* preço por quilo: “o quilo”, “por kg”, “/kg”, “cada quilo”… */
+ const mk=/\s*(?:\b(?:por|pelo|pela|o|a|no|do|cada)\s*|\/\s*)(?:kg|kgs|quilos?|kilos?|quilogramas?|quil[aã]o)(?![a-zà-ÿ])/i;
+ if(mk.test(t)){kg=true;t=t.replace(mk,' ')}
+ /* “total” / “ao todo”: o valor dito é o da compra toda, não o do quilo */
+ const mt=/\s*\b(?:no total|ao todo|total|deu|ficou)\b\s*/i;if(mt.test(t)){total=true;t=t.replace(mt,' ')}
+ /* quantidade em peso: “500 gramas”, “1,5 kg” */
+ let pesoSoNum=null;
+ const mw=/(\d{1,5}(?:[.,]\d{1,3})?)\s*(kg|kgs|quilogramas?|quilos?|kilos?|gramas?|gr|grs|g)(?![a-zà-ÿ])/i;
+ const w=t.match(mw);
+ if(w){const raw=w[1],isKg=/^(?:k|q)/i.test(w[2]),n=+raw.replace(',','.');
+  /* “banana 7,99 kg”: só um número com 2 casas antes de kg é o preço do quilo */
+  const resto=(t.slice(0,w.index)+' '+t.slice(w.index+w[0].length));
+  const outro=/\d/.test(resto.replace(/\b1000\b/,''));
+  if(isKg&&/^\d+[.,]\d{2}$/.test(raw)&&!outro&&n>=1.5){kg=true;t=resto+' '+raw}
+  else{peso=isKg?n*1000:n;t=resto}}
+ /* preço */
  const P=[
   [/(\d{1,4})\s*[,.]\s*(\d{1,2})(?!\d)/g,(a,b)=>+(a+'.'+String(b).padEnd(2,'0'))],
   [/(\d{1,4})\s*(?:reais|real)\s*(?:e\s*)?(\d{1,2})(?:\s*centavos?)?(?!\d)/g,(a,b)=>+(a+'.'+String(b).padStart(2,'0'))],
@@ -7201,11 +7229,21 @@ function parseVoz(txt){
   if(v>0&&v<10000){preco=Math.round(v*100)/100;nome=(t.slice(0,m.index)+' '+t.slice(m.index+m[0].length));break}}
  nome=nome.replace(/\b(?:reais|real|centavos?)\b/gi,' ')
   .replace(/^\s*(?:por favor\s+)?(?:adicionar|adicione|adiciona|anotar|anote|colocar|coloque|coloca|incluir|inclua|registrar|registre|comprar|compre)\s+/i,'')
-  .replace(/\s+(?:por|a|de|custa|custou|est[aá]|no valor de|valor|pre[cç]o|na promo[cç][aã]o)\s*$/i,'')
-  .replace(/[^\wÀ-ÿ%.,\/\- ]/g,' ').replace(/\s+/g,' ').replace(/^[\s.,\-\/]+|[\s.,\-\/]+$/g,'');
+  .replace(/\s+(?:cada|a unidade|por unidade|a unid)\s*$/i,'')
+  .replace(/\s+(?:por|a|de|custa|custou|est[aá]|no valor de|valor|pre[cç]o|na promo[cç][aã]o)\s*$/i,'');
+ /* quantidade por unidade: “3 unidades de arroz”, “2 pacotes de feijão” */
+ const mq=nome.match(/(?:^|\s)(\d{1,2})\s*(?:x|vezes|unidades?|und|un|pacotes?|caixas?|latas?|garrafas?|potes?|sacos?|bandejas?)(?![a-zà-ÿ])\s*(?:de\s+)?/i);
+ if(mq&&peso==null&&!kg){qtd=+mq[1];nome=nome.slice(0,mq.index)+' '+nome.slice(mq.index+mq[0].length)}
+ nome=nome.replace(/[^\wÀ-ÿ%.,\/\- ]/g,' ').replace(/\s+/g,' ').replace(/^\s*(?:de|do|da|dos|das)\s+/i,'').replace(/^[\s.,\-\/]+|[\s.,\-\/]+$/g,'');
  const peq=/^(?:de|da|do|das|dos|e|em|no|na|com|para|sem)$/;
  nome=nome.split(' ').map((w,i)=>i&&peq.test(w.toLowerCase())?w.toLowerCase():(w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())).join(' ').slice(0,60);
- return {nome,preco,un:kg?'kg':'un'}}
+ let un='un',qty=1;
+ if(peso!=null&&peso>0){
+  if(total&&preco!=null){preco=Math.round(preco/(peso/1000)*100)/100}
+  if(peso<1000){un='g';qty=Math.round(peso)}else{un='kg';qty=Math.round(peso)/1000}
+ }else if(kg)un='kg';
+ else if(qtd)qty=qtd;
+ return {nome,preco,un,qty,peso:peso!=null&&peso>0,kg}}
 
 const V={hold:false,on:false,done:false,fin:false,txt:'',acc:'',erro:'',rs:0,seq:0,max:null,sr:null,ls:null,ls2:null,tm:null,undo:null};
 function vozBolha(html,cls,btn){let b=$('#voz');if(!b){b=document.createElement('div');b.id='voz';b.setAttribute('role','status');document.body.appendChild(b)}
@@ -7257,7 +7295,7 @@ async function vozIni(ev){
     else vozMicNegado();
     return}
    try{const a=await N.available();if(a&&a.available===false){V.hold=false;clearTimeout(V.max);vozAviso('⚠️','O reconhecimento de voz não está disponível neste celular. <small>Confira se o app Google está instalado e atualizado.</small>',8000);return}}catch(e){}
-   const ouvindo=()=>vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');
+   const ouvindo=()=>vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · carne 500 gramas 25,90 o quilo · banana 2 quilos 7,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');
    ouvindo();vozBt(1);V.on=true;
    const opt={language:LOC(),maxResults:3,partialResults:true,popup:false};
    V.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m){[V.acc,V.txt]=vzJunta(V.acc,V.txt,m);if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(vozTxt())+'<small>Solte o botão para registrar</small></span>','ouve')}});
@@ -7271,7 +7309,7 @@ async function vozIni(ev){
   const r=new W();r.lang=LOC();r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
   r.onresult=e=>{let x='';for(let i=0;i<e.results.length;i++)x+=e.results[i][0].transcript;V.acc='';V.txt=x;if(!V.done)vozBolha('<span class="mic">🎤</span><span class="tx">'+esc(x)+'<small>Solte o botão para registrar</small></span>','ouve')};
   const sq=V.seq;r.onerror=e=>{V.erro=e&&e.error;setTimeout(()=>{if(sq===V.seq)vozProc()},300)};r.onend=()=>{if(sq===V.seq)vozProc()};
-  vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');vozBt(1);
+  vozBolha('<span class="mic">🎤</span><span class="tx">Ouvindo…<small>Diga: produto e preço. Ex.: arroz turquesa 6,99 · carne 500 gramas 25,90 o quilo · banana 2 quilos 7,99 · ou FINALIZAR, EXCLUIR (produto), TROCAR PARA (mercado)</small></span>','ouve');vozBt(1);
   V.sr=r;V.on=true;r.start()
  }catch(e){V.hold=false;V.on=false;clearTimeout(V.max);vozBt(0);
   const why=String((e&&(e.message||e.errorMessage))||e||'').slice(0,120);
@@ -7279,10 +7317,10 @@ async function vozIni(ev){
 async function vozFim(){
  if(!V.hold&&!V.on)return;V.hold=false;if(!V.on||V.fin)return;V.fin=true;clearTimeout(V.max);
  const N=nat()?plug('SpeechRecognition'):null,sq=V.seq,fim=()=>{if(sq===V.seq)vozProc()};
- /* espera meio segundo antes de parar, para não cortar a última palavra (o preço) */
- setTimeout(async()=>{try{if(N){await N.stop();setTimeout(fim,700)}else if(V.sr){V.sr.stop();setTimeout(fim,1500)}else fim()}catch(e){fim()}},500);
+ /* espera um pouco antes de parar, para não cortar a última palavra (o preço ou “o quilo”) */
+ setTimeout(async()=>{try{if(N){await N.stop();setTimeout(fim,900)}else if(V.sr){V.sr.stop();setTimeout(fim,1500)}else fim()}catch(e){fim()}},850);
  /* plano B: em qualquer caso a escuta é encerrada e a barra some */
- setTimeout(fim,3500)}
+ setTimeout(fim,4200)}
 /* cancela tudo: para o microfone e some com a barra */
 async function vozAbort(){
  clearTimeout(V.max);V.seq++;const N=nat()?plug('SpeechRecognition'):null;
@@ -7340,22 +7378,23 @@ function vozAdd(txt){
  const r=parseVoz(txt);
  if(!r.nome){vozBolha('<span class="mic">🤔</span><span class="tx">Não entendi o produto<small>Ouvi: “'+esc(txt)+'”</small></span>');vozAuto(4500);return}
  const k=r.nome.toLowerCase(),mem=S.prods[k],sem=r.preco==null;
- const preco=sem?((mem&&mem.price)||0):r.preco,un=r.un;
+ const preco=sem?((mem&&mem.price)||0):r.preco;let un=r.un,qty=r.qty||1;
+ if(un==='un'&&!r.peso&&!r.kg&&mem&&mem.unit==='kg'){un='kg';qty=1}
  const mkn=(S.market||'').trim(),id=mkId(mkn)||addMk(mkn),mercado=(MK().find(x=>x.id===id)||{nome:mkn}).nome;
  const u={};
- const ja=S.shop.find(x=>!x.done&&nrm(x.title)===nrm(r.nome)&&wt(x.unit)===(un==='kg'));
- if(ja){u.ja=ja;u.old=ja.price;ja.price=preco}
- else{const it={id:uid(),title:r.nome,price:preco,unit:un,qty:1,done:false};S.shop.push(it);u.novo=it.id}
- if(preco>0){S.scans=S.scans.filter(x=>!(x.market===mercado&&x.date===HOJE&&nrm(x.title)===nrm(r.nome)&&wt(x.unit)===(un==='kg')));
-  const sc={id:uid(),market:mercado,date:HOJE,title:r.nome,price:preco,unit:un};S.scans.unshift(sc);u.scan=sc.id;
-  S.prods[k]={name:r.nome,price:preco,unit:un}}
+ const ja=S.shop.find(x=>!x.done&&nrm(x.title)===nrm(r.nome)&&wt(x.unit)===wt(un));
+ if(ja){u.ja=ja;u.old=ja.price;u.oq=ja.qty;u.ou=ja.unit;ja.price=preco;if(r.peso){ja.qty=qty;ja.unit=un}}
+ else{const it={id:uid(),title:r.nome,price:preco,unit:un,qty:qty,done:false};S.shop.push(it);u.novo=it.id}
+ if(preco>0){S.scans=S.scans.filter(x=>!(x.market===mercado&&x.date===HOJE&&nrm(x.title)===nrm(r.nome)&&wt(x.unit)===wt(un)));
+  const sc={id:uid(),market:mercado,date:HOJE,title:r.nome,price:preco,unit:wt(un)?'kg':'un'};S.scans.unshift(sc);u.scan=sc.id;
+  S.prods[k]={name:r.nome,price:preco,unit:wt(un)?'kg':'un'}}
  save();V.undo=u;
  if(tab==='compras'&&sub==='atual')render();
- vozBolha('<span class="mic">'+(sem&&!preco?'⚠️':'✅')+'</span><span class="tx">'+esc(r.nome)+(preco?' · '+brl(preco)+(un==='kg'?'/kg':''):'')+(ja?' (preço atualizado)':' adicionado')+'<small>'+(sem&&!preco?'Sem preço: toque no valor na lista para digitar.':'Ouvi: “'+esc(txt)+'”')+'</small></span>',null,'Desfazer');
+ vozBolha('<span class="mic">'+(sem&&!preco?'⚠️':'✅')+'</span><span class="tx">'+esc(r.nome)+(preco?' · '+brl(preco)+(wt(un)?'/kg':''):'')+(wt(un)&&r.peso&&preco?' · '+qtyTxt({unit:un,qty:qty})+' = '+brl(lineTotal({price:preco,unit:un,qty:qty})):'')+(!wt(un)&&qty>1?' · '+qty+' un':'')+(ja?' (preço atualizado)':' adicionado')+'<small>'+(sem&&!preco?'Sem preço: toque no valor na lista para digitar.':'Ouvi: “'+esc(txt)+'”')+'</small></span>',null,'Desfazer');
  const bu=$('#voz-u');if(bu)bu.onclick=vozDesfaz;vozAuto(7000)}
 function vozDesfaz(){const u=V.undo;V.undo=null;if(!u)return;
  if(u.fn){u.fn();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800);return}
- if(u.novo)S.shop=S.shop.filter(x=>x.id!==u.novo);else if(u.ja)u.ja.price=u.old;
+ if(u.novo)S.shop=S.shop.filter(x=>x.id!==u.novo);else if(u.ja){u.ja.price=u.old;if(u.ou){u.ja.qty=u.oq;u.ja.unit=u.ou}}
  if(u.scan)S.scans=S.scans.filter(x=>x.id!==u.scan);
  save();if(tab==='compras'&&sub==='atual')render();vozBolha('<span class="mic">↩️</span><span class="tx">Desfeito</span>');vozAuto(1800)}
 
@@ -7557,7 +7596,7 @@ const NOVIDADES={
   '💰 Kayla na Carteira: “limpar valores” ou “zerar valores” coloca todos os valores em R$ 0,00, mantendo lançamentos, nomes e datas. Dá para desfazer.'
  ],
  '3.1.5':[
-  '🎙️ Kayla por voz: toque no microfone do painel e fale o comando. Ela só obedece: não lê as respostas em voz alta.'
+  '🎙️ Kayla por voz: segure o microfone do painel, fale o comando e solte. Ela só obedece: não lê as respostas em voz alta.'
  ],
  '3.1.4':[
   '🌃 Novo tema “Cyberpunk”: cidade neon, chuva, carros voadores, fonte futurista e ícones angulares.'
@@ -7700,7 +7739,7 @@ const RECADO_KAYLA=[
  ['💰','Carteira','“gastei 50 no mercado”, “recebi 300 de freela”, “conta fixa luz 120 dia 10”, “meu salário é 2500”. Também edita e apaga gastos.'],
  ['🧭','Abrir telas','“abrir carteira”, “abrir notas”, “ir para o calendário”.'],
  ['🎨','Ajustes do app','“tema escuro”, “tema cyberpunk”, “ativar lembretes”.'],
- ['🎙️','Falar com ela','Toque no microfone do chat e diga o comando.'],
+ ['🎙️','Falar com ela','Segure o microfone do chat, diga o comando e solte.'],
  ['🗣️','Chamar pelo nome','Já vem ligado (Configurações › Assistente Kayla › Chamar pelo nome): com o app aberto, diga “Kayla, marcar dentista amanhã às 14h” e ela executa.'],
  ['🧑‍🏫','Tour e dúvidas','Diga “tour” para aprender o app, ou pergunte como algo funciona.']];
 function recadoKayla(){
@@ -8529,11 +8568,14 @@ function kAdd(who,txt,chips){K.msgs.push({who:who,txt:txt,chips:chips||null});kD
 /* ---------- Kayla por voz: toque no 🎙️ e fale o comando. Ela só obedece: não fala nem lê as respostas em voz alta. ---------- */
 let K_VOZ=null;
 function kMicUi(on){const b=$('#kay-mic'),i=$('#kay-i');
- if(b){b.classList.toggle('listening',!!on);b.textContent=on?'⏹️':'🎙️';b.setAttribute('aria-label',on?'Parar de ouvir':'Falar com a Kayla');b.title=on?'Toque para parar':'Toque e fale o comando'}
- if(i){if(on){if(i.dataset.ph==null)i.dataset.ph=i.placeholder;i.placeholder='Ouvindo… fale o comando'}else if(i.dataset.ph!=null){i.placeholder=i.dataset.ph;delete i.dataset.ph}}}
+ if(b){b.classList.toggle('listening',!!on);b.textContent='🎙️';b.setAttribute('aria-label',on?'Ouvindo: solte para enviar':'Segure para falar com a Kayla');b.title=on?'Solte para enviar':'Segure, fale e solte'}
+ if(i){if(on){if(i.dataset.ph==null)i.dataset.ph=i.placeholder;i.placeholder='Ouvindo… solte quando terminar'}else if(i.dataset.ph!=null){i.placeholder=i.dataset.ph;delete i.dataset.ph}}}
 function kVoiceClean(t){try{if(t.ls)t.ls.remove()}catch(e){}try{if(t.ls2)t.ls2.remove()}catch(e){}t.ls=t.ls2=null;clearTimeout(t.sil)}
 function kVoiceAbort(){const t=K_VOZ;if(!t)return;t.dead=true;K_VOZ=null;clearTimeout(t.max);kVoiceClean(t);
  try{if(t.n)t.n.stop();else if(t.w)t.w.abort()}catch(e){}kMicUi(false)}
+function kVoiceSolta(){const t=K_VOZ;if(!t||t.dead)return;t.soltou=true;
+ /* espera um instante após soltar, para não cortar a última palavra */
+ setTimeout(()=>{if(!t.dead)kVoiceStop()},700)}
 async function kVoiceStop(){const t=K_VOZ;if(!t||t.dead)return;
  try{if(t.n)await t.n.stop();else if(t.w)t.w.stop()}catch(e){}
  setTimeout(()=>{if(!t.dead)t.fim(t.full?t.full():(t.parcial||''))},2500)}
@@ -8548,7 +8590,7 @@ async function kVoice(){
   txt=String(txt||'').trim();
   if(txt)kRun(txt);
   else if(t.err==='not-allowed'||t.err==='service-not-allowed')kAdd('k','Preciso da permissão do microfone para ouvir você. Libere em Configurações › Permissões.');
-  else kAdd('k','Não ouvi nada. Toque no 🎙️ e fale de novo.')};
+  else kAdd('k','Não ouvi nada. Segure o 🎙️, fale e solte.')};
  K_VOZ=t;kMicUi(true);t.max=setTimeout(()=>{if(!t.dead)kVoiceStop()},20000);
  try{
   try{await wakeParar()}catch(e){}
@@ -8560,16 +8602,21 @@ async function kVoice(){
    let r=null,ult=null;const ini0=Date.now();
    /* guarda o que foi ouvindo (parcial) para não perder o final da frase quando o Android encerra cedo */
    try{t.ls=await N.addListener('partialResults',e=>{const m=e&&e.matches&&e.matches[0];if(m&&!t.dead)[t.acc,t.parcial]=vzJunta(t.acc,t.parcial,m)})}catch(e){}
-   try{t.ls2=await N.addListener('listeningState',e=>{if(e&&e.status==='stopped'&&Date.now()-ini0>700&&!t.dead){clearTimeout(t.sil);t.sil=setTimeout(()=>{if(!t.dead)t.fim(t.full())},900)}})}catch(e){}
+   const opt={language:LOC(),maxResults:5,partialResults:true,popup:false};t.rs=0;
+   try{t.ls2=await N.addListener('listeningState',e=>{
+    /* dedo ainda no botão: o Android parou por silêncio, então volta a ouvir e guarda o que já foi dito */
+    if(e&&e.status==='stopped'&&t.seg&&!t.soltou&&!t.dead&&t.rs<8){t.rs++;t.acc=t.full();t.parcial='';N.start(opt).catch(()=>{});return}
+    if(e&&e.status==='stopped'&&Date.now()-ini0>700&&!t.dead){clearTimeout(t.sil);t.sil=setTimeout(()=>{if(!t.dead)t.fim(t.full())},1300)}})}catch(e){}
    for(let tent=0;tent<3&&!t.dead;tent++){
     const ini=Date.now();
-    try{r=await N.start({language:LOC(),maxResults:5,partialResults:true,popup:false});ult=null;break}
+    try{r=await N.start(opt);ult=null;break}
     catch(e){ult=e;const msg=String((e&&(e.message||e.errorMessage))||e||'');
      if(/permission|denied|not-allowed/i.test(msg))throw e;
      /* “Ongoing speech recognition”, ocupado ou erro logo ao abrir: solta o reconhecedor e tenta de novo */
      if(Date.now()-ini>4000)break;
      try{await Promise.race([N.stop(),new Promise(ok=>setTimeout(ok,800))])}catch(x){}
      await new Promise(ok=>setTimeout(ok,500))}}
+   if(t.soltou&&!t.dead){try{await N.stop()}catch(x){}}
    if(t.dead)return;
    const fin=String((r&&r.matches&&r.matches[0])||'').trim(),par=t.full();
    /* o resultado final costuma ser o melhor; se o parcial ouviu bem mais, usa o parcial */
@@ -8661,8 +8708,15 @@ function kSync(){const ok=!!(S.user&&S.user.name)&&!kCfg().off&&!(typeof PIN_LK!
  let f=$('#kay-f');
  if(!f){f=document.createElement('button');f.id='kay-f';f.type='button';f.setAttribute('aria-label','Abrir a assistente Kayla');f.innerHTML=`<img src="${K_IMG}" alt="Kayla"><span class="k-dot"></span>`;f.onclick=kOpen;document.body.appendChild(f);
   const p=document.createElement('div');p.id='kay-p';p.setAttribute('role','dialog');p.setAttribute('aria-label','Kayla, assistente');
-  p.innerHTML=`<div class="k-h"><img src="${K_IMG}" alt=""><div><b>Kayla</b><small>assistente do JC ORGANIZA</small></div><button type="button" id="kay-x" aria-label="Fechar">✕</button></div><div id="kay-msgs"></div><div class="k-in"><input id="kay-i" placeholder="Escreva para a Kayla…" autocomplete="off" enterkeyhint="send"><button type="button" id="kay-mic" aria-label="Falar com a Kayla" title="Toque e fale o comando">🎙️</button><button type="button" id="kay-s" aria-label="Enviar">➤</button></div>`;document.body.appendChild(p);
-  $('#kay-x').onclick=kClose;const env=()=>{const i=$('#kay-i'),v=i.value;i.value='';kRun(v)};$('#kay-s').onclick=env;$('#kay-mic').onclick=kVoice;$('#kay-i').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();env()}});
+  p.innerHTML=`<div class="k-h"><img src="${K_IMG}" alt=""><div><b>Kayla</b><small>assistente do JC ORGANIZA</small></div><button type="button" id="kay-x" aria-label="Fechar">✕</button></div><div id="kay-msgs"></div><div class="k-in"><input id="kay-i" placeholder="Escreva para a Kayla…" autocomplete="off" enterkeyhint="send"><button type="button" id="kay-mic" aria-label="Segure para falar com a Kayla" title="Segure, fale e solte">🎙️</button><button type="button" id="kay-s" aria-label="Enviar">➤</button></div>`;document.body.appendChild(p);
+  $('#kay-x').onclick=kClose;const env=()=>{const i=$('#kay-i'),v=i.value;i.value='';kRun(v)};$('#kay-s').onclick=env;(()=>{const b=$('#kay-mic');let seg=false,ign=false;
+ b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(x){}
+  if(K_VOZ){ign=true;kVoiceStop();return}   /* ouvindo sozinha (chamou “Kayla”): tocar encerra */
+  ign=false;seg=true;kVoice();if(K_VOZ)K_VOZ.seg=true});
+ const solta=()=>{if(!seg)return;seg=false;if(ign)return;kVoiceSolta()};
+ b.addEventListener('pointerup',solta);b.addEventListener('pointercancel',solta);
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+ b.style.touchAction='none';b.style.userSelect='none';b.style.webkitUserSelect='none'})();$('#kay-i').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();env()}});
   p.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.k-c button');if(b)kRun(b.dataset.c)});
   if(!kCfg().seen){const esp=n=>{if(K.open||kCfg().seen||!(S.user&&S.user.name)||n>90)return;if(document.querySelector('.ov')||(typeof permAsking!=='undefined'&&permAsking)||(typeof PIN_LK!=='undefined'&&PIN_LK)){setTimeout(()=>esp(n+1),2000);return}kOpen()};setTimeout(()=>esp(0),6000)}}
  f.style.display=ok&&!K.open?'':'none';if(!ok){const p=$('#kay-p');if(p)p.classList.remove('on');K.open=false}}
@@ -9187,6 +9241,7 @@ function compraTexto(t){
  r=r.replace(R('\\s+(?:na|a|à|pra|para|em)\\s+(?:minha\\s+)?(?:lista|feira|compras)(?:\\s+de\\s+(?:compras|feira))?$'),'').replace(R('^(?:na|a|à|pra|para)\\s+(?:minha\\s+)?(?:lista|feira|compras)(?:\\s+de\\s+(?:compras|feira))?\\s*[:,-]?\\s*'),'').replace(/^mais\s+/,'').trim();
  if(!r||/\?/.test(r)||DATAX.test(r)||NAOCOMPRA.test(r))return null;
  if(!verbo&&(COMANDO.test(N(r))||r.length>80))return null;
+ if(typeof vzPreparo==='function'&&/\b(?:gramas?|quilos?|kilos?|kg)\b/i.test(r))r=vzPreparo(r);
  const segs=segmentos(r);if(!segs.length||segs.length>15)return null;
  const its=[];for(const sg of segs){const it=itemParse(sg);if(!it)return null;its.push(it)}
  if(!its.some(i=>i.price!=null))return null;
