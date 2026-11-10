@@ -2141,6 +2141,53 @@ function atParse(txt){const out=[];let c=null;txt.split('\n').map(l=>l.trim()).f
  const a=l.split('|');c.it.push({n:a[0],d:a[1],de:+a[2]||0,at:+a[3],app:+a[4],car:+a[5],lim:a[6]||''})});return out}
 /* Listas de produtos e preços (PDF): um único preço promocional, validade própria de cada lista */
 const AT_LISTAS=[
+{t:'Folheto · Especial Bazar',ini:'2026-11-10',fim:'2026-11-15',txt:`
+Cadeira de Praia Aço Mor|Alta, unidade|79.00|89.90
+Conjunto de Frigideiras Tramontina|Kit com 2 unidades|55.90|79.90
+Copo Oca Nadir|300ml, conjunto com 6 unidades|19.90|29.90
+Esponja Multiuso Alklin|Unidade|0.99|1.29
+Flutuador Mor|1,60m, unidade|6.99|10.90
+Folha de Alumínio Pratsy|30cm x 4m, rolo|2.99|4.19
+Frigideira Panelux Franceza|18cm antiaderente, unidade|26.90|39.90
+Jarra Ladrilhos Nadir|1,2L com tampa, unidade|16.90|21.90
+Jogo de Facas Tramontina|Preto/Vermelho, 4 peças|46.90|55.90
+Mop Giratório Alklin|12L, unidade|89.00|109.00
+Odorizante em Gel New Fresh Luxcar|Vários tipos, pote com 60g|8.99|13.90
+Panela de Pressão Panelux|3L polida, unidade|79.00|89.90
+Pano Microfibra Luxcar|35x35cm, conjunto com 4 unidades|15.90|19.90
+Piscina Mor|1000 litros, unidade|149.00|249.00
+Pneu Dunlop SP Touring|175/70 R13, unidade (imagem ilustrativa, não acompanha a roda)|298.00|349.00
+Pneu FM800 Dunlop SP|185/65 R15, unidade (imagem ilustrativa, não acompanha a roda)|429.00|479.00
+Prato Primavera Nadir|Fundo/raso, unidade|5.49|6.90
+Copo Nadir Água Paulista|Ref. 7002, unidade|7.90|8.99
+Tigela Marinex Plus|Com tampa plástica, 1,5 litros, unidade|26.90|32.90
+Tigela para Sobremesa Nadir Nature|Com tampa, 200ml, unidade|3.99|4.95
+Mop Sekito Noviça|Com cabo, unidade|65.90|79.90
+Rodo Plástico Noviça|Sem cabo, 40cm, unidade|8.90|10.90
+Vassoura Fácil Noviça|Sem cabo, unidade|7.90|10.90
+Saco de Lixo Brilhus|Preto 30L, rolo com 30 unidades|9.90|12.90
+Esponja Multiuso Esfrebom|Pacote com 4 unidades|4.99|6.49
+Balde Sanremo|8L, unidade|10.90|15.90
+Caixa Organizadora Sanremo|Flex 29L Ref. 941, unidade|35.90|49.90
+Caixa Organizadora Pleion|10L com tampa Ref. 430, unidade|25.90|32.90
+Caixa Organizadora Bioprátika Pleion|2,5L com tampa Ref. 310, unidade|5.99|7.99
+Caixa sem Tampa Bioprátika Pleion|12L Ref. 757, unidade|17.90|24.90
+Pote Hermético Pleion|3,3L Ref. 356, unidade|9.90|14.90
+Porta Detergente/Bucha Plasútil|Tear, unidade|9.90|13.90
+Pote para Açúcar Plasútil|1,15L, unidade|8.90|12.90
+Pote Plasútil|Clic Rosca 1L, unidade|5.99|7.99
+Garrafa Retrô Plasútil|Ref. 8039, 500ml, unidade|6.90|9.90
+Ventilador de Coluna Mondial|40cm, 220v, unidade|199.00|269.00
+Ventilador de Mesa Mondial|30cm, 220v, unidade|109.00|135.00
+Ventilador de Mesa Mondial|40cm, 220v, unidade|139.00|189.00
+Copo Descartável Copobras|ABNT transparente 180ml, pacote com 100 unidades|4.79|5.29
+Areia Higiênica para Gatos Pipicat|Floral, pacote com 4kg|12.90|16.90
+Alimento para Cães Coby|Saco com 10,1kg|37.90|49.90
+Alimento para Cães Champ|Carne e cereal, saco com 18kg|79.00|129.00
+Alimento para Cães Pedigree|Vários tipos, sachê com 100g|2.29|2.99
+Alimento para Gatos Whiskas|Vários sabores, sachê com 85g|2.49|2.99
+Alimento para Cães Bonzo|Carne e cereais, pacote com 15kg|99.00|169.00
+`},
 {t:'Lista de ofertas · Molhos, óleos e maionese',ini:'2026-10-28',fim:'2026-11-06',txt:`
 Extrato de Tomate Elefante Cebola e Alho|Pote 300g|7.50
 Extrato de Tomate Elefante Só Tomate|Pote 300g|7.50
@@ -2318,7 +2365,7 @@ let mmMk='assai';
 function mmSet(k){mmMk=k;render();window.scrollTo(0,0)}
 /* ---------- Promoções: comparador de preços entre mercados ---------- */
 const CMP_MK=[['assai','Assaí','Assaí'],['atacadao','Atacadão','Atacadão'],['novo','Novo Atacarejo','Novo']];
-const CMP_SET=[['Mercearia','🛒'],['Hortifrúti','🥬'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽'],['Utilidades','🏠']];
+const CMP_SET=[['Mercearia','🛒'],['Hortifrúti','🥬'],['Laticínios','🥛'],['Carnes e congelados','🍗'],['Bebidas','🥤'],['Higiene','🧴'],['Limpeza','🧽'],['Utilidades','🏠'],['Pet','🐾']];
 /* Produtos equivalentes: [id, setor, nome, quantidade de referência, Assaí, Atacadão, Novo].
    Cada mercado lista [nome exato do produto no encarte, tamanho da embalagem em relação à referência]. O preço é dividido por esse tamanho,
    para comparar o mesmo conteúdo (ex.: 3L de refrigerante = 3 × a referência de 1 L). Se houver mais de um produto, vale o mais barato. */
@@ -2403,15 +2450,18 @@ const CMP=[
  ['lavaliq','Limpeza','Lava-roupas líquido','1 L',[["Lava-roupas líquido Brilhante fragrâncias",0.9]],[["Lava Roupas Líquido Tixan",3],["Lava Roupas Líquido Dragão Azul",3]],[["Lava Roupas Líquido Becker",5]]],
  ['agsan','Limpeza','Água sanitária','1 L',[["Água sanitária Clorito",5]],null,null],
  ['inset','Limpeza','Inseticida aerossol','380 ml',[["Multi-inseticida Mata Insetos Proinset",0.921053]],[["Inseticida Aerossol SBP",1]],null],
- ['esponja','Limpeza','Esponja multiuso','1 unidade',null,[["Esponja Multiuso Brilhus",1]],[["Esponja Multiuso Tinindo",4]]],
+ ['esponja','Limpeza','Esponja multiuso','1 unidade',null,[["Esponja Multiuso Brilhus",1],["Esponja Multiuso Alklin",1],["Esponja Multiuso Esfrebom",4]],[["Esponja Multiuso Tinindo",4]]],
  ['papeltoalha','Limpeza','Papel toalha (2 rolos)','2 rolos',null,[["Papel Toalha Malu",1]],null],
  ['achoc','Mercearia','Achocolatado em pó','700 g',[["Achocolatado em pó Chocolatto 3 Corações",1]],[["Achocolatado em Pó Chocolatto 3 Corações",1],["Achocolatado em Pó 3 Corações Chocolatto",1.285714]],null],
  ['mussarela','Laticínios','Queijo mussarela (peça)','1 kg',[["Queijo tipo mussarela Davaca",1]],[["Queijo Mussarela Natville Resfriado",1],["Queijo Mussarela Jucurutu Resfriado Lanche",1]],null],
  ['cupim','Carnes e congelados','Cupim bovino','1 kg',[["Cupim bovino resfriado a vácuo Masterboi",1]],[["Carne Bovina Cupim Friboi Congelada",1]],null],
  ['calabresa','Carnes e congelados','Linguiça calabresa','1 kg',[["Linguiça tipo calabresa defumada Sadia",2.5]],[["Linguiça tipo Calabresa Seara",0.4]],null],
  ['pizza','Carnes e congelados','Pizza congelada','460 g',[["Pizza congelada Perdigão sabores",1]],null,[["Pizza Sadia",1]]],
- ['copo','Utilidades','Copos descartáveis 180 ml','100 un',[["Copos transparentes descartáveis Cristalcopo",1]],[["Copo de Plástico Descartável Cristalcopo",1]],null],
- ['termica','Utilidades','Garrafa térmica','1 L',[["Garrafa térmica Gostar Sanremo cores",0.75]],[["Garrafa Térmica Use Mor",1]],null]
+ ['copo','Utilidades','Copos descartáveis 180 ml','100 un',[["Copos transparentes descartáveis Cristalcopo",1]],[["Copo de Plástico Descartável Cristalcopo",1],["Copo Descartável Copobras",1]],null],
+ ['termica','Utilidades','Garrafa térmica','1 L',[["Garrafa térmica Gostar Sanremo cores",0.75]],[["Garrafa Térmica Use Mor",1]],null],
+ ['mop','Utilidades','Mop giratório com balde','1 unidade',[["Mop com balde compacto Brilhus Bettanin",1]],[["Mop Giratório Alklin",1]],null],
+ /* Pet */
+ ['racaocao','Pet','Ração para cães adultos (carne e cereais)','18 kg',[["Alimento para cães adultos sabor carne & cereal Champ",1]],[["Alimento para Cães Champ",1]],null]
 ];
 let mmView='lista',cmpApp=true;try{cmpApp=localStorage.getItem('ma-cmp-app')!=='0'}catch(e){}
 function mmVw(v){mmView=v;render();window.scrollTo(0,0)}
