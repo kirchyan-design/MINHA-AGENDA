@@ -3186,7 +3186,7 @@ function colarBk(){const o=document.createElement('div');o.className='ov';o.inne
 const CN_UF=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 const CN_ST={edital:['📝','Edital publicado','#2f9e6b'],andamento:['🔄','Em andamento','#e08a1e'],final:['🏁','Finalizado','#6b7c88'],prev:['🔮','Previsto','#7c5cd6']};
 const CN_GR=[['M','📘','Nível médio'],['S','🎓','Nível superior'],['MS','📚','Médio e superior']];
-const CN_ATUAL='05/11/2026';
+const CN_ATUAL='10/11/2026';
 /* st: edital (inscrição aberta ou futura; se o prazo passou vira "Em andamento" sozinho) | andamento | final | prev. n: M, S ou MS. Dados de referência: sempre confirme no edital oficial. */
 const CN_DATA=[
 {id:'cd',o:'Câmara dos Deputados',uf:'BR',st:'edital',n:'S',v:'66 + CR',s:'R$ 32.070,88',tx:'R$ 130',fim:'2026-11-17',c:'Analista Legislativo (comunicação, arquivologia, biblioteconomia, engenharias, museólogo, registro e redação)',l:'fivenews.cbnet.net.br/concursos/cd_26_analista'},
@@ -3199,8 +3199,8 @@ const CN_DATA=[
 {id:'dppb',o:'Defensoria Pública da Paraíba',uf:'PB',st:'edital',n:'MS',v:'13 a 20 + CR (2 editais)',s:'R$ 4.042,50 a R$ 5.197,50',b:'FCC',tx:'R$ 103 (médio) / R$ 123 (superior)',fim:'2026-11-13',c:'Técnico e Analista da Defensoria (jurídico, TI, psicologia, serviço social…)',l:'concursosfcc.com.br'},
 {id:'dpsp',o:'Defensoria Pública de São Paulo',uf:'SP',st:'edital',n:'S',v:'70',s:'R$ 29.716 a R$ 34.156,32',b:'FCC',tx:'R$ 250',fim:'2026-11-11',c:'Defensor(a) Público(a)',l:'concursosfcc.com.br'},
 {id:'sead',o:'Secretaria da Administração (BA)',uf:'BA',st:'edital',n:'S',v:'50',s:'R$ 10.860,62',b:'Cesgranrio',tx:'R$ 220',fim:'2026-11-11',c:'Especialista em Políticas Públicas e Gestão Governamental',l:'cesgranrio.org.br'},
-{id:'cbmpe',o:'Corpo de Bombeiros Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'570 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-05',c:'Soldado (510) – médio; 2º Tenente (60) – superior',l:'institutoaocp.org.br'},
-{id:'pmpe',ed:'arquivos.qconcursos.com/regulamento/arquivo/102167/pm-pe-2026-edital-n-1-edital.pdf',o:'Polícia Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'1.320 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-05',c:'Soldado (1.250) – médio; 2º Tenente (70) – superior',l:'institutoaocp.org.br'},
+{id:'cbmpe',o:'Corpo de Bombeiros Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'570 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-23',c:'Soldado (510) – médio; 2º Tenente (60) – superior',ob:'Inscrições prorrogadas até as 14h de 23/11/2026.',l:'institutoaocp.org.br'},
+{id:'pmpe',ed:'arquivos.qconcursos.com/regulamento/arquivo/102167/pm-pe-2026-edital-n-1-edital.pdf',o:'Polícia Militar de Pernambuco',uf:'PE',st:'edital',n:'MS',v:'1.320 + CR',s:'R$ 5.617,92 a R$ 12.937,33',b:'IAOCP',tx:'R$ 180 (soldado) / R$ 220 (2º ten.)',fim:'2026-11-23',c:'Soldado (1.250) – médio; 2º Tenente (70) – superior',ob:'Inscrições prorrogadas até as 14h de 23/11/2026.',l:'institutoaocp.org.br'},
 {id:'pmsc',o:'Polícia Militar de Santa Catarina',uf:'SC',st:'edital',n:'M',v:'500 + suplentes',s:'R$ 8.505 (+ aux. alimentação R$ 550)',b:'IAOCP',tx:'R$ 200',fim:'2026-11-16',c:'Soldado (QPPM)',l:'institutoaocp.org.br'},
 {id:'pmmg',o:'PM de Minas Gerais – Curso de Formação de Oficiais',uf:'MG',st:'edital',n:'S',v:'90 (18 p/ pessoas negras)',s:'R$ 7.912,17 a R$ 12.170,61',tx:'R$ 243',fim:'2026-12-10',c:'Cadete CFO (exige graduação em Direito)',l:'policiamilitar.mg.gov.br/site/crs'},
 {id:'tcego',o:'TCE-GO – Tribunal de Contas de Goiás',uf:'GO',st:'edital',n:'M',v:'16',s:'R$ 11.862,19',b:'FCC',tx:'R$ 100',fim:'2026-11-06',c:'Técnico de Controle Externo (administrativo – 6; TI – 10)',l:'concursosfcc.com.br'},
@@ -3231,6 +3231,13 @@ const CN_DATA=[
 {id:'sluzia',o:'Prefeitura de Santa Luzia',uf:'MG',st:'edital',n:'MS',v:'454 + CR',s:'Até R$ 8.628,87',b:'Fadenor',tx:'R$ 70 a R$ 175',ini:'2026-12-17',fim:'2027-01-15',c:'Analista, assistente administrativo, enfermeiro, professor, psicólogo, procurador',l:'cotec.fadenor.com.br'},
 {id:'paraguacu',o:'Prefeitura de Paraguaçu',uf:'MG',st:'edital',n:'MS',v:'100 + CR',s:'R$ 1.638,83 a R$ 20.128,27',b:'IBDO',tx:'R$ 80 a R$ 150',ini:'2026-12-21',fim:'2027-01-19',c:'Guarda civil, motorista, técnico em enfermagem, enfermeiro, médico, educador…',l:'concursos.ibdoprojetos.org.br'},
 {id:'bhedu',o:'Secretaria Municipal de Educação de Belo Horizonte',uf:'MG',st:'edital',n:'S',v:'112',s:'R$ 3.660,96',tx:'Gratuita',ini:'2026-12-21',fim:'2027-01-19',c:'Professor municipal (1º/2º ciclos, ed. física, geografia, inglês, matemática). Exige a Prova Nacional Docente 2026.',l:'prefeitura.pbh.gov.br'},
+{id:'pcpe',o:'Polícia Civil de Pernambuco',uf:'PE',st:'edital',n:'S',v:'1.315 (1.200 agente, 70 escrivão, 45 delegado)',s:'R$ 5.667,92 (agente/escrivão) a R$ 13.560 (delegado)',b:'Cebraspe',tx:'R$ 250 (agente/escrivão) / R$ 350 (delegado)',ini:'2026-10-15',fim:'2026-12-16',c:'Agente de Polícia, Escrivão de Polícia e Delegado de Polícia (nível superior)',ob:'Provas previstas: 07/03/2027 (agente e escrivão) e 14/03/2027 (delegado).',l:'cebraspe.org.br'},
+{id:'pppe',o:'Polícia Penal de Pernambuco',uf:'PE',st:'edital',n:'S',v:'700 (537 masc. + 163 fem.)',s:'R$ 5.667,92',b:'Cebraspe',tx:'R$ 250',ini:'2026-11-12',fim:'2027-01-04',c:'Policial Penal (nível superior em qualquer área)',ob:'Edital publicado em 04/11/2026. Prova objetiva prevista para 21/03/2027.',l:'cebraspe.org.br/concursos/seap_pe_26'},
+{id:'ibge',o:'IBGE – Recenseador (Censo Agropecuário 2027)',uf:'BR',st:'edital',n:'M',v:'27.279 (temporárias)',s:'R$ 1.741 fixos + variável até R$ 2.629 (+ aux. alimentação R$ 1.192)',b:'Cesgranrio',tx:'R$ 70',ini:'2026-11-06',fim:'2026-11-25',c:'Recenseador. As fontes divergem sobre a escolaridade (fundamental ou médio completo): confirme no edital.',ob:'Prova objetiva em 31/01/2027, com 60 questões.',l:'concursos.cesgranrio.org.br/portal/avaliacoes/34'},
+{id:'pmsp',o:'Polícia Militar de São Paulo',uf:'SP',st:'edital',n:'M',v:'2.000',s:'R$ 5.482,51',b:'Vunesp',tx:'R$ 110',fim:'2026-12-22',c:'Aluno-Soldado PM do Quadro de Praças',l:'vunesp.com.br'},
+{id:'goiana',o:'Prefeitura de Goiana',uf:'PE',st:'edital',n:'MS',v:'166',s:'Até R$ 8.926,43',fim:'2026-11-17',c:'Cargos de nível médio, técnico e superior',l:''},
+{id:'ferreiros',o:'Prefeitura de Ferreiros',uf:'PE',st:'edital',n:'MS',v:'57',s:'Até R$ 4.179,47',fim:'2026-11-19',c:'Cargos de nível fundamental, médio e superior',l:''},
+{id:'scaetano',o:'Prefeitura de São Caetano',uf:'PE',st:'edital',n:'MS',v:'46',s:'Até R$ 3.242',fim:'2026-12-10',c:'Cargos de nível médio e superior',l:''},
 /* em andamento */
 {id:'cgu',o:'CGU – Controladoria-Geral da União',uf:'BR',st:'edital',n:'S',v:'54 + CR',s:'R$ 20.000',b:'Cebraspe',tx:'R$ 170',fim:'2026-11-04',c:'Auditor Federal de Finanças e Controle (auditoria e TI)',l:'bit.ly/cgu26-cebraspe'},
 {id:'sefazsp',o:'Secretaria da Fazenda e Planejamento (SP)',uf:'SP',st:'edital',n:'S',v:'60 + CR',s:'R$ 11.359,50',b:'FCC',tx:'R$ 150',fim:'2026-11-03',c:'Analista em Planejamento, Orçamento e Finanças Públicas',l:'concursosfcc.com.br'},
@@ -3245,9 +3252,9 @@ const CN_DATA=[
 {id:'riacho',o:'Prefeitura de Riacho das Almas – Guarda Municipal',uf:'PE',st:'final',n:'M',v:'—',s:'—',c:'Guarda Municipal',ob:'Resultado final homologado em 2026; validade conta da homologação (prorrogável).',l:'portaldeprefeitura.com.br'},
 {id:'upe',o:'UPE – Universidade de Pernambuco',uf:'PE',st:'final',n:'S',v:'—',s:'—',c:'Professor Universitário (Assistente e Adjunto)',ob:'Resultado final homologado (notícia de jan/2026).',l:'portaldeprefeitura.com.br'},
 /* previstos */
-{id:'ibge',o:'IBGE – Concursos para 2027',uf:'BR',st:'prev',n:'MS',v:'≈ 27.330',s:'—',c:'Recenseador e Analista Censitário (1.020 vagas de nível superior, entrada prevista jan/2027)',ob:'Edital era esperado para outubro/2026 e convocação até março/2027. Confirme no site do IBGE se já foi publicado.',l:'ibge.gov.br'},
-{id:'rf',o:'Receita Federal',uf:'BR',st:'prev',n:'S',v:'146 (autorizadas)',s:'Até ≈ R$ 29,9 mil',c:'Auditor Fiscal e Analista',ob:'Vagas autorizadas pelo Governo Federal; prazo citado: dezembro/2026.',l:'gov.br/receitafederal'},
-{id:'bcb',o:'Banco Central',uf:'BR',st:'prev',n:'MS',v:'170',s:'Técnico R$ 6.402,76 / Analista R$ 9.219,11',c:'Técnico e Analista',ob:'Autorizado; prazo citado: até 03/01/2027.',l:'bcb.gov.br'},
+{id:'ibgean',o:'IBGE – Analista Censitário',uf:'BR',st:'prev',n:'S',v:'1.020 (previstas)',s:'—',c:'Analista Censitário (nível superior)',ob:'Não encontrei edital publicado até 10/11/2026. Confirme no site do IBGE.',l:'ibge.gov.br'},
+{id:'rf',o:'Receita Federal',uf:'BR',st:'prev',n:'S',v:'146 (autorizadas: 116 Analista Tributário + 30 Auditor-Fiscal)',s:'Até ≈ R$ 29,9 mil',c:'Auditor-Fiscal e Analista Tributário',ob:'Autorizado em 03/07/2026; o edital deve sair em até 6 meses (por volta de 03/01/2027). Banca ainda não definida.',l:'gov.br/receitafederal'},
+{id:'bcb',o:'Banco Central',uf:'BR',st:'prev',n:'MS',v:'170 (100 Auditor + 50 Técnico + 20 Procurador)',s:'—',c:'Auditor, Técnico e Procurador do Banco Central',ob:'Autorizado em 03/07/2026; o edital deve sair em até 6 meses (por volta de 03/01/2027).',l:'bcb.gov.br'},
 {id:'anpd',o:'ANPD – Autoridade Nacional de Proteção de Dados',uf:'BR',st:'prev',n:'S',v:'50',s:'—',c:'Cargos de nível superior',ob:'Autorizado; prazo citado: até 24/12/2026.',l:'gov.br/anpd'},
 {id:'inss',o:'INSS',uf:'BR',st:'prev',n:'MS',v:'2 mil (emergencial) a 10 mil (pedido)',s:'—',c:'Técnico e Analista do Seguro Social',ob:'Pedido de autorização em análise no MGI; não há edital publicado.',l:'gov.br/inss'},
 {id:'prf',o:'PRF – Policial',uf:'BR',st:'prev',n:'S',v:'Proposta: 4.902 cargos',s:'R$ 12.862,33',c:'Policial Rodoviário Federal',ob:'Aguardando autorização do MGI; sem banca definida.',l:'gov.br/prf'},
@@ -3266,6 +3273,8 @@ fisc:['Língua Portuguesa','Raciocínio Lógico','Direito Constitucional','Direi
 ctrl:['Língua Portuguesa','Raciocínio Lógico','Informática / TI (conforme a área)','Direito Constitucional','Direito Administrativo','Administração Pública','Contabilidade Pública e Orçamento','Controle externo e legislação do órgão'],
 gest:['Língua Portuguesa','Raciocínio Lógico','Gestão e Políticas Públicas','Direito Constitucional','Direito Administrativo','Economia','Estatística','Atualidades'],
 pol:['Língua Portuguesa','Matemática / Raciocínio Lógico','Atualidades','Noções de Direito Constitucional','Noções de Direito Penal / Penal Militar','Direitos Humanos','Legislação institucional da corporação'],
+pc:['Língua Portuguesa','Raciocínio Lógico','Informática','Noções de Direito Constitucional','Direito Administrativo','Direito Penal','Direito Processual Penal','Legislação penal especial','Direitos Humanos','Conhecimentos específicos do cargo'],
+pp:['Língua Portuguesa','Raciocínio Lógico','Noções de Direito Constitucional e Administrativo','Direito Penal e Processual Penal','Lei de Execução Penal (LEP)','Direitos Humanos','Legislação institucional da Polícia Penal'],
 polpe:['Língua Portuguesa','Matemática / Raciocínio Lógico','Atualidades','Noções de Direito Constitucional','Noções de Direito Penal / Penal Militar','Direitos Humanos','Legislação institucional da corporação','Redação (prova discursiva)'],
 pmof:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','Direito Penal','Direito Processual Penal','Direito Penal Militar','Direitos Humanos','Legislação institucional da PM'],
 prf:['Língua Portuguesa','Raciocínio Lógico','Informática','Ética no serviço público','Direito Constitucional','Direito Administrativo','Direito Penal e Processual Penal','Legislação de trânsito','Física'],
@@ -3284,7 +3293,7 @@ nav:['Língua Portuguesa','Raciocínio Lógico / Matemática','Informática','Co
 ibge:['Língua Portuguesa','Matemática / Raciocínio Lógico','Noções de Informática','Conhecimentos específicos do cargo (estatística, geografia, conforme a função)'],
 anpd:['Língua Portuguesa','Direito Constitucional','Direito Administrativo','LGPD (Lei 13.709/2018) e proteção de dados','Informática / TI (conforme a área)','Conhecimentos específicos do cargo'],
 inss:['Língua Portuguesa','Raciocínio Lógico','Informática','Ética no serviço público','Direito Constitucional','Direito Administrativo','Direito Previdenciário e Seguridade Social']};
-const CN_MP={leg:'cd mossoro cuiaba cpires',jud:'trt8 trt4 trt3 tjpb dppb tjrj tjpe',def:'dpsp',fisc:'cgu sefazsp rf bcb',ctrl:'tcego',gest:'sead cnu',pol:'pmsc pmam',polpe:'pmpe cbmpe',pmof:'pmmg',prf:'prf',mun:'pgoias curitiba contagem sjdr buriti jucurutu itaporoca groairas horizonte aracati belovale lagoasanta sluzia paraguacu caruaru',gcm:'sgon saroque santana riacho',prof:'bhedu vgrande',doc:'ifsp ifmg upe',con:'cauap crecies',adm:'abdi',mil:'mar',pesq:'ipa',saude:'bocaiuva',adv:'ufpe',gen:'prfadm pf saude_min',nav:'nav',ibge:'ibge',anpd:'anpd',inss:'inss'};
+const CN_MP={leg:'cd mossoro cuiaba cpires',jud:'trt8 trt4 trt3 tjpb dppb tjrj tjpe',def:'dpsp',fisc:'cgu sefazsp rf bcb',ctrl:'tcego',gest:'sead cnu',pol:'pmsc pmam pmsp',pc:'pcpe',pp:'pppe',polpe:'pmpe cbmpe',pmof:'pmmg',prf:'prf',mun:'goiana ferreiros scaetano pgoias curitiba contagem sjdr buriti jucurutu itaporoca groairas horizonte aracati belovale lagoasanta sluzia paraguacu caruaru',gcm:'sgon saroque santana riacho',prof:'bhedu vgrande',doc:'ifsp ifmg upe',con:'cauap crecies',adm:'abdi',mil:'mar',pesq:'ipa',saude:'bocaiuva',adv:'ufpe',gen:'prfadm pf saude_min',nav:'nav',ibge:'ibge ibgean',anpd:'anpd',inss:'inss'};
 const cnMatPrev=c=>{if(Array.isArray(c.mt)&&c.mt.length)return c.mt;for(const k in CN_MP)if((' '+CN_MP[k]+' ').includes(' '+c.id+' '))return CN_TPL[k];return null};
 let cnTab='lista',cnUF='',cnSt='all',cnNv='all',cnQ='',cnFav=false,cnForm=false,cnGs='ini',cnGn='M';
 const cnIni=()=>{S.conc=S.conc||{};S.conc.fav=S.conc.fav||[];S.conc.mine=S.conc.mine||[];S.conc.guia=S.conc.guia||{};return S.conc};
@@ -3408,10 +3417,10 @@ function cnGuia(){
 function cnMat(k){const G=cnIni().guia;if(G[k])delete G[k];else G[k]=1;save();const y=window.scrollY;render();window.scrollTo(0,y)}
 
 /* ===== CLT: vagas de emprego (Recife, Olinda, Paulista e Jaboatão dos Guararapes) =====
-   Levantamento feito em 06/11/2026 a partir de portais públicos de vagas.
+   Levantamento feito em 06/11/2026 e atualizado em 10/11/2026 a partir de portais públicos de vagas.
    Cada vaga traz a fonte e a data de publicação quando o portal informa. Vagas mudam rápido: confirme sempre no site da fonte.
    Nível (superior, médio, fundamental) é estimado pelo tipo de cargo quando o anúncio não informa. */
-const CLT_ATUAL="06/11/2026";
+const CLT_ATUAL="10/11/2026";
 const CLT_CID={R:["Recife","#2f7fd6"],O:["Olinda","#d9822b"],P:["Paulista","#2f9e6b"],J:["Jaboatão","#7c5cd6"]};
 const CLT_NOME={R:"Recife",O:"Olinda",P:"Paulista",J:"Jaboatão dos Guararapes"};
 const CLT_NV=[["S","🎓","Ensino superior"],["M","📘","Ensino médio e técnico"],["F","🧰","Ensino fundamental ou sem exigência"]];
@@ -3440,23 +3449,40 @@ vag:["Vagas.com",{d:"https://www.vagas.com.br/vagas-em-recife"}],
 emr:["Empregos Recife",{d:"https://empregosrecife.com.br/"}],
 ind:["Indeed",{R:"https://br.indeed.com/empregos-em-Recife-PE",O:"https://br.indeed.com/l-olinda,-pe-vagas.html",P:"https://br.indeed.com/l-paulista,-pe-vagas.html",J:"https://br.indeed.com/l-jaboat%C3%A3o-dos-guararapes,-pe-vagas.html"}],
 bne:["BNE",{R:"https://www.bne.com.br/vagas-de-emprego-em-recife-pe",O:"https://www.bne.com.br/vagas-de-emprego-em-olinda-pe"}],
-tb:["Trabalha Brasil",{O:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-olinda-pe",P:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-paulista-pe"}],
+tb:["Trabalha Brasil",{R:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-recife-pe",O:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-olinda-pe",P:"https://www.trabalhabrasil.com.br/vagas-de-emprego-em-paulista-pe"}],
 cat:["Catho",{P:"https://www.catho.com.br/vagas/pe/paulista/",J:"https://www.catho.com.br/vagas/pe/jaboatao-dos-guararapes/"}],
 gl:["Glassdoor",{P:"https://www.glassdoor.com.br/Vaga/paulista-vagas-SRCH_IL.0,8_IC2505964.htm",J:"https://www.glassdoor.com.br/Vaga/jaboat%C3%A3o-dos-guararapes-vagas-SRCH_IL.0,23_IC4161563.htm"}],
 li:["LinkedIn",{J:"https://br.linkedin.com/jobs/vagas-em-jaboat%C3%A3o-dos-guararapes"}],
 sim:["SimplyHired",{d:"https://www.simplyhired.com.br/search?q=trabalhe+conosco&l=paulista%2C+pe"}],
 eb:["Empregando Brasil",{d:"https://empregandobrasil.com.br/cidades/olinda-pe/"}],
 inf:["Infojobs",{d:"https://www.infojobs.com.br/empregos-em-jaboatao-guararapes,-pe.aspx"}],
+sine:["Sedepe / Sine-PE (quadro do dia)",{d:"https://portaldeprefeitura.com.br/oportunidades/pernambuco-oferece-960-vagas-de-emprego-com-salarios-de-ate-r-42-mil/635695/"}],
 cim:["Clique SP (vagas Cimed)",{d:"https://cliquesp.com.br/noticias/vagas-cimed-2026-48-oportunidades-abertas-em-8-estados-saiba-como-se-candidatar/"}]};
 /* atalhos "mais vagas ao vivo" de cada cidade */
 const CLT_LIVE={
-R:[["Indeed","ind"],["Vagas.com","vag"],["GoRecife","gor"],["Jobbol","job"],["BNE","bne"]],
+R:[["Indeed","ind"],["Vagas.com","vag"],["GoRecife","gor"],["Trabalha Brasil","tb"],["Jobbol","job"],["BNE","bne"]],
 O:[["Indeed","ind"],["Trabalha Brasil","tb"],["BNE","bne"],["Empregando Brasil","eb"]],
 P:[["Indeed","ind"],["Trabalha Brasil","tb"],["Catho","cat"],["Glassdoor","gl"]],
 J:[["Indeed","ind"],["Catho","cat"],["Glassdoor","gl"],["LinkedIn","li"]]};
 /* [cidade, cargo, empresa, área, nível, salário, quantidade, data, fonte, observações] */
 const CLT_RAW=[
 /* ---- RECIFE ---- */
+/* atualização de 10/11/2026: quadro da Sedepe/Sine-PE de 09/11 (só funções, o quadro não traz empresa nem salário por vaga) e vagas do Trabalha Brasil */
+["R","Atendente de telemarketing","","ate","M","","","09/11/2026","sine","Uma das funções com mais vagas no Recife no quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Soldador","","ind","F","","","09/11/2026","sine","Uma das funções com mais vagas no Recife no quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Porteiro","","ser","F","","","09/11/2026","sine","Uma das funções com mais vagas no Recife no quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Auxiliar de limpeza","","ser","F","","","09/11/2026","sine","Uma das funções com mais vagas no Recife no quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Mecânico ajustador","","cons","M","","","09/11/2026","sine","Uma das funções com mais vagas no Recife no quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Vigilante patrimonial (vaga exclusiva para PcD)","","ser","M","","","09/11/2026","sine","Exclusiva para pessoa com deficiência. Quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Balconista (vaga exclusiva para PcD)","","com","M","","","09/11/2026","sine","Exclusiva para pessoa com deficiência. Quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Lavador de ônibus (vaga exclusiva para PcD)","","ser","F","","","09/11/2026","sine","Exclusiva para pessoa com deficiência. Quadro da Sedepe/Sine-PE de 09/11/2026."],
+["R","Motorista de caminhão","Verônica Leão Assessoria em RH","log","F","R$ 3.000,00","3 vagas","","tb","Presencial. Efetivo/CLT."],
+["R","Motorista de caminhão","Nordex Express","log","F","R$ 3.200,00","","","tb","Presencial. Efetivo/CLT."],
+["R","Assistente de vendas","GE Cosméticos","com","M","R$ 1.832,00","","","tb","Presencial. Efetivo/CLT."],
+["R","Auxiliar de licitações","Capital da Construção Comércio e Serviço","adm","M","R$ 2.450,00","","","tb","Presencial. Efetivo/CLT."],
+["R","Sushiman","Greenmix Alimentos","ali","F","R$ 2.500,00","","","tb","Presencial. Efetivo/CLT."],
+["R","Cumim","Greenmix Alimentos","ali","F","R$ 1.700,00","2 vagas","","tb","Presencial. Efetivo/CLT."],
+["R","Doméstica","Colégio Studio","ser","F","R$ 1.621,00","","","tb","Presencial. Efetivo/CLT."],
 ["R","Assistente de direção de restaurante","LBS Alimentos","ali","M","R$ 1.954,00","2 vagas","05/11/2026","gor","Atendimento ao cliente, operar caixa, controle de planilhas, liberação e recebimento de mercadoria."],
 ["R","Assistente administrativo","","adm","M","","2 vagas","05/11/2026","gor",""],
 ["R","Caixa de bar, lanchonete e restaurante","","ali","M","","3 vagas","05/11/2026","gor","Atendimento ao cliente e operação de caixa."],

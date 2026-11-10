@@ -194,7 +194,7 @@ Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions
 
 - **Cartão da vaga**: além de cargo, empresa e salário, mostra **Benefícios, Jornada/horário, Modalidade, Local e Requisitos** quando a informação existe (campo vazio não aparece). Nas vagas da lista fixa (`CLT_RAW`), benefícios, horário e modalidade são tirados do texto das observações; para escrever à mão, use as posições extras da linha: `[..., benefícios, jornada, requisitos, link, local]`.
 - **Atualização automática**: o robô `.github/workflows/atualizar-vagas.yml` roda de 3 em 3 horas (e pelo botão Run workflow), executa `scripts/vagas.py` e grava `vagas/clt.json`. O app lê esse arquivo ao abrir, ao voltar para o app e a cada 30 min (`cltCarregar`), e o botão **🔄 Atualizar** do menu CLT força a busca. Vagas com mais de 30 dias saem; as vagas novas ganham o selo **🆕 Nova**.
-- A lista fixa de 06/11/2026 continua valendo por 14 dias; depois disso só aparecem as vagas do robô. Se o robô não achar nada, o `clt.json` anterior é mantido.
+- A lista fixa (levantada em 06/11/2026 e atualizada em 10/11/2026) continua valendo por 14 dias; depois disso só aparecem as vagas do robô. Se o robô não achar nada, o `clt.json` anterior é mantido.
 - **Fontes**: API pública do Gupy (sem chave) e Adzuna (opcional, traz salário: cadastre os secrets `ADZUNA_ID` e `ADZUNA_KEY`). Depois da primeira execução, abra o relatório `relatorio-vagas` (Actions) para ver o que cada fonte entregou.
 
 ## Espaço Cultural (versão 3.5.1)
