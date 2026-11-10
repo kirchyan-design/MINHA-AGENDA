@@ -3672,7 +3672,7 @@ function cltLive(){
  const cs=cltCid?[cltCid]:Object.keys(CLT_CID);
  return `<p class="cn-nv" style="margin:8px 0 4px">As listas dos portais mudam toda hora. Toque para abrir e ver as vagas mais novas.</p>`+cs.map(c=>`<div class="cn-act" style="margin:4px 0"><b style="min-width:84px;font-size:13px">📍 ${esc(CLT_CID[c][0])}</b>${CLT_LIVE[c].map(a=>{const u=(CLT_SRC[a[1]][1][c])||CLT_SRC[a[1]][1].d;return `<a class="cn-lk" href="${esc(u)}" target="_blank" rel="noopener">${esc(a[0])} ↗</a>`}).join("")}</div>`).join("")}
 function cltFavT(id){const c=cltIni(),i=c.fav.indexOf(id);if(i<0)c.fav.push(id);else c.fav.splice(i,1);save();const y=window.scrollY;render();window.scrollTo(0,y)}
-function vClt(){cltIni();setTimeout(cltVistas,4000);
+function vCltVagas(){cltIni();setTimeout(cltVistas,4000);
  const nvb=[["all","Todos"],["S","🎓 Superior"],["M","📘 Médio"],["F","🧰 Fundam."]];
  return `<h2>${_t("CLT")}</h2>
  <p class="hint" style="margin:0 0 10px">Vagas de emprego com carteira assinada em Recife, Olinda, Paulista e Jaboatão dos Guararapes (PE). Lista de ${esc(CLT_QUANDO)} em portais públicos. Vagas fecham rápido: confirme sempre no site da fonte. O nível de escolaridade é estimado pelo cargo quando o anúncio não informa.</p>
@@ -3690,6 +3690,68 @@ function vClt(){cltIni();setTimeout(cltVistas,4000);
 ".cl-ar>summary::-webkit-details-marker{display:none}.cl-ar>summary small{background:var(--acs);color:var(--ac);border-radius:99px;padding:1px 9px;font-size:12px}"+
 ".cl-live>summary{cursor:pointer;font-weight:700;color:var(--ac);font-size:14px}.cl-live{padding:12px 14px}.cl-ar>summary::after{content:'▾';color:var(--mute);margin-left:4px}.cl-ar:not([open])>summary::after{content:'▸'}";
 document.head.appendChild(s)})();
+
+/* ===== CLT › Calculadora trabalhista (tabelas de 2026: INSS, IRRF Lei 15.270/2025, seguro-desemprego) =====
+   Tudo roda no aparelho, sem internet. Para atualizar em janeiro, mude só o objeto CC. */
+const CC={teto:8475.55,dep:189.59,simp:607.20,
+ inss:[[1621,.075],[2902.84,.09],[4354.27,.12],[8475.55,.14]],
+ ir:[[2428.80,0,0],[2826.65,.075,182.16],[3751.05,.15,394.16],[4664.68,.225,675.49],[1e9,.275,908.73]],
+ sd:{a:2222.17,b:3703.99,f:1777.74,t:2518.65,min:1621}};
+let cltModo="vagas",ccAba="liq",ccS={};
+const ccN=v=>{v=String(v==null?"":v).trim();if(!v)return 0;if(v.includes(","))v=v.replace(/\./g,"").replace(",",".");const n=parseFloat(v);return isFinite(n)?n:0};
+const ccV=id=>{const e=document.getElementById(id);return e?e.value:""};
+const ccR=n=>Math.round((n+Number.EPSILON)*100)/100;
+const ccD=s=>s?new Date(s+"T12:00"):null;
+function ccInss(b){b=Math.min(Math.max(b,0),CC.teto);let t=0,p=0;for(const[l,a]of CC.inss){if(b>p)t+=(Math.min(b,l)-p)*a;p=l}return ccR(t)}
+function ccIr(bruto,ded,nd){const d=Math.max(ded+nd*CC.dep,CC.simp),base=Math.max(bruto-d,0);let imp=0;
+ for(const[l,a,p]of CC.ir)if(base<=l){imp=Math.max(base*a-p,0);break}
+ const red=bruto<=5000?imp:bruto<=7350?Math.max(978.62-.133145*bruto,0):0;return ccR(Math.max(imp-red,0))}
+const ccF=(id,l,ph,t)=>`<label class="cc-l">${l}<input id="${id}" ${t||'type="text" inputmode="decimal"'} placeholder="${ph||""}" value="${esc(ccS[id]||"")}" oninput="ccS[this.id]=this.value"></label>`;
+const ccSel=(id,l,o)=>`<label class="cc-l">${l}<select id="${id}" onchange="ccS[this.id]=this.value">${o.map(a=>`<option value="${a[0]}"${(ccS[id]||o[0][0])==a[0]?" selected":""}>${a[1]}</option>`).join("")}</select></label>`;
+const ccDt=(id,l)=>ccF(id,l,"",'type="date"');
+function ccOut(rows,tot,nota){return `<div class="cc-o">${rows.map(r=>`<div class="${r[2]||""}"><span>${r[0]}</span><b>${typeof r[1]=="number"?(r[2]=="n"?"− ":"")+brl(r[1]):r[1]}</b></div>`).join("")}${tot?`<div class="t"><span>${tot[0]}</span><b>${brl(tot[1])}</b></div>`:""}${nota?`<p class="hint">${nota}</p>`:""}</div>`}
+const CC_AV="Estimativa com as tabelas de 2026. Convenção coletiva, médias de variáveis e regras da empresa podem mudar o valor final.";
+const CC_ABAS=[["liq","💵","Líquido"],["fer","🏖️","Férias"],["d13","🎁","13º"],["resc","🚪","Rescisão"],["he","⏱️","Horas extras"],["sd","🧾","Seguro-desemp."]];
+function ccForm(){const dep=ccF("xd","Dependentes (IR)","0",'type="text" inputmode="numeric"');
+ if(ccAba=="liq")return ccF("ls","Salário bruto (R$)","3.000,00")+dep+ccF("lp","Pensão alimentícia (R$)","0,00")+ccF("lo","Outros descontos (plano, etc.) (R$)","0,00")+ccSel("lv","Vale-transporte (6%)",[["n","Não desconta"],["s","Desconta 6%"]]);
+ if(ccAba=="fer")return ccF("fs","Salário bruto (R$)","3.000,00")+ccF("fh","Média de horas extras/variáveis (R$)","0,00")+dep+ccSel("fd","Dias de férias (se vender 10 dias, contam 20)",[[30,"30 dias"],[20,"20 dias"],[15,"15 dias"],[10,"10 dias"]])+ccSel("fa","Vender 10 dias (abono pecuniário)",[["n","Não"],["s","Sim"]]);
+ if(ccAba=="d13")return ccF("bs","Salário bruto (R$)","3.000,00")+ccF("bh","Média de horas extras/variáveis (R$)","0,00")+ccF("bm","Meses trabalhados no ano (1 a 12)","12",'type="text" inputmode="numeric"')+dep;
+ if(ccAba=="resc")return ccF("rs","Salário bruto (R$)","3.000,00")+ccDt("ra","Data de admissão")+ccDt("rd","Data de saída")+ccSel("rt","Tipo de saída",[["sem","Demissão sem justa causa"],["ped","Pedido de demissão"],["jus","Justa causa"],["aco","Acordo (art. 484-A)"]])+ccSel("rv","Aviso prévio",[["ind","Indenizado (não trabalhado)"],["trab","Trabalhado"]])+ccSel("rf","Férias vencidas (período completo)",[[0,"Nenhuma"],[1,"1 período"],[2,"2 períodos"]])+ccF("rg","Saldo do FGTS (R$) — vazio = estimar 8%","");
+ if(ccAba=="he")return ccF("hs","Salário bruto (R$)","3.000,00")+ccF("hj","Jornada mensal (horas)","220",'type="text" inputmode="numeric"')+ccF("h5","Horas extras a 50%","0",'type="text" inputmode="decimal"')+ccF("h1","Horas extras a 100% (dom./feriado)","0")+ccF("hn","Horas noturnas (adicional 20%)","0")+ccF("hu","Dias úteis no mês","26",'type="text" inputmode="numeric"')+ccF("hd","Domingos e feriados no mês","4",'type="text" inputmode="numeric"');
+ return ccF("ss","Média dos 3 últimos salários (R$)","2.500,00")+ccSel("sn","Solicitação",[["1","1ª vez"],["2","2ª vez"],["3","3ª vez ou mais"]])+ccF("sm","Meses trabalhados nos últimos 36 meses (ou 18/16)","12",'type="text" inputmode="numeric"')}
+function ccGo(){const e=document.getElementById("ccres");if(!e)return;let h;try{h=ccCalc()}catch(x){h="Confira os valores digitados."}e.innerHTML=h.startsWith("<")?h:`<p class="hint" style="color:var(--rd)">${h}</p>`;e.scrollIntoView({behavior:"smooth",block:"nearest"})}
+function ccCalc(){const nd=Math.floor(ccN(ccV("xd")));
+ if(ccAba=="liq"){const b=ccN(ccV("ls"));if(!b)return"Informe o salário bruto.";const pe=ccN(ccV("lp")),o=ccN(ccV("lo")),i=ccInss(b),r=ccIr(b,i+pe,nd),vt=ccV("lv")=="s"?ccR(b*.06):0;
+  return ccOut([["Salário bruto",b],["INSS",i,"n"],["IRRF",r,"n"],["Vale-transporte (6%)",vt,"n"],["Pensão alimentícia",pe,"n"],["Outros descontos",o,"n"]],["Salário líquido",ccR(b-i-r-vt-pe-o)],`FGTS da empresa (8%): ${brl(b*.08)} — não sai do seu salário. ${CC_AV}`)}
+ if(ccAba=="fer"){const b=ccN(ccV("fs"))+ccN(ccV("fh")),d=ccV("fa")=="s"?20:(+ccV("fd")||30);if(!b)return"Informe o salário bruto.";const v=ccR(b/30*d),t=ccR(v/3),ab=ccV("fa")=="s"?ccR(b/30*10*4/3):0,tr=v+t,i=ccInss(tr),r=ccIr(tr,i,nd);
+  return ccOut([[`Férias (${d} dias)`,v],["1/3 constitucional",t],["Abono pecuniário (10 dias + 1/3, isento)",ab],["INSS",i,"n"],["IRRF",r,"n"]],["Líquido das férias",ccR(tr+ab-i-r)],"Pagamento até 2 dias antes do início das férias. "+CC_AV)}
+ if(ccAba=="d13"){const b=ccN(ccV("bs"))+ccN(ccV("bh")),m=Math.min(Math.max(Math.floor(ccN(ccV("bm"))),1),12);if(!ccN(ccV("bs")))return"Informe o salário bruto.";const t=ccR(b/12*m),p1=ccR(t/2),i=ccInss(t),r=ccIr(t,i,nd);
+  return ccOut([[`13º proporcional (${m}/12)`,t],["1ª parcela (até 30/11, sem descontos)",p1],["INSS (na 2ª parcela)",i,"n"],["IRRF (na 2ª parcela)",r,"n"],["2ª parcela (até 20/12)",ccR(t-p1-i-r)]],["Líquido total do 13º",ccR(t-i-r)],"Vale 1 avo por mês com 15 dias ou mais trabalhados. "+CC_AV)}
+ if(ccAba=="he"){const s=ccN(ccV("hs")),j=ccN(ccV("hj"))||220;if(!s)return"Informe o salário bruto.";const h=s/j,a=ccN(ccV("h5")),c=ccN(ccV("h1")),n=ccN(ccV("hn")),u=ccN(ccV("hu"))||26,f=ccN(ccV("hd"))||4,v5=ccR(h*1.5*a),v1=ccR(h*2*c),vn=ccR(h*.2*n),ex=v5+v1,dsr=ccR(ex/u*f),tot=ccR(ex+vn+dsr);
+  return ccOut([["Valor da hora normal",ccR(h)],["Horas extras 50%",v5],["Horas extras 100%",v1],["Adicional noturno (20%)",vn],["DSR sobre horas extras",dsr]],["Total a receber a mais",tot],"Hora noturna urbana: 22h às 5h, com hora reduzida de 52min30s. Valores brutos, antes de INSS e IRRF. "+CC_AV)}
+ if(ccAba=="sd"){const m=ccN(ccV("ss")),q=+ccV("sn")||1,ms=Math.floor(ccN(ccV("sm")));if(!m)return"Informe a média salarial.";const s=CC.sd;let p=m<=s.a?m*.8:m<=s.b?s.f+(m-s.a)*.5:s.t;p=ccR(Math.min(Math.max(p,s.min),s.t));
+  const np=q==1?(ms>=24?5:ms>=12?4:0):q==2?(ms>=24?5:ms>=12?4:ms>=9?3:0):(ms>=24?5:ms>=9?4:ms>=6?3:0);
+  return ccOut([["Valor de cada parcela",p],["Número de parcelas",np?np+"x":"sem direito pelo tempo"]],np?["Total estimado",ccR(p*np)]:null,"Não vale para pedido de demissão nem justa causa. Pedir em até 120 dias após a saída. Confirme no app Carteira de Trabalho Digital.")}
+ return ccResc()}
+function ccResc(){const sal=ccN(ccV("rs")),ad=ccD(ccV("ra")),dm=ccD(ccV("rd")),tp=ccV("rt")||"sem",ind=(ccV("rv")||"ind")=="ind",fv=+ccV("rf")||0;
+ if(!sal||!ad||!dm||dm<ad)return"Preencha o salário e as datas (a saída deve ser depois da admissão).";
+ let anos=dm.getFullYear()-ad.getFullYear();const an=new Date(ad);an.setFullYear(ad.getFullYear()+anos);if(an>dm)anos--;
+ const ult=new Date(ad);ult.setFullYear(ad.getFullYear()+anos);let mf=(dm.getFullYear()-ult.getFullYear())*12+dm.getMonth()-ult.getMonth();
+ const t0=new Date(ult);t0.setMonth(ult.getMonth()+mf);if(t0>dm){mf--;t0.setMonth(t0.getMonth()-1)}if(Math.round((dm-t0)/864e5)+1>=15)mf++;
+ let a13=dm.getMonth()+(dm.getDate()>=15?1:0);if(ad.getFullYear()==dm.getFullYear())a13-=ad.getMonth()+(ad.getDate()>15?1:0);
+ const dias=Math.min(30+3*anos,90),proj=ind&&(tp=="sem"||tp=="aco")?Math.floor(dias/30):0,jc=tp=="jus";
+ a13=Math.min(Math.max(a13+proj,0),12);mf=Math.min(Math.max(mf+proj,0),12);
+ const sd=ccR(sal/30*Math.min(dm.getDate(),30)),av=tp=="sem"&&ind?ccR(sal/30*dias):tp=="aco"&&ind?ccR(sal/30*dias/2):0,d13=jc?0:ccR(sal/12*a13),fp=jc?0:ccR(sal/12*mf),fp3=ccR(fp/3),fvv=ccR(fv*sal*4/3);
+ const meses=Math.max(1,(dm.getFullYear()-ad.getFullYear())*12+dm.getMonth()-ad.getMonth()+1),fg=ccN(ccV("rg"))||ccR(sal*.08*meses),mu=tp=="sem"?ccR(fg*.4):tp=="aco"?ccR(fg*.2):0;
+ const iS=ccInss(sd),i13=ccInss(d13),bruto=ccR(sd+av+d13+fp+fp3+fvv),liq=ccR(bruto-iS-i13);
+ const sq=tp=="sem"?"Saque total do FGTS + multa de 40%":tp=="aco"?"Saque de 80% do FGTS + multa de 20%":"Sem saque do FGTS";
+ return ccOut([[`Saldo de salário (${Math.min(dm.getDate(),30)} dias)`,sd],[`Aviso prévio${av?" ("+(tp=="aco"?dias/2+" dias, 50%":dias+" dias")+")":""}`,av],[`13º proporcional (${a13}/12)`,d13],[`Férias proporcionais (${mf}/12)`,fp],["1/3 sobre férias proporcionais",fp3],["Férias vencidas + 1/3",fvv],["INSS sobre saldo",iS,"n"],["INSS sobre 13º",i13,"n"]],["Total líquido estimado",liq])+ccOut([["FGTS (saldo"+(ccN(ccV("rg"))?"":" estimado")+")",fg],["Multa rescisória do FGTS",mu],["Situação do FGTS",sq]],null,"Aviso trabalhado ou indenizado e pedido de demissão sem cumprir aviso podem gerar desconto. Aviso indenizado e multa do FGTS não pagam INSS/IR. O IRRF sobre saldo e 13º não entrou na conta. "+CC_AV)}
+function vCltCalc(){const nav=CC_ABAS.map(a=>`<button class="${ccAba==a[0]?"on":""}" onclick="ccAba='${a[0]}';render()"><span class="sl-ei">${a[1]}</span>${a[2]}</button>`).join("");
+ return `<div class="seg s5" style="flex-wrap:wrap">${nav}</div><div class="card"><p class="hint" style="margin:0 0 4px">Valores de 2026: salário mínimo R$ 1.621,00, teto do INSS R$ 8.475,55, IRRF isento até R$ 5.000 (Lei 15.270/2025).</p>${ccForm()}<div class="row" style="margin-top:12px"><button onclick="ccGo()">🧮 Calcular</button><button class="sec" onclick="ccS={};render()">Limpar</button></div></div><div class="card" id="ccres"><p class="hint" style="margin:0">Preencha os campos e toque em Calcular.</p></div>`}
+function vClt(){const m=[["vagas","💼 Vagas"],["calc","🧮 Calculadora"]];
+ return `<div class="seg s3" style="margin-bottom:12px">${m.map(a=>`<button class="${cltModo==a[0]?"on":""}" onclick="cltModo='${a[0]}';render()">${a[1]}</button>`).join("")}</div>`+(cltModo=="calc"?`<h2>Calculadora trabalhista</h2>`+vCltCalc():vCltVagas())}
+(function(){const s=document.createElement("style");s.textContent=".cc-l{display:block;font-size:12px;color:var(--mute);margin:10px 0 0}.cc-l input,.cc-l select{display:block;width:100%;margin-top:4px;color:var(--ink);font-size:16px}.cc-o div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--ln);font-size:14px}.cc-o div b{text-align:right}.cc-o .n b{color:var(--rd)}.cc-o .t{font-weight:700;color:var(--ac);border-bottom:0;font-size:16px;padding-top:10px}.cc-o+.cc-o{margin-top:10px}";document.head.appendChild(s)})();
+
 
 /* ===== CLT › Meu currículo: carregar o arquivo e enviar para a empresa por e-mail =====
    O arquivo fica só neste aparelho (IndexedDB 'jc-curriculo'), fora do backup e da nuvem. Em S.clt ficam só os dados leves:
