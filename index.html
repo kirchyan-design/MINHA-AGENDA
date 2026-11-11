@@ -10636,5 +10636,20 @@ vConfig=function(){let h=_vc();const k=h.lastIndexOf('<div style="text-align:cen
 try{tabsAtualizar();nav();if(S.user&&S.user.name)render()}catch(e){console.error(e)}
 })();
 </script>
+<style id="tema-vermelho">
+:root[data-color="vermelho"][data-eff="light"]{--bg:#fbf1f1;--sf:#fff;--ac:#c62828;--acs:#fde2e2;--ln:#eddada;--onac:#fff}
+:root[data-color="vermelho"][data-eff="dark"]{--bg:#1c0f0f;--sf:#2b1717;--ac:#ff6b6b;--acs:#4a2020;--ln:#432626;--onac:#2b0707}
+</style>
+<script>
+(function(){
+const ANA='anafenix272016@gmail.com';
+COR.push(['vermelho','Vermelho','#c62828']);
+const eml=()=>{try{return String((S.user&&S.user.conta&&S.user.conta.email)||ownerId()||'').trim().toLowerCase()}catch(e){return ''}};
+/* aplica o vermelho uma única vez nessa conta; depois vale a escolha dela em Configurações › Aparência */
+const _at=applyTheme;
+applyTheme=function(){try{if(S.user&&S.user.name&&eml()===ANA&&!S.corVermelhoAplicada){S.corVermelhoAplicada=1;S.color='vermelho';save()}}catch(e){}_at.apply(this,arguments)};
+try{applyTheme()}catch(e){console.error(e)}
+})();
+</script>
 </body>
 </html>
