@@ -10564,5 +10564,77 @@ window.kMemLimpar=function(){if(confirm('Apagar tudo o que a Kayla aprendeu sobr
 /* a primeira tela já foi desenhada antes deste trecho: redesenha a Início para o cartão aparecer sem precisar trocar de tela */
 try{if(tab==='inicio'&&S.user&&S.user.name&&document.getElementById('v'))render()}catch(e){}
 </script>
+<style id="simples-css">
+body.simples{font-size:17px}
+body.simples #greet{display:none}
+body.simples button,body.simples input:not([type=checkbox]),body.simples select{min-height:48px}
+.sfoco{text-align:center;padding:22px 16px}.sfoco small{letter-spacing:.12em;font-weight:800;color:var(--mute)}
+.sft{font-size:26px;font-weight:800;margin:8px 0;line-height:1.2}.sfh{color:var(--mute);margin-bottom:6px}
+.sbig{width:100%;font-size:20px;min-height:60px;margin:10px 0 6px}
+.srow{display:flex;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--ln)}
+.srow input[type=checkbox]{width:28px;height:28px;flex:none}.srow .t{flex:1}
+.sbar{height:8px;border-radius:8px;background:var(--ln);overflow:hidden;margin:6px 0 12px}.sbar i{display:block;height:100%;background:var(--ac)}
+.sadd{display:flex;gap:8px}.sadd input:first-child{flex:1;min-width:0}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mgrid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 8px;font-size:16px;min-height:96px}.mgrid .e{font-size:30px}
+body.calmo *{animation:none!important;transition:none!important}
+details.cfgg{margin:10px 0}
+details.cfgg>summary{font-weight:800;font-size:17px;padding:16px;border-radius:14px;border:1px solid var(--ln);cursor:pointer;min-height:52px}
+</style>
+<script>
+(function(){
+const PRIM=['inicio','agenda','notas','compras'],SEC=['cal','diario','carteira','mercado','concursos','clt','mulher','cultural','filmes','biblioteca','biblia'];
+const EMAIL_SIMPLES='thaynapereira0017@gmail.com',eml=()=>{try{return String((S.user&&S.user.conta&&S.user.conta.email)||ownerId()||'').trim().toLowerCase()}catch(e){return ''}};
+const simples=()=>S.modo==='simples'||(S.modo==null&&eml()===EMAIL_SIMPLES);
+ICO.mais='<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>';
+/* menu inferior com 5 itens; o resto vai para "Mais" */
+const _ta=tabsAtualizar;
+tabsAtualizar=function(){if(!simples())return _ta();const v=PRIM.map(i=>TABS_ALL.find(t=>t[0]===i));v.push(['mais','⋯','Mais']);TABS.length=0;v.forEach(t=>TABS.push(t));try{FL.N=TABS.length}catch(e){}};
+const _sm=setMenu;setMenu=function(m){S.menuUser=true;_sm(m)};
+const _hd=head;
+head=function(){_hd.apply(this,arguments);const ok=!!(S.user&&S.user.name);document.body.classList.toggle('simples',ok&&simples());document.body.classList.toggle('calmo',!!S.calmo);
+ if(ok&&simples()&&!(S.menu==='side'&&S.menuUser)){$('nav').style.display='';document.body.classList.add('nv');const mb=$('#menub');if(mb)mb.style.display='none'}};
+/* Mais */
+window.vMais=function(){const off=S.tabsOff||[],G=[['Dia a dia',['cal','diario']],['Dinheiro e trabalho',['carteira','mercado','concursos','clt']],['Lazer e leitura',['filmes','biblioteca','biblia','cultural','mulher']]];
+ return `<h2>Mais</h2>`+G.map(g=>{const it=g[1].filter(i=>!off.includes(i)).map(i=>TABS_ALL.find(t=>t[0]===i));return it.length?`<h3>${g[0]}</h3><div class="mgrid">${it.map(t=>`<button class="sec" onclick="go('${t[0]}')"><span class="e">${t[1]}</span>${_t(t[2])}</button>`).join('')}</div>`:''}).join('')
+ +`<h3>Ajustes</h3><div class="mgrid"><button class="sec" onclick="go('config')"><span class="e">⚙️</span>${_t('Configurações')}</button></div>`};
+const _rd=render;
+render=function(){if(!(S.user&&S.user.name))return _rd();
+ if(!simples()){if(tab==='mais')tab='inicio';return _rd()}
+ if(tab==='mais'){head();$('#v').innerHTML=vMais();return}
+ _rd();if(SEC.includes(tab))$('#v').insertAdjacentHTML('afterbegin','<button class="ghost" style="min-height:44px" onclick="go(\'mais\')">← Mais</button>')};
+/* Início simples: uma coisa por vez */
+const FOCO={end:0,iv:0};window.FOCO=FOCO;
+window.focoTick=function(){const r=FOCO.end-Date.now(),e=document.getElementById('foco');
+ if(r<=0){clearInterval(FOCO.iv);FOCO.end=0;try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(x){}info('Tempo de foco acabou. Faça uma pausa de 5 min.');if(e)e.textContent='⏱ Foco 25 min';return}
+ if(e)e.textContent='⏱ '+Math.floor(r/60000)+':'+String(Math.floor(r%60000/1000)).padStart(2,'0')+' · parar'};
+window.focoToggle=function(){if(FOCO.end){clearInterval(FOCO.iv);FOCO.end=0;const e=document.getElementById('foco');if(e)e.textContent='⏱ Foco 25 min'}else{FOCO.end=Date.now()+25*60000;FOCO.iv=setInterval(focoTick,1000);focoTick()}};
+window.sAdd=function(){const t=$('#sa-t').value.trim();if(!t){$('#sa-t').focus();return}S.ev.push({id:uid(),title:t,date:HOJE,time:$('#sa-h').value,done:false});save();render()};
+const _vi=vInicio;
+vInicio=function(){if(!simples())return _vi();
+ const hoje=sortEv(S.ev.filter(e=>e.date===HOJE)),pend=hoje.filter(e=>!e.done),feito=hoje.length-pend.length,prox=pend[0],resto=pend.slice(1,6),plh=S.pl.filter(p=>p.date===HOJE),faltam=S.shop.filter(x=>!x.done).length;
+ const foco=prox?`<div class="card sfoco"><small>AGORA</small><div class="sft">${esc(prox.title)}</div><div class="sfh">${prox.time||''}</div><button class="sbig" onclick="togEv('${prox.id}')">✓ Feito</button><button class="sec" id="foco" onclick="focoToggle()">${FOCO.end?'⏱ em andamento · parar':'⏱ Foco 25 min'}</button></div>`
+  :`<div class="card sfoco"><div class="sft">${hoje.length?'🎉 Tudo feito hoje!':'Dia livre'}</div><div class="sfh">${hoje.length?'Você merece uma pausa.':'Adicione a primeira tarefa abaixo.'}</div></div>`;
+ return `<div class="gt" style="font-size:22px;font-weight:800">${saud()}, ${esc(S.user.name)}!</div><div class="gd" style="color:var(--mute)">${dataLonga()}</div>`
+ +(plh.length?`<p><span class="chip">${shiftIco(plh[0])} Plantão ${plh[0].ent}–${plh[0].sai}</span></p>`:'')
+ +(hoje.length?`<div class="sbar" aria-label="progresso"><i style="width:${Math.round(feito/hoje.length*100)}%"></i></div>`:'')+foco
+ +(resto.length?`<h3>Depois</h3><div class="card">${resto.map(e=>`<div class="srow"><input type="checkbox" onchange="togEv('${e.id}')" aria-label="Concluir"><span class="hora">${e.time||'—'}</span><span class="t">${esc(e.title)}</span></div>`).join('')}</div>`:'')
+ +`<h3>Adicionar</h3><div class="card"><div class="sadd"><input id="sa-t" placeholder="O que fazer hoje?" maxlength="80" onkeydown="if(event.key==='Enter')sAdd()"><input id="sa-h" type="time" aria-label="Hora"></div><button class="sbig" style="margin-top:10px" onclick="sAdd()">+ Adicionar</button></div>`
+ +(faltam?`<button class="sec" style="width:100%" onclick="go('compras')">🛒 ${faltam} ${faltam===1?'item':'itens'} na lista de compras</button>`:'')};
+/* Configurações: layout do app + grupos recolhíveis (todos os layouts continuam em "Aparência e layouts") */
+window.setModo=function(m){S.modo=m==='completo'?'completo':'simples';save();tab='config';tabsAtualizar();nav();render()};
+window.togCalmo=function(){S.calmo=!S.calmo;save();render()};
+const CFGOPEN=new Set(['0']);
+document.addEventListener('toggle',e=>{const d=e.target;if(d.classList&&d.classList.contains('cfgg'))d.open?CFGOPEN.add(d.dataset.k):CFGOPEN.delete(d.dataset.k)},true);
+const cfgLayout=()=>{const m=simples()?'simples':'completo',c=!!S.calmo;return `<h3>Layout do app</h3><div class="card"><div class="seg">${[['simples','Simples'],['completo','Completo']].map(a=>`<button class="${m===a[0]?'on':''}" aria-pressed="${m===a[0]}" onclick="setModo('${a[0]}')">${a[1]}</button>`).join('')}</div><p class="hint"><b>Simples</b>: menu com 5 itens, uma tarefa por vez e o resto em “Mais” (pensado para TDAH). <b>Completo</b>: o layout original, com todos os menus.</p><div class="prm"><span class="ic">🧘</span><span class="t"><b>Reduzir animações</b><small>Menos movimento na tela.</small></span><button class="${c?'':'sec'}" onclick="togCalmo()" aria-pressed="${c}">${c?'Desativar':'Ativar'}</button></div><p class="hint">Cores, temas especiais, menu inferior/lateral e Flow giratório: em “Aparência e layouts”.</p></div>`};
+const _vc=vConfig;
+vConfig=function(){let h=_vc();const k=h.lastIndexOf('<div style="text-align:center;margin-top:4px">'),sair=k>0?h.slice(k):'';if(k>0)h=h.slice(0,k);
+ const parts=h.split('<h3'),h0=parts.shift();if(!simples())return h0+cfgLayout()+parts.map(p=>'<h3'+p).join('')+sair;
+ const G=[['👤 Perfil e conta',/Perfil|Conta/],['🎨 Aparência e layouts',/Aparência|Menu|Tela inicial|Idioma|Kayla|Novidades/],['🔔 Avisos e extras',/Lembretes|Rádio|Notícias|Permiss/],['💾 Backup e segurança',/Backup|Segurança|Aplicativo/]],out=G.map(()=>[]);out.push([]);
+ parts.forEach(p=>{const t=p.slice(p.indexOf('>')+1,p.indexOf('</h3>'));let i=G.findIndex(g=>g[1].test(t));if(i<0)i=G.length;out[i].push('<h3'+p)});
+ return h0+cfgLayout()+out.map((a,i)=>a.length?`<details class="cfgg" data-k="${i}" ${CFGOPEN.has(String(i))?'open':''}><summary>${i<G.length?G[i][0]:'⚙️ Outros'}</summary>${a.join('')}</details>`:'').join('')+sair};
+try{tabsAtualizar();nav();if(S.user&&S.user.name)render()}catch(e){console.error(e)}
+})();
+</script>
 </body>
 </html>
