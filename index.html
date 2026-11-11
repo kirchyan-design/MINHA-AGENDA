@@ -2759,7 +2759,7 @@ function vConfig(){
  +`<div style="text-align:center;margin-top:4px"><button class="ghost" onclick="ask('Sair? Seus dados ficam guardados neste aparelho e voltam quando você entrar de novo com a mesma conta.',()=>{contaSair(true);S.user.name='';tab='inicio';save();nav();render()},'Sair')">Sair</button></div>`}
 
 function togVers(){S.versOff=!S.versOff;save();render()}
-function cfgInicio(){const on=!S.versOff,cd=!S.natalCdOff;return `<h3>${_t('Tela inicial')}</h3><div class="card"><div class="prm"><span class="ic">📖</span><span class="t"><b>Versículo bíblico do dia</b><small>${on?'Aparece no topo da tela inicial.':'Escondido da tela inicial.'}</small></span><button class="${on?'':'sec'}" onclick="togVers()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div><div class="prm"><span class="ic">🎄</span><span class="t"><b>Letreiro de contagem para o Natal</b><small>${cd?'Fixo no topo, com os dias que faltam para o Natal.':'Escondido.'}</small></span><button class="${cd?'':'sec'}" onclick="togNatalCd()" aria-pressed="${cd}">${cd?'Desativar':'Ativar'}</button></div></div>`}
+function cfgInicio(){const on=!S.versOff,cd=!!S.natalCdOn;return `<h3>${_t('Tela inicial')}</h3><div class="card"><div class="prm"><span class="ic">📖</span><span class="t"><b>Versículo bíblico do dia</b><small>${on?'Aparece no topo da tela inicial.':'Escondido da tela inicial.'}</small></span><button class="${on?'':'sec'}" onclick="togVers()" aria-pressed="${on}">${on?'Desativar':'Ativar'}</button></div><div class="prm"><span class="ic">🎄</span><span class="t"><b>Letreiro de contagem para o Natal</b><small>${cd?'Fixo no topo, com os dias que faltam para o Natal.':'Escondido.'}</small></span><button class="${cd?'':'sec'}" onclick="togNatalCd()" aria-pressed="${cd}">${cd?'Desativar':'Ativar'}</button></div></div>`}
 /* ---------- v2.5: Conta (Google ou e-mail/senha) e recuperação da senha do app ---------- */
 const FA=()=>plug('FirebaseAuthentication');
 if(S.user&&S.user.google&&!S.user.conta){S.user.conta=Object.assign({prov:'google'},S.user.google);delete S.user.google}
@@ -9741,8 +9741,8 @@ let NT_OB=null;
 function ntObs(){if(NT_OB||!window.MutationObserver||!document.body)return;let q=0;
  NT_OB=new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;try{ntHats()}catch(e){}})});
  NT_OB.observe(document.body,{childList:true,subtree:true})}
-/* ao abrir o app a primeira vez com esta versão, aplica o tema de Natal; depois o usuário muda em Configurações › Aparência */
-function natalAuto(){try{if(S.natalOk)return;S.natalOk=1;S.color='natal';save()}catch(e){}}
+/* o tema Natal não é mais o principal: continua disponível em Configurações › Aparência. Uma única vez, quem recebeu o Natal automaticamente volta ao tema padrão */
+function natalAuto(){try{if(S.natalRev)return;S.natalRev=1;if(S.natalOk&&S.color==='natal')S.color='teal';save()}catch(e){}}
 (function(){const _a=applyTheme;applyTheme=function(){_a.apply(this,arguments);try{
  if(S.color==='natal'&&!document.getElementById('nt-font')){const l=document.createElement('link');l.id='nt-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Nunito:wght@600;700;800&display=swap';document.head.appendChild(l)}
  ntBg();ntHats();ntObs()}catch(e){}}})();
@@ -9755,8 +9755,8 @@ function cdNatalTxt(){const n=new Date(),a=cdNatalAlvo();
  return '🎄 Faltam <b>'+d+(d===1?' dia':' dias')+'</b> <b>'+p(h)+':'+p(m)+':'+p(s)+'</b> para o Natal 🎅'}
 function cdNatalAplica(){try{let el=document.getElementById('cd-natal');
  if(!el){el=document.createElement('div');el.id='cd-natal';el.setAttribute('role','status');el.setAttribute('aria-label','Contagem regressiva para o Natal');document.body.appendChild(el)}
- const on=!S.natalCdOff;document.documentElement.classList.toggle('cd-on',on);if(on)el.innerHTML=cdNatalTxt()}catch(e){}}
-function togNatalCd(){S.natalCdOff=!S.natalCdOff;save();cdNatalAplica();render()}
+ const on=!!S.natalCdOn;document.documentElement.classList.toggle('cd-on',on);if(on)el.innerHTML=cdNatalTxt()}catch(e){}}
+function togNatalCd(){S.natalCdOn=!S.natalCdOn;save();cdNatalAplica();render()}
 cdNatalAplica();setInterval(cdNatalAplica,1000);
 /* ===== Tema VIKING: papel de parede (aurora, lua, fiorde, drakkar, pinheiros, pedra com runa, neve) + fontes rúnicas ===== */
 function vkScene(){
