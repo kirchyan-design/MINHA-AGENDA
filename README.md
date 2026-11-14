@@ -2,6 +2,13 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 3.8.2 (14/11/2026)
+
+- **Filmes**: `filmes.json` e `FI_BASE` atualizados em 14/11 (cartaz de RioMar, Shopping Recife, De Lux, Tacaruna, Plaza e Boa Vista; saíram *Assalto à Brasileira*, *Klara e o Sol*, *Razão e Sensibilidade*, *Rocky, Um Lutador* e outros; entraram *A Virada - Ignição da Alma*, *Boiúna*, *Como Roubar um Banco*, *Ebenezer e os Fantasmas do Natal*, *Eu Sou o Rocky* e *Lago dos Ossos*). Patteo, North Way e Guararapes seguem sem grade própria.
+- **Espaço Cultural**: `cultural.json` e `CU_BASE` atualizados (`CU_ISO` = 14/11/2026) com 10 eventos de 13 a 15/11.
+- **Promoções (pendente)**: todos os encartes cadastrados em `AS_ENC` (Assaí, até 12/11) e `NV_ENC` (Novo Atacarejo, até 13/11) já venceram e saem sozinhos. Os encartes novos (Assaí PE 13 a 15/11; Novo Atacarejo *Ofertas da semana* 13 a 15/11, *Ofertas do Findi Hortifruti* 14 a 15/11 e *Achadinhos Bazar + Auto* até 22/11) são imagens, e os itens e preços precisam ser digitados a partir do encarte.
+- `VERSION` do `sw.js` em 3.8.2 e `NOVIDADES` com a 3.8.2.
+
 ## Carteira compartilhada (v3.6.8) e comentários (v3.7.0)
 
 - Na **Carteira** há o cartão **👥 Compartilhar a Carteira**: o dono convida pelo e-mail (Gmail) e a outra pessoa aceita na própria Carteira. Só o menu Carteira é compartilhado. As mudanças são enviadas em ~1 s e o outro aparelho confere a cada 3 s (20 s em outras telas); edições simultâneas são juntas item a item (`shMerge`). Dados em `carteiras/{id}` e `carteiras/{id}/dados/p*`. Exige as regras do `firestore.rules` publicadas, app instalado (APK) e conta Google. Máximo de 5 pessoas.
