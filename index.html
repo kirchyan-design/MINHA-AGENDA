@@ -1447,7 +1447,7 @@ try{const r=localStorage.getItem('minha-agenda');if(r)S=Object.assign(S,JSON.par
 const OWNK='ma-owner',ACCP='ma-acc:';let TROCANDO=false;
 const ownerId=()=>{try{return localStorage.getItem(OWNK)||''}catch(e){return ''}};
 try{if(!ownerId()&&S.user&&S.user.conta){const c=S.user.conta,i=String(c.email||c.phone||c.uid||'').trim().toLowerCase();if(i)localStorage.setItem(OWNK,i)}}catch(e){}
-S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.tabsOff=Array.isArray(S.tabsOff)?S.tabsOff:[];S.pl=Array.isArray(S.pl)?S.pl:[];S.hosp=Array.isArray(S.hosp)?S.hosp:[];S.mercados=Array.isArray(S.mercados)?S.mercados:[];S.scans=Array.isArray(S.scans)?S.scans:[];S.user=S.user||{name:''};S.notif=Object.assign({on:true,lead:10,plOn:true,plLead:60},S.notif||{});
+S.shop.forEach(x=>{x.price=x.price||0;x.qty=x.qty||1});S.tabsOff=Array.isArray(S.tabsOff)?S.tabsOff:[];S.pl=Array.isArray(S.pl)?S.pl:[];S.hosp=Array.isArray(S.hosp)?S.hosp:[];S.mercados=Array.isArray(S.mercados)?S.mercados:[];S.scans=Array.isArray(S.scans)?S.scans:[];S.feira=Array.isArray(S.feira)?S.feira:[];S.user=S.user||{name:''};S.notif=Object.assign({on:true,lead:10,plOn:true,plLead:60},S.notif||{});
 
 /* ---------- Idiomas (i18n) ---------- */
 const LANGS=[['pt','Português','pt-BR','por'],['en','English','en-US','eng'],['es','Español','es-ES','spa'],['de','Deutsch','de-DE','deu']];
@@ -2672,9 +2672,35 @@ function vHist(){
  if(!S.hist.length)return '<div class="vazio">Nenhuma compra finalizada. Ao finalizar uma lista, ela aparece aqui com o nome do mercado.</div>';
  return S.hist.map(h=>h.id===edH?histEdit():`<div class="card"><div class="row ent" onclick="aberto=aberto==='${h.id}'?null:'${h.id}';render()">${logoNome(h.market)}<div style="flex:1"><strong>${esc(h.market)}</strong><div style="color:var(--mute);font-size:14px">${fmt(h.date,{day:'numeric',month:'short',year:'numeric'})}, ${h.items.length} itens</div></div><strong>${brl(h.total)}</strong></div>`
  +(aberto===h.id?`<div style="margin-top:8px">${h.items.map(x=>`<div class="item"><span class="t">${esc(x.title)} <small style="color:var(--mute)">${qtyTxt(x)} × ${brl(x.price)}${wt(x.unit)?'/kg':''}</small></span><b>${brl(lineTotal(x))}</b></div>`).join('')}<div class="row" style="margin-top:10px"><button class="sec" onclick="reuse('${h.id}')">Usar de novo</button><button class="sec" onclick="startH('${h.id}')">Editar</button><button class="ghost" onclick="ask('Excluir do histórico?',()=>{S.hist=S.hist.filter(x=>x.id!=='${h.id}');save();render()})">Excluir</button></div></div>`:'')+'</div>').join('')}
+/* ---------- Criar lista de feira: o que está faltando em casa ---------- */
+const feiraArr=()=>(S.feira=Array.isArray(S.feira)?S.feira:[]);
+function addFeira(){const i=$('#fe-t'),t=i.value.trim();if(!t){i.focus();return}
+ const q=($('#fe-q').value||'').trim(),L=feiraArr();
+ if(L.some(x=>nrm(x.title)===nrm(t))){info('“'+t+'” já está na lista de feira.');i.value='';i.focus();return}
+ L.push({id:uid(),title:t[0].toUpperCase()+t.slice(1),qty:q,done:false});save();render();const n=$('#fe-t');if(n)n.focus()}
+function togFeira(id){const x=feiraArr().find(y=>y.id===id);if(!x)return;x.done=!x.done;save();render()}
+function delFeira(id){S.feira=feiraArr().filter(x=>x.id!==id);save();render()}
+function limpaFeira(){S.feira=[];save();render()}
+function feiraParaLista(){
+ const pend=feiraArr().filter(x=>!x.done);if(!pend.length)return;let n=0,ja=0;
+ pend.forEach(x=>{if(S.shop.some(y=>nrm(y.title)===nrm(x.title))){ja++;return}
+  const pr=(S.prods[x.title.toLowerCase()]||{price:0}),q=num(x.qty);
+  S.shop.push({id:uid(),title:x.title,price:pr.price||0,unit:pr.unit==='kg'?'kg':'un',qty:pr.unit==='kg'?(q>0?q:1):Math.max(1,Math.round(q)||1),done:false});n++});
+ S.feira=feiraArr().filter(x=>x.done);save();sub='atual';render();window.scrollTo(0,0);
+ info(n+(n===1?' produto enviado':' produtos enviados')+' para a Lista de compras'+(ja?' ('+ja+(ja===1?' já estava lá)':' já estavam lá)'):'.'))}
+function vFeira(){
+ const L=feiraArr(),pend=L.filter(x=>!x.done),ok=L.filter(x=>x.done);
+ const it=x=>`<div class="item ${x.done?'done':''}"><input type="checkbox" ${x.done?'checked':''} onchange="togFeira('${x.id}')" aria-label="Já comprei"><span class="t">${esc(x.title)}${x.qty?` <small style="color:var(--mute)">· ${esc(x.qty)}</small>`:''}</span><button class="ghost" onclick="delFeira('${x.id}')" aria-label="Remover ${esc(x.title)}">✕</button></div>`;
+ return `<datalist id="fe-pl">${Object.values(S.prods).map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>`
+ +`<div class="card"><h3 style="margin:0 0 4px">🧺 O que está faltando em casa?</h3><p class="hint" style="margin:0 0 10px">Vá anotando aqui o que acabou. Na hora da compra, é só enviar tudo para a Lista de compras.</p>`
+ +`<input id="fe-t" list="fe-pl" placeholder="Produto (ex.: arroz, sabão em pó)" maxlength="60" onkeydown="if(event.key==='Enter')addFeira()"><div class="row" style="margin-top:8px"><input id="fe-q" placeholder="Quantidade (opcional)" maxlength="20" onkeydown="if(event.key==='Enter')addFeira()"><button onclick="addFeira()">Adicionar</button></div></div>`
+ +(L.length?(pend.length?`<h3>Faltando (${pend.length})</h3><div class="card">${pend.map(it).join('')}</div>`:'')
+  +(ok.length?`<h3>Já comprei (${ok.length})</h3><div class="card">${ok.map(it).join('')}</div>`:'')
+  +`<div class="card"><div class="row">${pend.length?`<button onclick="feiraParaLista()">🛒 Enviar para a Lista de compras</button>`:''}<button class="ghost" onclick="ask('Limpar toda a lista de feira?',limpaFeira,'Limpar')">Limpar</button></div></div>`
+  :'<div class="vazio">Nada anotado ainda. Adicione acima os produtos que estão faltando em casa.</div>')}
 function vCompras(){
- const seg=`<div class="seg">${[['atual','Lista'],['scan','📷 Escanear'],['prod','Produtos'],['comp','Comparar'],['mkt','Mercados'],['hist','Histórico ('+S.hist.length+')']].map(a=>`<button class="${sub===a[0]?'on':''}" onclick="sub='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`;
- return `<h2>${_t('Lista de compras')}</h2>`+seg+(sub==='atual'?vLista():sub==='scan'?vEscanear():sub==='prod'?vProdutos():sub==='comp'?vComparar():sub==='mkt'?vMercados():vHist())}
+ const seg=`<div class="seg">${[['atual','Lista'],['feira','🧺 Criar lista de feira'],['scan','📷 Escanear'],['prod','Produtos'],['comp','Comparar'],['mkt','Mercados'],['hist','Histórico ('+S.hist.length+')']].map(a=>`<button class="${sub===a[0]?'on':''}" onclick="sub='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`;
+ return `<h2>${_t('Lista de compras')}</h2>`+seg+(sub==='atual'?vLista():sub==='feira'?vFeira():sub==='scan'?vEscanear():sub==='prod'?vProdutos():sub==='comp'?vComparar():sub==='mkt'?vMercados():vHist())}
 
 function vTotais(){
  const fotos=Object.values(S.diary).reduce((n,d)=>n+(d.imgs||[]).filter(id=>FOTOS[id]).length,0),ev=S.ev.length,ok=S.ev.filter(e=>e.done).length,di=Object.keys(S.diary).length,sh=S.shop.length,hi=S.hist.length,pr=Object.keys(S.prods).length,nt=S.notes.length,pl=S.pl.length,cw=S.cart.gastos.length+S.cart.fixas.length+S.cart.rendas.length,total=ev+di+sh+hi+pr+nt+pl+cw;
@@ -5682,8 +5708,11 @@ try{fired=new Set(JSON.parse(localStorage.getItem('mp-fired')||'[]'))}catch(e){}
 const LNp=()=>plug('LocalNotifications');
 const nid=k=>{let h=7;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;return h%2000000000+1};
 function gatilhos(){const N=S.notif,out=[];if(!N.on)return out;
+ const mgN={};S.ev.forEach(e=>{if(e.mg)mgN[e.mg]=(mgN[e.mg]||0)+1});
  S.ev.forEach(e=>{if(e.done||!e.date)return;const tem=!!e.time,t=new Date(e.date+'T'+(e.time||'08:00')).getTime();if(isNaN(t))return;const ld=e.exato?0:N.lead;
-  out.push({key:'e'+e.id,at:t-(tem?ld*60000:0),title:(tem?'⏰ ':'📋 ')+e.title,body:tem?(ld?'Começa às '+e.time+' (em '+ld+' min)':'Agora: '+e.time):'Compromisso de hoje'})});
+  out.push({key:'e'+e.id,at:t-(tem?ld*60000:0),title:(tem?'⏰ ':'📋 ')+e.title,body:tem?(ld?'Começa às '+e.time+' (em '+ld+' min)':'Agora: '+e.time):'Compromisso de hoje'});
+  /* aviso 1 dia antes: mesmo horário do compromisso (sem hora, às 08:00) no dia anterior. Lembretes automáticos repetidos (ciclo, remédio diário) ficam de fora. */
+  if(N.umDia!==0&&(!e.mg||mgN[e.mg]===1))out.push({key:'e1d'+e.id,at:t-86400000,title:'📅 Amanhã: '+e.title,body:tem?'Compromisso amanhã, '+dm(e.date)+', às '+e.time:'Compromisso amanhã, '+dm(e.date)})});
  if(N.plOn)S.pl.forEach(p=>{const t=new Date(p.date+'T'+p.ent).getTime();if(isNaN(t))return;
   out.push({key:'p'+p.id,at:t-N.plLead*60000,title:'🩺 Plantão '+p.ent+' → '+p.sai,body:'Começa às '+p.ent+(hospBy(p.hosp)?' · '+hospBy(p.hosp).name:'')+(p.obs?' · '+p.obs:'')})});
  if(N.cwOn!==false){cwGatilhos(N).forEach(x=>out.push(x));salGatilhos(N).forEach(x=>out.push(x))}
@@ -5781,6 +5810,7 @@ function cfgLembretes(){const N=S.notif,on=N.on,sn=N.sound,app=nat();
  const sel=(id,l,opts,cur,fn)=>`<label class="fl" for="${id}">${l}</label><select id="${id}" style="width:100%" onchange="${fn}">${opts.map(o=>`<option value="${o[0]}" ${+o[0]===+cur?'selected':''}>${o[1]}</option>`).join('')}</select>`;
  return `<h3>${_t('Lembretes e alarme')}</h3><div class="card"><button class="${on?'sec':''}" style="width:100%" onclick="ativarLembretes(${!on})">${on?'🔔 Lembretes ativados · tocar para desativar':'🔕 Ativar lembretes de compromissos'}</button>`
  +(on?sel('nt-l','Avisar compromissos',[[0,'Na hora'],[5,'5 min antes'],[10,'10 min antes'],[15,'15 min antes'],[30,'30 min antes'],[60,'1 hora antes']],N.lead,"setNotif('lead',this.value)")
+  +sel('nt-d','Avisar 1 dia antes do compromisso',[[1,'Ligado'],[0,'Desligado']],N.umDia===0?0:1,"setNotif('umDia',this.value)")
   +sel('nt-p','Lembrar meus plantões',[[0,'Não lembrar'],[30,'30 min antes'],[60,'1 hora antes'],[120,'2 horas antes'],[180,'3 horas antes']],N.plOn?N.plLead:0,"setNotif('plLead',this.value)"):'')
  +`<div class="row" style="margin-top:10px"><button class="sec" style="width:100%" onclick="notifTeste()">🔔 Testar notificação (chega em 5 s)</button></div>${NOTIF_ERR?`<p class="hint">Último erro ao agendar: ${esc(NOTIF_ERR)}</p>`:''}<label class="fl">Música do alarme</label><div class="somnome">🎵 ${sn?esc(sn.name):'Som padrão (bipes)'}</div><div class="row" style="margin-top:8px"><button class="sec" onclick="$('#nt-f').click()">🎵 Escolher música</button><button class="sec" onclick="alarme('Teste do alarme','É assim que o alarme vai tocar.')">▶ Testar</button>${sn?'<button class="ghost" onclick="removerSom()">Remover</button>':''}</div><input type="file" id="nt-f" accept="audio/*" style="display:none" onchange="escolherSom(this)">`
  +`<p class="hint">Escolha qualquer música dos arquivos do seu celular. Com o app aberto, ou ao tocar na notificação, a música toca em repetição até você parar. Com o app fechado, o celular mostra a notificação com o som padrão dele, pois o Android não deixa um app trocar o som sem estar aberto.${app?'':' Neste navegador os avisos só funcionam com a página aberta.'} A música fica só neste aparelho e não entra no backup.</p></div>`}
