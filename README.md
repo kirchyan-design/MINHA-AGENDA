@@ -2,6 +2,13 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 3.8.5 (25/11/2026)
+
+- **CLT** (`CLT_RAW`, `CLT_ATUAL` = 25/11/2026): entraram 47 vagas novas no fim da lista (para não mudar os ids das antigas): 38 do InformeVagas PE, publicadas de 12 a 23/11, com salário, benefícios, jornada, requisitos e **e-mail para currículo preenchido**, e 9 do GoRecife, criadas de 23 a 25/11. Nova fonte `ivp` em `CLT_SRC`. Vagas em outras cidades (Cabo, Itapissuma, Vitória de Santo Antão, Abreu e Lima, Petrolina) ficaram de fora porque o menu só cobre Recife, Olinda, Paulista e Jaboatão. A vaga de gráfica (Afogados) só tem WhatsApp, que está na observação.
+- **Filmes** (`filmes.json` e `FI_BASE`, `atualizado` = 25/11): entrou *Jogos Vorazes: Amanhecer na Colheita* (estreia de 19/11, 16 anos) na grade dos seis cinemas de Recife; saíram do *Em breve* os filmes que já estrearam; entraram as estreias de 03/12 (*Noite Ainda Mais Infeliz*, *Zero D.C.: O Nascimento de Cristo*, *Para Vigo Me Voy!*) e de 10/12 (*One Piece*, *Shrek*, *A Paixão de Cristo*, *Diário de uma Paixão*). **Streaming**: 12 lançamentos de dezembro.
+- **Limite**: as grades por cinema (quais filmes passam em cada shopping) não foram reconferidas nesta rodada; só entrou *Jogos Vorazes*. *I Love Boosters* (estreia de 19/11) não está em nenhuma grade por falta de fonte por cinema. Patteo, North Way e Guararapes seguem sem grade própria.
+- `VERSION` do `sw.js` em 3.8.5 e `NOVIDADES` com a 3.8.5.
+
 ## Versão 3.8.4 (22/11/2026)
 
 - **Concursos** (`CN_DATA`, `CN_ATUAL` = 22/11/2026): entraram Prefeitura de Custódia (PE), Câmara de Petrolina (PE), Ministério da Saúde (PSS, 759 vagas), Banestes, SP Águas, CETESB, CAU-SC, São Francisco de Goiás, São Luís de Montes Belos, Câmara de Areia (PB) e Cristalândia do Piauí. Corrigidos: o item `trt3` era na verdade o **TRF 3ª Região (SP/MS)** (id mantido para não perder favoritos) e o item `pgoias` passou a ser **Aparecida de Goiânia** (os números de 2.956 vagas estavam atribuídos a Petrolina de Goiás). Previstos: ANPD (Cebraspe), Receita Federal, Banco Central, INSS e PRF atualizados; entraram `gcmr` (Guarda do Recife, banca AOCP) e `cnu3`.
