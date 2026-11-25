@@ -1521,7 +1521,7 @@ let LOGOS={};try{const r=localStorage.getItem('minha-agenda-logos');if(r)LOGOS=J
 let FOTOS={},dimgs=[],dimgsFor=null;try{const r=localStorage.getItem('minha-agenda-fotos');if(r)FOTOS=JSON.parse(r)||{}}catch(e){}
 const saveFotos=()=>{if(TROCANDO)return true;try{localStorage.setItem('minha-agenda-fotos',JSON.stringify(FOTOS));return true}catch(e){return false}};
 function gcFotos(){const used=new Set();Object.values(S.diary).forEach(d=>(d.imgs||[]).forEach(i=>used.add(i)));let ch=false;Object.keys(FOTOS).forEach(k=>{if(!used.has(k)){delete FOTOS[k];ch=true}});if(ch)saveFotos()}
-const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}try{shAgendar()}catch(e){}return ok};
+const save=()=>{if(TROCANDO)return true;let ok=true;try{localStorage.setItem('minha-agenda',JSON.stringify(S))}catch(e){ok=false}gcFotos();try{schedSoon()}catch(e){}try{nuvAgendar()}catch(e){}try{shAgendar()}catch(e){}try{psAgendar()}catch(e){}return ok};
 let tab='inicio',sel=HOJE,mes=new Date(),mood='',dsel=HOJE,calSub='cal',edPl=null,plSub='reg',plAno='todos',plQuick=null,plOpen={},plQuickH=null,edHosp=null,hpCor=null,hpOpen={};
 const ICO={
  biblia:'<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v16H6.5A1.5 1.5 0 0 0 5 20.5z"/><path d="M5 20.5V21h14"/><path d="M12 6.5v8M9 9.5h6"/>',
@@ -1772,7 +1772,7 @@ function vCal(){
 /* ---------- Meus Plantões ---------- */
 function plItem(p,sd){
  if(p.id===edPl)return `<div class="item" style="flex-wrap:wrap"><div class="row" style="width:100%"><input type="date" id="pe-d" value="${p.date}"></div><div class="row" style="width:100%"><label class="fl2">Entrada<input type="time" id="pe-i" value="${p.ent}"></label><label class="fl2">Saída<input type="time" id="pe-o" value="${p.sai}"></label></div><div class="row" style="width:100%">${hospSel('pe-h','pe',p.hosp)}${valIn('pe-v',p.val)}</div><textarea id="pe-ob" style="min-height:60px" placeholder="Observações (opcional)">${esc(p.obs||'')}</textarea><div class="row" style="width:100%"><button onclick="savePl('${p.id}')">Salvar</button><button class="ghost" onclick="edPl=null;render()">Cancelar</button></div></div>`;
- return `<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><div class="t">${sd?`<small class="pdt">${fmt(p.date,{weekday:'short',day:'2-digit',month:'short'})}</small><br>`:''}<b>${p.ent} → ${p.sai}</b>${cruza(p)?' <small style="color:var(--mute)">(termina no dia seguinte)</small>':''} <small style="color:var(--ac);font-weight:700">· ${fmtDur(durMin(p))}</small>${plExtra(p)}${p.obs?`<div class="pobs">${esc(p.obs)}</div>`:''}</div><button class="ghost" onclick="edPl='${p.id}';render()" aria-label="Editar plantão">✎</button><button class="ghost" onclick="ask('Excluir este plantão?',()=>{S.pl=S.pl.filter(x=>x.id!=='${p.id}');save();render()})" aria-label="Excluir plantão">✕</button></div>`}
+ return `<div class="item"><span class="hora" style="min-width:28px;font-size:18px">${shiftIco(p)}</span><div class="t">${sd?`<small class="pdt">${fmt(p.date,{weekday:'short',day:'2-digit',month:'short'})}</small><br>`:''}<b>${p.ent} → ${p.sai}</b>${cruza(p)?' <small style="color:var(--mute)">(termina no dia seguinte)</small>':''} <small style="color:var(--ac);font-weight:700">· ${fmtDur(durMin(p))}</small>${plExtra(p)}${p.obs?`<div class="pobs">${esc(p.obs)}</div>`:''}</div>${p.r?'<span class="ghost" title="Compartilhado" aria-label="Plantão compartilhado" style="opacity:.6">🔒</span>':`<button class="ghost" onclick="edPl='${p.id}';render()" aria-label="Editar plantão">✎</button><button class="ghost" onclick="ask('Excluir este plantão?',()=>{S.pl=S.pl.filter(x=>x.id!=='${p.id}');save();render()})" aria-label="Excluir plantão">✕</button>`}</div>`}
 /* ---- v1.5: hospitais e diárias ---- */
 const BRL=v=>(Number(v)||0).toLocaleString(LOC(),{style:'currency',currency:'BRL'});
 const vlr=v=>{const n=parseFloat(String(v==null?'':v).replace(',','.'));return isNaN(n)||n<0?0:Math.round(n*100)/100};
@@ -3281,6 +3281,50 @@ function shDlgDesenha(){
   +(L?`<button class="ghost" style="width:100%;margin-top:12px" onclick="shSair()">${dono?'⛔ Parar de compartilhar':'🚪 Sair da Carteira compartilhada'}</button>`:'')
   +`<div class="row" style="margin-top:12px"><button class="sec" style="flex:1" onclick="shDlgFecha()">Fechar</button></div></div>`;
  if(foco){const e=document.getElementById('sh-em');if(e){e.value=val;e.focus()}}}
+/* ---------- Plantões espelhados: kirchyan@gmail.com -> adalia05flor@gmail.com (somente leitura) ----------
+   Tudo que a conta PS_DONO registrar, alterar ou apagar em Plantões/Hospitais é enviado ao Firestore (plantoesEspelho/principal).
+   A conta PS_LEITOR confere a cada 15 s e espelha a lista: itens recebidos levam a marca r:1 e não são editáveis; os plantões próprios dela não mudam.
+   Exige as regras novas do firestore.rules (bloco plantoesEspelho). Ambas as contas precisam entrar com e-mail verificado (Google). */
+const PS_DONO='kirchyan@gmail.com',PS_LEITOR='adalia05flor@gmail.com',PS_DOC='plantoesEspelho/principal';
+const PS={busy:false,t:0,ok:null,msg:''};let PS_T=null;
+const psEmail=()=>String((ct()||{}).email||'').trim().toLowerCase();
+const psKey=()=>'ma-ps:'+((ct()||{}).uid||'');
+const psEst=()=>{try{return JSON.parse(localStorage.getItem(psKey()))||{}}catch(e){return {}}};
+const psGrava=o=>{try{localStorage.setItem(psKey(),JSON.stringify(o))}catch(e){}};
+const psNome=FS_N+'/'+PS_DOC,psUrl=FS_B+'/'+PS_DOC;
+async function psEnviar(){
+ if(NUV.ok!==true)return; /* só depois de restaurar os dados da nuvem, para nunca enviar uma lista vazia por engano */
+ const dados={pl:(S.pl||[]).filter(p=>!p.r),hosp:(S.hosp||[]).filter(h=>!h.r)},h=nuvHash(JSON.stringify(dados)),est=psEst();
+ if(est.h===h)return;
+ const d=await fsReq('GET',psUrl),f=(d&&d.fields)||{},antes=+((f.partes&&f.partes.integerValue)||0),rev=+((f.rev&&f.rev.integerValue)||0)+1;
+ const parts=shPartes(dados),campos={rev:shVal.i(rev),em:shVal.s(new Date().toISOString()),partes:shVal.i(parts.length)};
+ const w=[{update:{name:psNome,fields:campos},updateMask:{fieldPaths:Object.keys(campos)}}];
+ parts.forEach((x,i)=>w.push({update:{name:psNome+'/dados/p'+i,fields:{d:shVal.s(x)}}}));
+ for(let i=parts.length;i<antes;i++)w.push({delete:psNome+'/dados/p'+i});
+ await shCommit(w);psGrava({h:h,rev:rev})}
+async function psReceber(){
+ const d=await fsReq('GET',psUrl);if(!d||!d.fields)return;
+ const f=d.fields,rev=+((f.rev&&f.rev.integerValue)||0),n=+((f.partes&&f.partes.integerValue)||0),est=psEst();
+ if(est.rev===rev)return;
+ const nomes=[];for(let i=0;i<n;i++)nomes.push(psNome+'/dados/p'+i);
+ const r=await fsReq('POST',FS_B+':batchGet',{documents:nomes}),m={};
+ (r||[]).forEach(x=>{if(x.found)m[x.found.name]=(x.found.fields.d&&x.found.fields.d.stringValue)||''});
+ let t='';for(const k of nomes){if(m[k]===undefined)throw new Error('Dados incompletos na nuvem.');t+=m[k]}
+ const o=JSON.parse(t);if(!o||typeof o!=='object')throw new Error('Dados inválidos.');
+ S.pl=(S.pl||[]).filter(p=>!p.r).concat((Array.isArray(o.pl)?o.pl:[]).map(p=>Object.assign({},p,{r:1})));
+ S.hosp=(S.hosp||[]).filter(h=>!h.r).concat((Array.isArray(o.hosp)?o.hosp:[]).map(h=>Object.assign({},h,{r:1})));
+ psGrava({rev:rev});save();
+ if((tab==='cal'||tab==='inicio')&&!document.querySelector('.ov')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))render()}
+async function psSync(){
+ if(PS.busy||TROCANDO||!nat()||!FA()||!ct()||!ct().uid)return;
+ const em=psEmail();if(em!==PS_DONO&&em!==PS_LEITOR)return;
+ PS.busy=true;PS.t=Date.now();
+ try{if(em===PS_DONO)await psEnviar();else await psReceber();PS.ok=true;PS.msg=''}
+ catch(e){PS.ok=false;PS.msg=String((e&&e.message)||e).slice(0,100)}
+ finally{PS.busy=false}}
+function psAgendar(){if(TROCANDO||!nat()||!ct()||psEmail()!==PS_DONO)return;clearTimeout(PS_T);PS_T=setTimeout(psSync,1500)}
+setInterval(()=>{try{if(!document.hidden)psSync()}catch(e){}},15000);
+document.addEventListener('visibilitychange',()=>{try{if(!document.hidden)psSync()}catch(e){}});
 /* ---------- Backup ---------- */
 const nat=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())}catch(e){return false}};
 const plug=n=>{try{return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins[n]}catch(e){}};

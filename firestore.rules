@@ -51,5 +51,18 @@ service cloud.firestore {
           && request.auth.uid in get(/databases/$(database)/documents/carteiras/$(cid)).data.membros;
       }
     }
+
+    // Plantões espelhados: só kirchyan@gmail.com grava; adalia05flor@gmail.com apenas lê.
+    match /plantoesEspelho/{id} {
+      function verificado() { return request.auth != null && request.auth.token.email != null && request.auth.token.email_verified == true; }
+      function dono() { return verificado() && request.auth.token.email.lower() == 'kirchyan@gmail.com'; }
+      function leitor() { return verificado() && request.auth.token.email.lower() == 'adalia05flor@gmail.com'; }
+      allow read: if dono() || leitor();
+      allow write: if dono();
+      match /dados/{parte} {
+        allow read: if dono() || leitor();
+        allow write: if dono();
+      }
+    }
   }
 }
