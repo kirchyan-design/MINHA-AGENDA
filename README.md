@@ -2,6 +2,13 @@
 
 Agenda, notas, diário, compras e plantões. O APK é gerado pelo GitHub Actions (aba Actions › Gerar APK).
 
+## Versão 3.8.4 (22/11/2026)
+
+- **Concursos** (`CN_DATA`, `CN_ATUAL` = 22/11/2026): entraram Prefeitura de Custódia (PE), Câmara de Petrolina (PE), Ministério da Saúde (PSS, 759 vagas), Banestes, SP Águas, CETESB, CAU-SC, São Francisco de Goiás, São Luís de Montes Belos, Câmara de Areia (PB) e Cristalândia do Piauí. Corrigidos: o item `trt3` era na verdade o **TRF 3ª Região (SP/MS)** (id mantido para não perder favoritos) e o item `pgoias` passou a ser **Aparecida de Goiânia** (os números de 2.956 vagas estavam atribuídos a Petrolina de Goiás). Previstos: ANPD (Cebraspe), Receita Federal, Banco Central, INSS e PRF atualizados; entraram `gcmr` (Guarda do Recife, banca AOCP) e `cnu3`.
+- **CLT** (`CLT_RAW`, `CLT_ATUAL` = 22/11/2026): as 8 vagas do quadro da Sedepe/Sine-PE de 09/11 foram trocadas pelas do quadro de 19/11 (no mesmo lugar da lista, para não mudar os ids), e entraram motofretista e as vagas para PcD. Agora a **lista fixa também respeita os 30 dias** (`cltVig`): vaga com data de publicação mais antiga some sozinha. Vagas sem data continuam até o robô de vagas rodar.
+- **Limite**: o quadro de 19/11 só informa as funções, não a cidade, a empresa nem o salário de cada vaga. Para vagas completas, rode o workflow *Atualizar vagas CLT* (precisa de internet).
+- `VERSION` do `sw.js` em 3.8.4 e `NOVIDADES` com a 3.8.4. (A 3.8.3, de promoções, já estava no `sw.js` mas não neste README.)
+
 ## Versão 3.8.2 (14/11/2026)
 
 - **Filmes**: `filmes.json` e `FI_BASE` atualizados em 14/11 (cartaz de RioMar, Shopping Recife, De Lux, Tacaruna, Plaza e Boa Vista; saíram *Assalto à Brasileira*, *Klara e o Sol*, *Razão e Sensibilidade*, *Rocky, Um Lutador* e outros; entraram *A Virada - Ignição da Alma*, *Boiúna*, *Como Roubar um Banco*, *Ebenezer e os Fantasmas do Natal*, *Eu Sou o Rocky* e *Lago dos Ossos*). Patteo, North Way e Guararapes seguem sem grade própria.
