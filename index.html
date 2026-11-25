@@ -1813,7 +1813,7 @@ function vPlantoes(){
  if(plSub==='hosp')return vPlHosp();
  const y=mes.getFullYear(),m=mes.getMonth(),key=y+'-'+String(m+1).padStart(2,'0');
  const dia=S.pl.filter(p=>p.date===sel).sort(plSort),mp=S.pl.filter(p=>p.date.startsWith(key)).sort(plSort),tm=mp.reduce((s,p)=>s+durMin(p),0);
- return `<h2>${_t('Calendário')}</h2>${calSeg()}${plSeg()}${quickBar()}<div class="cx cx-pl">${calHead()}<div class="cx-g">${calGrid('pl')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">${plQuick?'Dias coloridos já têm plantão; a cor indica o hospital. ':'Toque em um dia para ver os plantões dele. '}☀️ diurno · 🌙 noturno.</p>${S.hosp.length?`<div class="hleg">${S.hosp.map(h=>`<span>${hd(h)} ${esc(h.name)}</span>`).join('')}</div>`:''}</div>
+ return `<h2>${_t('Calendário')}</h2>${calSeg()}${psStatus()}${plSeg()}${quickBar()}<div class="cx cx-pl">${calHead()}<div class="cx-g">${calGrid('pl')}</div><p style="font-size:12px;color:var(--mute);margin:10px 0 0">${plQuick?'Dias coloridos já têm plantão; a cor indica o hospital. ':'Toque em um dia para ver os plantões dele. '}☀️ diurno · 🌙 noturno.</p>${S.hosp.length?`<div class="hleg">${S.hosp.map(h=>`<span>${hd(h)} ${esc(h.name)}</span>`).join('')}</div>`:''}</div>
  <h3 style="text-transform:capitalize">${fmt(sel,{weekday:'long',day:'numeric',month:'long'})}</h3>
  <div class="card">${dia.length?dia.map(plItem).join(''):'<div class="vazio" style="padding:10px">Nenhum plantão registrado neste dia.'+(plQuick?'':' Escolha o tipo de plantão acima e toque no dia para registrar.')+'</div>'}
 </div>
@@ -3293,9 +3293,9 @@ const psEst=()=>{try{return JSON.parse(localStorage.getItem(psKey()))||{}}catch(
 const psGrava=o=>{try{localStorage.setItem(psKey(),JSON.stringify(o))}catch(e){}};
 const psNome=FS_N+'/'+PS_DOC,psUrl=FS_B+'/'+PS_DOC;
 async function psEnviar(){
- if(NUV.ok!==true)return; /* só depois de restaurar os dados da nuvem, para nunca enviar uma lista vazia por engano */
  const dados={pl:(S.pl||[]).filter(p=>!p.r),hosp:(S.hosp||[]).filter(h=>!h.r)},h=nuvHash(JSON.stringify(dados)),est=psEst();
  if(est.h===h)return;
+ if(!est.h&&!dados.pl.length&&!dados.hosp.length)return; /* nunca envia lista vazia na primeira vez */
  const d=await fsReq('GET',psUrl),f=(d&&d.fields)||{},antes=+((f.partes&&f.partes.integerValue)||0),rev=+((f.rev&&f.rev.integerValue)||0)+1;
  const parts=shPartes(dados),campos={rev:shVal.i(rev),em:shVal.s(new Date().toISOString()),partes:shVal.i(parts.length)};
  const w=[{update:{name:psNome,fields:campos},updateMask:{fieldPaths:Object.keys(campos)}}];
@@ -3320,8 +3320,14 @@ async function psSync(){
  const em=psEmail();if(em!==PS_DONO&&em!==PS_LEITOR)return;
  PS.busy=true;PS.t=Date.now();
  try{if(em===PS_DONO)await psEnviar();else await psReceber();PS.ok=true;PS.msg=''}
- catch(e){PS.ok=false;PS.msg=String((e&&e.message)||e).slice(0,100)}
+ catch(e){PS.ok=false;const t=String((e&&(e.code||''))+' '+((e&&e.message)||e)).toLowerCase();PS.msg=/permission|403|unauthenticated/.test(t)?'Sem permissão no Firestore: publique o firestore.rules novo e entre com o Google (e-mail verificado).':/failed to fetch|network|load failed/.test(t)?'Sem conexão com a internet.':t.trim().slice(0,100)}
  finally{PS.busy=false}}
+const psAtivo=()=>{const e=psEmail();return e===PS_DONO||e===PS_LEITOR};
+function psStatus(){
+ if(!ct()||!psAtivo()){return ''}
+ const dono=psEmail()===PS_DONO,hh=PS.t?new Date(PS.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}):'';
+ const msg=!nat()?'Disponível só no aplicativo instalado no celular.':PS.ok===false?'⚠️ '+PS.msg:PS.ok?'✅ '+(dono?'Enviando seus plantões para '+PS_LEITOR:'Recebendo os plantões de '+PS_DONO)+(hh?' · '+hh:''):'Sincronizando…';
+ return `<div class="card"><div class="prm"><span class="ic">🔄</span><span class="t"><b>Plantões compartilhados</b><small>${esc(msg)}</small></span><button class="sec" onclick="PS.t=0;psSync().then(()=>render())">Sincronizar</button></div></div>`}
 function psAgendar(){if(TROCANDO||!nat()||!ct()||psEmail()!==PS_DONO)return;clearTimeout(PS_T);PS_T=setTimeout(psSync,1500)}
 setInterval(()=>{try{if(!document.hidden)psSync()}catch(e){}},15000);
 document.addEventListener('visibilitychange',()=>{try{if(!document.hidden)psSync()}catch(e){}});
